@@ -123,6 +123,12 @@ export default function Header() {
         </Trans>
       </StyledLink>
 
+      <StyledLink to={'/referrals'}>
+        <Trans>
+          <TEXT.Menu>Referrals</TEXT.Menu>
+        </Trans>
+      </StyledLink>
+
       {/* <StyledLink to={'/claimpage'}>
         <Trans>
           <TEXT.Menu>Claim</TEXT.Menu>

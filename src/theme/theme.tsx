@@ -106,6 +106,9 @@ export const TEXT = {
   BoldSmallBody(props: TextProps) {
     return <TextWrapper fontFamily="Inter, sans-serif" fontSize={14} fontWeight={700} color={'white1'} {...props} />
   },
+  BoldSmallBodyNoColor(props: TextProps) {
+    return <TextWrapper fontFamily="Inter, sans-serif" fontSize={14} fontWeight={700} {...props} />
+  },
   Supplemental(props: TextProps) {
     return <TextWrapper fontFamily="Inter, sans-serif" fontSize={12} fontWeight={400} color={'white1'} {...props} />
   },

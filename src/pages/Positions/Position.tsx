@@ -71,7 +71,7 @@ export const Position = ({
       const initialCollateralFormated = +initialCollateral / (10 ** 18)
       return initialCollateralFormated < 1 ? initialCollateralFormated.toFixed(6) : initialCollateralFormated.toFixed(2)
     }
-    return formatBigNumber(value, 18, 2) === 0 ? formatBigNumber(value, 18, 6) : formatBigNumber(value, 18, 2)
+    return Number(formatBigNumber(value, 18, 6)) < 0.01 ? formatBigNumber(value, 18, 6) : formatBigNumber(value, 18, 2)
   }, [value, initialCollateral])
 
   const parsedCost: string | number | undefined = useMemo(() => {

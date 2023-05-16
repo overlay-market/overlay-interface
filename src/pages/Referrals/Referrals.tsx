@@ -118,6 +118,8 @@ const Referrals = () => {
   const {account, chainId} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
 
+  const myAffiliateLink = useMemo(() => 'Test', [])
+
   console.log({account, chainId})
 
   const submitReferralCode = () => {
@@ -125,11 +127,11 @@ const Referrals = () => {
   }
 
   const handleContentCopy = () => {
-    console.log('Content Copy')
+    navigator.clipboard.writeText(myAffiliateLink)
   }
 
   const handleTwitter = () => {
-    console.log('go to twitter')
+    window.open('https://twitter.com/intent/tweet?text=hello%20there!', '_blank')
   }
 
   // Where does Overlay Referral Program ➞ link go
@@ -183,7 +185,7 @@ const Referrals = () => {
           </ReferralInfoRow>
           <ReferralInfoRow marginTop={32}>
             <InputContainer noBackground>
-              <Input readOnly value="12312312" onUserInput={e => e} />
+              <Input readOnly value={myAffiliateLink} onUserInput={e => e} />
             </InputContainer>
             <Icon clickable onClick={handleContentCopy}>
               <Copy />
@@ -197,15 +199,12 @@ const Referrals = () => {
 
       {/* States
         Connect Wallet
-
         ### Traders
         Enter Referral Code
         Checking Code...
         Submit Code
         Sign Wallet to Confirm
         Transaction Processing...
-
-
         ### Affiliates
         Code Already Exists 
         Submit Code
@@ -228,7 +227,7 @@ const Referrals = () => {
           </ReferralInfoRow>
           <ReferralInfoRow justify="start" margin={0}>
             <TEXT.SmallBody>Feature request?</TEXT.SmallBody>
-            <Link onClick={() => console.log('https://discord.com/channels/798007956239024148/999068130989064234')} color={'#71CEFF'}>
+            <Link onClick={() => window.open('https://discord.com/channels/798007956239024148/999068130989064234', '_blank')} color={'#71CEFF'}>
               Tell us about it ➞
             </Link>
           </ReferralInfoRow>

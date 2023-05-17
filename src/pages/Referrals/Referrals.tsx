@@ -118,7 +118,8 @@ const Referrals = () => {
   const {account, chainId} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
 
-  const myAffiliateLink = useMemo(() => 'Test', [])
+  const myReferralCode = 'test' //get from api
+  const myAffiliateLink: string = useMemo<string>(() => `https://app.overlay.market/#/markets?ref=${myReferralCode}`, [])
 
   console.log({account, chainId})
 
@@ -131,7 +132,11 @@ const Referrals = () => {
   }
 
   const handleTwitter = () => {
-    window.open('https://twitter.com/intent/tweet?text=hello%20there!', '_blank')
+    const message =
+      encodeURIComponent(`Try out @OverlayProtocol, allows users to long/short ANY illiquid data stream with leverage by settling PnL in $OVL 🫡.
+    
+Use with fee discounts: ${myAffiliateLink}`)
+    window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank')
   }
 
   // Where does Overlay Referral Program ➞ link go

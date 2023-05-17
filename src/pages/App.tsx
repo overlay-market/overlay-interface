@@ -14,6 +14,7 @@ import styled from 'styled-components/macro'
 import Bridge from './Bridge/Bridge'
 import Claim from './Claim/Claim'
 import ClaimPage from './Claim/ClaimPage'
+import Stake from './Stake/StakePage'
 import Popups from '../components/Popup/Popups'
 import { ClosedPosition } from './Positions/ClosedPosition'
 
@@ -41,6 +42,7 @@ const App = () => {
               <Route exact strict path="/closed-positions/:unwindId/:positionId" component={ClosedPosition} />
               <Route exact strict path="/claim/:claimId" component={Claim} />
               <Route exact strict path="/claimpage" component={ClaimPage} />
+              <Route exact strict path="/stake" component={Stake} />
               <Route exact strict path="/liquidate" component={Liquidate} />
               <Route exact strict path="/bridge" component={Bridge} />
             </Switch>

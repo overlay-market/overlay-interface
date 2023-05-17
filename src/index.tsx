@@ -20,6 +20,7 @@ import './index.css'
 import App from './pages/App'
 import reportWebVitals from './reportWebVitals'
 import '@reach/dialog/styles.css'
+import ReferralContextProvider from './state/referrals/referralContext'
 require('dotenv').config()
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
@@ -43,19 +44,21 @@ ReactDOM.render(
             <Web3ReactProvider getLibrary={getLibrary}>
               <Web3ProviderNetwork getLibrary={getLibrary}>
                 <Updaters />
-                <SnackbarProvider
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  content={(key, message) => <SnackMessage id={key} message={message} />}
-                >
-                  <ThemeProvider>
-                    <MUIThemeProvider theme={muiTheme}>
-                      <App />
-                    </MUIThemeProvider>
-                  </ThemeProvider>
-                </SnackbarProvider>
+                <ReferralContextProvider>
+                  <SnackbarProvider
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    content={(key, message) => <SnackMessage id={key} message={message} />}
+                  >
+                    <ThemeProvider>
+                      <MUIThemeProvider theme={muiTheme}>
+                        <App />
+                      </MUIThemeProvider>
+                    </ThemeProvider>
+                  </SnackbarProvider>
+                </ReferralContextProvider>
               </Web3ProviderNetwork>
             </Web3ReactProvider>
           </CookiesProvider>

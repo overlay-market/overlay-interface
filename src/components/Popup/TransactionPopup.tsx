@@ -97,6 +97,11 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
           </ErrorMessage>
         )} */}
 
+        {/* Referral Error Messages */}
+        {chainId && info?.message === 'referral code does not exist' && <ErrorMessage>Referral code does not exist.</ErrorMessage>}
+        {chainId && info?.message === 'referral code of user already used' && <ErrorMessage>User already have a referral code.</ErrorMessage>}
+        {chainId && info?.message === 'referral code successfully used' && <TEXT.BoldSmallBody>Referral code successfully used.</TEXT.BoldSmallBody>}
+
         {chainId && hash && success && (
           <ExternalLink href={getExplorerLink(chainId, hash, ExplorerDataType.TRANSACTION)}>
             <ExternalLinkContentsContainer>

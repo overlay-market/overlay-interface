@@ -25,14 +25,19 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   // console.log('referral')
   // console.log({account})
 
+  // checkForUserReferralLink(sender, link)
   const isReferralCodeValid = (referralCode: string): boolean => {
-    return true
+    return false
   }
 
+  // hasReferrer function
   const isUserReferralCodeUsed = (referralCode: string): boolean => {
-    return true
+    return false
   }
 
+  // pass referrer wallet address
+  // pass account wallet address
+  // getUserWalletAddress(referralCode)
   const setAccountReferralCode = (referralCode: string): void => {
     addPopup(
       {
@@ -49,7 +54,6 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   }
 
   const checkReferralCode = async (referralCode: string | null): Promise<boolean> => {
-    console.log('run')
     if (!referralCode) {
       console.log('no referral code')
       return false
@@ -74,6 +78,7 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
         },
         Date.now().toString(),
       )
+      return false
     }
 
     if (!isUserReferralCodeUsed(referralCode)) {
@@ -89,6 +94,7 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
         },
         Date.now().toString(),
       )
+      return false
     }
 
     if (isUserReferralCodeUsed(referralCode) && isReferralCodeValid(referralCode)) {

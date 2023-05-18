@@ -1,22 +1,16 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
-import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../components/Table/Table'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {PageContainer} from '../../components/Container/Container'
 import {TEXT} from '../../theme/theme'
 import {Trans} from '@lingui/macro'
 import {FlexRow} from '../../components/Container/Container'
-import {useCurrentWalletPositions} from '../../state/build/hooks'
-import {useTotalMarketsData} from '../../state/markets/hooks'
-import {useMarketDetails, AdditionalMarketData} from '../../hooks/useMarketDetails'
-import {useCurrentMarketState, MarketStateResults} from '../../hooks/useCurrentMarketState'
 import {ReferralTypeSelect} from './ReferralTypeSelect'
 import {Input} from '../../components/Input/Input'
-import {SelectActionButton, TriggerActionButton} from '../../components/Button/Button'
+import {TriggerActionButton} from '../../components/Button/Button'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {Copy, Twitter} from 'react-feather'
 import {Icon} from '../../components/Icon/Icon'
+import useAxios from 'axios-hooks'
 
 const REFERRAL_TYPES = {
   TRADERS: 'traders',
@@ -68,10 +62,15 @@ const TriggerConnectWalletButton = styled(TriggerActionButton)`
   background: #71ceff;
   color: #000000;
 `
-const SubmitReferralCodeButton = styled(TriggerActionButton)`
+
+interface SubmitReferralCodeButtonProps {
+  disabled?: boolean
+}
+
+const SubmitReferralCodeButton = styled(TriggerActionButton)<SubmitReferralCodeButtonProps>`
   border: 1px solid #f2f2f2;
-  background: #71ceff;
-  color: #000000;
+  background: ${({disabled}) => (disabled ? '#D0D0D2' : '#71ceff')};
+  color: ${({disabled}) => (disabled ? '#63656D' : '#000000')};
 `
 const Link = styled(TEXT.SmallBody)`
   cursor: pointer;
@@ -110,22 +109,45 @@ const ReferralInfoRow = styled.div<ReferralInfoRowProps>`
 const referralCodeRegex = RegExp(`^[a-zA-Z0-9_]+$`)
 
 const Referrals = () => {
-  const [type, setType] = useState<string>('traders')
-  const [loading, isLoading] = useState<boolean>(false)
+  const [type, setType] = useState<string>(REFERRAL_TYPES.TRADERS)
   const [referralCode, setReferralCode] = useState<string>('')
+  const [myReferralCode, setMyReferralCode] = useState<string>('')
   const [showError, setShowError] = useState<boolean>(false)
 
-  const {account, chainId} = useActiveWeb3React()
+  const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
 
-  const myReferralCode = 'test' //get from api
-  const myAffiliateLink: string = useMemo<string>(() => `https://app.overlay.market/#/markets?ref=${myReferralCode}`, [])
+  // TODO: Move all API calls to one hook called useReferralHook
+  const [{loading: createReferralCodeLoading}, executeCreateReferralCode] = useAxios(
+    {
+      url: 'http://localhost:8080/referral/createReferralCode',
+      method: 'POST',
+      data: {
+        sender: account,
+        username: referralCode,
+      },
+    },
+    {manual: true},
+  )
 
-  console.log({account, chainId})
+  const [{data: userInfo}, getUserReferralLinks] = useAxios(
+    {
+      url: 'http://localhost:8080/referral/userInfo/' + account,
+      method: 'GET',
+    },
+    {manual: true},
+  )
 
   const submitReferralCode = () => {
-    console.log('submit')
+    executeCreateReferralCode()
+    setReferralCode('')
+    setType(REFERRAL_TYPES.AFFILIATES)
   }
+
+  const myAffiliateLink: string = useMemo<string>(
+    () => (myReferralCode ? `${window.location.origin}/#/markets?ref=${myReferralCode}` : ''),
+    [myReferralCode],
+  )
 
   const handleContentCopy = () => {
     navigator.clipboard.writeText(myAffiliateLink)
@@ -134,7 +156,7 @@ const Referrals = () => {
   const handleTwitter = () => {
     const message =
       encodeURIComponent(`Try out @OverlayProtocol, allows users to long/short ANY illiquid data stream with leverage by settling PnL in $OVL 🫡.
-    
+
 Use with fee discounts: ${myAffiliateLink}`)
     window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank')
   }
@@ -153,6 +175,14 @@ Use with fee discounts: ${myAffiliateLink}`)
       setShowError(false)
     }
   }, [referralCode])
+
+  useEffect(() => {
+    if (type === REFERRAL_TYPES.AFFILIATES) {
+      getUserReferralLinks()
+      const lastCreatedLink = Object.keys(userInfo?.referralLinks || {}).slice(-1)[0]
+      setMyReferralCode(lastCreatedLink ?? '')
+    }
+  }, [type, userInfo])
 
   return (
     <ReferralsContainer>
@@ -208,6 +238,9 @@ Use with fee discounts: ${myAffiliateLink}`)
         Enter Referral Code
         Checking Code...
         Submit Code
+
+        // Since we store them in DB we don't have a transaction that will be done,
+        // hence we can delete this states below
         Sign Wallet to Confirm
         Transaction Processing...
         ### Affiliates
@@ -220,7 +253,9 @@ Use with fee discounts: ${myAffiliateLink}`)
       {type === REFERRAL_TYPES.TRADERS ? (
         <>
           {account ? (
-            <SubmitReferralCodeButton onClick={submitReferralCode}>Enter Referral Code</SubmitReferralCodeButton>
+            <SubmitReferralCodeButton onClick={submitReferralCode} disabled={!referralCode || createReferralCodeLoading}>
+              {createReferralCodeLoading ? 'Processing...' : 'Enter Referral Code'}
+            </SubmitReferralCodeButton>
           ) : (
             <TriggerConnectWalletButton onClick={toggleWalletModal}>Connect Wallet</TriggerConnectWalletButton>
           )}

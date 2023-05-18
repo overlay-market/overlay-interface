@@ -204,6 +204,7 @@ Use with fee discounts: ${myAffiliateLink}`)
           </ReferralInfoRow>
           <ReferralInfoRow marginTop={32} flexDirection="column">
             <InputContainer>
+              {/* TODO: check is referral code exists use debounce */}
               <Input value={referralCode} onUserInput={setReferralCode} placeholder="Enter referral code" />
             </InputContainer>
             {showError && (

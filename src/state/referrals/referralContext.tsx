@@ -2,6 +2,7 @@ import {createContext, useEffect, useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useAddPopup, useWalletModalToggle} from '../application/hooks'
+import useAxios from 'axios-hooks'
 
 interface ReferralContextType {
   referralCode: string
@@ -22,50 +23,89 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   const addPopup = useAddPopup()
   const location = useLocation()
 
-  // console.log('referral')
-  // console.log({account})
+  const [, executeGetUserInfo] = useAxios(
+    {
+      url: 'http://localhost:8080/referral/userInfo/' + account,
+      method: 'GET',
+    },
+    {
+      useCache: true,
+      manual: true,
+    },
+  )
+  const [, executeCheckReferralCode] = useAxios({}, {manual: true})
+  const [, getReferrer] = useAxios({}, {manual: true})
+  const [, executeAddReferrer] = useAxios({}, {manual: true})
 
-  // checkForUserReferralLink(sender, link)
-  const isReferralCodeValid = (referralCode: string): boolean => {
-    return false
+  const isReferralCodeValid = async (referralCode: string): Promise<boolean> => {
+    const response = await executeCheckReferralCode({
+      url: `http://localhost:8080/referral/checkUserName/${referralCode}`,
+      method: 'GET',
+    })
+
+    return Boolean(response)
   }
 
-  // hasReferrer function
-  const isUserReferralCodeUsed = (referralCode: string): boolean => {
-    return false
+  const isUserReferralCodeUsed = async (): Promise<boolean> => {
+    const {data} = await executeGetUserInfo()
+    return !Boolean(data?.referrer)
   }
 
+  // should use addReferrer
   // pass referrer wallet address
   // pass account wallet address
   // getUserWalletAddress(referralCode)
-  const setAccountReferralCode = (referralCode: string): void => {
-    addPopup(
-      {
-        txn: {
-          hash: '',
-          success: true,
-          info: {
-            message: 'referral code successfully used',
-          },
+  // referral/createReferralCode(AddressViaLink(referralCode), address)
+  // AddressViaLink(referralCode)
+  const setAccountReferralCode = async (referralCode: string): Promise<void> => {
+    try {
+      const {data: referrerAddress} = await getReferrer({
+        url: `http://localhost:8080/referral/userAddressViaLink/${referralCode}`,
+        method: 'GET',
+      })
+
+      const {data} = await executeAddReferrer({
+        url: `http://localhost:8080/referral/addReferral`,
+        method: 'POST',
+        data: {
+          sender: account,
+          referrer: referrerAddress,
         },
-      },
-      Date.now().toString(),
-    )
+      })
+
+      console.log({data})
+
+      if (data) {
+        addPopup(
+          {
+            txn: {
+              hash: '',
+              success: true,
+              info: {
+                message: 'referral code successfully used',
+              },
+            },
+          },
+          Date.now().toString(),
+        )
+      }
+    } catch (error) {
+      // TODO: handle error
+      console.log({error})
+    }
   }
 
   const checkReferralCode = async (referralCode: string | null): Promise<boolean> => {
     if (!referralCode) {
-      console.log('no referral code')
       return false
     }
     if (!account) {
+      // TODO: wait until wallet is connected
       toggleWalletModal()
-      // handle the scenario when user cancels,
-      // should return user was not able to use the referral code
       return false
     }
 
-    if (!isReferralCodeValid(referralCode)) {
+    if (!(await isReferralCodeValid(referralCode))) {
       addPopup(
         {
           txn: {
@@ -81,7 +121,7 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
       return false
     }
 
-    if (!isUserReferralCodeUsed(referralCode)) {
+    if (!(await isUserReferralCodeUsed())) {
       addPopup(
         {
           txn: {
@@ -97,11 +137,10 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
       return false
     }
 
-    if (isUserReferralCodeUsed(referralCode) && isReferralCodeValid(referralCode)) {
-      setAccountReferralCode(referralCode)
+    if ((await isUserReferralCodeUsed()) && (await isReferralCodeValid(referralCode))) {
+      await setAccountReferralCode(referralCode)
     }
 
-    console.log({referralCode, account})
     return false
   }
 

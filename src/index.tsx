@@ -44,21 +44,21 @@ ReactDOM.render(
             <Web3ReactProvider getLibrary={getLibrary}>
               <Web3ProviderNetwork getLibrary={getLibrary}>
                 <Updaters />
-                <ReferralContextProvider>
-                  <SnackbarProvider
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
-                    content={(key, message) => <SnackMessage id={key} message={message} />}
-                  >
-                    <ThemeProvider>
-                      <MUIThemeProvider theme={muiTheme}>
+                <SnackbarProvider
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  content={(key, message) => <SnackMessage id={key} message={message} />}
+                >
+                  <ThemeProvider>
+                    <MUIThemeProvider theme={muiTheme}>
+                      <ReferralContextProvider>
                         <App />
-                      </MUIThemeProvider>
-                    </ThemeProvider>
-                  </SnackbarProvider>
-                </ReferralContextProvider>
+                      </ReferralContextProvider>
+                    </MUIThemeProvider>
+                  </ThemeProvider>
+                </SnackbarProvider>
               </Web3ProviderNetwork>
             </Web3ReactProvider>
           </CookiesProvider>

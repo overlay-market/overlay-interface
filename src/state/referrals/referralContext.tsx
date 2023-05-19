@@ -1,8 +1,9 @@
 import {createContext, useEffect, useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {useAddPopup, useWalletModalToggle} from '../application/hooks'
+import {useAddPopup, useModalOpen, useWalletModalToggle} from '../application/hooks'
 import useAxios from 'axios-hooks'
+import {ApplicationModal} from '../application/actions'
 
 interface ReferralContextType {
   referralCode: string
@@ -18,10 +19,11 @@ interface ReferralContextProviderProps {
 
 const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   const [referralCode, setReferralCode] = useState('')
-  const {account} = useActiveWeb3React()
+  const {account, active} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const addPopup = useAddPopup()
   const location = useLocation()
+  const isOpen = useModalOpen(ApplicationModal.WALLET)
 
   const [, executeGetUserInfo] = useAxios(
     {
@@ -38,12 +40,12 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   const [, executeAddReferrer] = useAxios({}, {manual: true})
 
   const isReferralCodeValid = async (referralCode: string): Promise<boolean> => {
-    const response = await executeCheckReferralCode({
+    const {data} = await executeCheckReferralCode({
       url: `http://localhost:8080/referral/checkUserName/${referralCode}`,
       method: 'GET',
     })
 
-    return Boolean(response)
+    return Boolean(data)
   }
 
   const isUserReferralCodeUsed = async (): Promise<boolean> => {
@@ -89,9 +91,21 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
           Date.now().toString(),
         )
       }
-    } catch (error) {
-      // TODO: handle error
-      console.log({error})
+    } catch (error: any) {
+      if (error?.response?.data?.error === 'Already has a referral') {
+        addPopup(
+          {
+            txn: {
+              hash: '',
+              success: false,
+              info: {
+                message: 'referral code of user already used',
+              },
+            },
+          },
+          Date.now().toString(),
+        )
+      }
     }
   }
 
@@ -100,8 +114,9 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
       return false
     }
     if (!account) {
-      // TODO: wait until wallet is connected
-      toggleWalletModal()
+      if (!isOpen && active) {
+        toggleWalletModal()
+      }
       return false
     }
 

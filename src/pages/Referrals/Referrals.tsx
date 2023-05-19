@@ -113,9 +113,17 @@ const Referrals = () => {
   const [referralCode, setReferralCode] = useState<string>('')
   const [myReferralCode, setMyReferralCode] = useState<string>('')
   const [showError, setShowError] = useState<boolean>(false)
+  const [isCheckingCode, setIsCheckingCode] = useState<boolean>(false)
+  const [isReferralCodeAvailable, setIsReferralCodeAvailable] = useState<boolean>(false)
 
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+
+  const [, executeCheckReferralCode] = useAxios({}, {manual: true})
+
+  const handleInputChange = (value: string) => {
+    setReferralCode(value)
+  }
 
   // TODO: Move all API calls to one hook called useReferralHook
   const [{loading: createReferralCodeLoading}, executeCreateReferralCode] = useAxios(
@@ -161,13 +169,7 @@ Use with fee discounts: ${myAffiliateLink}`)
     window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank')
   }
 
-  // Where does Overlay Referral Program ➞ link go
-  // Where does Tell us about it ➞ link go
-  // Should Enter referral code be disabled when referral code is empty
-  // Do we validate on input or on click of submit
-  // Where does the twitter icon go
-  // Are states correct
-
+  // TODO: Where does Overlay Referral Program ➞ link go
   useEffect(() => {
     if (referralCode !== '' && !referralCodeRegex.test(referralCode)) {
       setShowError(true)
@@ -183,6 +185,34 @@ Use with fee discounts: ${myAffiliateLink}`)
       setMyReferralCode(lastCreatedLink ?? '')
     }
   }, [type, userInfo])
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(async () => {
+      if (referralCode) {
+        setIsCheckingCode(true)
+        try {
+          const {data: isCodeValid} = await executeCheckReferralCode({
+            url: `http://localhost:8080/referral/checkUserName/${referralCode}`,
+            method: 'GET',
+          })
+
+          if (isCodeValid) {
+            setIsReferralCodeAvailable(false)
+          } else {
+            setIsReferralCodeAvailable(true)
+          }
+        } catch (error) {
+          console.log(error)
+        } finally {
+          setIsCheckingCode(false)
+        }
+      }
+    }, 500)
+
+    return () => {
+      clearTimeout(debounceTimer)
+    }
+  }, [referralCode])
 
   return (
     <ReferralsContainer>
@@ -204,8 +234,7 @@ Use with fee discounts: ${myAffiliateLink}`)
           </ReferralInfoRow>
           <ReferralInfoRow marginTop={32} flexDirection="column">
             <InputContainer>
-              {/* TODO: check is referral code exists use debounce */}
-              <Input value={referralCode} onUserInput={setReferralCode} placeholder="Enter referral code" />
+              <Input value={referralCode} onUserInput={handleInputChange} placeholder="Enter referral code" />
             </InputContainer>
             {showError && (
               <ErrorContainer>
@@ -254,8 +283,17 @@ Use with fee discounts: ${myAffiliateLink}`)
       {type === REFERRAL_TYPES.TRADERS ? (
         <>
           {account ? (
-            <SubmitReferralCodeButton onClick={submitReferralCode} disabled={!referralCode || createReferralCodeLoading}>
-              {createReferralCodeLoading ? 'Processing...' : 'Enter Referral Code'}
+            <SubmitReferralCodeButton
+              onClick={submitReferralCode}
+              disabled={!referralCode || createReferralCodeLoading || isCheckingCode || !isReferralCodeAvailable}
+            >
+              {createReferralCodeLoading
+                ? 'Processing...'
+                : isCheckingCode
+                ? 'Checking Code...'
+                : referralCode && !isReferralCodeAvailable
+                ? 'Code Already Exists'
+                : 'Enter Referral Code'}
             </SubmitReferralCodeButton>
           ) : (
             <TriggerConnectWalletButton onClick={toggleWalletModal}>Connect Wallet</TriggerConnectWalletButton>

@@ -6,11 +6,11 @@ import useAxios from 'axios-hooks'
 import {ApplicationModal} from '../application/actions'
 
 interface ReferralContextType {
-  referralCode: string
+  // referralCode: string
 }
 
 export const ReferralContext = createContext<ReferralContextType>({
-  referralCode: '',
+  // referralCode: '',
 })
 
 interface ReferralContextProviderProps {
@@ -18,7 +18,7 @@ interface ReferralContextProviderProps {
 }
 
 const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
-  const [referralCode, setReferralCode] = useState('')
+  // const [referralCode, setReferralCode] = useState('')
   const {account, active} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const addPopup = useAddPopup()
@@ -168,14 +168,11 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
 
     // if both conditions above is false
     // tell user successfully used the referral code
-    // if (refParam) {
-    //   setReferralCode(refParam)
-    // }
     checkReferralCode(refParam)
   }, [location, account])
 
   const contextValue: ReferralContextType = {
-    referralCode,
+    // referralCode,
   }
 
   return <ReferralContext.Provider value={contextValue}>{children}</ReferralContext.Provider>

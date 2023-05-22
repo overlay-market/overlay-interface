@@ -94,6 +94,10 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
         <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
           <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
         </StyledInternalLink>
+        <StyledInternalLink tabIndex={tabIndex} to={'/referrals'}>
+          <StyledMenuLink displayText={'Referrals'} linkDestination={'/referrals'} currentLocation={location} />
+        </StyledInternalLink>
+
         <Separator />
 
         <StyledExternalLink href="https://overlay.market">Risks</StyledExternalLink>

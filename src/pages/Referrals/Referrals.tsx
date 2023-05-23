@@ -11,6 +11,7 @@ import {useWalletModalToggle} from '../../state/application/hooks'
 import {Copy, Twitter} from 'react-feather'
 import {Icon} from '../../components/Icon/Icon'
 import useAxios from 'axios-hooks'
+import {REFERRALS_API} from '../../constants/referrals'
 
 const REFERRAL_TYPES = {
   TRADERS: 'traders',
@@ -24,6 +25,11 @@ const ReferralsContainer = styled.div`
   max-width: 400px;
   margin-top: 64px;
   color: white;
+  padding: 0 16px 48px 16px;
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    padding: 0;
+  `}
 `
 
 const Title = styled.div`
@@ -94,6 +100,7 @@ interface ReferralInfoRowProps {
   margin?: number
   marginTop?: number
   flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+  mobileFlexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
 }
 const ReferralInfoRow = styled.div<ReferralInfoRowProps>`
   margin: ${({margin}) => (margin ? `${margin}px 0` : '0')};
@@ -101,9 +108,13 @@ const ReferralInfoRow = styled.div<ReferralInfoRowProps>`
   justify-content: ${({justify}) => (justify ? justify : 'center')};
   align-items: ${({align}) => (align ? align : 'center')};
   align-items: ${({align}) => (align ? align : 'center')};
-  flex-direction: ${({flexDirection}) => (flexDirection ? flexDirection : 'row')};
   display: flex;
   gap: 4px;
+  flex-direction: ${({mobileFlexDirection}) => (mobileFlexDirection ? mobileFlexDirection : 'row')};
+
+  ${({theme, flexDirection}) => theme.mediaWidth.minExtraSmall`
+    flex-direction: ${() => (flexDirection ? flexDirection : 'row')};
+  `}
 `
 
 const referralCodeRegex = RegExp(`^[a-zA-Z0-9_]+$`)
@@ -113,41 +124,26 @@ const Referrals = () => {
   const [referralCode, setReferralCode] = useState<string>('')
   const [myReferralCode, setMyReferralCode] = useState<string>('')
   const [showError, setShowError] = useState<boolean>(false)
-  const [isCheckingCode, setIsCheckingCode] = useState<boolean>(false)
   const [isReferralCodeAvailable, setIsReferralCodeAvailable] = useState<boolean>(false)
-
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
-
-  const [, executeCheckReferralCode] = useAxios({}, {manual: true})
+  const [{loading: checkReferralCodeLoading}, executeCheckReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true, useCache: true})
+  const [{loading: createReferralCodeLoading}, executeCreateReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true})
+  const [{data: userInfo}, getUserReferralLinks] = useAxios({baseURL: REFERRALS_API}, {manual: true})
 
   const handleInputChange = (value: string) => {
     setReferralCode(value)
   }
 
-  // TODO: Move all API calls to one hook called useReferralHook
-  const [{loading: createReferralCodeLoading}, executeCreateReferralCode] = useAxios(
-    {
-      url: 'http://localhost:8080/referral/createReferralCode',
+  const submitReferralCode = () => {
+    executeCreateReferralCode({
+      url: 'createReferralCode',
       method: 'POST',
       data: {
         sender: account,
         username: referralCode,
       },
-    },
-    {manual: true},
-  )
-
-  const [{data: userInfo}, getUserReferralLinks] = useAxios(
-    {
-      url: 'http://localhost:8080/referral/userInfo/' + account,
-      method: 'GET',
-    },
-    {manual: true},
-  )
-
-  const submitReferralCode = () => {
-    executeCreateReferralCode()
+    })
     setReferralCode('')
     setType(REFERRAL_TYPES.AFFILIATES)
   }
@@ -180,7 +176,10 @@ Use with fee discounts: ${myAffiliateLink}`)
 
   useEffect(() => {
     if (type === REFERRAL_TYPES.AFFILIATES) {
-      getUserReferralLinks()
+      getUserReferralLinks({
+        url: 'userInfo/' + account,
+        method: 'GET',
+      })
       const lastCreatedLink = Object.keys(userInfo?.referralLinks || {}).slice(-1)[0]
       setMyReferralCode(lastCreatedLink ?? '')
     }
@@ -188,14 +187,12 @@ Use with fee discounts: ${myAffiliateLink}`)
 
   useEffect(() => {
     const debounceTimer = setTimeout(async () => {
-      if (referralCode) {
-        setIsCheckingCode(true)
+      if (referralCode && !showError) {
         try {
           const {data: isCodeValid} = await executeCheckReferralCode({
-            url: `http://localhost:8080/referral/checkUserName/${referralCode}`,
+            url: `checkUserName/${referralCode}`,
             method: 'GET',
           })
-
           if (isCodeValid) {
             setIsReferralCodeAvailable(false)
           } else {
@@ -203,8 +200,6 @@ Use with fee discounts: ${myAffiliateLink}`)
           }
         } catch (error) {
           console.log(error)
-        } finally {
-          setIsCheckingCode(false)
         }
       }
     }, 500)
@@ -226,7 +221,7 @@ Use with fee discounts: ${myAffiliateLink}`)
           <ReferralInfoRow margin={8}>
             <TEXT.BoldSmallBody>Rebates. Fee Discounts.</TEXT.BoldSmallBody>
           </ReferralInfoRow>
-          <ReferralInfoRow margin={8}>
+          <ReferralInfoRow margin={8} mobileFlexDirection="column">
             <TEXT.SmallBody>Need more info?</TEXT.SmallBody>
             <Link onClick={() => console.log('go to http://')} color={'#71CEFF'}>
               Overlay Referral Program ➞
@@ -285,13 +280,13 @@ Use with fee discounts: ${myAffiliateLink}`)
           {account ? (
             <SubmitReferralCodeButton
               onClick={submitReferralCode}
-              disabled={!referralCode || createReferralCodeLoading || isCheckingCode || !isReferralCodeAvailable}
+              disabled={!referralCode || createReferralCodeLoading || !isReferralCodeAvailable || showError || checkReferralCodeLoading}
             >
               {createReferralCodeLoading
                 ? 'Processing...'
-                : isCheckingCode
+                : checkReferralCodeLoading
                 ? 'Checking Code...'
-                : referralCode && !isReferralCodeAvailable
+                : referralCode && !isReferralCodeAvailable && checkReferralCodeLoading
                 ? 'Code Already Exists'
                 : 'Enter Referral Code'}
             </SubmitReferralCodeButton>

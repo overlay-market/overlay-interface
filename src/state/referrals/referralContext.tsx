@@ -4,6 +4,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {useAddPopup, useModalOpen, useWalletModalToggle} from '../application/hooks'
 import useAxios from 'axios-hooks'
 import {ApplicationModal} from '../application/actions'
+import {REFERRALS_API} from '../../constants/referrals'
 
 interface ReferralContextType {
   // referralCode: string
@@ -24,24 +25,14 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   const addPopup = useAddPopup()
   const location = useLocation()
   const isOpen = useModalOpen(ApplicationModal.WALLET)
-
-  const [, executeGetUserInfo] = useAxios(
-    {
-      url: 'http://localhost:8080/referral/userInfo/' + account,
-      method: 'GET',
-    },
-    {
-      useCache: true,
-      manual: true,
-    },
-  )
-  const [, executeCheckReferralCode] = useAxios({}, {manual: true})
-  const [, getReferrer] = useAxios({}, {manual: true})
-  const [, executeAddReferrer] = useAxios({}, {manual: true})
+  const [, executeGetUserInfo] = useAxios({baseURL: REFERRALS_API}, {useCache: true, manual: true})
+  const [, executeCheckReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true})
+  const [, getReferrer] = useAxios({baseURL: REFERRALS_API}, {manual: true})
+  const [, executeAddReferrer] = useAxios({baseURL: REFERRALS_API}, {manual: true})
 
   const isReferralCodeValid = async (referralCode: string): Promise<boolean> => {
     const {data} = await executeCheckReferralCode({
-      url: `http://localhost:8080/referral/checkUserName/${referralCode}`,
+      url: `checkUserName/${referralCode}`,
       method: 'GET',
     })
 
@@ -49,33 +40,28 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   }
 
   const isUserReferralCodeUsed = async (): Promise<boolean> => {
-    const {data} = await executeGetUserInfo()
+    const {data} = await executeGetUserInfo({
+      url: 'userInfo/' + account,
+      method: 'GET',
+    })
     return !Boolean(data?.referrer)
   }
 
-  // should use addReferrer
-  // pass referrer wallet address
-  // pass account wallet address
-  // getUserWalletAddress(referralCode)
-  // referral/createReferralCode(AddressViaLink(referralCode), address)
-  // AddressViaLink(referralCode)
   const setAccountReferralCode = async (referralCode: string): Promise<void> => {
     try {
       const {data: referrerAddress} = await getReferrer({
-        url: `http://localhost:8080/referral/userAddressViaLink/${referralCode}`,
+        url: `userAddressViaLink/${referralCode}`,
         method: 'GET',
       })
 
       const {data} = await executeAddReferrer({
-        url: `http://localhost:8080/referral/addReferral`,
+        url: `addReferral`,
         method: 'POST',
         data: {
           sender: account,
           referrer: referrerAddress,
         },
       })
-
-      console.log({data})
 
       if (data) {
         addPopup(
@@ -92,6 +78,7 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
         )
       }
     } catch (error: any) {
+      console.error('Set Account Referral Code Error: ', error)
       if (error?.response?.data?.error === 'Already has a referral') {
         addPopup(
           {
@@ -162,12 +149,6 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
     const refParam = queryParams.get('ref')
-
-    // Check referral code does not exist or invalid
-    // and user already has a referral code used
-
-    // if both conditions above is false
-    // tell user successfully used the referral code
     checkReferralCode(refParam)
   }, [location, account])
 

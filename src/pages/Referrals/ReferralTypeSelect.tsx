@@ -4,9 +4,13 @@ import {TEXT} from '../../theme/theme'
 const ReferralTypeSelectContainer = styled.div`
   display: flex;
   flex-direction: row;
-  margin: 16px;
+  margin: 16px 0;
   background: #474747;
   border-radius: 8px;
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    margin: 16px;
+  `}
 `
 interface ReferralTypeProps {
   active?: boolean

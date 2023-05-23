@@ -19,7 +19,7 @@ import Referrals from './Referrals/Referrals'
 import {ClosedPosition} from './Positions/ClosedPosition'
 
 export const AppWrapper = styled.div`
-  background-color: ${({theme}) => theme.bg1};
+  background-color: ${({theme}) => theme.dark.background};
   height: 100%;
   min-height: 100vh;
   width: 100vw;

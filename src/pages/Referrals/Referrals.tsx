@@ -256,7 +256,7 @@ Use with fee discounts: ${myAffiliateLink}`)
             <Icon disabled={userInfoLoading} clickable onClick={handleContentCopy}>
               <Copy />
             </Icon>
-            <Icon clickable margin="4px" onClick={handleTwitter}>
+            <Icon disabled={userInfoLoading} clickable margin="4px" onClick={handleTwitter}>
               <Twitter fill="#00acee" stroke="none" size={20} />
             </Icon>
           </ReferralInfoRow>

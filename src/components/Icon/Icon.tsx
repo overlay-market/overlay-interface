@@ -56,7 +56,7 @@ export const Icon = ({size, margin, children, color, transform, clickable, onCli
       transform={transform}
       clickable={clickable}
       disabled={disabled}
-      onClick={onClick}
+      onClick={disabled ? () => null : onClick}
       top={top}
       right={right}
       left={left}

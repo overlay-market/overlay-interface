@@ -12,6 +12,7 @@ import {Copy, Twitter} from 'react-feather'
 import {Icon} from '../../components/Icon/Icon'
 import useAxios from 'axios-hooks'
 import {REFERRALS_API} from '../../constants/referrals'
+import useDebounce from '../../hooks/useDebounce'
 
 const REFERRAL_TYPES = {
   TRADERS: 'traders',
@@ -127,6 +128,7 @@ const Referrals = () => {
   const [isReferralCodeAvailable, setIsReferralCodeAvailable] = useState<boolean>(false)
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const debouncedReferralCode = useDebounce(referralCode, 500)
   const [{loading: checkReferralCodeLoading}, executeCheckReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true, useCache: true})
   const [{loading: createReferralCodeLoading}, executeCreateReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true})
   const [{data: userInfo}, getUserReferralLinks] = useAxios({baseURL: REFERRALS_API}, {manual: true})
@@ -157,6 +159,15 @@ const Referrals = () => {
     navigator.clipboard.writeText(myAffiliateLink)
   }
 
+  const getUserLinks = async () => {
+    await getUserReferralLinks({
+      url: 'userInfo/' + account,
+      method: 'GET',
+    })
+    const lastCreatedLink = Object.keys(userInfo?.referralLinks || {}).slice(-1)[0]
+    setMyReferralCode(lastCreatedLink ?? '')
+  }
+
   const handleTwitter = () => {
     const message =
       encodeURIComponent(`Try out @OverlayProtocol, allows users to long/short ANY illiquid data stream with leverage by settling PnL in $OVL 🫡.
@@ -176,12 +187,7 @@ Use with fee discounts: ${myAffiliateLink}`)
 
   useEffect(() => {
     if (type === REFERRAL_TYPES.AFFILIATES) {
-      getUserReferralLinks({
-        url: 'userInfo/' + account,
-        method: 'GET',
-      })
-      const lastCreatedLink = Object.keys(userInfo?.referralLinks || {}).slice(-1)[0]
-      setMyReferralCode(lastCreatedLink ?? '')
+      getUserLinks()
     }
   }, [type, userInfo])
 
@@ -286,7 +292,7 @@ Use with fee discounts: ${myAffiliateLink}`)
                 ? 'Processing...'
                 : checkReferralCodeLoading
                 ? 'Checking Code...'
-                : referralCode && !isReferralCodeAvailable && checkReferralCodeLoading
+                : debouncedReferralCode && !isReferralCodeAvailable
                 ? 'Code Already Exists'
                 : 'Enter Referral Code'}
             </SubmitReferralCodeButton>

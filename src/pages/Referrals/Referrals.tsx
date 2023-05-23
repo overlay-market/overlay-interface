@@ -131,7 +131,7 @@ const Referrals = () => {
   const debouncedReferralCode = useDebounce(referralCode, 500)
   const [{loading: checkReferralCodeLoading}, executeCheckReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true, useCache: true})
   const [{loading: createReferralCodeLoading}, executeCreateReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true})
-  const [{data: userInfo}, getUserReferralLinks] = useAxios({baseURL: REFERRALS_API}, {manual: true})
+  const [{loading: userInfoLoading}, getUserReferralLinks] = useAxios({baseURL: REFERRALS_API}, {manual: true})
 
   const handleInputChange = (value: string) => {
     setReferralCode(value)
@@ -160,11 +160,11 @@ const Referrals = () => {
   }
 
   const getUserLinks = async () => {
-    await getUserReferralLinks({
+    const {data} = await getUserReferralLinks({
       url: 'userInfo/' + account,
       method: 'GET',
     })
-    const lastCreatedLink = Object.keys(userInfo?.referralLinks || {}).slice(-1)[0]
+    const lastCreatedLink = Object.keys(data?.referralLinks || {}).slice(-1)[0]
     setMyReferralCode(lastCreatedLink ?? '')
   }
 
@@ -189,7 +189,7 @@ Use with fee discounts: ${myAffiliateLink}`)
     if (type === REFERRAL_TYPES.AFFILIATES) {
       getUserLinks()
     }
-  }, [type, userInfo])
+  }, [type])
 
   useEffect(() => {
     const debounceTimer = setTimeout(async () => {
@@ -251,9 +251,9 @@ Use with fee discounts: ${myAffiliateLink}`)
           </ReferralInfoRow>
           <ReferralInfoRow marginTop={32}>
             <InputContainer noBackground>
-              <Input readOnly value={myAffiliateLink} onUserInput={e => e} />
+              {userInfoLoading ? 'loading...' : <Input readOnly value={myAffiliateLink} onUserInput={e => e} />}
             </InputContainer>
-            <Icon clickable onClick={handleContentCopy}>
+            <Icon disabled={userInfoLoading} clickable onClick={handleContentCopy}>
               <Copy />
             </Icon>
             <Icon clickable margin="4px" onClick={handleTwitter}>

@@ -263,24 +263,6 @@ Use with fee discounts: ${myAffiliateLink}`)
         </InterfaceContainer>
       )}
 
-      {/* States
-        Connect Wallet
-        ### Traders
-        Enter Referral Code
-        Checking Code...
-        Submit Code
-
-        // Since we store them in DB we don't have a transaction that will be done,
-        // hence we can delete this states below
-        Sign Wallet to Confirm
-        Transaction Processing...
-        ### Affiliates
-        Code Already Exists 
-        Submit Code
-        Sign Wallet to Confirm
-        Transaction Processing...
-      */}
-
       {type === REFERRAL_TYPES.TRADERS ? (
         <>
           {account ? (

@@ -6,6 +6,10 @@ import {Link} from 'react-router-dom'
 import {ArrowRight} from 'react-feather'
 import Pools from './Pools'
 import {makeStyles} from '@material-ui/core/styles'
+import {SupportedChainId} from '../../constants/chains'
+import {useAppSelector} from '../../state/hooks'
+import {AppState} from '../../state/state'
+import {useEffect, useState} from 'react'
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
@@ -20,6 +24,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '8px',
     padding: '24px',
     alignItems: 'center',
+    minWidth: '200px',
     [theme.breakpoints.down('xs')]: {
       marginTop: theme.spacing(2),
     },
@@ -50,8 +55,39 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+export interface PoolsData {
+  poolName: string
+  poolAddress: string
+  poolType: string
+  chainId: number
+}
+
+const allPoolsData: PoolsData[] = [
+  {
+    poolName: 'Stake OVL for NIP',
+    poolAddress: '0xf7c484e9dE1D7c8AAb098375AbCC52BA6d340A03',
+    poolType: 'thirdwebStaking',
+    chainId: SupportedChainId.ARBITRUM_GÖRLI,
+  },
+]
+
 const Stake = () => {
   const classes = useStyles()
+
+  let chainId = useAppSelector((state: AppState) => state.application.chainId)
+  const [filteredPoolsData, setFilteredPoolsData] = useState<PoolsData[]>([])
+  const [totalStaked, setTotalStaked] = useState<number>(0)
+  let poolTvls: number[] = []
+
+  useEffect(() => {
+    setFilteredPoolsData(allPoolsData.filter(pool => pool.chainId === chainId))
+  }, [chainId])
+
+  function addToTotalStaked(amount: number, index: number) {
+    console.log({amount, index})
+    poolTvls[index] = amount
+    setTotalStaked(poolTvls.reduce((accumulator, currentValue) => accumulator + currentValue, 0))
+  }
 
   return (
     <PageContainer>
@@ -87,13 +123,13 @@ const Stake = () => {
               Total Staked
             </TEXT.SmallBody>
             <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={'#E5F6FF'} lineHeight={'24px'}>
-              7,777,777 OVL
+              {totalStaked} OVL
             </TEXT.BoldNumber>
           </div>
         </div>
       </FlexRow>
 
-      <Pools />
+      <Pools filteredPoolsData={filteredPoolsData} addToTotalStaked={addToTotalStaked} />
     </PageContainer>
   )
 }

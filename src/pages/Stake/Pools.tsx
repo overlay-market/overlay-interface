@@ -5,19 +5,15 @@ import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../compone
 import Loader from '../../components/Loaders/Loaders'
 import {TEXT} from '../../theme/theme'
 import PoolsRow from './PoolsRow'
+import {PoolsData} from './StakePage'
 
-const poolsData: any[] = [
-  {
-    poolName: 'OVL / UDSC LP',
-    tvl: 128480350,
-    volume24h: 100000000,
-    volume7d: 1280000000,
-    balance: 0,
-    rewards: 123,
-  },
-]
-
-const Pools = () => {
+const Pools = ({
+  filteredPoolsData,
+  addToTotalStaked,
+}: {
+  filteredPoolsData: PoolsData[]
+  addToTotalStaked: (amount: number, index: number) => void
+}) => {
   return (
     <>
       <TableContainer component={Paper} style={{marginTop: '88px'}}>
@@ -45,17 +41,10 @@ const Pools = () => {
                 </TEXT.Supplemental>
               </StyledHeaderCell>
 
-              {/* 24h Volume */}
+              {/* Rewards */}
               <StyledHeaderCell align="right">
                 <TEXT.Supplemental>
-                  <Trans>Volume 24h</Trans>
-                </TEXT.Supplemental>
-              </StyledHeaderCell>
-
-              {/* 7D Volume */}
-              <StyledHeaderCell align="right">
-                <TEXT.Supplemental>
-                  <Trans>Volume 7D</Trans>
+                  <Trans>Rewards</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>
 
@@ -69,30 +58,19 @@ const Pools = () => {
               {/* Rewards */}
               <StyledHeaderCell align="right">
                 <TEXT.Supplemental>
-                  <Trans>Rewards</Trans>
+                  <Trans>My Rewards</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>
             </StyledTableHeaderRow>
           </TableHead>
           <TableBody>
-            {poolsData.length > 0 &&
-              poolsData.map((pool, index) => (
-                <PoolsRow
-                  key={index}
-                  index={index + 1}
-                  poolName={pool.poolName}
-                  tvl={pool.tvl}
-                  volume24h={pool.volume24h}
-                  volume7d={pool.volume7d}
-                  balance={pool.balance}
-                  rewards={pool.rewards}
-                />
-              ))}
+            {filteredPoolsData.length > 0 &&
+              filteredPoolsData.map((pool, index) => <PoolsRow key={index} index={index + 1} pool={pool} addToTotalStaked={addToTotalStaked} />)}
           </TableBody>
         </StyledTable>
       </TableContainer>
 
-      {poolsData.length === 0 && (
+      {filteredPoolsData.length === 0 && (
         <FlexRow marginTop="32px" justifyContent="center !important" width="100%">
           <Loader stroke="white" size="21px" />
         </FlexRow>

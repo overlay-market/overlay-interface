@@ -47,7 +47,6 @@ type IconProps = {
 }
 
 export const Icon = ({size, margin, children, color, transform, clickable, onClick, top, right, left, bottom, position, disabled}: IconProps) => {
-  console.log({disabled})
   return (
     <IconWrapper
       size={size}

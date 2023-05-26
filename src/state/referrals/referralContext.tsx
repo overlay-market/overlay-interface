@@ -6,12 +6,34 @@ import useAxios from 'axios-hooks'
 import {ApplicationModal} from '../application/actions'
 import {REFERRALS_API} from '../../constants/referrals'
 
+export interface IUserInfo {
+  discount?: number
+  referralLinks?: any
+  referrer?: string
+  referredCount?: number
+  reward?: number
+  user?: string
+}
 interface ReferralContextType {
-  // referralCode: string
+  referralCode: string
+  userInfo: IUserInfo
+  checkReferralCodeLoading: boolean
+  userInfoLoading: boolean
+  setReferralCode(referral: string): any
+  getUserInfo(config?: any | undefined, options?: any | undefined): any
+  executeCheckReferralCode(config?: any | undefined, options?: any | undefined): any
+  setAccountReferralCode(referral: string): any
 }
 
 export const ReferralContext = createContext<ReferralContextType>({
-  // referralCode: '',
+  referralCode: '',
+  userInfo: {},
+  checkReferralCodeLoading: false,
+  userInfoLoading: false,
+  setReferralCode: () => false,
+  getUserInfo: () => null,
+  executeCheckReferralCode: () => null,
+  setAccountReferralCode: () => null,
 })
 
 interface ReferralContextProviderProps {
@@ -19,14 +41,14 @@ interface ReferralContextProviderProps {
 }
 
 const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
-  // const [referralCode, setReferralCode] = useState('')
+  const [referralCode, setReferralCode] = useState('')
   const {account, active} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const addPopup = useAddPopup()
   const location = useLocation()
   const isOpen = useModalOpen(ApplicationModal.WALLET)
-  const [, executeGetUserInfo] = useAxios({baseURL: REFERRALS_API}, {useCache: true, manual: true})
-  const [, executeCheckReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true})
+  const [{data: userInfo, loading: userInfoLoading}, executeGetUserInfo] = useAxios({baseURL: REFERRALS_API}, {useCache: true, manual: true})
+  const [{loading: checkReferralCodeLoading}, executeCheckReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true})
   const [, getReferrer] = useAxios({baseURL: REFERRALS_API}, {manual: true})
   const [, executeAddReferrer] = useAxios({baseURL: REFERRALS_API}, {manual: true})
 
@@ -47,7 +69,7 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
     return !Boolean(data?.referrer)
   }
 
-  const setAccountReferralCode = async (referralCode: string): Promise<void> => {
+  const setAccountReferralCode = async (referralCode: string): Promise<boolean> => {
     try {
       const {data: referrerAddress} = await getReferrer({
         url: `userAddressViaLink/${referralCode}`,
@@ -76,6 +98,8 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
           },
           Date.now().toString(),
         )
+
+        return true
       }
     } catch (error: any) {
       console.error('Set Account Referral Code Error: ', error)
@@ -94,6 +118,8 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
         )
       }
     }
+
+    return false
   }
 
   const checkReferralCode = async (referralCode: string | null): Promise<boolean> => {
@@ -153,7 +179,14 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   }, [location, account])
 
   const contextValue: ReferralContextType = {
-    // referralCode,
+    userInfo,
+    getUserInfo: executeGetUserInfo,
+    userInfoLoading,
+    referralCode,
+    checkReferralCodeLoading,
+    setReferralCode,
+    executeCheckReferralCode,
+    setAccountReferralCode,
   }
 
   return <ReferralContext.Provider value={contextValue}>{children}</ReferralContext.Provider>

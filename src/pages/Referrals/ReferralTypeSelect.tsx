@@ -1,12 +1,13 @@
 import styled from 'styled-components/macro'
 import {TEXT} from '../../theme/theme'
+import {REFERRAL_TYPES} from './Referrals'
 
 const ReferralTypeSelectContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin: 16px 0;
   background: #474747;
-  border-radius: 8px;
+  border-radius: 24px;
 
   ${({theme}) => theme.mediaWidth.minExtraSmall`
     margin: 16px;
@@ -20,13 +21,13 @@ const ReferralType = styled.div<ReferralTypeProps>`
   display: flex;
   justify-content: center;
   flex: 1;
-  border-radius: 8px;
+  border-radius: 24px;
   padding: 14px 0;
   cursor: pointer;
-  background: ${props => (props.active ? '#71CEFF' : '')};
+  background: ${props => (props.active ? props.theme.dark.blue2 : '')};
 
   div {
-    color: ${props => (props.active ? '#202431' : '')};
+    color: ${props => (props.active ? props.theme.dark.background : '')};
   }
 `
 
@@ -38,10 +39,10 @@ interface ReferralTypeSelectProps {
 export const ReferralTypeSelect = ({value, onSelect}: ReferralTypeSelectProps) => {
   return (
     <ReferralTypeSelectContainer>
-      <ReferralType active={value === 'traders'} onClick={() => onSelect('traders')}>
+      <ReferralType active={value === REFERRAL_TYPES.TRADERS} onClick={() => onSelect(REFERRAL_TYPES.TRADERS)}>
         <TEXT.BoldSmallBody>Traders</TEXT.BoldSmallBody>
       </ReferralType>
-      <ReferralType active={value === 'affiliates'} onClick={() => onSelect('affiliates')}>
+      <ReferralType active={value === REFERRAL_TYPES.AFFILIATES} onClick={() => onSelect(REFERRAL_TYPES.AFFILIATES)}>
         <TEXT.BoldSmallBody>Affiliates</TEXT.BoldSmallBody>
       </ReferralType>
     </ReferralTypeSelectContainer>

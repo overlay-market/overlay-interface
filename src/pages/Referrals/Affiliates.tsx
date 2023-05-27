@@ -1,10 +1,8 @@
 import {useContext, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {MEDIA_WIDTHS, TEXT, colors} from '../../theme/theme'
-import {Trans} from '@lingui/macro'
+import {TEXT, colors} from '../../theme/theme'
 import {FlexRow} from '../../components/Container/Container'
-import {ReferralTypeSelect} from './ReferralTypeSelect'
 import {Input} from '../../components/Input/Input'
 import {TriggerActionButton} from '../../components/Button/Button'
 import {useWalletModalToggle} from '../../state/application/hooks'
@@ -13,38 +11,9 @@ import {Icon} from '../../components/Icon/Icon'
 import useAxios from 'axios-hooks'
 import {REFERRALS_API} from '../../constants/referrals'
 import useDebounce from '../../hooks/useDebounce'
-import {useHistory, useLocation} from 'react-router-dom'
-import {ReferralContext, IUserInfo} from '../../state/referrals/referralContext'
+import {ReferralContext} from '../../state/referrals/referralContext'
 
-export const REFERRAL_TYPES = {
-  TRADERS: 'traders',
-  AFFILIATES: 'affiliates',
-}
-
-const ReferralsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: auto;
-  max-width: ${MEDIA_WIDTHS.minMedium}px;
-  margin-top: 64px;
-  color: white;
-  padding: 0 16px 48px 16px;
-
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
-    padding: 0;
-  `}
-`
-
-const Title = styled.div`
-  text-align: center;
-  font-weight: 700;
-  font-size: 24px;
-  color: #f0f0f0;
-`
-
-const FixedWidthContainer = styled.div`
+export const FixedWidthContainer = styled.div`
   width: 100%;
 
   ${({theme}) => theme.mediaWidth.minExtraSmall`
@@ -52,32 +21,33 @@ const FixedWidthContainer = styled.div`
   `}
 `
 
-const InterfaceContainer = styled.div`
+export const InterfaceContainer = styled.div`
+  background: #1b2131;
+  border: 0.5px solid rgba(113, 206, 255, 0.5);
+  box-shadow: 0px 0px 12px 6px rgba(91, 96, 164, 0.25);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  border: 1px solid #71ceff;
-  border-radius: 8px;
   box-shadow: 0 0 12px #5b60a4;
   padding: 16px 16px 24px;
   margin: 16px 0 24px;
-  background: #1b2131;
   max-width: 400px;
 `
 
-const OverviewCard = styled.div`
+export const OverviewCard = styled.div`
   display: flex;
   flex-direction: column;
-  border: 1px solid #71ceff;
+  background: #1b2131;
+  border: 0.5px solid rgba(113, 206, 255, 0.5);
+  box-shadow: 0px 0px 12px 6px rgba(91, 96, 164, 0.25);
   border-radius: 8px;
-  box-shadow: 0 0 12px #5b60a4;
   padding: 16px 32px 16px 32px;
   margin: 16px 0 24px;
-  background: #1b2131;
   max-width: 400px;
   flex: 1;
 `
 
-const OverviewContainer = styled.div`
+export const OverviewContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 40px;
@@ -89,7 +59,7 @@ interface ContentContainerProps {
   margin?: string
 }
 
-const ContentContainer = styled.div<ContentContainerProps>`
+export const ContentContainer = styled.div<ContentContainerProps>`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -100,7 +70,7 @@ const ContentContainer = styled.div<ContentContainerProps>`
 interface InputContainerProps {
   noBackground?: boolean
 }
-const InputContainer = styled(FlexRow)<InputContainerProps>`
+export const InputContainer = styled(FlexRow)<InputContainerProps>`
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 0px;
@@ -110,9 +80,9 @@ const InputContainer = styled(FlexRow)<InputContainerProps>`
   background: ${({noBackground}) => (noBackground ? '' : '#2e3343')};
 `
 
-const TriggerConnectWalletButton = styled(TriggerActionButton)`
+export const TriggerConnectWalletButton = styled(TriggerActionButton)`
   border: 1px solid #f2f2f2;
-  background: #71ceff;
+  background: ${({theme}) => theme.dark.blue2};
   color: #000000;
 `
 
@@ -120,11 +90,11 @@ interface SubmitReferralCodeButtonProps {
   disabled?: boolean
 }
 
-const SubmitReferralCodeButton = styled(TriggerActionButton)<SubmitReferralCodeButtonProps>`
+export const SubmitReferralCodeButton = styled(TriggerActionButton)<SubmitReferralCodeButtonProps>`
   background: ${({disabled, theme}) => (disabled ? theme.dark.white : theme.dark.blue2)};
   color: ${({disabled, theme}) => (disabled ? theme.dark.grey3 : theme.dark.black)};
 `
-const Link = styled(TEXT.SmallBody)`
+export const Link = styled(TEXT.SmallBody)`
   cursor: pointer;
   color: ${({theme}) => theme.dark.blue2} !important;
 
@@ -132,7 +102,7 @@ const Link = styled(TEXT.SmallBody)`
     text-shadow: 0.5px 0.5px 1px rgba(159, 159, 159, 1);
   }
 `
-const ErrorContainer = styled.div`
+export const ErrorContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-start;
@@ -141,7 +111,7 @@ const ErrorContainer = styled.div`
     color: red;
   }
 `
-const ButtonsContainer = styled.div`
+export const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -151,21 +121,21 @@ const ButtonsContainer = styled.div`
 interface ReferralInfoRowProps {
   justify?: string
   align?: string
-  margin?: number
-  marginTop?: number
-  flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
-  mobileFlexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+  margin?: string
   width?: string
+  height?: string
   borderTop?: string
   padding?: string
+  flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+  mobileFlexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
 }
-const ReferralInfoRow = styled.div<ReferralInfoRowProps>`
-  margin: ${({margin}) => (margin ? `${margin}px 0` : '0')};
-  margin-top: ${({marginTop}) => (marginTop ? `${marginTop}px` : '0')};
+export const ReferralInfoRow = styled.div<ReferralInfoRowProps>`
+  margin: ${({margin}) => (margin ? `${margin}` : '0')};
   justify-content: ${({justify}) => (justify ? justify : 'center')};
   align-items: ${({align}) => (align ? align : 'center')};
   flex-direction: ${({mobileFlexDirection}) => (mobileFlexDirection ? mobileFlexDirection : 'row')};
   width: ${({width}) => (width ? width : '')};
+  height: ${({height}) => (height ? height : '')};
   border-top: ${({borderTop}) => (borderTop ? borderTop : '')};
   padding: ${({padding}) => (padding ? padding : '')};
   display: flex;
@@ -179,24 +149,10 @@ const ReferralInfoRow = styled.div<ReferralInfoRowProps>`
 const referralCodeRegex = RegExp(`^[a-zA-Z0-9_]+$`)
 
 const Affiliates = () => {
-  const location = useLocation()
-  const history = useHistory()
+  const {userInfo, getUserInfo, userInfoLoading, referralCode, setReferralCode, executeCheckReferralCode, checkReferralCodeLoading} =
+    useContext(ReferralContext)
 
-  const {
-    userInfo,
-    getUserInfo,
-    userInfoLoading,
-    referralCode,
-    setReferralCode,
-    executeCheckReferralCode,
-    checkReferralCodeLoading,
-    setAccountReferralCode,
-  } = useContext(ReferralContext)
-
-  const [type, setType] = useState<string>(REFERRAL_TYPES.TRADERS)
-  const [myReferralCode, setMyReferralCode] = useState<string>('')
   const [showError, setShowError] = useState<boolean>(false)
-  const [isReferralCodeExisting, setIsReferralCodeExisting] = useState<boolean>(false)
   const [isReferralCodeAvailable, setIsReferralCodeAvailable] = useState<boolean>(false)
   const {account, active} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
@@ -204,30 +160,17 @@ const Affiliates = () => {
 
   const debouncedReferralCode = useDebounce(referralCode, 400)
 
-  const [{data: referrerInfo}, getReferrerInfo] = useAxios(
-    {baseURL: REFERRALS_API, url: `userInfo/${userInfo?.referrer}`, method: 'GET'},
-    {useCache: true},
-  )
-
-  const referrerLink: string | undefined = useMemo(() => {
-    console.log('run use memo', userInfo)
-    const links = Object.keys(referrerInfo?.referralLinks || {})
-    return links.length ? links[0] : ''
-  }, [referrerInfo, userInfo])
-
   const myReferralLink: string | undefined = useMemo(() => {
     const links = Object.keys(userInfo?.referralLinks || {})
     return links.length && links[0] !== 'none' ? links[0] : ''
   }, [userInfo])
-
-  console.log({myReferralLink})
 
   const handleInputChange = (value: string) => {
     setReferralCode(value)
   }
 
   const submitReferralCode = async () => {
-    await executeCreateReferralCode({
+    const res = await executeCreateReferralCode({
       url: 'createReferralCode',
       method: 'POST',
       data: {
@@ -236,6 +179,7 @@ const Affiliates = () => {
       },
     })
     setReferralCode('')
+    getUserInfo()
   }
 
   const myAffiliateLink: string = useMemo<string>(
@@ -294,29 +238,29 @@ Use with fee discounts: ${myAffiliateLink}`)
       {myReferralLink ? (
         <OverviewContainer>
           <OverviewCard>
-            <ReferralInfoRow margin={8} justify="start">
+            <ReferralInfoRow margin="0 0 8px 0" justify="start">
               <TEXT.BoldSmallBody color={colors(false).dark.grey2}>Referred Users</TEXT.BoldSmallBody>
             </ReferralInfoRow>
-            <ReferralInfoRow margin={8} mobileFlexDirection="column" justify="start">
+            <ReferralInfoRow margin="0 0 8px 0" mobileFlexDirection="column" justify="start">
               <TEXT.StandardHeader1>{userInfo?.referredCount}</TEXT.StandardHeader1>
             </ReferralInfoRow>
           </OverviewCard>
           <OverviewCard>
-            <ReferralInfoRow margin={8} justify="start">
+            <ReferralInfoRow margin="0 0 8px 0" justify="start">
               <TEXT.BoldSmallBody color={colors(false).dark.grey2}>Volume</TEXT.BoldSmallBody>
             </ReferralInfoRow>
-            <ReferralInfoRow margin={8} mobileFlexDirection="column" justify="start">
+            <ReferralInfoRow margin="0 0 8px 0" mobileFlexDirection="column" justify="start">
               <TEXT.StandardHeader1>$0</TEXT.StandardHeader1>
             </ReferralInfoRow>
           </OverviewCard>
           <OverviewCard>
-            <ReferralInfoRow margin={8} justify="start">
+            <ReferralInfoRow margin="0 0 8px 0" justify="start">
               <TEXT.BoldSmallBody color={colors(false).dark.grey2}>Rebates</TEXT.BoldSmallBody>
             </ReferralInfoRow>
-            <ReferralInfoRow margin={8} mobileFlexDirection="column" justify="start">
-              <TEXT.StandardHeader1>$10</TEXT.StandardHeader1>
+            <ReferralInfoRow margin="0 0 8px 0" mobileFlexDirection="column" justify="start">
+              <TEXT.StandardHeader1>$0</TEXT.StandardHeader1>
             </ReferralInfoRow>
-            <ReferralInfoRow margin={8} mobileFlexDirection="column" justify="end">
+            <ReferralInfoRow margin="8px 0 0 0" mobileFlexDirection="column" justify="end" height="24px">
               <TEXT.BoldSmallBody color={colors(false).dark.blue2}>Claim</TEXT.BoldSmallBody>
             </ReferralInfoRow>
           </OverviewCard>
@@ -324,14 +268,14 @@ Use with fee discounts: ${myAffiliateLink}`)
       ) : (
         <FixedWidthContainer>
           <InterfaceContainer>
-            <ReferralInfoRow margin={8}>
+            <ReferralInfoRow margin="0 0 8px 0">
               <TEXT.BoldSmallBody>Rebates. Fee Discounts.</TEXT.BoldSmallBody>
             </ReferralInfoRow>
-            <ReferralInfoRow margin={8} mobileFlexDirection="column">
+            <ReferralInfoRow margin="0 0 8px 0" mobileFlexDirection="column">
               <TEXT.SmallBody>Need more info?</TEXT.SmallBody>
               <Link onClick={() => console.log('go to http://')}>Overlay Referral Program ➞</Link>
             </ReferralInfoRow>
-            <ReferralInfoRow marginTop={32} flexDirection="column">
+            <ReferralInfoRow margin="32px 0 0 0" flexDirection="column">
               <InputContainer>
                 <Input value={referralCode} onUserInput={handleInputChange} placeholder="Enter referral code" />
               </InputContainer>
@@ -353,7 +297,7 @@ Use with fee discounts: ${myAffiliateLink}`)
             </ReferralInfoRow>
             <ReferralInfoRow
               borderTop={`1px solid ${colors(false).dark.white}`}
-              marginTop={16}
+              margin="16px 0 0 0"
               width="100%"
               justify="space-between"
               padding="16px 0 0 0"
@@ -373,7 +317,7 @@ Use with fee discounts: ${myAffiliateLink}`)
             <ReferralInfoRow>
               <TEXT.BoldSmallBody color={colors(false).dark.grey2}>Rebates</TEXT.BoldSmallBody>
             </ReferralInfoRow>
-            <ReferralInfoRow marginTop={16}>
+            <ReferralInfoRow margin="16px 0 0 0">
               <TEXT.SmallBody color={colors(false).dark.grey3}>No rebate distribution yet</TEXT.SmallBody>
             </ReferralInfoRow>
           </ContentContainer>

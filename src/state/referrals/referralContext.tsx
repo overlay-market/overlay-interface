@@ -19,6 +19,7 @@ interface ReferralContextType {
   userInfo: IUserInfo
   checkReferralCodeLoading: boolean
   userInfoLoading: boolean
+  setAccountReferralCodeLoading: boolean
   setReferralCode(referral: string): any
   getUserInfo(config?: any | undefined, options?: any | undefined): any
   executeCheckReferralCode(config?: any | undefined, options?: any | undefined): any
@@ -30,6 +31,7 @@ export const ReferralContext = createContext<ReferralContextType>({
   userInfo: {},
   checkReferralCodeLoading: false,
   userInfoLoading: false,
+  setAccountReferralCodeLoading: false,
   setReferralCode: () => false,
   getUserInfo: () => null,
   executeCheckReferralCode: () => null,
@@ -41,16 +43,27 @@ interface ReferralContextProviderProps {
 }
 
 const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
-  const [referralCode, setReferralCode] = useState('')
+  const [referralCode, setReferralCode] = useState<string>('')
   const {account, active} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const addPopup = useAddPopup()
   const location = useLocation()
   const isOpen = useModalOpen(ApplicationModal.WALLET)
-  const [{data: userInfo, loading: userInfoLoading}, executeGetUserInfo] = useAxios({baseURL: REFERRALS_API}, {useCache: true, manual: true})
   const [{loading: checkReferralCodeLoading}, executeCheckReferralCode] = useAxios({baseURL: REFERRALS_API}, {manual: true})
   const [, getReferrer] = useAxios({baseURL: REFERRALS_API}, {manual: true})
-  const [, executeAddReferrer] = useAxios({baseURL: REFERRALS_API}, {manual: true})
+  const [{loading: addReferrerLoading}, executeAddReferrer] = useAxios({baseURL: REFERRALS_API}, {manual: true})
+
+  const [{data: userInfo, loading: userInfoLoading}, executeGetUserInfo] = useAxios(
+    {
+      baseURL: REFERRALS_API,
+      url: 'userInfo/' + account,
+      method: 'GET',
+    },
+    {
+      useCache: true,
+      manual: false,
+    },
+  )
 
   const isReferralCodeValid = async (referralCode: string): Promise<boolean> => {
     const {data} = await executeCheckReferralCode({
@@ -175,7 +188,8 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
     const refParam = queryParams.get('ref')
-    checkReferralCode(refParam)
+    // checkReferralCode(refParam)
+    if (refParam) setReferralCode(refParam)
   }, [location, account])
 
   const contextValue: ReferralContextType = {
@@ -186,6 +200,7 @@ const ReferralContextProvider = ({children}: ReferralContextProviderProps) => {
     checkReferralCodeLoading,
     setReferralCode,
     executeCheckReferralCode,
+    setAccountReferralCodeLoading: addReferrerLoading,
     setAccountReferralCode,
   }
 

@@ -6,9 +6,20 @@ import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {BigNumber} from 'ethers'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {PoolsData} from './StakePage'
+import {PoolsData} from './PoolsPage'
 import {useEffect} from 'react'
+import {useHistory} from 'react-router-dom'
+import {makeStyles} from '@material-ui/core/styles'
 
+const useStyles = makeStyles(theme => ({
+  tableRow: {
+    [theme.breakpoints.up('md')]: {
+      '&:hover': {
+        background: '#362E40 !important',
+      },
+    },
+  },
+}))
 export interface PoolsRowProps {
   index: number
   pool: PoolsData
@@ -16,6 +27,8 @@ export interface PoolsRowProps {
 }
 
 const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
+  const classes = useStyles()
+  const history = useHistory()
   const {account} = useActiveWeb3React()
   const {poolName, poolAddress} = pool
 
@@ -47,8 +60,12 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
     addToTotalStaked(+tvl, index - 1)
   }, [tvl, index, addToTotalStaked])
 
+  const handleNavigate = () => {
+    history.push(`/stake/123`)
+  }
+
   return (
-    <StyledTableRow hover={true}>
+    <StyledTableRow className={classes.tableRow} hover={true} onClick={handleNavigate}>
       {/* Index */}
       <StyledTableCellThin id="marketIndex">{index}</StyledTableCellThin>
 

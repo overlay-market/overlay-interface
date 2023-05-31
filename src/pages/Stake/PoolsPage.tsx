@@ -13,6 +13,7 @@ import {useEffect, useState} from 'react'
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
+    alignItems: 'start',
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'column',
     },
@@ -71,7 +72,7 @@ const allPoolsData: PoolsData[] = [
   },
 ]
 
-const Stake = () => {
+const PoolsPage = () => {
   const classes = useStyles()
 
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
@@ -91,8 +92,8 @@ const Stake = () => {
 
   return (
     <PageContainer>
-      <TEXT.BoldStandardBody color="grey2" mb="16px">
-        Earn Rewards
+      <TEXT.BoldStandardBody color="grey2" mb="8px">
+        All Staking
       </TEXT.BoldStandardBody>
 
       <FlexRow className={classes.flexRow}>
@@ -134,4 +135,4 @@ const Stake = () => {
   )
 }
 
-export default Stake
+export default PoolsPage

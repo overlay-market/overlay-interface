@@ -8,6 +8,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import {SupportedChainId} from '../../constants/chains'
 import {useState} from 'react'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
+import {darken} from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
@@ -74,9 +75,44 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  toggleButtonGroup: {},
+  toggleButtonGroup: {
+    '& .MuiToggleButtonGroup-groupedHorizontal:not(:first-child)': {
+      marginLeft: '-25px',
+      '&.Mui-selected': {
+        borderRadius: '37px',
+      },
+    },
+    '& .MuiToggleButtonGroup-groupedHorizontal:not(:last-child).Mui-selected': {
+      borderRadius: '37px',
+    },
+  },
   toggleButton: {
     borderRadius: '37px',
+    border: 'none',
+    textTransform: 'none',
+    padding: theme.spacing(2, 8),
+    backgroundColor: '#474747',
+    width: '168px',
+    '& .MuiToggleButton-label': {
+      color: '#F0F0F0',
+      fontFamily: 'Inter',
+      fontWeight: 700,
+      fontSize: '14px',
+      lineHeight: '17px',
+    },
+    '&:hover': {
+      backgroundColor: darken('#474747', 0.1),
+    },
+    '&.Mui-selected': {
+      zIndex: 1,
+      backgroundColor: '#71CEFF',
+      '& .MuiToggleButton-label': {
+        color: '#202431',
+      },
+      '&:hover': {
+        backgroundColor: darken('#71CEFF', 0.1),
+      },
+    },
   },
 }))
 
@@ -102,6 +138,7 @@ const Stake = () => {
   const [poolType, setPoolType] = useState<string>('stake')
 
   const handlePoolTypeChange = (event: React.MouseEvent<HTMLElement>, newPoolType: string) => {
+    if (newPoolType === null) return
     setPoolType(newPoolType)
   }
 
@@ -145,7 +182,7 @@ const Stake = () => {
         </div>
       </FlexRow>
 
-      <FlexRow mt={30} justifyContent="space-between">
+      <FlexRow mt={30} align="flex-start">
         {/* Pool info */}
         <div className={classes.poolInfo}>
           <TEXT.BoldStandardBody>Providing OVL + USDC liquidity into this pool earns LP's OVL,</TEXT.BoldStandardBody>
@@ -170,12 +207,12 @@ const Stake = () => {
 
         {/* Pool card */}
         <div className={classes.poolCard}>
-          {/* Toggle button */}
+          {/* Toggle buttons */}
           <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
-            <ToggleButton className={classes.toggleButton} value="stake">
+            <ToggleButton className={classes.toggleButton} value="stake" disableRipple>
               Stake
             </ToggleButton>
-            <ToggleButton className={classes.toggleButton} value="withdraw">
+            <ToggleButton className={classes.toggleButton} value="withdraw" disableRipple>
               Withdraw
             </ToggleButton>
           </ToggleButtonGroup>

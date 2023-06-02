@@ -72,7 +72,7 @@ const allPoolsData: PoolsData[] = [
   },
 ]
 
-const PoolsPage = () => {
+const StakePage = () => {
   const classes = useStyles()
 
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
@@ -135,4 +135,4 @@ const PoolsPage = () => {
   )
 }
 
-export default PoolsPage
+export default StakePage

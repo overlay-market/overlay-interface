@@ -1,7 +1,7 @@
 import Markets from '../pages/Markets/Markets'
 import Positions from '../pages/Positions/PositionsPage'
-import Pools from '../pages/Stake/PoolsPage'
-import Stake from '../pages/Stake/Stake'
+import Pools from '../pages/Stake/StakePage'
+import Pool from '../pages/Stake/Pool'
 import Liquidate from '../pages/Liquidate/Liquidate'
 import {Market} from '../pages/Markets/Market'
 import {Unwind} from '../pages/Positions/Unwind'
@@ -40,8 +40,8 @@ const routesConfig = [
     component: () => Pools,
   },
   {
-    path: '/stake/:poolId',
-    component: () => Stake,
+    path: '/stake/:poolAddress',
+    component: () => Pool,
   },
   {
     path: '/liquidate',

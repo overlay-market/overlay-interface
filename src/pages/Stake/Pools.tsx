@@ -5,7 +5,7 @@ import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../compone
 import Loader from '../../components/Loaders/Loaders'
 import {TEXT} from '../../theme/theme'
 import PoolsRow from './PoolsRow'
-import {PoolsData} from './PoolsPage'
+import {PoolsData} from './StakePage'
 
 const Pools = ({
   filteredPoolsData,

@@ -6,7 +6,7 @@ import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {BigNumber} from 'ethers'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {PoolsData} from './PoolsPage'
+import {PoolsData} from './StakePage'
 import {useEffect} from 'react'
 import {useHistory} from 'react-router-dom'
 import {makeStyles} from '@material-ui/core/styles'
@@ -61,7 +61,7 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
   }, [tvl, index, addToTotalStaked])
 
   const handleNavigate = () => {
-    history.push(`/stake/123`)
+    history.push(`/stake/${poolAddress}`)
   }
 
   return (

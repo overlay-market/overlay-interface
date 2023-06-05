@@ -203,6 +203,7 @@ const useStyles = makeStyles(theme => ({
     objectFit: 'cover',
     height: '100%',
     width: '100%',
+    maxHeight: '245px',
   },
   powerCardImageContent: {
     padding: '8px',

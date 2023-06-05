@@ -49,14 +49,14 @@ export function colors(darkMode: boolean): Colors {
     bg2: darkMode ? '#F7F7F7' : '#0B0F1C',
     bg3: darkMode ? '#565A69' : '#edeef2',
 
-    //misc
+    // misc
     white1: '#f2f2f2',
     blue1: darkMode ? '#2172E5' : '#0068FC',
     blue2: '#56CCF2',
     blue3: '#12B4FF',
     red1: darkMode ? '#FF4343' : '#DA2D2B',
     green1: darkMode ? '#27AE60' : '#007D35',
-    grey2: darkMode ? '#A8A6A6' : '#A8A6A6'
+    grey2: darkMode ? '#A8A6A6' : '#A8A6A6',
   }
 }
 

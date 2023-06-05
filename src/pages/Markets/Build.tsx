@@ -351,7 +351,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     } else {
       calculatedAmountByPercentage = (Number(totalSupply) * (percentage / 100)).toFixed(6)
     }
-    if (minCollateral && +calculatedAmountByPercentage < minCollateral) return handleUserInput("")
+    if (minCollateral && +calculatedAmountByPercentage < minCollateral) return handleUserInput('')
     return handleUserInput(calculatedAmountByPercentage)
   }
 
@@ -401,7 +401,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           transactionErrorMessage: undefined,
           transactionHash: hash,
         })
-        onResetBuildState();
+        onResetBuildState()
       })
       .catch(error => {
         setBuildState({

@@ -4,7 +4,7 @@ import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-backgr
 import {Image} from 'rebass'
 import {TEXT} from '../../theme/theme'
 import {Link} from 'react-router-dom'
-import {ArrowRight} from 'react-feather'
+import {ArrowLeft, ArrowRight} from 'react-feather'
 import {makeStyles} from '@material-ui/core/styles'
 import {Button, Card, CardContent, CardMedia, CircularProgress, Grid} from '@material-ui/core'
 import {SupportedChainId} from '../../constants/chains'
@@ -21,6 +21,15 @@ import {AppState} from '../../state/state'
 import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
+  arrowLeft: {
+    verticalAlign: 'middle',
+    paddingBottom: '2px',
+  },
+  backLink: {
+    fontFamily: 'Inter',
+    fontWeight: 700,
+    fontSize: 14,
+  },
   flexRow: {
     alignItems: 'start',
     marginBottom: '80px',
@@ -40,6 +49,18 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('xs')]: {
       marginTop: theme.spacing(2),
     },
+  },
+  totalRewardsCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    background: '#1B2131',
+    border: '0.5px solid rgba(113, 206, 255, 0.5)',
+    borderRadius: '8px',
+    padding: '24px',
+    alignItems: 'center',
+    minWidth: '200px',
+    width: 'fit-content',
+    marginTop: theme.spacing(2.5),
   },
   iconBackground: {
     position: 'relative',
@@ -76,7 +97,7 @@ const useStyles = makeStyles(theme => ({
     textDecoration: 'underline',
   },
   poolCardContainer: {
-    flex: '1 1 0',
+    maxWidth: '345px',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -88,12 +109,14 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '8px',
     backgroud: '#1B2131',
     boxShadow: '0px 0px 12px 6px rgba(91, 96, 164, 0.2)',
-    width: '310px',
+    width: '100%',
     marginTop: '16px',
+    boxSizing: 'border-box',
   },
   toggleButtonGroup: {
+    width: '100%',
     '& .MuiToggleButtonGroup-groupedHorizontal:not(:first-child)': {
-      marginLeft: '-10px',
+      marginLeft: '-8px',
       '&.Mui-selected': {
         borderTopLeftRadius: '8px',
         borderBottomLeftRadius: '8px',
@@ -107,12 +130,12 @@ const useStyles = makeStyles(theme => ({
     },
   },
   toggleButton: {
+    width: '100%',
     borderRadius: '8px',
     border: 'none',
     textTransform: 'none',
-    padding: theme.spacing(2, 8),
+    padding: theme.spacing(2, 0),
     background: '#474747',
-    width: '175px',
     '& .MuiToggleButton-label': {
       color: '#F0F0F0',
       fontFamily: 'Inter',
@@ -142,7 +165,7 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     marginTop: '24px',
-    width: '340px',
+    width: '100%',
     textTransform: 'none',
     padding: '12px',
     borderRadius: '8px',
@@ -171,14 +194,21 @@ const useStyles = makeStyles(theme => ({
   loadingButton: {
     border: '1px solid #BBBBBB',
   },
-  claimRewards: {
-    color: '#71CEFF',
-    '&:hover': {
-      cursor: 'pointer',
+  claimRewardsButton: {
+    marginTop: '30px',
+    width: '100%',
+    textTransform: 'none',
+    padding: '12px',
+    borderRadius: '8px',
+    border: '1px solid #71CEFF',
+    '& .MuiButton-label': {
+      fontFamily: 'Inter',
+      fontWeight: 700,
+      fontSize: '14px',
+      lineHeight: '17px',
+      color: '#71CEFF',
     },
-  },
-  noRewards: {
-    color: '#A8A6A6',
+    '&.Mui-disabled': {},
   },
   powerCard: {
     background: '#1B2131',
@@ -340,9 +370,19 @@ const Pool = () => {
 
   const handleClaimRewards = () => {}
 
+  const handleConfirm = () => {
+    if (poolType === 'stake') {
+    } else {
+    }
+  }
+
   return (
     <PageContainer>
-      <TEXT.BoldStandardBody color="grey2" mb="8px">
+      <Link to="/stake" className={clsx(classes.link, classes.backLink)}>
+        <ArrowLeft strokeWidth={3} height={14} width={14} className={classes.arrowLeft} /> Back
+      </Link>
+
+      <TEXT.BoldStandardBody color="grey2" mt="26px" mb="8px">
         {allPoolsData[0].poolName}
       </TEXT.BoldStandardBody>
 
@@ -382,109 +422,93 @@ const Pool = () => {
 
               <TEXT.StandardBody fontSize="14px">1 NIP/100 OVL/1min</TEXT.StandardBody>
             </FlexRow>
-
-            <FlexRow mt={24} className={classes.keyValueDisplay}>
-              <FlexRow>
-                <TEXT.StandardBody fontSize="14px" color="grey2">
-                  Total Balance
-                </TEXT.StandardBody>
-                <TEXT.StandardBody
-                  className={clsx(rewards ? classes.claimRewards : classes.noRewards)}
-                  fontSize="14px"
-                  color="grey2"
-                  fontWeight={700}
-                  ml={20}
-                  onClick={handleClaimRewards}
-                >
-                  Claim
-                </TEXT.StandardBody>
-              </FlexRow>
-
-              <TEXT.StandardBody fontSize="14px">-</TEXT.StandardBody>
-            </FlexRow>
           </div>
         </FlexColumn>
 
         {/* Pool card */}
-        <FlexColumn className={classes.poolCardContainer}>
-          {/* Toggle buttons */}
-          <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
-            <ToggleButton className={classes.toggleButton} value="stake" disableRipple>
-              Stake
-            </ToggleButton>
-            <ToggleButton className={classes.toggleButton} value="withdraw" disableRipple>
-              Withdraw
-            </ToggleButton>
-          </ToggleButtonGroup>
+        <div style={{flex: '1 1 0', display: 'flex', justifyContent: 'center'}}>
+          <FlexColumn className={classes.poolCardContainer}>
+            {/* Toggle buttons */}
+            <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
+              <ToggleButton className={classes.toggleButton} value="stake" disableRipple>
+                Stake
+              </ToggleButton>
+              <ToggleButton className={classes.toggleButton} value="withdraw" disableRipple>
+                Withdraw
+              </ToggleButton>
+            </ToggleButtonGroup>
 
-          {/* Card */}
-          <div className={classes.poolCard}>
-            <TEXT.Supplemental color="grey2">Choose Staking Amount</TEXT.Supplemental>
+            {/* Card */}
+            <div className={classes.poolCard}>
+              <TEXT.Supplemental color="grey2">{poolType === 'stake' ? 'Choose Staking Amount' : 'Withdraw Staked Amount'}</TEXT.Supplemental>
 
-            <div className={classes.inputContainer}>
-              <FlexRow justify="space-between" mb="25px">
-                <TEXT.Supplemental color="grey2">OVL Amount</TEXT.Supplemental>
-                <TEXT.Supplemental color="grey2" style={{textDecoration: 'underline'}}>
-                  Max: {'-'} OVL
-                </TEXT.Supplemental>
-              </FlexRow>
-              <FlexRow justify="space-between">
-                <NumericalInput color="#E5F6FF" align="left" padding="0px" fontWeight="700" value={stakeAmount} onUserInput={handleUserInput} />
-                <TEXT.BoldStandardBody color="#E5F6FF">OVL</TEXT.BoldStandardBody>
+              <div className={classes.inputContainer}>
+                <FlexRow justify="space-between" mb="25px">
+                  <TEXT.Supplemental color="grey2">OVL Amount</TEXT.Supplemental>
+                  <TEXT.Supplemental color="grey2" style={{textDecoration: 'underline'}}>
+                    Max: {'-'} OVL
+                  </TEXT.Supplemental>
+                </FlexRow>
+                <FlexRow justify="space-between">
+                  <NumericalInput color="#E5F6FF" align="left" padding="0px" fontWeight="700" value={stakeAmount} onUserInput={handleUserInput} />
+                  <TEXT.BoldStandardBody color="#E5F6FF">OVL</TEXT.BoldStandardBody>
+                </FlexRow>
+              </div>
+
+              <FlexRow justify="space-between" mt="16px">
+                <TEXT.Supplemental color="grey2">Est. Received APY</TEXT.Supplemental>
+                <TEXT.Supplemental color="#E5F6FF">~40%</TEXT.Supplemental>
               </FlexRow>
             </div>
 
-            <FlexRow justify="space-between" mt="16px">
-              <TEXT.Supplemental color="grey2">Est. Received APY</TEXT.Supplemental>
-              <TEXT.Supplemental color="#E5F6FF">~40%</TEXT.Supplemental>
-            </FlexRow>
-          </div>
-
-          {account ? (
-            showApprovalFlow ? (
-              <Button
-                variant="contained"
-                className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                disabled={Number(stakeAmount) === 0 || attemptingTransaction}
-                onClick={handleApprove}
-              >
-                {attemptingTransaction ? (
-                  <span>
-                    Waiting Confirmation <CircularProgress size={16} className={classes.circularProgress} />
-                  </span>
-                ) : Number(stakeAmount) === 0 ? (
-                  'Enter an amount'
-                ) : (
-                  'Approve OVL'
-                )}
-              </Button>
+            {account ? (
+              showApprovalFlow ? (
+                <Button
+                  variant="contained"
+                  className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
+                  disabled={Number(stakeAmount) === 0 || attemptingTransaction}
+                  onClick={handleApprove}
+                >
+                  {attemptingTransaction ? (
+                    <span>
+                      Waiting Confirmation <CircularProgress size={16} className={classes.circularProgress} />
+                    </span>
+                  ) : Number(stakeAmount) === 0 ? (
+                    'Enter an amount'
+                  ) : (
+                    'Approve OVL'
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
+                  disabled={Number(stakeAmount) === 0 || attemptingTransaction}
+                  onClick={handleConfirm}
+                >
+                  {attemptingTransaction ? (
+                    <span>
+                      Transaction Pending <CircularProgress size={16} className={classes.circularProgress} />
+                    </span>
+                  ) : Number(stakeAmount) === 0 ? (
+                    'Enter an amount'
+                  ) : poolType === 'stake' ? (
+                    'Stake'
+                  ) : (
+                    'Withdraw'
+                  )}
+                </Button>
+              )
             ) : (
-              <Button
-                variant="contained"
-                className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                disabled={Number(stakeAmount) === 0 || attemptingTransaction}
-                onClick={() => setStakeState(prevState => ({...prevState, attemptingTransaction: true}))}
-              >
-                {attemptingTransaction ? (
-                  <span>
-                    Transaction Pending <CircularProgress size={16} className={classes.circularProgress} />
-                  </span>
-                ) : Number(stakeAmount) === 0 ? (
-                  'Enter an amount'
-                ) : (
-                  'Stake'
-                )}
+              <Button variant="contained" className={classes.button} onClick={toggleWalletModal}>
+                Connect Wallet
               </Button>
-            )
-          ) : (
-            <Button variant="contained" className={classes.button} onClick={toggleWalletModal}>
-              Connect Wallet
-            </Button>
-          )}
-        </FlexColumn>
+            )}
+          </FlexColumn>
+        </div>
 
         {/* Total staked */}
-        <div style={{flex: '1 1 0', display: 'flex', justifyContent: 'right'}}>
+        <div style={{flex: '1 1 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
           <div className={classes.totalStakedCard}>
             {/* Icon */}
             <div className={classes.iconBackground}>
@@ -500,6 +524,28 @@ const Pool = () => {
                 {totalStaked} OVL
               </TEXT.BoldNumber>
             </div>
+          </div>
+
+          <div className={classes.totalRewardsCard}>
+            <FlexRow>
+              {/* Icon */}
+              <div className={classes.iconBackground}>
+                <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
+              </div>
+
+              {/* Value */}
+              <div>
+                <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
+                  Total NIP Rewards
+                </TEXT.SmallBody>
+                <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={'#E5F6FF'} lineHeight={'24px'}>
+                  {rewards} NIP
+                </TEXT.BoldNumber>
+              </div>
+            </FlexRow>
+            <Button className={classes.claimRewardsButton} onClick={handleClaimRewards}>
+              Claim
+            </Button>
           </div>
         </div>
       </FlexRow>

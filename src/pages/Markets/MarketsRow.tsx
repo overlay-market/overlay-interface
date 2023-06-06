@@ -2,10 +2,13 @@ import {useMemo, useState, useEffect} from 'react'
 import {StyledTableCellThin, StyledTableRow} from '../../components/Table/Table'
 import {FlexRow} from '../../components/Container/Container'
 import {TEXT} from '../../theme/theme'
-import {DoubleProgressBar} from '../../components/ProgressBar/ProgressBar'
+import {ProgressBar} from '../../components/ProgressBar/ProgressBar'
 import {useHistory} from 'react-router-dom'
 import {Icon} from '../../components/Icon/Icon'
 import {AlertCircle} from 'react-feather'
+import {MarketChartData} from '../../constants/markets'
+import Chart7dCoin from './Chart7dCoin'
+import Chart7dNft from './Chart7dNft'
 
 type MarketsRowProps = {
   index: number
@@ -20,6 +23,8 @@ type MarketsRowProps = {
   oracleLogo: string | undefined
   marketLogo: string | undefined
   priceCurrency: string | undefined
+  marketChartData: MarketChartData | undefined
+  hide7dChart: boolean
 }
 
 const MarketsRow = ({
@@ -35,6 +40,8 @@ const MarketsRow = ({
   oracleLogo,
   marketLogo,
   priceCurrency = '',
+  marketChartData,
+  hide7dChart,
 }: MarketsRowProps) => {
   const [long, setLong] = useState<number>(0)
   const [short, setShort] = useState<number>(0)
@@ -51,11 +58,11 @@ const MarketsRow = ({
   const defaultZero = '00.00'
 
   const shortPercentageOfTotalOi = useMemo(() => {
-    return Number.isFinite(short) && Number.isFinite(total) && total > short ? ((short / total) * 100).toFixed(2) : defaultZero
+    return Number.isFinite(short) && Number.isFinite(total) && total > 0 ? ((short / total) * 100).toFixed(2) : defaultZero
   }, [short, total])
 
   const longPercentageOfTotalOi = useMemo(() => {
-    return Number.isFinite(long) && Number.isFinite(total) && total > long ? ((long / total) * 100).toFixed(2) : defaultZero
+    return Number.isFinite(long) && Number.isFinite(total) && total > 0 ? ((long / total) * 100).toFixed(2) : defaultZero
   }, [long, total])
 
   function handleNavigate() {
@@ -98,7 +105,7 @@ const MarketsRow = ({
           </TEXT.BoldNumber>
           <TEXT.BoldNumber color="#5FD0AB">{longPercentageOfTotalOi}%</TEXT.BoldNumber>
         </FlexRow>
-        <DoubleProgressBar leftBarValue={short} rightBarValue={long} maxValue={total} />
+        <ProgressBar reverse={false} split={false} max={total} value={short} width={'100%'} margin={'0'} color={'#FF648A'} />
       </StyledTableCellThin>
 
       <StyledTableCellThin id="marketFeedLogo">
@@ -106,6 +113,14 @@ const MarketsRow = ({
           <img src={oracleLogo} alt="Market Feed Logo" />
         </Icon>
       </StyledTableCellThin>
+
+      {/* 7D chart */}
+      {!hide7dChart && (
+        <StyledTableCellThin id="market7dChart" align="center">
+          {marketChartData && marketChartData.isNft && <Chart7dNft marketChartData={marketChartData!!} />}
+          {marketChartData && !marketChartData.isNft && <Chart7dCoin marketChartData={marketChartData!!} />}
+        </StyledTableCellThin>
+      )}
     </StyledTableRow>
   )
 }

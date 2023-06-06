@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import {NavLink, useLocation, useHistory} from 'react-router-dom'
+import {NavLink, useLocation} from 'react-router-dom'
 import styled from 'styled-components/macro'
 import {IconButton} from '@material-ui/core'
 import {Trans} from '@lingui/macro'
@@ -12,14 +12,10 @@ import More from '../More/More'
 import Burger from '../Hamburger/Hamburger'
 import SlideMenu from '../SlideMenu/SlideMenu'
 import Web3Status from '../Web3Status/Web3Status'
-import OverlayLogo from '../../assets/images/overlay-logo.png'
-import LightOverlayLogo from '../../assets/images/overlay-logo-light.png'
-import UpdatedOverlayLogo from '../../assets/images/updated-overlay-icon.png'
-import OverlayLogoDark from '../../assets/images/overlay-logo-dark.png'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
 
 export const HeaderContainer = styled.div`
-  color: ${({theme}) => theme.text1};
+  color: ${({theme}) => theme.dark.white};
   display: flex;
   flex-direction: row;
   width: auto;
@@ -52,7 +48,7 @@ const activeClassName = 'ACTIVE'
 export const StyledLink = styled(NavLink).attrs({
   activeClassName,
 })`
-  color: ${({theme}) => theme.text1};
+  color: ${({theme}) => theme.dark.white};
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
@@ -60,7 +56,7 @@ export const StyledLink = styled(NavLink).attrs({
   display: none;
 
   &.${activeClassName} {
-    color: ${({theme}) => theme.text4};
+    color: ${({theme}) => theme.dark.blue2};
   }
 
   ${({theme}) => theme.mediaWidth.minSmall`
@@ -71,7 +67,6 @@ export const StyledLink = styled(NavLink).attrs({
 export default function Header() {
   const [darkMode] = useDarkModeManager()
   const [open, setOpen] = useState(false)
-  const history = useHistory()
   const menuId = 'main-menu'
 
   let location = useLocation().pathname
@@ -81,6 +76,9 @@ export default function Header() {
     if (open) {
       setOpen(open => false)
     }
+
+    // Disabling eslint warning as passing open as a dependency will prevent the menu from opening
+    // eslint-disable-next-line
   }, [location])
 
   // disable scroll when mobile menu open
@@ -103,13 +101,11 @@ export default function Header() {
           )}
         </IconButton>
       </LogoContainer>
-
       <StyledLink to={'/markets'}>
         <Trans>
           <TEXT.Menu>Markets</TEXT.Menu>
         </Trans>
       </StyledLink>
-
       <StyledLink to={'/positions'}>
         <Trans>
           <TEXT.Menu>Positions</TEXT.Menu>
@@ -127,19 +123,16 @@ export default function Header() {
           <TEXT.Menu>Bridge</TEXT.Menu>
         </Trans>
       </StyledLink>
-
       {/* <StyledLink to={'/claimpage'}>
         <Trans>
           <TEXT.Menu>Claim</TEXT.Menu>
         </Trans>
       </StyledLink> */}
-
       <AccountContainer>
         <Web3Status />
         <More />
         <Burger open={open} setOpen={setOpen} aria-controls={menuId} />
       </AccountContainer>
-
       <SlideMenu open={open} setOpen={setOpen} />
     </HeaderContainer>
   )

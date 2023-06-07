@@ -6,9 +6,16 @@ import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {BigNumber} from 'ethers'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {PoolsData} from './StakePage'
+import {PoolsData} from '../../constants/stake'
 import {useEffect} from 'react'
 import {useHistory} from 'react-router-dom'
+import {makeStyles} from '@material-ui/core/styles'
+
+const useStyles = makeStyles(theme => ({
+  tableCell: {
+    borderBottom: '1px solid #A8A6A6',
+  },
+}))
 
 export interface PoolsRowProps {
   index: number
@@ -17,6 +24,7 @@ export interface PoolsRowProps {
 }
 
 const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
+  const classes = useStyles()
   const history = useHistory()
   const {account} = useActiveWeb3React()
   const {poolName, poolAddress} = pool
@@ -56,32 +64,34 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
   return (
     <StyledTableRow hover={true} onClick={handleNavigate}>
       {/* Index */}
-      <StyledTableCellThin id="marketIndex">{index}</StyledTableCellThin>
+      <StyledTableCellThin id="marketIndex" className={classes.tableCell}>
+        {index}
+      </StyledTableCellThin>
 
       {/* Pool */}
-      <StyledTableCellThin id="pool">
+      <StyledTableCellThin id="pool" className={classes.tableCell}>
         <FlexRow>
           <TEXT.BoldSmallBody>{poolName}</TEXT.BoldSmallBody>
         </FlexRow>
       </StyledTableCellThin>
 
       {/* TVL */}
-      <StyledTableCellThin id="tvl" align="right">
+      <StyledTableCellThin id="tvl" align="right" className={classes.tableCell}>
         <TEXT.Number>{tvl} OVL</TEXT.Number>
       </StyledTableCellThin>
 
       {/* Rewards */}
-      <StyledTableCellThin id="volume24h" align="right">
+      <StyledTableCellThin id="volume24h" align="right" className={classes.tableCell}>
         <TEXT.Number>{poolRewards}</TEXT.Number>
       </StyledTableCellThin>
 
       {/* Balance */}
-      <StyledTableCellThin id="balance" align="right">
+      <StyledTableCellThin id="balance" align="right" className={classes.tableCell}>
         <TEXT.BoldNumber>{balance} OVL</TEXT.BoldNumber>
       </StyledTableCellThin>
 
       {/* Rewards */}
-      <StyledTableCellThin id="rewards" align="right">
+      <StyledTableCellThin id="rewards" align="right" className={classes.tableCell}>
         <TEXT.BoldNumber>{rewards} NIP</TEXT.BoldNumber>
       </StyledTableCellThin>
     </StyledTableRow>

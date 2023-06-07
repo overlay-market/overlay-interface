@@ -7,8 +7,7 @@ import {Link} from 'react-router-dom'
 import {ArrowLeft, ArrowRight} from 'react-feather'
 import {makeStyles} from '@material-ui/core/styles'
 import {Button, Card, CardContent, CardMedia, CircularProgress, Grid} from '@material-ui/core'
-import {SupportedChainId} from '../../constants/chains'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import {darken} from '@material-ui/core/styles'
 import {useActiveWeb3React} from '../../hooks/web3'
@@ -19,6 +18,10 @@ import {OVL} from '../../constants/tokens'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import clsx from 'clsx'
+import {colors} from '../../theme/theme'
+import {PoolsData, allPoolsData} from '../../constants/stake'
+import {RouteComponentProps} from 'react-router-dom'
+import {useStakeCallback} from '../../hooks/useStakeCallback'
 
 const useStyles = makeStyles(theme => ({
   arrowLeft: {
@@ -30,27 +33,14 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 700,
     fontSize: 14,
   },
-  flexRow: {
+  mainRow: {
     alignItems: 'start',
     marginBottom: '80px',
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'column',
     },
   },
-  totalStakedCard: {
-    display: 'flex',
-    background: '#1B2131',
-    border: '0.5px solid rgba(113, 206, 255, 0.5)',
-    borderRadius: '8px',
-    padding: '24px',
-    alignItems: 'center',
-    minWidth: '200px',
-    width: 'fit-content',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(2),
-    },
-  },
-  totalRewardsCard: {
+  stakeRewardsCard: {
     display: 'flex',
     flexDirection: 'column',
     background: '#1B2131',
@@ -60,7 +50,11 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     minWidth: '200px',
     width: 'fit-content',
-    marginTop: theme.spacing(2.5),
+    boxSizing: 'border-box',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing(2),
+      width: '100%',
+    },
   },
   iconBackground: {
     position: 'relative',
@@ -86,10 +80,10 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: 'nowrap',
     fontFamily: 'Roboto Mono',
   },
-  poolInfo: {
+  poolInfoCol: {
     flex: '1 1 0',
-    alignItems: 'flex-start',
   },
+  poolInfoContainer: {},
   keyValueDisplay: {
     justifyContent: 'space-between',
   },
@@ -97,9 +91,14 @@ const useStyles = makeStyles(theme => ({
     textDecoration: 'underline',
   },
   poolCardContainer: {
-    maxWidth: '345px',
     alignItems: 'center',
     justifyContent: 'center',
+    [theme.breakpoints.up('sm')]: {
+      maxWidth: '345px',
+    },
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing(2),
+    },
   },
   poolCard: {
     display: 'flex',
@@ -110,7 +109,7 @@ const useStyles = makeStyles(theme => ({
     backgroud: '#1B2131',
     boxShadow: '0px 0px 12px 6px rgba(91, 96, 164, 0.2)',
     width: '100%',
-    marginTop: '16px',
+    marginTop: theme.spacing(2),
     boxSizing: 'border-box',
   },
   toggleButtonGroup: {
@@ -200,15 +199,20 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'none',
     padding: '12px',
     borderRadius: '8px',
-    border: '1px solid #71CEFF',
+    border: '1px solid #E5F6FF',
     '& .MuiButton-label': {
       fontFamily: 'Inter',
       fontWeight: 700,
       fontSize: '14px',
       lineHeight: '17px',
-      color: '#71CEFF',
+      color: '#E5F6FF',
     },
-    '&.Mui-disabled': {},
+    '&.Mui-disabled': {
+      border: '1px solid #A8A6A6',
+      '& .MuiButton-label': {
+        color: '#A8A6A6',
+      },
+    },
   },
   powerCard: {
     background: '#1B2131',
@@ -241,23 +245,24 @@ const useStyles = makeStyles(theme => ({
       padding: '8px',
     },
   },
-}))
-
-export interface PoolsData {
-  poolName: string
-  poolAddress: string
-  poolType: string
-  chainId: number
-}
-
-const allPoolsData: PoolsData[] = [
-  {
-    poolName: 'Stake OVL for NIP',
-    poolAddress: '0xf7c484e9dE1D7c8AAb098375AbCC52BA6d340A03',
-    poolType: 'thirdwebStaking',
-    chainId: SupportedChainId.ARBITRUM_GÖRLI,
+  poolCardCol: {
+    flex: '1 1 0',
+    display: 'flex',
+    justifyContent: 'center',
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
   },
-]
+  stakeRewardsCol: {
+    flex: '1 1 0',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
+  },
+}))
 
 export interface PowerCardData {
   name: string
@@ -299,10 +304,15 @@ const powerCards: PowerCardData[] = [
   },
 ]
 
-const Pool = () => {
+const Pool = ({
+  match: {
+    params: {poolAddress},
+  },
+}: RouteComponentProps<{poolAddress: string}>) => {
   const classes = useStyles()
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const [poolData, setPoolData] = useState<PoolsData | null>(null)
   const [totalStaked, setTotalStaked] = useState<number>(0)
   const [poolType, setPoolType] = useState<string>('stake')
   const [stakeAmount, setStakeAmount] = useState<string>('0')
@@ -320,10 +330,19 @@ const Pool = () => {
   const chainId = useAppSelector((state: AppState) => state.application.chainId)
   const ovl = chainId ? OVL[chainId] : undefined
 
-  // TODO: fetch user rewards
-  const rewards = 10
+  useEffect(() => {
+    const pool = allPoolsData.find(pool => pool.poolAddress === poolAddress)
 
-  const [approval, approveCallback] = useApproveCallback(utils.parseUnits(stakeAmount ? stakeAmount : '0'), '', ovl)
+    // else redirect?
+    if (pool) setPoolData(pool)
+  }, [poolAddress])
+
+  const {callback: stakeCallback} = useStakeCallback(stakeAmount, poolData?.poolAddress!!)
+
+  // TODO: fetch user rewards
+  let rewards: number = 10
+
+  const [approval, approveCallback] = useApproveCallback(utils.parseUnits(stakeAmount ? stakeAmount : '0'), poolAddress.toLowerCase(), ovl)
 
   const showApprovalFlow = useMemo(() => {
     return approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
@@ -370,11 +389,35 @@ const Pool = () => {
 
   const handleClaimRewards = () => {}
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     if (poolType === 'stake') {
+      if (!stakeCallback) return
+      setStakeState({
+        showConfirm: true,
+        attemptingTransaction: true,
+        transactionErrorMessage: undefined,
+        transactionHash: undefined,
+      })
+      stakeCallback()
+        .then(hash => {
+          setStakeState({
+            showConfirm: false,
+            attemptingTransaction: false,
+            transactionErrorMessage: undefined,
+            transactionHash: hash,
+          })
+        })
+        .catch(error => {
+          setStakeState({
+            showConfirm: false,
+            attemptingTransaction: false,
+            transactionErrorMessage: error,
+            transactionHash: undefined,
+          })
+        })
     } else {
     }
-  }
+  }, [stakeCallback, stakeAmount])
 
   return (
     <PageContainer>
@@ -382,51 +425,51 @@ const Pool = () => {
         <ArrowLeft strokeWidth={3} height={14} width={14} className={classes.arrowLeft} /> Back
       </Link>
 
-      <TEXT.BoldStandardBody color="grey2" mt="26px" mb="8px">
+      <TEXT.BoldStandardBody color={colors(true).dark.grey2} mt="26px" mb="8px">
         {allPoolsData[0].poolName}
       </TEXT.BoldStandardBody>
 
-      <FlexRow className={classes.flexRow}>
+      <FlexRow className={classes.mainRow}>
         {/* Pool info */}
-        <FlexColumn className={classes.poolInfo}>
-          <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
-            {allPoolsData[0].poolName}
-          </TEXT.BoldHeader1>
-          <TEXT.SmallBody color="grey2" lineHeight="17px" mb="13px">
-            Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
-          </TEXT.SmallBody>
-          <TEXT.SmallBody color="grey2" lineHeight="17px">
-            Rewards airdropped first week of every month.
-            <br />
-            <Link to="/" className={classes.link}>
-              Learn more <ArrowRight height={12} width={12} className={classes.arrowRight} />
-            </Link>
-          </TEXT.SmallBody>
-
-          <div style={{marginTop: '46px', textAlign: 'justify'}}>
-            <TEXT.SmallBody color="grey2" lineHeight="19px">
-              Stakers of OVL into this pool earn rewards in the form of NIP (ERC-20). NIP can be exchanged for Power Cards, to exchange for OVL, and
-              other cool things like swag.
-              <br />
-              <br />
+        <div className={classes.poolInfoCol}>
+          <FlexColumn align="flex-start" className={classes.poolInfoContainer}>
+            <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
+              {allPoolsData[0].poolName}
+            </TEXT.BoldHeader1>
+            <TEXT.SmallBody color={colors(true).dark.grey2} lineHeight="17px" mb="13px">
+              Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
             </TEXT.SmallBody>
-            <TEXT.SmallBody color="grey2" lineHeight="19px">
-              Overlay Protocol's native Power cards give the owner special powers like free trading, Degen leverage, and extra governance voting
-              rights.
+            <TEXT.SmallBody color={colors(true).dark.grey2} lineHeight="17px">
+              Rewards airdropped first week of every month.
+              <br />
+              <Link to="/" className={classes.link}>
+                Learn more <ArrowRight height={12} width={12} className={classes.arrowRight} />
+              </Link>
             </TEXT.SmallBody>
 
-            <FlexRow mt={54} className={classes.keyValueDisplay}>
-              <TEXT.StandardBody fontSize="14px" color="grey2">
-                Rewards
+            <div style={{marginTop: '46px', textAlign: 'justify'}}>
+              <TEXT.StandardBody color={colors(true).dark.grey2}>
+                Stakers of OVL into this pool earn rewards in the form of NIP (ERC-20). NIP can be exchanged for Power Cards, to exchange for OVL, and
+                other cool things like swag.
+                <br />
+                <br />
+              </TEXT.StandardBody>
+              <TEXT.StandardBody color={colors(true).dark.grey2}>
+                Overlay Protocol's native Power cards give the owner special powers like free trading, Degen leverage, and extra governance voting
+                rights.
               </TEXT.StandardBody>
 
-              <TEXT.StandardBody fontSize="14px">1 NIP/100 OVL/1min</TEXT.StandardBody>
-            </FlexRow>
-          </div>
-        </FlexColumn>
+              <FlexRow mt={54} className={classes.keyValueDisplay}>
+                <TEXT.StandardBody color={colors(true).dark.grey2}>Rewards</TEXT.StandardBody>
+
+                <TEXT.StandardBody color={colors(true).dark.blue1}>1 NIP/100 OVL/1min</TEXT.StandardBody>
+              </FlexRow>
+            </div>
+          </FlexColumn>
+        </div>
 
         {/* Pool card */}
-        <div style={{flex: '1 1 0', display: 'flex', justifyContent: 'center'}}>
+        <div className={classes.poolCardCol}>
           <FlexColumn className={classes.poolCardContainer}>
             {/* Toggle buttons */}
             <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
@@ -440,24 +483,33 @@ const Pool = () => {
 
             {/* Card */}
             <div className={classes.poolCard}>
-              <TEXT.Supplemental color="grey2">{poolType === 'stake' ? 'Choose Staking Amount' : 'Withdraw Staked Amount'}</TEXT.Supplemental>
+              <TEXT.Supplemental color={colors(true).dark.grey2}>
+                {poolType === 'stake' ? 'Choose Staking Amount' : 'Withdraw Staked Amount'}
+              </TEXT.Supplemental>
 
               <div className={classes.inputContainer}>
                 <FlexRow justify="space-between" mb="25px">
-                  <TEXT.Supplemental color="grey2">OVL Amount</TEXT.Supplemental>
-                  <TEXT.Supplemental color="grey2" style={{textDecoration: 'underline'}}>
+                  <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
+                  <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
                     Max: {'-'} OVL
                   </TEXT.Supplemental>
                 </FlexRow>
                 <FlexRow justify="space-between">
-                  <NumericalInput color="#E5F6FF" align="left" padding="0px" fontWeight="700" value={stakeAmount} onUserInput={handleUserInput} />
-                  <TEXT.BoldStandardBody color="#E5F6FF">OVL</TEXT.BoldStandardBody>
+                  <NumericalInput
+                    color={colors(true).dark.blue1}
+                    align="left"
+                    padding="0px"
+                    fontWeight="700"
+                    value={stakeAmount}
+                    onUserInput={handleUserInput}
+                  />
+                  <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
                 </FlexRow>
               </div>
 
               <FlexRow justify="space-between" mt="16px">
-                <TEXT.Supplemental color="grey2">Est. Received APY</TEXT.Supplemental>
-                <TEXT.Supplemental color="#E5F6FF">~40%</TEXT.Supplemental>
+                <TEXT.SmallBody color={colors(true).dark.grey2}>Est. Received APY</TEXT.SmallBody>
+                <TEXT.SmallBody color={colors(true).dark.blue1}>~40%</TEXT.SmallBody>
               </FlexRow>
             </div>
 
@@ -507,27 +559,27 @@ const Pool = () => {
           </FlexColumn>
         </div>
 
-        {/* Total staked */}
-        <div style={{flex: '1 1 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
-          <div className={classes.totalStakedCard}>
-            {/* Icon */}
-            <div className={classes.iconBackground}>
-              <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
-            </div>
-
-            {/* Value */}
-            <div>
-              <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
-                Total Staked
-              </TEXT.SmallBody>
-              <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={'#E5F6FF'} lineHeight={'24px'}>
-                {totalStaked} OVL
-              </TEXT.BoldNumber>
-            </div>
-          </div>
-
-          <div className={classes.totalRewardsCard}>
+        {/* My stake & NIP rewards */}
+        <div className={classes.stakeRewardsCol}>
+          <div className={classes.stakeRewardsCard}>
+            {/* My stake */}
             <FlexRow>
+              <div className={classes.iconBackground}>
+                <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
+              </div>
+
+              <div>
+                <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
+                  My stake
+                </TEXT.SmallBody>
+                <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
+                  {totalStaked} OVL
+                </TEXT.BoldNumber>
+              </div>
+            </FlexRow>
+
+            {/* My NIP rewards */}
+            <FlexRow mt={16}>
               {/* Icon */}
               <div className={classes.iconBackground}>
                 <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
@@ -536,14 +588,14 @@ const Pool = () => {
               {/* Value */}
               <div>
                 <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
-                  Total NIP Rewards
+                  My NIP Rewards
                 </TEXT.SmallBody>
-                <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={'#E5F6FF'} lineHeight={'24px'}>
+                <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
                   {rewards} NIP
                 </TEXT.BoldNumber>
               </div>
             </FlexRow>
-            <Button className={classes.claimRewardsButton} onClick={handleClaimRewards}>
+            <Button className={classes.claimRewardsButton} disabled={rewards === 0} onClick={handleClaimRewards}>
               Claim
             </Button>
           </div>
@@ -552,7 +604,7 @@ const Pool = () => {
 
       <Grid container spacing={8}>
         {powerCards.map((card, idx) => (
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} justifyContent="center">
             <Card className={classes.powerCard}>
               {/* NIP cost */}
               <TEXT.BoldHeader1>{card.nipCost}</TEXT.BoldHeader1>
@@ -582,17 +634,17 @@ const Pool = () => {
 
               {/* Info */}
               <FlexRow mt={32} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color="grey2">
+                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
                   {card.powerName}
                 </TEXT.StandardBody>
 
-                <TEXT.StandardBody fontSize="14px" fontWeight={700} color="#FFCC8F">
+                <TEXT.StandardBody fontSize="14px" fontWeight={700} color={colors(true).dark.tan2}>
                   {card.powerValue}
                 </TEXT.StandardBody>
               </FlexRow>
 
               <FlexRow mt={16} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color="grey2">
+                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
                   Regular cost
                 </TEXT.StandardBody>
 
@@ -600,7 +652,7 @@ const Pool = () => {
               </FlexRow>
 
               <FlexRow mt={16} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color="grey2">
+                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
                   Required Stake
                 </TEXT.StandardBody>
 

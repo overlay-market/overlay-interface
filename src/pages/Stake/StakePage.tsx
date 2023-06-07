@@ -6,10 +6,11 @@ import {Link} from 'react-router-dom'
 import {ArrowRight} from 'react-feather'
 import Pools from './Pools'
 import {makeStyles} from '@material-ui/core/styles'
-import {SupportedChainId} from '../../constants/chains'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import {useEffect, useState} from 'react'
+import {colors} from '../../theme/theme'
+import {PoolsData, allPoolsData} from '../../constants/stake'
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
@@ -56,22 +57,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export interface PoolsData {
-  poolName: string
-  poolAddress: string
-  poolType: string
-  chainId: number
-}
-
-const allPoolsData: PoolsData[] = [
-  {
-    poolName: 'Stake OVL for NIP',
-    poolAddress: '0xf7c484e9dE1D7c8AAb098375AbCC52BA6d340A03',
-    poolType: 'thirdwebStaking',
-    chainId: SupportedChainId.ARBITRUM_GÖRLI,
-  },
-]
-
 const StakePage = () => {
   const classes = useStyles()
 
@@ -85,31 +70,30 @@ const StakePage = () => {
   }, [chainId])
 
   function addToTotalStaked(amount: number, index: number) {
-    console.log({amount, index})
     poolTvls[index] = amount
     setTotalStaked(poolTvls.reduce((accumulator, currentValue) => accumulator + currentValue, 0))
   }
 
   return (
     <PageContainer>
-      <TEXT.BoldStandardBody color="grey2" mb="8px">
+      <TEXT.BoldStandardBody color={colors(true).dark.grey2} mb="8px">
         All Staking
       </TEXT.BoldStandardBody>
 
       <FlexRow className={classes.flexRow}>
         <FlexColumn align="start">
-          <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
+          <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb="2px">
             Stake OVL, Earn Rewards
           </TEXT.BoldHeader1>
-          <TEXT.Supplemental color="grey2" lineHeight="15px" mb="3px">
+          <TEXT.SmallBody color={colors(true).dark.grey2} mb="1px">
             Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
-          </TEXT.Supplemental>
-          <TEXT.Supplemental color="grey2" lineHeight="15px">
+          </TEXT.SmallBody>
+          <TEXT.SmallBody color={colors(true).dark.grey2}>
             Rewards airdropped first week of every month.{' '}
             <Link to="/" className={classes.link}>
-              Learn more <ArrowRight height={12} width={12} className={classes.arrowRight} />
+              Learn more <ArrowRight height={14} width={14} className={classes.arrowRight} />
             </Link>
-          </TEXT.Supplemental>
+          </TEXT.SmallBody>
         </FlexColumn>
 
         <div className={classes.totalStakedCard}>
@@ -123,7 +107,7 @@ const StakePage = () => {
             <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
               Total Staked
             </TEXT.SmallBody>
-            <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={'#E5F6FF'} lineHeight={'24px'}>
+            <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1}>
               {totalStaked} OVL
             </TEXT.BoldNumber>
           </div>

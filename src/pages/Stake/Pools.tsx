@@ -3,9 +3,16 @@ import {Trans} from '@lingui/macro'
 import {FlexRow} from '../../components/Container/Container'
 import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../components/Table/Table'
 import Loader from '../../components/Loaders/Loaders'
-import {TEXT} from '../../theme/theme'
+import {TEXT, colors} from '../../theme/theme'
 import PoolsRow from './PoolsRow'
-import {PoolsData} from './StakePage'
+import {PoolsData} from '../../constants/stake'
+import {makeStyles} from '@material-ui/core/styles'
+
+const useStyles = makeStyles(theme => ({
+  headerCell: {
+    borderBottom: '1px solid #A8A6A6',
+  },
+}))
 
 const Pools = ({
   filteredPoolsData,
@@ -14,6 +21,8 @@ const Pools = ({
   filteredPoolsData: PoolsData[]
   addToTotalStaked: (amount: number, index: number) => void
 }) => {
+  const classes = useStyles()
+
   return (
     <>
       <TableContainer component={Paper} style={{marginTop: '88px'}}>
@@ -21,43 +30,43 @@ const Pools = ({
           <TableHead>
             <StyledTableHeaderRow>
               {/* Index */}
-              <StyledHeaderCell width={1}>
-                <TEXT.Supplemental>
+              <StyledHeaderCell className={classes.headerCell} width={1}>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>
                   <Trans>#</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* Pools */}
-              <StyledHeaderCell width={25}>
-                <TEXT.Supplemental>
+              <StyledHeaderCell className={classes.headerCell} width={25}>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>
                   <Trans>Pools</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* TVL */}
-              <StyledHeaderCell align="right">
-                <TEXT.Supplemental>
+              <StyledHeaderCell className={classes.headerCell} align="right">
+                <TEXT.Supplemental color={colors(true).dark.blue1}>
                   <Trans>TVL</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* Rewards */}
-              <StyledHeaderCell align="right">
-                <TEXT.Supplemental>
+              <StyledHeaderCell className={classes.headerCell} align="right">
+                <TEXT.Supplemental color={colors(true).dark.blue1}>
                   <Trans>Rewards</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* My Balance */}
-              <StyledHeaderCell align="right">
-                <TEXT.Supplemental>
+              <StyledHeaderCell className={classes.headerCell} align="right">
+                <TEXT.Supplemental color={colors(true).dark.blue1}>
                   <Trans>My Balance</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* Rewards */}
-              <StyledHeaderCell align="right">
-                <TEXT.Supplemental>
+              <StyledHeaderCell className={classes.headerCell} align="right">
+                <TEXT.Supplemental color={colors(true).dark.blue1}>
                   <Trans>My Rewards</Trans>
                 </TEXT.Supplemental>
               </StyledHeaderCell>

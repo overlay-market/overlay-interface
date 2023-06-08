@@ -1,13 +1,13 @@
-import {FlexColumn, FlexRow, PageContainer} from '../../components/Container/Container'
+import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {NumericalInput} from '../../components/NumericalInput/NumericalInput'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
 import {Image} from 'rebass'
 import {TEXT} from '../../theme/theme'
 import {Link} from 'react-router-dom'
-import {ArrowLeft, ArrowRight} from 'react-feather'
+import {ArrowRight} from 'react-feather'
 import {makeStyles} from '@material-ui/core/styles'
 import {Button, Card, CardContent, CardMedia, CircularProgress, Grid} from '@material-ui/core'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {Fragment, useCallback, useMemo, useState} from 'react'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import {darken} from '@material-ui/core/styles'
 import {useActiveWeb3React} from '../../hooks/web3'
@@ -20,7 +20,6 @@ import {AppState} from '../../state/state'
 import clsx from 'clsx'
 import {colors} from '../../theme/theme'
 import {PoolsData, allPoolsData} from '../../constants/stake'
-import {RouteComponentProps} from 'react-router-dom'
 import {useStakeCallback} from '../../hooks/useStakeCallback'
 import {useWithdrawCallback} from '../../hooks/useWithdrawCallback'
 import {useClaimRewardsCallback} from '../../hooks/useClaimRewardsCallback'
@@ -31,15 +30,6 @@ import {useOvlBalance} from '../../state/wallet/hooks'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 
 const useStyles = makeStyles(theme => ({
-  arrowLeft: {
-    verticalAlign: 'middle',
-    paddingBottom: '2px',
-  },
-  backLink: {
-    fontFamily: 'Inter',
-    fontWeight: 700,
-    fontSize: 14,
-  },
   mainRow: {
     alignItems: 'start',
     marginBottom: '80px',
@@ -311,16 +301,15 @@ const powerCards: PowerCardData[] = [
   },
 ]
 
-const Pool = ({
-  match: {
-    params: {poolAddress},
-  },
-}: RouteComponentProps<{poolAddress: string}>) => {
+export interface PoolProps {
+  poolData: PoolsData
+}
+
+const Stake = ({poolData}: PoolProps) => {
   const classes = useStyles()
   const {account} = useActiveWeb3React()
   const ovlBalance = useOvlBalance()
   const toggleWalletModal = useWalletModalToggle()
-  const [poolData, setPoolData] = useState<PoolsData | null>(null)
   const [poolType, setPoolType] = useState<string>('stake')
   const [inputAmount, setInputAmount] = useState<string>('0')
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setStakeState] = useState<{
@@ -340,18 +329,11 @@ const Pool = ({
   const chainId = useAppSelector((state: AppState) => state.application.chainId)
   const ovl = chainId ? OVL[chainId] : undefined
 
-  useEffect(() => {
-    const pool = allPoolsData.find(pool => pool.poolAddress === poolAddress)
+  const {callback: stakeCallback} = useStakeCallback(inputAmount, poolData.poolAddress)
+  const {callback: withdrawCallback} = useWithdrawCallback(inputAmount, poolData.poolAddress)
+  const {callback: claimRewardsCallback} = useClaimRewardsCallback(poolData.poolAddress)
 
-    // else redirect?
-    if (pool) setPoolData(pool)
-  }, [poolAddress])
-
-  const {callback: stakeCallback} = useStakeCallback(inputAmount, poolData?.poolAddress!!)
-  const {callback: withdrawCallback} = useWithdrawCallback(inputAmount, poolData?.poolAddress!!)
-  const {callback: claimRewardsCallback} = useClaimRewardsCallback(poolData?.poolAddress!!)
-
-  const stakingContract = useThirdWebStakingContract(poolAddress)
+  const stakingContract = useThirdWebStakingContract(poolData.poolAddress)
   const stakeInfo = useSingleCallResult(stakingContract, 'getStakeInfo', [account || '0'])
   const poolRewardsRatio = useSingleCallResult(stakingContract, 'getRewardRatio')
   const getTimeUnit = useSingleCallResult(stakingContract, 'getTimeUnit')
@@ -367,7 +349,7 @@ const Pool = ({
     timeUnitSeconds > 93600 ? (timeUnitDays === 1 ? 'DAY' : timeUnitDays + 'd') : timeUnitSeconds / 60 + 'min'
   }`
 
-  const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolAddress.toLowerCase(), ovl)
+  const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolData.poolAddress.toLowerCase(), ovl)
 
   const showApprovalFlow = useMemo(() => {
     return approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
@@ -479,15 +461,7 @@ const Pool = ({
   }, [inputAmount, attemptingTransaction, poolType, ovlBalance, stakedAmountFormatted])
 
   return (
-    <PageContainer>
-      <Link to="/stake" className={clsx(classes.link, classes.backLink)}>
-        <ArrowLeft strokeWidth={3} height={14} width={14} className={classes.arrowLeft} /> Back
-      </Link>
-
-      <TEXT.BoldStandardBody color={colors(true).dark.grey2} mt="26px" mb="8px">
-        {allPoolsData[0].poolName}
-      </TEXT.BoldStandardBody>
-
+    <Fragment>
       <FlexRow className={classes.mainRow}>
         {/* Pool info */}
         <div className={classes.poolInfoCol}>
@@ -726,8 +700,8 @@ const Pool = ({
           </Grid>
         ))}
       </Grid>
-    </PageContainer>
+    </Fragment>
   )
 }
 
-export default Pool
+export default Stake

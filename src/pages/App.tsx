@@ -16,6 +16,7 @@ import Claim from './Claim/Claim'
 import ClaimPage from './Claim/ClaimPage'
 import Popups from '../components/Popup/Popups'
 import {ClosedPosition} from './Positions/ClosedPosition'
+import Leaderboard from './Leaderboard/Leaderboard'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -43,6 +44,7 @@ const App = () => {
               <Route exact strict path="/claimpage" component={ClaimPage} />
               <Route exact strict path="/liquidate" component={Liquidate} />
               <Route exact strict path="/bridge" component={Bridge} />
+              <Route exact strict path="/leaderboard" component={Leaderboard} />
             </Switch>
           </Web3ReactManager>
         </TermsOfServiceManager>

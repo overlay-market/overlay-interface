@@ -22,6 +22,13 @@ import {colors} from '../../theme/theme'
 import {PoolsData, allPoolsData} from '../../constants/stake'
 import {RouteComponentProps} from 'react-router-dom'
 import {useStakeCallback} from '../../hooks/useStakeCallback'
+import {useWithdrawCallback} from '../../hooks/useWithdrawCallback'
+import {useClaimRewardsCallback} from '../../hooks/useClaimRewardsCallback'
+import {useSingleCallResult} from '../../state/multicall/hooks'
+import {useThirdWebStakingContract} from '../../hooks/useContract'
+import {BigNumber} from 'ethers'
+import {useOvlBalance} from '../../state/wallet/hooks'
+import {formatBigNumber} from '../../utils/formatBigNumber'
 
 const useStyles = makeStyles(theme => ({
   arrowLeft: {
@@ -311,11 +318,11 @@ const Pool = ({
 }: RouteComponentProps<{poolAddress: string}>) => {
   const classes = useStyles()
   const {account} = useActiveWeb3React()
+  const ovlBalance = useOvlBalance()
   const toggleWalletModal = useWalletModalToggle()
   const [poolData, setPoolData] = useState<PoolsData | null>(null)
-  const [totalStaked, setTotalStaked] = useState<number>(0)
   const [poolType, setPoolType] = useState<string>('stake')
-  const [stakeAmount, setStakeAmount] = useState<string>('0')
+  const [inputAmount, setInputAmount] = useState<string>('0')
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setStakeState] = useState<{
     showConfirm: boolean
     attemptingTransaction: boolean
@@ -327,6 +334,9 @@ const Pool = ({
     transactionErrorMessage: undefined,
     transactionHash: undefined,
   })
+  const [{attemptingTransaction: attemptingClaimTransaction}, setClaimState] = useState<{attemptingTransaction: boolean}>({
+    attemptingTransaction: false,
+  })
   const chainId = useAppSelector((state: AppState) => state.application.chainId)
   const ovl = chainId ? OVL[chainId] : undefined
 
@@ -337,19 +347,34 @@ const Pool = ({
     if (pool) setPoolData(pool)
   }, [poolAddress])
 
-  const {callback: stakeCallback} = useStakeCallback(stakeAmount, poolData?.poolAddress!!)
+  const {callback: stakeCallback} = useStakeCallback(inputAmount, poolData?.poolAddress!!)
+  const {callback: withdrawCallback} = useWithdrawCallback(inputAmount, poolData?.poolAddress!!)
+  const {callback: claimRewardsCallback} = useClaimRewardsCallback(poolData?.poolAddress!!)
 
-  // TODO: fetch user rewards
-  let rewards: number = 10
+  const stakingContract = useThirdWebStakingContract(poolAddress)
+  const stakeInfo = useSingleCallResult(stakingContract, 'getStakeInfo', [account || '0'])
+  const poolRewardsRatio = useSingleCallResult(stakingContract, 'getRewardRatio')
+  const getTimeUnit = useSingleCallResult(stakingContract, 'getTimeUnit')
 
-  const [approval, approveCallback] = useApproveCallback(utils.parseUnits(stakeAmount ? stakeAmount : '0'), poolAddress.toLowerCase(), ovl)
+  const stakedAmount: BigNumber = stakeInfo?.result?.[0] ?? (BigNumber.from(0) as BigNumber)
+  const rewardAmount: BigNumber = stakeInfo?.result?.[1] ?? (BigNumber.from(0) as BigNumber)
+  const timeUnitSeconds: number = getTimeUnit?.result?.[0] ?? 0
+  const timeUnitDays = timeUnitSeconds / 93600
+
+  const stakedAmountFormatted = formatBigNumber(stakedAmount, 18, 2) ?? 0
+  const rewardAmountFormatted = formatBigNumber(rewardAmount, 18, 2) ?? 0
+  const poolRewards = `${poolRewardsRatio?.result?.[0]} NIP/${poolRewardsRatio?.result?.[1]} OVL/${
+    timeUnitSeconds > 93600 ? (timeUnitDays === 1 ? 'DAY' : timeUnitDays + 'd') : timeUnitSeconds / 60 + 'min'
+  }`
+
+  const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolAddress.toLowerCase(), ovl)
 
   const showApprovalFlow = useMemo(() => {
     return approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
   }, [approval])
 
   const handleApprove = useCallback(async () => {
-    if (!stakeAmount) {
+    if (!inputAmount) {
       return
     }
     setStakeState({
@@ -376,48 +401,82 @@ const Pool = ({
           transactionHash: undefined,
         })
       })
-  }, [approveCallback, stakeAmount])
+  }, [approveCallback, inputAmount])
 
   const handlePoolTypeChange = (event: React.MouseEvent<HTMLElement>, newPoolType: string) => {
     if (newPoolType === null) return
     setPoolType(newPoolType)
+    setInputAmount('0')
   }
 
   const handleUserInput = (input: string) => {
-    setStakeAmount(input)
+    setInputAmount(input)
   }
 
-  const handleClaimRewards = () => {}
+  const handleClaimRewards = useCallback(() => {
+    if (!claimRewardsCallback) return
+
+    setClaimState({
+      attemptingTransaction: true,
+    })
+
+    claimRewardsCallback()
+      .then(hash => {
+        setClaimState({
+          attemptingTransaction: false,
+        })
+      })
+      .catch(error => {
+        console.error(error)
+      })
+  }, [claimRewardsCallback])
 
   const handleConfirm = useCallback(() => {
-    if (poolType === 'stake') {
-      if (!stakeCallback) return
-      setStakeState({
-        showConfirm: true,
-        attemptingTransaction: true,
-        transactionErrorMessage: undefined,
-        transactionHash: undefined,
+    const callback = poolType === 'stake' ? stakeCallback : withdrawCallback
+
+    if (!callback) return
+
+    setStakeState({
+      showConfirm: true,
+      attemptingTransaction: true,
+      transactionErrorMessage: undefined,
+      transactionHash: undefined,
+    })
+
+    callback()
+      .then(hash => {
+        setStakeState({
+          showConfirm: false,
+          attemptingTransaction: false,
+          transactionErrorMessage: undefined,
+          transactionHash: hash,
+        })
       })
-      stakeCallback()
-        .then(hash => {
-          setStakeState({
-            showConfirm: false,
-            attemptingTransaction: false,
-            transactionErrorMessage: undefined,
-            transactionHash: hash,
-          })
+      .catch(error => {
+        setStakeState({
+          showConfirm: false,
+          attemptingTransaction: false,
+          transactionErrorMessage: error,
+          transactionHash: undefined,
         })
-        .catch(error => {
-          setStakeState({
-            showConfirm: false,
-            attemptingTransaction: false,
-            transactionErrorMessage: error,
-            transactionHash: undefined,
-          })
-        })
-    } else {
+      })
+  }, [stakeCallback, withdrawCallback, poolType])
+
+  const isConfirmButtonDisabled = useMemo(() => {
+    if (poolType === 'stake') {
+      if (Number(inputAmount) > Number(ovlBalance?.toExact() ?? 0)) {
+        return true
+      }
     }
-  }, [stakeCallback, stakeAmount])
+
+    if (poolType === 'withdraw') {
+      if (Number(inputAmount) > Number(stakedAmountFormatted)) {
+        return true
+      }
+    }
+
+    return Number(inputAmount) === 0 || attemptingTransaction
+  }, [inputAmount, attemptingTransaction, poolType, ovlBalance, stakedAmountFormatted])
 
   return (
     <PageContainer>
@@ -462,7 +521,7 @@ const Pool = ({
               <FlexRow mt={54} className={classes.keyValueDisplay}>
                 <TEXT.StandardBody color={colors(true).dark.grey2}>Rewards</TEXT.StandardBody>
 
-                <TEXT.StandardBody color={colors(true).dark.blue1}>1 NIP/100 OVL/1min</TEXT.StandardBody>
+                <TEXT.StandardBody color={colors(true).dark.blue1}>{poolRewards}</TEXT.StandardBody>
               </FlexRow>
             </div>
           </FlexColumn>
@@ -491,7 +550,7 @@ const Pool = ({
                 <FlexRow justify="space-between" mb="25px">
                   <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
                   <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
-                    Max: {'-'} OVL
+                    Max: {poolType === 'stake' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
                   </TEXT.Supplemental>
                 </FlexRow>
                 <FlexRow justify="space-between">
@@ -500,13 +559,14 @@ const Pool = ({
                     align="left"
                     padding="0px"
                     fontWeight="700"
-                    value={stakeAmount}
+                    value={inputAmount}
                     onUserInput={handleUserInput}
                   />
                   <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
                 </FlexRow>
               </div>
 
+              {/* TODO */}
               <FlexRow justify="space-between" mt="16px">
                 <TEXT.SmallBody color={colors(true).dark.grey2}>Est. Received APY</TEXT.SmallBody>
                 <TEXT.SmallBody color={colors(true).dark.blue1}>~40%</TEXT.SmallBody>
@@ -518,14 +578,14 @@ const Pool = ({
                 <Button
                   variant="contained"
                   className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                  disabled={Number(stakeAmount) === 0 || attemptingTransaction}
+                  disabled={Number(inputAmount) === 0 || attemptingTransaction}
                   onClick={handleApprove}
                 >
                   {attemptingTransaction ? (
                     <span>
                       Waiting Confirmation <CircularProgress size={16} className={classes.circularProgress} />
                     </span>
-                  ) : Number(stakeAmount) === 0 ? (
+                  ) : Number(inputAmount) === 0 ? (
                     'Enter an amount'
                   ) : (
                     'Approve OVL'
@@ -535,14 +595,14 @@ const Pool = ({
                 <Button
                   variant="contained"
                   className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                  disabled={Number(stakeAmount) === 0 || attemptingTransaction}
+                  disabled={isConfirmButtonDisabled}
                   onClick={handleConfirm}
                 >
                   {attemptingTransaction ? (
                     <span>
                       Transaction Pending <CircularProgress size={16} className={classes.circularProgress} />
                     </span>
-                  ) : Number(stakeAmount) === 0 ? (
+                  ) : Number(inputAmount) === 0 ? (
                     'Enter an amount'
                   ) : poolType === 'stake' ? (
                     'Stake'
@@ -573,7 +633,7 @@ const Pool = ({
                   My stake
                 </TEXT.SmallBody>
                 <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
-                  {totalStaked} OVL
+                  {stakedAmountFormatted} OVL
                 </TEXT.BoldNumber>
               </div>
             </FlexRow>
@@ -591,11 +651,15 @@ const Pool = ({
                   My NIP Rewards
                 </TEXT.SmallBody>
                 <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
-                  {rewards} NIP
+                  {rewardAmountFormatted} NIP
                 </TEXT.BoldNumber>
               </div>
             </FlexRow>
-            <Button className={classes.claimRewardsButton} disabled={rewards === 0} onClick={handleClaimRewards}>
+            <Button
+              className={classes.claimRewardsButton}
+              disabled={rewardAmount.isZero() || attemptingClaimTransaction}
+              onClick={handleClaimRewards}
+            >
               Claim
             </Button>
           </div>

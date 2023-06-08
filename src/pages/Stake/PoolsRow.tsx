@@ -90,7 +90,7 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
         <TEXT.BoldNumber>{balance} OVL</TEXT.BoldNumber>
       </StyledTableCellThin>
 
-      {/* Rewards */}
+      {/* My Rewards */}
       <StyledTableCellThin id="rewards" align="right" className={classes.tableCell}>
         <TEXT.BoldNumber>{rewards} NIP</TEXT.BoldNumber>
       </StyledTableCellThin>

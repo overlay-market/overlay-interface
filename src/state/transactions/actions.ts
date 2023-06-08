@@ -21,6 +21,8 @@ export enum TransactionType {
   BRIDGE_OVL = 4,
   CLAIM_OVL = 5,
   STAKE_OVL = 6,
+  WITHDRAW_OVL = 7,
+  CLAIM_REWARDS = 8,
 }
 
 export interface BaseTransactionInfo {
@@ -65,10 +67,21 @@ export interface ClaimOVLTransactionInfo extends BaseTransactionInfo {
   amount: BigNumberish
 }
 
-export interface StakeTransactionInfo extends BaseTransactionInfo {
+export interface StakeOVLTransactionInfo extends BaseTransactionInfo {
   type: TransactionType.STAKE_OVL
   poolAddress: string
   amount: string
+}
+
+export interface WithdrawOVLTransactionInfo extends BaseTransactionInfo {
+  type: TransactionType.WITHDRAW_OVL
+  poolAddress: string
+  amount: string
+}
+
+export interface ClaimRewardsTransactionInfo extends BaseTransactionInfo {
+  type: TransactionType.CLAIM_REWARDS
+  poolAddress: string
 }
 
 export type TransactionInfo =
@@ -78,7 +91,9 @@ export type TransactionInfo =
   | LiquidateOVLTransactionInfo
   | BridgeOVLTransactionInfo
   | ClaimOVLTransactionInfo
-  | StakeTransactionInfo
+  | StakeOVLTransactionInfo
+  | WithdrawOVLTransactionInfo
+  | ClaimRewardsTransactionInfo
 
 export const addTransaction = createAction<{
   chainId: ChainId

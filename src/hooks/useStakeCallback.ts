@@ -49,7 +49,7 @@ function useStakeCallArguments(amount: string, poolAddress: string) {
   }
 
   return useMemo(() => {
-    if (!poolAddress || !chainId || !account || !stakingContract || !calldata) return []
+    if (!poolAddress || !amount || !chainId || !account || !stakingContract || !calldata) return []
 
     const txn: {address: string; calldata: string; value: string} = {
       address: poolAddress,
@@ -64,7 +64,7 @@ function useStakeCallArguments(amount: string, poolAddress: string) {
         value: txn.value,
       },
     ]
-  }, [calldata, poolAddress, chainId, account, stakingContract])
+  }, [calldata, poolAddress, amount, chainId, account, stakingContract])
 }
 
 export function useStakeCallback(
@@ -216,5 +216,5 @@ export function useStakeCallback(
       },
       error: null,
     }
-  }, [poolAddress, library, account, chainId, stakeCalls, addTransaction, addPopup, currentTimeForId])
+  }, [poolAddress, amount, library, account, chainId, stakeCalls, addTransaction, addPopup, currentTimeForId])
 }

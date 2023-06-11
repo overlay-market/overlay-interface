@@ -2,7 +2,7 @@ import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {NumericalInput} from '../../components/NumericalInput/NumericalInput'
 import {TEXT} from '../../theme/theme'
 import {Link} from 'react-router-dom'
-import {ArrowRight} from 'react-feather'
+import {ArrowRight, ExternalLink} from 'react-feather'
 import {makeStyles} from '@material-ui/core/styles'
 import {Button, CircularProgress} from '@material-ui/core'
 import {Fragment, useCallback, useMemo, useState} from 'react'
@@ -17,7 +17,7 @@ import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import clsx from 'clsx'
 import {colors} from '../../theme/theme'
-import {PoolsData, allPoolsData} from '../../constants/stake'
+import {PoolsData} from '../../constants/stake'
 import {useStakeCallback} from '../../hooks/useStakeCallback'
 import {useWithdrawCallback} from '../../hooks/useWithdrawCallback'
 import {useClaimRewardsCallback} from '../../hooks/useClaimRewardsCallback'
@@ -257,6 +257,16 @@ const useStyles = makeStyles(theme => ({
       width: '100%',
     },
   },
+  poolContract: {
+    textDecoration: 'underline',
+  },
+  externalLink: {
+    marginLeft: '14px',
+    color: '#F8F8F8',
+  },
+  externalLinkIcon: {
+    verticalAlign: 'middle',
+  },
 }))
 
 export interface PoolProps {
@@ -425,12 +435,13 @@ const LiquidityPool = ({poolData}: PoolProps) => {
         <div className={classes.poolInfoCol}>
           <FlexColumn align="flex-start" className={classes.poolInfoContainer}>
             <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
-              {allPoolsData[0].poolName}
+              {poolData.poolName}
             </TEXT.BoldHeader1>
-            <TEXT.SmallBody color={colors(true).dark.grey2} lineHeight="17px" mb="13px">
+
+            <TEXT.SmallBody color={colors(true).dark.grey2} mt="40px" mb="13px">
               Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
             </TEXT.SmallBody>
-            <TEXT.SmallBody color={colors(true).dark.grey2} lineHeight="17px">
+            <TEXT.SmallBody color={colors(true).dark.grey2}>
               Rewards airdropped first week of every month.
               <br />
               <Link to="/" className={classes.link}>
@@ -438,24 +449,26 @@ const LiquidityPool = ({poolData}: PoolProps) => {
               </Link>
             </TEXT.SmallBody>
 
-            <div style={{marginTop: '46px', textAlign: 'justify'}}>
-              <TEXT.StandardBody color={colors(true).dark.grey2}>
-                Stakers of OVL into this pool earn rewards in the form of NIP (ERC-20). NIP can be exchanged for Power Cards, to exchange for OVL, and
-                other cool things like swag.
-                <br />
-                <br />
-              </TEXT.StandardBody>
-              <TEXT.StandardBody color={colors(true).dark.grey2}>
-                Overlay Protocol's native Power cards give the owner special powers like free trading, Degen leverage, and extra governance voting
-                rights.
-              </TEXT.StandardBody>
+            <TEXT.BoldStandardBody mt="40px">Earn fees on this pool by providing OVL + USDC</TEXT.BoldStandardBody>
 
-              <FlexRow mt={54} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody color={colors(true).dark.grey2}>Rewards</TEXT.StandardBody>
+            <TEXT.StandardBody mt="24px" className={classes.poolContract}>
+              Pool contract
+              <Link to="/" className={classes.externalLink}>
+                <ExternalLink height={16} width={16} className={classes.externalLinkIcon} />
+              </Link>
+            </TEXT.StandardBody>
 
-                <TEXT.StandardBody color={colors(true).dark.blue1}>{poolRewards}</TEXT.StandardBody>
-              </FlexRow>
-            </div>
+            <FlexRow mt={24} className={classes.keyValueDisplay}>
+              <TEXT.StandardBody color={colors(true).dark.grey2}>Rewards</TEXT.StandardBody>
+
+              <TEXT.StandardBody color={colors(true).dark.blue1}>149% APY</TEXT.StandardBody>
+            </FlexRow>
+
+            <FlexRow mt={24} className={classes.keyValueDisplay}>
+              <TEXT.StandardBody color={colors(true).dark.grey2}>Reward Balance</TEXT.StandardBody>
+
+              <TEXT.StandardBody color={colors(true).dark.blue1}>-</TEXT.StandardBody>
+            </FlexRow>
           </FlexColumn>
         </div>
 
@@ -480,7 +493,7 @@ const LiquidityPool = ({poolData}: PoolProps) => {
                 <FlexRow justify="space-between" mb="25px">
                   <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
                   <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
-                    Max: {poolType === 'stake' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
+                    Max: {poolType === 'add' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
                   </TEXT.Supplemental>
                 </FlexRow>
                 <FlexRow justify="space-between">
@@ -498,9 +511,9 @@ const LiquidityPool = ({poolData}: PoolProps) => {
 
               <div className={classes.inputContainer} style={{marginTop: '14px'}}>
                 <FlexRow justify="space-between" mb="25px">
-                  <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
+                  <TEXT.Supplemental color={colors(true).dark.grey2}>USDC Amount</TEXT.Supplemental>
                   <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
-                    Max: {poolType === 'stake' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
+                    Max: {poolType === 'add' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} USDC
                   </TEXT.Supplemental>
                 </FlexRow>
                 <FlexRow justify="space-between">
@@ -512,7 +525,7 @@ const LiquidityPool = ({poolData}: PoolProps) => {
                     value={inputAmount}
                     onUserInput={handleUserInput}
                   />
-                  <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
+                  <TEXT.BoldStandardBody color={colors(true).dark.blue1}>USDC</TEXT.BoldStandardBody>
                 </FlexRow>
               </div>
 
@@ -554,10 +567,10 @@ const LiquidityPool = ({poolData}: PoolProps) => {
                     </span>
                   ) : Number(inputAmount) === 0 ? (
                     'Enter an amount'
-                  ) : poolType === 'stake' ? (
-                    'Stake'
+                  ) : poolType === 'add' ? (
+                    'Add Liquidity'
                   ) : (
-                    'Withdraw'
+                    'Remove Liquidity'
                   )}
                 </Button>
               )

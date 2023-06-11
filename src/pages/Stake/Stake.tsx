@@ -28,6 +28,7 @@ import {useThirdWebStakingContract} from '../../hooks/useContract'
 import {BigNumber} from 'ethers'
 import {useOvlBalance} from '../../state/wallet/hooks'
 import {formatBigNumber} from '../../utils/formatBigNumber'
+import NipIcon from '../../assets/svg/nip-white.svg'
 
 const useStyles = makeStyles(theme => ({
   mainRow: {
@@ -469,10 +470,10 @@ const Stake = ({poolData}: PoolProps) => {
             <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
               {allPoolsData[0].poolName}
             </TEXT.BoldHeader1>
-            <TEXT.SmallBody color={colors(true).dark.grey2} lineHeight="17px" mb="13px">
+            <TEXT.SmallBody color={colors(true).dark.grey2} mb="13px">
               Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
             </TEXT.SmallBody>
-            <TEXT.SmallBody color={colors(true).dark.grey2} lineHeight="17px">
+            <TEXT.SmallBody color={colors(true).dark.grey2}>
               Rewards airdropped first week of every month.
               <br />
               <Link to="/" className={classes.link}>
@@ -616,7 +617,7 @@ const Stake = ({poolData}: PoolProps) => {
             <FlexRow mt={16}>
               {/* Icon */}
               <div className={classes.iconBackground}>
-                <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
+                <Image src={NipIcon} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
               </div>
 
               {/* Value */}

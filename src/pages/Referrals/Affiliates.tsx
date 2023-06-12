@@ -12,6 +12,7 @@ import useAxios from 'axios-hooks'
 import {REFERRALS_API} from '../../constants/referrals'
 import useDebounce from '../../hooks/useDebounce'
 import {ReferralContext} from '../../state/referrals/referralContext'
+import Loader from '../../components/Loaders/Loaders'
 
 export const FixedWidthContainer = styled.div`
   width: 100%;
@@ -233,7 +234,9 @@ Use with fee discounts: ${myAffiliateLink}`)
     }
   }, [referralCode])
 
-  return (
+  return userInfoLoading ? (
+    <Loader size="32px" />
+  ) : (
     <>
       {myReferralLink ? (
         <OverviewContainer>

@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import {NavLink, useLocation} from 'react-router-dom'
+import {Link, NavLink, useLocation} from 'react-router-dom'
 import styled from 'styled-components/macro'
 import {IconButton} from '@material-ui/core'
 import {Trans} from '@lingui/macro'
@@ -14,6 +14,7 @@ import SlideMenu from '../SlideMenu/SlideMenu'
 import Web3Status from '../Web3Status/Web3Status'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
 import {ChevronDown} from 'react-feather'
+import WalletMenu from './WalletMenu'
 
 export const HeaderContainer = styled.div`
   color: ${({theme}) => theme.dark.white};
@@ -73,24 +74,24 @@ const PowerCardLink = styled(StyledLink)`
   text-fill-color: transparent;
 `
 
-const Dropdown = styled.div<{open: boolean; active: boolean}>`
-  display: flex;
+const Dropdown = styled.div<{active: boolean}>`
+  display: none;
   flex-direction: column;
   position: relative;
   text-decoration: none;
   margin: auto 16px;
-  padding: 8px;
+  padding: 8px 0 8px 8px;
   cursor: pointer;
   background: ${({theme}) => theme.dark.grey4};
   color: ${({theme, active}) => (active ? theme.dark.blue2 : theme.dark.purple2)};
   border-radius: 8px;
-  width: 50px;
-  transition: width 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+  width: 59px;
+  transition: width 0.2 ease-in-out;
 
   .dropdown-list {
     padding: 0;
     border-radius: 8px;
-    width: 64px;
+    width: 59px;
     height: 0px;
 
     a {
@@ -98,12 +99,20 @@ const Dropdown = styled.div<{open: boolean; active: boolean}>`
     }
   }
 
+  .chevron {
+    transform: rotate(0deg);
+  }
+
   &:hover {
     border-radius: 8px 8px 0 0;
     width: 110px;
 
+    .chevron {
+      transform: rotate(180deg);
+    }
+
     .dropdown-list {
-      padding: 8px 8px 16px 8px;
+      padding: 8px 0px 16px 8px;
       border-radius: 0 0 8px 8px;
       width: 110px;
       height: 83px;
@@ -113,13 +122,18 @@ const Dropdown = styled.div<{open: boolean; active: boolean}>`
       }
     }
   }
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    display: flex;
+  `};
 `
 
 const DropdownContent = styled.div`
   display: flex;
+  gap: 4px;
 `
 
-const DropdownList = styled.div<{open: boolean}>`
+const DropdownList = styled.div`
   position: absolute;
   top: 100%;
   left: 0;
@@ -128,27 +142,42 @@ const DropdownList = styled.div<{open: boolean}>`
   gap: 16px;
   background: ${({theme}) => theme.dark.grey4};
   overflow: hidden;
-  transition: width 0.3s ease-in-out, height 0.2s ease-in-out, border-radius 0.3s ease-in-out;
+  transition: width 0.2 ease-in-out;
 `
 
 const DropdownItem = styled(StyledLink)`
   margin: 0;
 `
 
-interface RotatingChevronProps {
-  open: boolean
-}
-
-export const RotatingChevron = styled(ChevronDown)<RotatingChevronProps>`
-  transform: ${props => (props.open ? 'rotate(180deg)' : 'rotate(0deg)')};
+const RotatingChevron = styled(ChevronDown)`
   transition: transform ease-out 0.25s;
+`
+
+export const UnstyledLink = styled(Link)`
+  color: unset;
+  text-decoration: none;
+`
+
+const BuyOVLButtonContainer = styled.div`
+  display: flex;
+  margin-right: 40px;
+  align-items: center;
+`
+const SoonTag = styled.div`
+  padding: 4px 8px;
+  background: ${({theme}) => theme.dark.grey3};
+  border-radius: 8px;
 `
 
 export default function Header() {
   const [darkMode] = useDarkModeManager()
-  const [open, setOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(false)
+
   const menuId = 'main-menu'
+
+  const NEW_HEADER_FLAG = true
+  const HIDE_POWER_CARDS = true
+  const HIDE_BUY_OVL = true
 
   let location = useLocation().pathname
 
@@ -174,7 +203,7 @@ export default function Header() {
   return (
     <HeaderContainer>
       <LogoContainer>
-        <IconButton href="https://overlay.market" target="_blank" style={{padding: 0}}>
+        <IconButton href="/" style={{padding: 0}}>
           {darkMode ? (
             <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo Light'} height={'100%'} width={'100%'} minHeight={'30px'} minWidth={'30px'} />
           ) : (
@@ -198,23 +227,21 @@ export default function Header() {
         </Trans>
       </StyledLink>
 
-      <PowerCardLink to={'/powercards'}>
-        <Trans>
-          <TEXT.Menu>Power Cards</TEXT.Menu>
-        </Trans>
-      </PowerCardLink>
+      {HIDE_POWER_CARDS ? null : (
+        <PowerCardLink to={'/powercards'}>
+          <Trans>
+            <TEXT.Menu>Power Cards</TEXT.Menu>
+          </Trans>
+        </PowerCardLink>
+      )}
 
-      <Dropdown
-        active={location === '/stake' || location === '/leaderboard' || location === '/referrals'}
-        open={openDropdown}
-        onClick={() => setOpenDropdown(!openDropdown)}
-      >
+      <Dropdown active={location === '/stake' || location === '/leaderboard' || location === '/referrals'}>
         <DropdownContent>
           <TEXT.Menu>Earn</TEXT.Menu>
-          <RotatingChevron open={openDropdown} height={20} width={20} />
+          <RotatingChevron className="chevron" height={17} width={17} />
         </DropdownContent>
 
-        <DropdownList className="dropdown-list" open={openDropdown}>
+        <DropdownList className="dropdown-list">
           <DropdownItem to={'/stake'}>
             <Trans>
               <TEXT.Menu>Stake</TEXT.Menu>
@@ -244,11 +271,20 @@ export default function Header() {
         </Trans>
       </StyledLink> */}
       <AccountContainer>
-        <TEXT.Menu color={colors(false).dark.tan2} marginRight={40}>
-          Buy OVL
-        </TEXT.Menu>
+        {HIDE_BUY_OVL ? null : (
+          <UnstyledLink to={'/'}>
+            <BuyOVLButtonContainer>
+              <TEXT.Menu color={colors(false).dark.tan2} marginRight="8px">
+                Buy OVL
+              </TEXT.Menu>
+              <SoonTag>
+                <TEXT.Supplemental>Soon!</TEXT.Supplemental>
+              </SoonTag>
+            </BuyOVLButtonContainer>
+          </UnstyledLink>
+        )}
         <Web3Status />
-        <More />
+        {NEW_HEADER_FLAG ? <WalletMenu /> : <More />}
         <Burger open={open} setOpen={setOpen} aria-controls={menuId} />
       </AccountContainer>
       <SlideMenu open={open} setOpen={setOpen} />

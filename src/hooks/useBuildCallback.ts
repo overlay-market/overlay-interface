@@ -181,9 +181,21 @@ export function useBuildCallback(
         )
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
-        let bestCallOption: SuccessfulCall | BuildCallEstimate | undefined = estimatedCalls.find(
-          (el, ix, list): el is SuccessfulCall => 'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
-        )
+        let bestCallOption: SuccessfulCall | BuildCallEstimate | undefined
+        try {
+          bestCallOption = estimatedCalls.find((el, ix, list): el is SuccessfulCall => {
+            if ('gasEstimate' in el) {
+              if (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]) {
+                return true
+              } else {
+                throw new Error('Expected an error object to be thrown')
+              }
+            }
+            return false
+          })
+        } catch (error) {
+          // Handle the error
+        }
 
         // check if any calls errored with a recognizable error
         if (!bestCallOption) {

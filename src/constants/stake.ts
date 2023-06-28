@@ -17,6 +17,13 @@ export const allPoolsData: PoolsData[] = [
     isStake: true,
   },
   {
+    poolName: 'Stake OVL for NIP v2',
+    poolAddress: '0x942DAB217E7e81299ec20655fCE3aBE762A18027',
+    poolType: 'thirdwebStaking',
+    chainId: SupportedChainId.ARBITRUM_GÖRLI,
+    isStake: true,
+  },
+  {
     poolName: 'OVL + USDC LP',
     poolAddress: '0xb31d222c23104cbc2c04df77941f1f2c478133dd',
     poolType: 'thirdwebStaking',

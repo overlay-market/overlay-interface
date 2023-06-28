@@ -196,16 +196,18 @@ const Leaderboard = () => {
                   </UsernameContainer>
                 </TableDataCell>
                 <TableDataCell noborder="true">
-                  <TEXT.SmallBody>{userData?.rank ?? 0}</TEXT.SmallBody>
+                  <TEXT.SmallBody>{userData?.rank ?? 'N/A'}</TEXT.SmallBody>
                 </TableDataCell>
                 <TableDataCell noborder="true">
-                  <TEXT.Number>{`${userData?.totalVolume ?? 0} OVL`}</TEXT.Number>
+                  <TEXT.Number>{userData?.totalVolume ? `${userData?.totalVolume ?? 0} OVL` : 'N/A'}</TEXT.Number>
                 </TableDataCell>
                 <TableDataCell noborder="true">
-                  <TEXT.Number>{`${userData?.earnings ?? 0} OVL`}</TEXT.Number>
+                  <TEXT.Number>{userData?.earnings ? `${userData?.earnings ?? 0} OVL` : 'N/A'}</TEXT.Number>
                 </TableDataCell>
                 <TableDataCell noborder="true" align="center">
-                  <TEXT.SmallBody color={40 > 0 ? colors(false).dark.green : ''}>{`${userData?.pnl ?? 0}%`}</TEXT.SmallBody>
+                  <TEXT.SmallBody color={userData.pnl && userData?.pnl > 0 ? colors(false).dark.green : ''}>
+                    {userData?.pnl ? `${userData?.pnl ?? 0}%` : 'N/A'}
+                  </TEXT.SmallBody>
                 </TableDataCell>
               </UserRankingRow>
             </TableBody>

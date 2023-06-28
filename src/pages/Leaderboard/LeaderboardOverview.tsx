@@ -93,7 +93,7 @@ const LeaderboardOverview = ({seasonData, userData}: {seasonData: ILeaderboardsD
     seasonData,
   })
 
-  const yourRewards: string = `~${userData?.earnings} OVL`
+  const yourRewards: string = `${userData?.earnings ? `~${userData?.earnings}` : 0} OVL`
   const seasonNumber: string = seasonData?.sessionNumber?.toString() || ''
   const upForGrabs: string = `${seasonData?.totalRewards} OVL`
   const seasonEndCountdown: string = calculateCountdown(seasonData?.sessionEnd)

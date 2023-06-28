@@ -1,4 +1,5 @@
 import {TableBody, TableHead} from '@material-ui/core'
+import {ethers} from 'ethers'
 import {PageContainer} from '../../components/Container/Container'
 import {StyledHeaderCell, StyledTable, StyledTableCell, StyledTableHeaderRow, StyledTableRow} from '../../components/Table/Table'
 import LeaderboardOverview from './LeaderboardOverview'
@@ -7,15 +8,23 @@ import styled from 'styled-components'
 import mockData from './mock-data'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {shortenAddress} from '../../utils/web3'
+import useAxios from 'axios-hooks'
+import {LEADERBOARRDS_API} from '../../constants/applications'
+import {useEffect, useMemo, useState} from 'react'
+import Loader from '../../components/Loaders/Loaders'
 
-const HeaderCell = styled(StyledHeaderCell)<{noBorder?: boolean}>`
+const HeaderCell = styled(StyledHeaderCell)<{noborder?: string; textalign?: string}>`
+  text-align: ${({textalign}) => (textalign ? textalign : 'end')} !important;
   border-bottom: 1px solid ${({theme}) => theme.dark.grey4} !important;
-  border-bottom: ${({noBorder}) => (noBorder ? '0px !important' : '')};
+  border-bottom: ${({noborder}) => (noborder === 'true' ? '0px !important' : '')};
+  padding: 16px !important;
 `
 
-const TableDataCell = styled(StyledTableCell)<{noBorder?: boolean}>`
+const TableDataCell = styled(StyledTableCell)<{noborder?: string; textalign?: string}>`
+  text-align: ${({textalign}) => (textalign ? textalign : 'end')} !important;
   border-bottom: 1px solid ${({theme}) => theme.dark.grey4} !important;
-  border-bottom: ${({noBorder}) => (noBorder ? '0px !important' : '')};
+  border-bottom: ${({noborder}) => (noborder === 'true' ? '0px !important' : '')};
+  padding: 16px !important;
 `
 
 const UserRankingRow = styled(StyledTableRow)`
@@ -24,11 +33,11 @@ const UserRankingRow = styled(StyledTableRow)`
   }
 
   td:first-child {
-    border-radius: 70px 0 0 70px;
+    border-radius: 8px 0 0 8px;
   }
 
   td:last-child {
-    border-radius: 0 70px 70px 0;
+    border-radius: 0 8px 8px 0;
   }
 `
 
@@ -38,101 +47,196 @@ const UsernameContainer = styled.div`
   gap: 16px;
 `
 
-const UsernameIcon = styled.div`
+const UsernameIcon = styled.div<{display?: string}>`
   background: grey;
   min-height: 48px;
   min-width: 48px;
   border-radius: 50%;
   border: 1px solid white;
-  display: flex;
+  display: ${({display}) => (display ? display : 'flex')};
   align-items: center;
   justify-content: center;
   color: black;
 `
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+`
+
+interface ITrader {
+  walletAddress: string
+  volumeTraded: number
+  username?: string
+  totalVolume?: number
+  earnings?: number
+  pnl?: number
+}
+export interface IUserRank extends ITrader {
+  rank?: number
+}
+export interface ILeaderboardsData {
+  sessionEnd: string
+  sessionStart: string
+  totalRewards: number
+  totalVolumeTraded: number
+  traders: [ITrader]
+  userRank: IUserRank
+  sessionNumber?: number
+}
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
+  const [traders, setTraders] = useState<[ITrader]>()
+  const [userData, setUserData] = useState<IUserRank>({
+    volumeTraded: 0,
+    walletAddress: '',
+  })
+  const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
+
+  const [{data: rawData, loading: rawDataLoading}] = useAxios({
+    baseURL: LEADERBOARRDS_API,
+    url: `sessions/currentSession`,
+    method: 'GET',
+    params: {
+      numberOfTraders: 10,
+      userAddress: account,
+    },
+  })
+
+  const leaderboardsData = useMemo<ILeaderboardsData>(() => rawData?.session, [rawData])
+  const userRank = useMemo<IUserRank>(() => rawData?.userRank, [rawData])
+  const seasonNumber = useMemo<number>(() => rawData?.sessionNumber, [rawData])
+
+  const getUserData = async () => {
+    const username = await providerEth.lookupAddress(userRank.walletAddress)
+    const earnings = leaderboardsData.totalRewards * (userRank?.volumeTraded / leaderboardsData?.totalVolumeTraded)
+
+    const userRankData = {
+      ...userRank,
+      username,
+      totalVolume: (userRank?.volumeTraded / 10 ** 18).toFixed(2),
+      earnings: earnings.toFixed(2),
+      pnl: (userRank?.volumeTraded / 10 ** 18 / earnings).toFixed(2),
+    }
+
+    setUserData(userRankData as unknown as IUserRank)
+  }
+
+  const getTraders = async () => {
+    const processedTraders = await Promise.all(
+      leaderboardsData?.traders?.map(async data => {
+        const username = await providerEth.lookupAddress(data.walletAddress)
+        const earnings = leaderboardsData.totalRewards * (data?.volumeTraded / leaderboardsData?.totalVolumeTraded)
+
+        return {
+          ...data,
+          username,
+          totalVolume: (data?.volumeTraded / 10 ** 18).toFixed(2) || 0,
+          earnings: earnings.toFixed(2) || 0,
+          pnl: (data?.volumeTraded / earnings / 10 ** 18).toFixed(2),
+        }
+      }),
+    )
+
+    setTraders(processedTraders as unknown as [ITrader])
+  }
+
+  useEffect(() => {
+    if (leaderboardsData?.traders) {
+      getTraders()
+    }
+  }, [leaderboardsData])
+
+  useEffect(() => {
+    if (userRank) {
+      getUserData()
+    }
+  }, [userRank])
+
   return (
     <PageContainer>
-      <LeaderboardOverview />
-      <StyledTable>
-        <TableHead>
-          <StyledTableHeaderRow>
-            <HeaderCell width={25} noBorder />
-            <HeaderCell width={20} noBorder>
-              <TEXT.Supplemental>Rank</TEXT.Supplemental>
-            </HeaderCell>
-            <HeaderCell width={10} noBorder>
-              <TEXT.Supplemental>Total Volume</TEXT.Supplemental>
-            </HeaderCell>
-            <HeaderCell width={10} noBorder>
-              <TEXT.Supplemental>Est. OVL Earned</TEXT.Supplemental>
-            </HeaderCell>
-            <HeaderCell width={5} noBorder align="center">
-              <TEXT.Supplemental>PnL</TEXT.Supplemental>
-            </HeaderCell>
-          </StyledTableHeaderRow>
-        </TableHead>
+      <LeaderboardOverview userData={userData} seasonData={{...leaderboardsData, sessionNumber: seasonNumber}} />
+      {rawDataLoading ? (
+        <LoadingContainer>
+          <Loader size="24px" />
+        </LoadingContainer>
+      ) : (
+        <StyledTable>
+          <TableHead>
+            <StyledTableHeaderRow>
+              <HeaderCell noborder={account ? 'true' : ''} textalign="left">
+                <TEXT.SmallBody fontWeight={600}>Leaderboard Rankings</TEXT.SmallBody>
+              </HeaderCell>
+              <HeaderCell noborder={account ? 'true' : ''}>
+                <TEXT.Supplemental>Rank</TEXT.Supplemental>
+              </HeaderCell>
+              <HeaderCell noborder={account ? 'true' : ''}>
+                <TEXT.Supplemental>Total Volume</TEXT.Supplemental>
+              </HeaderCell>
+              <HeaderCell noborder={account ? 'true' : ''}>
+                <TEXT.Supplemental>Est. OVL Earned</TEXT.Supplemental>
+              </HeaderCell>
+              <HeaderCell noborder={account ? 'true' : ''}>
+                <TEXT.Supplemental>PnL</TEXT.Supplemental>
+              </HeaderCell>
+            </StyledTableHeaderRow>
+          </TableHead>
 
-        {account && (
-          <UserRankingRow notClickable>
-            <TableDataCell noBorder>
-              <UsernameContainer>
-                <TEXT.BoldSmallBody>Your current rank</TEXT.BoldSmallBody>
-                <TEXT.Supplemental color={colors(false).dark.grey1}>{shortenAddress(account)}</TEXT.Supplemental>
-              </UsernameContainer>
-            </TableDataCell>
-            <TableDataCell noBorder>
-              <TEXT.SmallBody>50</TEXT.SmallBody>
-            </TableDataCell>
-            <TableDataCell noBorder>
-              <TEXT.Number>{`${1.12} OVL`}</TEXT.Number>
-            </TableDataCell>
-            <TableDataCell noBorder>
-              <TEXT.Number>{10.2}</TEXT.Number>
-            </TableDataCell>
-            <TableDataCell noBorder align="center">
-              <TEXT.SmallBody color={40 > 0 ? colors(false).dark.green : ''}>{`${40}%`}</TEXT.SmallBody>
-            </TableDataCell>
-          </UserRankingRow>
-        )}
+          {account && (
+            <TableBody>
+              <UserRankingRow notclickable="true">
+                <TableDataCell noborder="true">
+                  <UsernameContainer>
+                    <TEXT.BoldSmallBody>Your current rank</TEXT.BoldSmallBody>
+                    <TEXT.Supplemental color={colors(false).dark.grey1}>
+                      {userData?.username ?? shortenAddress(userData.walletAddress || account)}
+                    </TEXT.Supplemental>
+                    {/* <UsernameIcon display="hidden" /> */}
+                  </UsernameContainer>
+                </TableDataCell>
+                <TableDataCell noborder="true">
+                  <TEXT.SmallBody>{userData?.rank ?? 0}</TEXT.SmallBody>
+                </TableDataCell>
+                <TableDataCell noborder="true">
+                  <TEXT.Number>{`${userData?.totalVolume ?? 0} OVL`}</TEXT.Number>
+                </TableDataCell>
+                <TableDataCell noborder="true">
+                  <TEXT.Number>{`${userData?.earnings ?? 0} OVL`}</TEXT.Number>
+                </TableDataCell>
+                <TableDataCell noborder="true" align="center">
+                  <TEXT.SmallBody color={40 > 0 ? colors(false).dark.green : ''}>{`${userData?.pnl ?? 0}%`}</TEXT.SmallBody>
+                </TableDataCell>
+              </UserRankingRow>
+            </TableBody>
+          )}
 
-        <StyledTableHeaderRow>
-          <HeaderCell width={25}>
-            <TEXT.SmallBody fontWeight={600}>Leaderboard Rankings</TEXT.SmallBody>
-          </HeaderCell>
-          <HeaderCell width={20} />
-          <HeaderCell />
-          <HeaderCell />
-          <HeaderCell />
-        </StyledTableHeaderRow>
-
-        <TableBody>
-          {mockData.map(data => (
-            <StyledTableRow notClickable>
-              <TableDataCell>
-                <UsernameContainer>
-                  <UsernameIcon />
-                  <TEXT.BoldSmallBody>{data?.username}</TEXT.BoldSmallBody>
-                </UsernameContainer>
-              </TableDataCell>
-              <TableDataCell>
-                <TEXT.SmallBody>{data?.rank}</TEXT.SmallBody>
-              </TableDataCell>
-              <TableDataCell>
-                <TEXT.Number>{`${data?.totalVolume} OVL`}</TEXT.Number>
-              </TableDataCell>
-              <TableDataCell>
-                <TEXT.Number>{data?.earnings}</TEXT.Number>
-              </TableDataCell>
-
-              <TableDataCell align="center">
-                <TEXT.SmallBody color={data?.pnl > 0 ? colors(false).dark.green : ''}>{`${data?.pnl}%`}</TEXT.SmallBody>
-              </TableDataCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </StyledTable>
+          <TableBody>
+            {traders?.map((data: ITrader, index) => (
+              <StyledTableRow notclickable="true" key={data?.walletAddress}>
+                <TableDataCell>
+                  <UsernameContainer>
+                    <UsernameIcon />
+                    <TEXT.BoldSmallBody>{data?.username ?? data?.walletAddress}</TEXT.BoldSmallBody>
+                  </UsernameContainer>
+                </TableDataCell>
+                <TableDataCell>
+                  <TEXT.SmallBody>{index + 1}</TEXT.SmallBody>
+                </TableDataCell>
+                <TableDataCell>
+                  <TEXT.Number>{`${data?.totalVolume} OVL`}</TEXT.Number>
+                </TableDataCell>
+                <TableDataCell>
+                  <TEXT.Number>{`${data?.earnings} OVL`}</TEXT.Number>
+                </TableDataCell>
+                <TableDataCell align="center">
+                  <TEXT.SmallBody color={data.pnl && data?.pnl > 0 ? colors(false).dark.green : ''}>{`${data?.pnl}%`}</TEXT.SmallBody>
+                </TableDataCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </StyledTable>
+      )}
     </PageContainer>
   )
 }

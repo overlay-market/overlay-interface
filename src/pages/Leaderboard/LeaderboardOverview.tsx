@@ -1,10 +1,11 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {useWalletModalToggle} from '../../state/application/hooks'
-import {Clock, Unlock} from 'react-feather'
+import {Clock} from 'react-feather'
 import {Image} from 'rebass'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
 import {useActiveWeb3React} from '../../hooks/web3'
+import {ILeaderboardsData, IUserRank} from './Leaderboard'
 
 const OverviewContainer = styled.div`
   display: flex;
@@ -70,12 +71,32 @@ const CardContent = styled.div`
   justify-content: space-between;
 `
 
-const LeaderboardOverview = () => {
+function calculateCountdown(endDate: string) {
+  const futureDate = new Date(endDate).getTime()
+  const now = new Date().getTime()
+  const timeDiff = futureDate - now
+
+  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
+
+  const countdown = `${days}d ${hours}h ${minutes}m`
+
+  return countdown
+}
+
+const LeaderboardOverview = ({seasonData, userData}: {seasonData: ILeaderboardsData; userData: IUserRank}) => {
   const {account} = useActiveWeb3React()
-  const yourRewards: string = `~${20} OVL`
-  const seasonNumber: string = '1'
-  const upForGrabs: string = `${66000} OVL`
-  const seasonEndCountdown: string = '24d 11h 22m'
+
+  console.log({
+    userData,
+    seasonData,
+  })
+
+  const yourRewards: string = `~${userData?.earnings} OVL`
+  const seasonNumber: string = seasonData?.sessionNumber?.toString() || ''
+  const upForGrabs: string = `${seasonData?.totalRewards} OVL`
+  const seasonEndCountdown: string = calculateCountdown(seasonData?.sessionEnd)
   const toggleWalletModal = useWalletModalToggle()
 
   return (

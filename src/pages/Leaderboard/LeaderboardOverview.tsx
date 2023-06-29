@@ -71,6 +71,14 @@ const CardContent = styled.div`
   justify-content: space-between;
 `
 
+const LearnMoreLink = styled.a`
+  font-size: 14px;
+  font-family: Inter;
+  font-weight: 400;
+  color: ${({theme}) => theme.dark.blue2};
+  text-decoration: none;
+`
+
 function calculateCountdown(endDate: string) {
   const futureDate = new Date(endDate).getTime()
   const now = new Date().getTime()
@@ -127,9 +135,9 @@ const LeaderboardOverview = ({seasonData, userData}: {seasonData: ILeaderboardsD
 
           <FlexRowTextContainer>
             <TEXT.SmallBody color={colors(false).dark.grey2}>Rewards airdropped first week of every month.</TEXT.SmallBody>
-            <TEXT.SmallBody onClick={() => console.log('go to link')} color={colors(false).dark.blue2}>
+            <LearnMoreLink target="_blank" href="https://docs.google.com/document/d/1IAtRTuijLdG8ytlXElVLjYbIPI0BqnN5BK__RY2aZ9A/edit?usp=sharing">
               Learn more ➞
-            </TEXT.SmallBody>
+            </LearnMoreLink>
           </FlexRowTextContainer>
         </OverviewLeftContainer>
         <OverviewRightContainer>

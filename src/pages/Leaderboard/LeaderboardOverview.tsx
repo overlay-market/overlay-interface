@@ -80,22 +80,21 @@ function calculateCountdown(endDate: string) {
   const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
   const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
 
-  const countdown = `${days}d ${hours}h ${minutes}m`
+  if (days || hours || minutes) {
+    const countdown = `${days}d ${hours}h ${minutes}m`
 
-  return countdown
+    return countdown
+  }
+
+  return '-'
 }
 
 const LeaderboardOverview = ({seasonData, userData}: {seasonData: ILeaderboardsData; userData: IUserRank}) => {
   const {account} = useActiveWeb3React()
 
-  console.log({
-    userData,
-    seasonData,
-  })
-
-  const yourRewards: string = `${userData?.earnings ? `~${userData?.earnings}` : 0} OVL`
+  const yourRewards: string = `${userData?.earnings ? `~${userData?.earnings}` : '0'} OVL`
   const seasonNumber: string = seasonData?.sessionNumber?.toString() || ''
-  const upForGrabs: string = `${seasonData?.totalRewards} OVL`
+  const upForGrabs: string = `${seasonData?.totalRewards ? `${seasonData?.totalRewards} OVL` : '-'}`
   const seasonEndCountdown: string = calculateCountdown(seasonData?.sessionEnd)
   const toggleWalletModal = useWalletModalToggle()
 

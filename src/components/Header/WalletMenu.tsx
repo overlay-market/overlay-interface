@@ -69,14 +69,14 @@ const MenuTitle = styled.div<{open?: boolean}>`
 `
 
 const MenuItem = styled.div<{background?: string}>`
-  padding: 8px 16px;
+  padding: 8px 20px;
   cursor: pointer;
   background: ${({background}) => background};
 `
 
 const SlippageItem = styled.div`
   display: flex;
-  padding: 8px 16px;
+  padding: 8px 20px;
 `
 const SlippageContainer = styled.div`
   cursor: pointer;

@@ -312,7 +312,7 @@ const Stake = ({poolData}: PoolProps) => {
   const ovlBalance = useOvlBalance()
   const toggleWalletModal = useWalletModalToggle()
   const [poolType, setPoolType] = useState<string>('stake')
-  const [inputAmount, setInputAmount] = useState<string>('0')
+  const [inputAmount, setInputAmount] = useState<string>('')
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setStakeState] = useState<{
     showConfirm: boolean
     attemptingTransaction: boolean

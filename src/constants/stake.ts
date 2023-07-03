@@ -11,6 +11,13 @@ export interface PoolsData {
 export const allPoolsData: PoolsData[] = [
   {
     poolName: 'Stake OVL for NIP',
+    poolAddress: '0x1921054a4f8817F9783628F0694744F91Dd9d34e',
+    poolType: 'thirdwebStaking',
+    chainId: SupportedChainId.ARBITRUM,
+    isStake: true,
+  },
+  {
+    poolName: 'Stake OVL for NIP',
     poolAddress: '0xf7c484e9dE1D7c8AAb098375AbCC52BA6d340A03',
     poolType: 'thirdwebStaking',
     chainId: SupportedChainId.ARBITRUM_GÖRLI,

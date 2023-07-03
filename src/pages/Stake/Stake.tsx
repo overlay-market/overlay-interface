@@ -390,7 +390,7 @@ const Stake = ({poolData}: PoolProps) => {
   const handlePoolTypeChange = (event: React.MouseEvent<HTMLElement>, newPoolType: string) => {
     if (newPoolType === null) return
     setPoolType(newPoolType)
-    setInputAmount('0')
+    setInputAmount('')
   }
 
   const handleUserInput = (input: string) => {

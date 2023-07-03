@@ -44,13 +44,14 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
   const rewardAmount: BigNumber = stakeInfo?.result?.[1] ?? (BigNumber.from(0) as BigNumber)
   const tvlAmount: BigNumber = stakingTokenBalance?.result?.[0] ?? (BigNumber.from(0) as BigNumber)
   const timeUnitSeconds: number = getTimeUnit?.result?.[0] ?? 0
-  const timeUnitDays = timeUnitSeconds / 93600
+  const secondsInDay = 86400
+  const timeUnitDays = timeUnitSeconds / secondsInDay
 
   balance = formatBigNumber(stakedAmount, 18, 2) ?? 0
   rewards = formatBigNumber(rewardAmount, 18, 2) ?? 0
   tvl = formatBigNumber(tvlAmount, 18, 2) ?? 0
   poolRewards = `${poolRewardsRatio?.result?.[0]} NIP/${poolRewardsRatio?.result?.[1]} OVL/${
-    timeUnitSeconds > 93600 ? (timeUnitDays === 1 ? 'DAY' : timeUnitDays + 'd') : timeUnitSeconds / 60 + 'min'
+    timeUnitSeconds >= secondsInDay ? (timeUnitDays === 1 ? 'DAY' : timeUnitDays + 'd') : timeUnitSeconds / 60 + 'min'
   }`
 
   useEffect(() => {

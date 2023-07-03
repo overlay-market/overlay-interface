@@ -342,12 +342,13 @@ const Stake = ({poolData}: PoolProps) => {
   const stakedAmount: BigNumber = stakeInfo?.result?.[0] ?? (BigNumber.from(0) as BigNumber)
   const rewardAmount: BigNumber = stakeInfo?.result?.[1] ?? (BigNumber.from(0) as BigNumber)
   const timeUnitSeconds: number = getTimeUnit?.result?.[0] ?? 0
-  const timeUnitDays = timeUnitSeconds / 93600
+  const secondsInDay = 86400
+  const timeUnitDays = timeUnitSeconds / secondsInDay
 
   const stakedAmountFormatted = formatBigNumber(stakedAmount, 18, 2) ?? 0
   const rewardAmountFormatted = formatBigNumber(rewardAmount, 18, 2) ?? 0
   const poolRewards = `${poolRewardsRatio?.result?.[0]} NIP/${poolRewardsRatio?.result?.[1]} OVL/${
-    timeUnitSeconds > 93600 ? (timeUnitDays === 1 ? 'DAY' : timeUnitDays + 'd') : timeUnitSeconds / 60 + 'min'
+    timeUnitSeconds >= secondsInDay ? (timeUnitDays === 1 ? 'DAY' : timeUnitDays + 'd') : timeUnitSeconds / 60 + 'min'
   }`
 
   const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolData.poolAddress.toLowerCase(), ovl)

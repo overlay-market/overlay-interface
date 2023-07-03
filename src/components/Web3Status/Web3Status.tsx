@@ -1,14 +1,14 @@
-import {useMemo} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components/macro'
 import {Trans} from '@lingui/macro'
 import {AlertTriangle} from 'react-feather'
 import {UnsupportedChainIdError} from '@web3-react/core'
-import {TEXT} from '../../theme/theme'
+import {TEXT, colors} from '../../theme/theme'
 import {shortenAddress} from '../../utils/web3'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useOvlBalance} from '../../state/wallet/hooks'
 import {SupportedChainId} from '../../constants/chains'
-import {FlexRow} from '../Container/Container'
+import {FlexColumn, FlexRow} from '../Container/Container'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {useAllTransactions} from '../../state/transactions/hooks'
 import {TransactionDetails} from '../../state/transactions/reducer'
@@ -16,7 +16,10 @@ import NumberSpring from '../NumberSpring/NumberSpring'
 import Dropdown from './Dropdown'
 import ConnectWalletModal from '../ConnectWalletModal/ConnectWalletModal'
 import Loader from '../Loaders/Loaders'
+import {ethers} from 'ethers'
 import {switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
+
+const NEW_HEADER_FLAG = true
 
 export const Web3StatusConnected = styled.div`
   display: flex;
@@ -81,12 +84,22 @@ const BalanceContainer = styled(FlexRow)`
 `
 
 const Amount = styled(FlexRow)`
-  margin-left: 4px;
+  ${NEW_HEADER_FLAG ? '' : 'margin-left: 4px;'}
   font-weight: 500;
 
   ${({theme}) => theme.mediaWidth.minSmall`
     min-width: 85px;
   `}
+`
+
+const WalletDetails = styled(FlexColumn)`
+  margin-right: 8px;
+  position: relative;
+`
+
+const WalletBalance = styled(TEXT.Number)`
+  position: absolute;
+  top: 100%;
 `
 
 /**
@@ -112,9 +125,7 @@ export const TokenBalance = ({balance, network}: TokenBalanceProps) => {
     return (
       <>
         <BalanceContainer>
-          <Trans>
-            <TEXT.BoldSmallBody>Balance:</TEXT.BoldSmallBody>
-          </Trans>
+          {NEW_HEADER_FLAG ? null : <TEXT.BoldSmallBody>Balance:</TEXT.BoldSmallBody>}
           <TEXT.BoldSupplemental ml={1} mr={0} minWidth={'auto'}>
             <Loader size="12px" stroke="white" />
           </TEXT.BoldSupplemental>
@@ -125,11 +136,7 @@ export const TokenBalance = ({balance, network}: TokenBalanceProps) => {
     return (
       <>
         <BalanceContainer>
-          <TEXT.Supplemental minWidth={'fit-content'}>
-            <Trans>
-              <TEXT.BoldSmallBody>Balance:</TEXT.BoldSmallBody>:
-            </Trans>
-          </TEXT.Supplemental>
+          <TEXT.Supplemental minWidth={'fit-content'}>{NEW_HEADER_FLAG ? null : <TEXT.BoldSmallBody>Balance:</TEXT.BoldSmallBody>}</TEXT.Supplemental>
           <Amount>{NumberSpring(balance, 'OVL')}</Amount>
         </BalanceContainer>
       </>
@@ -138,7 +145,7 @@ export const TokenBalance = ({balance, network}: TokenBalanceProps) => {
     return (
       <>
         <BalanceContainer minWidth={'auto'}>
-          <Trans>Balance:</Trans>
+          {NEW_HEADER_FLAG ? null : <Trans>Balance:</Trans>}
           <Amount>{NumberSpring(balance, 'OVL')}</Amount>
         </BalanceContainer>
       </>
@@ -153,6 +160,8 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: string} = 
   [SupportedChainId.ARBITRUM]: 'Arbitrum One',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'Arbitrum Goerli Testnet',
 }
+
+const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
 
 function Web3StatusInner() {
   const {account, chainId, error} = useActiveWeb3React()
@@ -173,6 +182,30 @@ function Web3StatusInner() {
 
   const toggleWalletModal = useWalletModalToggle()
 
+  const [ens, setEns] = useState<string | null>(null)
+  useEffect(() => {
+    const fetchENS = async () => {
+      if (account) {
+        const storedENS = localStorage.getItem(`ens-${account}`)
+        if (storedENS) {
+          if (storedENS === 'null') {
+            const result = await providerEth.lookupAddress(account)
+            setEns(result)
+            localStorage.setItem(`ens-${account}`, result ?? 'null')
+          } else {
+            setEns(storedENS)
+          }
+        } else {
+          const result = await providerEth.lookupAddress(account)
+          setEns(result)
+          localStorage.setItem(`ens-${account}`, result ?? 'null')
+        }
+      }
+    }
+
+    fetchENS()
+  }, [account])
+
   if (account) {
     // connected
     return (
@@ -184,33 +217,31 @@ function Web3StatusInner() {
           </PendingTransactions>
         )}
 
-        {account && chainId && ovlBalance && <TokenBalance balance={Number(ovlBalance?.toFixed(4))} network={NETWORK_LABELS[chainId]} />}
+        {NEW_HEADER_FLAG ? (
+          <WalletDetails align="start">
+            <TEXT.BoldSmallBody>{ens ?? shortenAddress(account)}</TEXT.BoldSmallBody>
+            <WalletBalance fontSize={12} color={colors(false).dark.grey1}>
+              {account && chainId && ovlBalance && <TokenBalance balance={Number(ovlBalance?.toFixed(4))} network={NETWORK_LABELS[chainId]} />}
+              {account && chainId && !ovlBalance && <TokenBalance balance={0} network={NETWORK_LABELS[chainId]} />}
+            </WalletBalance>
+          </WalletDetails>
+        ) : (
+          <>
+            {account && chainId && ovlBalance && <TokenBalance balance={Number(ovlBalance?.toFixed(4))} network={NETWORK_LABELS[chainId]} />}
 
-        {account && chainId && !ovlBalance && <TokenBalance balance={0} network={NETWORK_LABELS[chainId]} />}
+            {account && chainId && !ovlBalance && <TokenBalance balance={0} network={NETWORK_LABELS[chainId]} />}
 
-        <Account>
-          {shortenAddress(account)}
-
-          {chainId && NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.MAINNET] && (
-            <Dropdown connectedNetwork={NETWORK_LABELS[chainId]} colorStatus={'#10DCB1'} />
-          )}
-
-          {chainId && NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.ARBITRUM] && (
-            <Dropdown connectedNetwork={NETWORK_LABELS[chainId]} colorStatus={'yellow'} />
-          )}
-
-          {chainId && NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.GÖRLI] && (
-            <Dropdown connectedNetwork={NETWORK_LABELS[chainId]} colorStatus={'yellow'} />
-          )}
-
-          {chainId && NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.RINKEBY] && (
-            <Dropdown connectedNetwork={NETWORK_LABELS[chainId]} colorStatus={'yellow'} />
-          )}
-
-          {chainId && NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.ARBITRUM_GÖRLI] && (
-            <Dropdown connectedNetwork={NETWORK_LABELS[chainId]} colorStatus={'yellow'} />
-          )}
-        </Account>
+            <Account>
+              {chainId && Object.values(SupportedChainId).includes(Number(chainId)) && (
+                <Dropdown
+                  connectedNetwork={NETWORK_LABELS[chainId]}
+                  colorStatus={NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.MAINNET] ? '#10DCB1' : 'yellow'}
+                  walletAddress={ens ?? shortenAddress(account)}
+                />
+              )}
+            </Account>
+          </>
+        )}
       </Web3StatusConnected>
     )
   } else if (error && isUnsupportedChainIdError) {

@@ -13,6 +13,15 @@ export const muiTheme = createTheme({
       },
     },
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 576,
+      md: 992,
+      lg: 1200,
+      xl: 1400,
+    },
+  },
 })
 
 export const MEDIA_WIDTHS = {
@@ -36,6 +45,7 @@ export function colors(darkMode: boolean): Colors {
     ? {
         dark: {
           background: '#202431',
+          grey5: '#303236',
           grey4: '#2E3343',
           grey3: '#474747',
           grey2: '#A8A6A6',
@@ -63,6 +73,7 @@ export function colors(darkMode: boolean): Colors {
     : {
         dark: {
           background: '#202431',
+          grey5: '#303236',
           grey4: '#2E3343',
           grey3: '#474747',
           grey2: '#A8A6A6',

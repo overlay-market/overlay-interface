@@ -12,6 +12,22 @@ import {LEADERBOARRDS_API} from '../../constants/applications'
 import {useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
 
+const LeaderboardsTable = styled(StyledTable)`
+  .total-volume,
+  .ovl-earned,
+  .pnl {
+    display: none;
+  }
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+  .total-volume,
+  .ovl-earned,
+  .pnl {
+    display: table-cell;
+  }
+  `}
+`
+
 const HeaderCell = styled(StyledHeaderCell)<{noborder?: string; textalign?: string}>`
   text-align: ${({textalign}) => (textalign ? textalign : 'end')} !important;
   border-bottom: 1px solid ${({theme}) => theme.dark.grey4} !important;
@@ -38,6 +54,16 @@ const UserRankingRow = styled(StyledTableRow)`
   td:last-child {
     border-radius: 0 8px 8px 0;
   }
+
+  td.rank {
+    border-radius: 0 8px 8px 0;
+  }
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    td.rank {
+      border-radius: 0;
+    }
+  `}
 `
 
 const UsernameContainer = styled.div`
@@ -163,22 +189,22 @@ const Leaderboard = () => {
           <Loader size="24px" />
         </LoadingContainer>
       ) : (
-        <StyledTable>
+        <LeaderboardsTable smWidth="100%">
           <TableHead>
             <StyledTableHeaderRow>
-              <HeaderCell noborder={account ? 'true' : ''} textalign="left">
+              <HeaderCell smWidth={80} noborder={account ? 'true' : ''} textalign="start">
                 <TEXT.SmallBody fontWeight={600}>Leaderboard Rankings</TEXT.SmallBody>
               </HeaderCell>
-              <HeaderCell noborder={account ? 'true' : ''}>
+              <HeaderCell smWidth={20} className="rank" noborder={account ? 'true' : ''}>
                 <TEXT.Supplemental>Rank</TEXT.Supplemental>
               </HeaderCell>
-              <HeaderCell noborder={account ? 'true' : ''}>
+              <HeaderCell className="total-volume" noborder={account ? 'true' : ''}>
                 <TEXT.Supplemental>Total Volume</TEXT.Supplemental>
               </HeaderCell>
-              <HeaderCell noborder={account ? 'true' : ''}>
+              <HeaderCell className="ovl-earned" noborder={account ? 'true' : ''}>
                 <TEXT.Supplemental>Est. OVL Earned</TEXT.Supplemental>
               </HeaderCell>
-              <HeaderCell noborder={account ? 'true' : ''}>
+              <HeaderCell className="pnl" noborder={account ? 'true' : ''}>
                 <TEXT.Supplemental>PnL</TEXT.Supplemental>
               </HeaderCell>
             </StyledTableHeaderRow>
@@ -196,16 +222,16 @@ const Leaderboard = () => {
                     {/* <UsernameIcon display="hidden" /> */}
                   </UsernameContainer>
                 </TableDataCell>
-                <TableDataCell noborder="true">
+                <TableDataCell className="rank" noborder="true">
                   <TEXT.SmallBody>{userData?.rank ?? 'N/A'}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell noborder="true">
+                <TableDataCell className="total-volume" noborder="true">
                   <TEXT.Number>{userData?.totalVolume ? `${userData?.totalVolume ?? 0} OVL` : 'N/A'}</TEXT.Number>
                 </TableDataCell>
-                <TableDataCell noborder="true">
+                <TableDataCell className="ovl-earned" noborder="true">
                   <TEXT.Number>{userData?.earnings ? `${userData?.earnings ?? 0} OVL` : 'N/A'}</TEXT.Number>
                 </TableDataCell>
-                <TableDataCell noborder="true" align="center">
+                <TableDataCell className="pnl" noborder="true" align="center">
                   <TEXT.SmallBody color={userData.pnl && userData?.pnl > 0 ? colors(false).dark.green : ''}>
                     {userData?.pnl ? `${userData?.pnl ?? 0}%` : 'N/A'}
                   </TEXT.SmallBody>
@@ -220,25 +246,25 @@ const Leaderboard = () => {
                 <TableDataCell>
                   <UsernameContainer>
                     <UsernameIcon />
-                    <TEXT.BoldSmallBody>{data?.username ?? data?.walletAddress}</TEXT.BoldSmallBody>
+                    <TEXT.BoldSmallBody>{data?.username ?? shortenAddress(data?.walletAddress)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
                 </TableDataCell>
-                <TableDataCell>
+                <TableDataCell className="rank">
                   <TEXT.SmallBody>{index + 1}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell>
+                <TableDataCell className="total-volume">
                   <TEXT.Number>{`${data?.totalVolume} OVL`}</TEXT.Number>
                 </TableDataCell>
-                <TableDataCell>
+                <TableDataCell className="ovl-earned">
                   <TEXT.Number>{`${data?.earnings} OVL`}</TEXT.Number>
                 </TableDataCell>
-                <TableDataCell align="center">
+                <TableDataCell className="pnl" align="center">
                   <TEXT.SmallBody color={data.pnl && data?.pnl > 0 ? colors(false).dark.green : ''}>{`${data?.pnl}%`}</TEXT.SmallBody>
                 </TableDataCell>
               </StyledTableRow>
             ))}
           </TableBody>
-        </StyledTable>
+        </LeaderboardsTable>
       )}
     </PageContainer>
   )

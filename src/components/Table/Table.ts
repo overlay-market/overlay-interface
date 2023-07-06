@@ -10,7 +10,7 @@ export const StyledTable = styled(Table)<{smWidth?: string}>`
     table-layout: fixed !important;
   `}
 
-  ${({theme}) => theme.mediaWidth.minMedium`
+  ${({theme}) => theme.mediaWidth.minLarge`
     min-width: 1200px !important;
   `}
 `

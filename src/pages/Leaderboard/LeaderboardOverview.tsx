@@ -10,6 +10,14 @@ import {ILeaderboardsData, IUserRank} from './Leaderboard'
 const OverviewContainer = styled.div`
   display: flex;
   padding: 24px 0;
+  flex-direction: column;
+  gap: 16px;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    background: red;
+    flex-direction: row;
+    gap: 0;
+  `}
 
   & > div {
     flex: 1;
@@ -34,20 +42,30 @@ const OverviewLeftContainer = styled.div`
 
 const OverviewRightContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
   gap: 24px;
+  justify-content: flex-start;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    justify-content: flex-end;
+  `}
 `
 
 const OverviewCardContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   background: #1b2131;
   border: 0.5px solid rgba(113, 206, 255, 0.5);
   border-radius: 8px;
-  padding: 24px;
-  max-width: 260px;
+  padding: 16px;
+  flex: 1;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    flex-direction: row;
+    padding: 24px;
+  `}
+
   ${({theme}) => theme.mediaWidth.minMedium`
-    max-width: unset;
+    max-width: 260px;
   `}
 `
 
@@ -67,8 +85,14 @@ const CardIcon = styled.div`
 const CardContent = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 8px 36px 8px 16px;
+  padding: 16px 0 0 0;
+  gap: 4px;
   justify-content: space-between;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    padding: 8px 36px 8px 16px;
+    gap: 0;
+  `}
 `
 
 const LearnMoreLink = styled.a`

@@ -44,6 +44,7 @@ const UsernameContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  min-height: 50px;
 `
 
 const UsernameIcon = styled.div<{display?: string}>`

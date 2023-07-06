@@ -1,0 +1,21 @@
+name: Push to Overlay App
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Push to Overlay App
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git remote add overlay-app https://github.com/overlay-market/overlay-app.git
+          git push overlay-app HEAD:main

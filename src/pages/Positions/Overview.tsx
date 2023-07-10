@@ -8,6 +8,7 @@ import {useTotalFees} from '../../hooks/useTotalFees'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useMemo} from 'react'
 import {colors} from '../../theme/theme'
+import MainOverviewCard from '../../components/Card/MainOverviewCard'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -17,6 +18,11 @@ const Container = styled.div<{mt?: string}>`
   ${({theme, mt}) => theme.mediaWidth.minMedium`
     margin-top: ${mt ? `${mt}` : ''};
   `}
+`
+
+const StyledGrid = styled(Grid)`
+  display: flex;
+  align-items: stretch;
 `
 
 export interface Props {
@@ -60,61 +66,72 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     {
       title: 'Open Positions',
       value: numberOfOpenPositions.toString(),
-      icon: 'book',
+      percentageChange: 25,
     },
     {
-      title: 'Total Locked',
-      value: `${numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : 'No open positions'}`,
-      icon: 'lock',
+      title: 'Locked Sum',
+      value: `${numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : null}`,
+      percentageChange: 23,
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
     {
-      title: 'Total Realized PnL',
-      value: `${numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl + ' OVL' : 'loading') : 'No unwinds yet'}`,
-      icon: +realizedPnl < 0 ? 'down' : 'up',
-      valueColor: +realizedPnl < 0 ? '#FF648A' : '#5FD0AB',
+      title: 'Realized',
+      value: `${numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl + ' OVL' : 'loading') : null}`,
+      percentageChange: 23,
     },
     {
-      title: 'Unrealized PnL',
-      value: `${numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : 'No open positions'}`,
-      icon: +upnl < 0 ? 'down' : 'up',
-      valueColor: +upnl < 0 ? '#FF648A' : '#5FD0AB',
+      title: 'Unrealized',
+      value: `${numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : null}`,
+      percentageChange: -5.65,
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
+    },
+    {
+      title: 'NFTs worth',
+      value: null,
+    },
+    {
+      title: 'NFTs',
+      value: null,
     },
   ]
 
-  return account ? (
+  return (
     <Container mt={marginTop}>
-      <TEXT.BoldStandardBody mb="16px">{`${title}`}</TEXT.BoldStandardBody>
+      <TEXT.BoldHeader1 mb="32px">{`${title}`}</TEXT.BoldHeader1>
       <Box>
-        <Grid container spacing={2}>
-          {cardsData.map(card => {
-            return (
-              <Grid item key={card.title} xs={12} sm={6} md={3}>
-                <OverviewCard
-                  title={card.title}
-                  icon={card.icon}
-                  value={card.value}
-                  valueColor={card.valueColor ?? '#E5F6FF'}
-                  isOver1000OpenPositions={card.isOver1000OpenPositions}
-                />
-              </Grid>
-            )
-          })}
-        </Grid>
-      </Box>
-    </Container>
-  ) : (
-    <Container mt={marginTop}>
-      <TEXT.BoldStandardBody mb="16px">{`${title}`}</TEXT.BoldStandardBody>
-      <Box>
-        <TEXT.SupplementalHeader fontSize={14}>
-          Nothing here yet. Open a position on the{' '}
-          <a href="/" style={{color: colors(false).dark.blue2}}>
-            Markets
-          </a>{' '}
-          page to begin.
-        </TEXT.SupplementalHeader>
+        {account ? (
+          <Grid container spacing={3}>
+            {/* TODO: Chart */}
+            <StyledGrid item key={'test'} xs={12} md={8} style={{height: '300px'}}>
+              <OverviewCard title={'test'} value={'test'} percentageChange={100} />
+            </StyledGrid>
+
+            {/* Locked Sum + uPnL */}
+            <StyledGrid item key={'test'} xs={12} md={4}>
+              <MainOverviewCard title={'Locked Sum + uPnL'} value={'223 OVL'} percentageChange={23} />
+            </StyledGrid>
+            {cardsData.map(card => {
+              return (
+                <StyledGrid item key={card.title} xs={6} sm={4} lg={2}>
+                  <OverviewCard
+                    title={card.title}
+                    value={card.value}
+                    percentageChange={card.percentageChange}
+                    isOver1000OpenPositions={card.isOver1000OpenPositions}
+                  />
+                </StyledGrid>
+              )
+            })}
+          </Grid>
+        ) : (
+          <TEXT.SupplementalHeader fontSize={14}>
+            Nothing here yet. Open a position on the{' '}
+            <a href="/" style={{color: colors(false).dark.blue2}}>
+              Markets
+            </a>{' '}
+            page to begin.
+          </TEXT.SupplementalHeader>
+        )}
       </Box>
     </Container>
   )

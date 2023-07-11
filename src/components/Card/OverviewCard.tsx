@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import {TEXT} from '../../theme/theme'
+import {Box} from '@material-ui/core'
 
 const Container = styled.div`
   display: flex;
@@ -21,12 +22,13 @@ const PercentageChangeBox = styled.div<{positive: boolean}>`
 interface DataProps {
   title: string
   value: string | null
-  percentageChange?: number
+  percentageChange?: number | null
+  period?: string
   isOver1000OpenPositions?: boolean
 }
 
 const OverviewCard = (props: DataProps) => {
-  const {title, value, percentageChange, isOver1000OpenPositions} = props
+  const {title, value, percentageChange, period, isOver1000OpenPositions} = props
 
   return (
     <Container>
@@ -40,12 +42,17 @@ const OverviewCard = (props: DataProps) => {
         </TEXT.BoldHeader1>
       )}
       {!!percentageChange && (
-        <PercentageChangeBox positive={percentageChange > 0}>
-          <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
-            {percentageChange > 0 && '+'}
-            {percentageChange}%
-          </TEXT.Number>
-        </PercentageChangeBox>
+        <Box display="flex" alignItems="center">
+          <PercentageChangeBox positive={percentageChange > 0}>
+            <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
+              {percentageChange > 0 && '+'}
+              {percentageChange}%
+            </TEXT.Number>
+          </PercentageChangeBox>
+          <TEXT.Supplemental color="#c4c4c4" ml={12}>
+            {period}
+          </TEXT.Supplemental>
+        </Box>
       )}
       {/* {isOver1000OpenPositions && (
         <div style={{position: 'absolute', marginTop: '47px'}}>

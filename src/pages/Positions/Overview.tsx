@@ -9,6 +9,7 @@ import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useMemo} from 'react'
 import {colors} from '../../theme/theme'
 import MainOverviewCard from '../../components/Card/MainOverviewCard'
+import OverviewChart from '../../components/Chart/OverviewChart'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -22,7 +23,6 @@ const Container = styled.div<{mt?: string}>`
 
 const StyledGrid = styled(Grid)`
   display: flex;
-  align-items: stretch;
 `
 
 export interface Props {
@@ -67,26 +67,32 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
       title: 'Open Positions',
       value: numberOfOpenPositions.toString(),
       percentageChange: 25,
+      period: '24h',
     },
     {
       title: 'Locked Sum',
       value: `${numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : null}`,
       percentageChange: 23,
+      period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
     {
       title: 'Realized',
       value: `${numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl + ' OVL' : 'loading') : null}`,
       percentageChange: 23,
+      period: '24h',
     },
     {
       title: 'Unrealized',
       value: `${numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : null}`,
       percentageChange: -5.65,
+      period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
     {
       title: 'NFTs worth',
+      percentageChange: null,
+      period: '7d',
       value: null,
     },
     {
@@ -102,8 +108,8 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
         {account ? (
           <Grid container spacing={3}>
             {/* TODO: Chart */}
-            <StyledGrid item key={'test'} xs={12} md={8} style={{height: '300px'}}>
-              <OverviewCard title={'test'} value={'test'} percentageChange={100} />
+            <StyledGrid item key={'test'} xs={12} md={8}>
+              <OverviewChart />
             </StyledGrid>
 
             {/* Locked Sum + uPnL */}
@@ -117,6 +123,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
                     title={card.title}
                     value={card.value}
                     percentageChange={card.percentageChange}
+                    period={card.period}
                     isOver1000OpenPositions={card.isOver1000OpenPositions}
                   />
                 </StyledGrid>

@@ -6,7 +6,14 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  background: #171926;
+  background: radial-gradient(
+      90% 100% at 100% 100%,
+      rgba(113, 206, 255, 0.65),
+      rgba(113, 206, 255, 0.15) 60%,
+      rgba(113, 206, 255, 0.05) 80%,
+      rgba(113, 206, 255, 0) 100%
+    ),
+    #171926;
   border-radius: 8px;
   padding: 40px;
 `

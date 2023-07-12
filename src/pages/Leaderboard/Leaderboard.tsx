@@ -113,6 +113,7 @@ export interface ILeaderboardsData {
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
+  const [seasonId, setSeasonId] = useState()
   const [traders, setTraders] = useState<[ITrader]>()
   const [userData, setUserData] = useState<IUserRank>({
     volumeTraded: 0,
@@ -129,9 +130,37 @@ const Leaderboard = () => {
     },
   })
 
-  const leaderboardsData = useMemo<ILeaderboardsData>(() => rawData?.session, [rawData])
-  const userRank = useMemo<IUserRank>(() => rawData?.userRank, [rawData])
-  const seasonNumber = useMemo<number>(() => rawData?.sessionNumber, [rawData])
+  const [{data: seasonDataRaw, loading: seasonDataRawLoading}, getSeasonDataRaw] = useAxios(
+    {
+      baseURL: LEADERBOARRDS_API,
+      method: 'GET',
+      params: {
+        numberOfTraders: 10,
+        userAddress: account,
+      },
+    },
+    {manual: true},
+  )
+
+  const userRank = useMemo<IUserRank>(() => seasonDataRaw?.userRank ?? rawData?.userRank, [rawData, seasonDataRaw])
+  const leaderboardsData = useMemo<ILeaderboardsData>(() => {
+    if (seasonDataRaw) {
+      return seasonDataRaw?.session
+    }
+    return rawData?.session
+  }, [rawData, seasonDataRaw])
+  const seasonNumber = useMemo<number>(() => {
+    if (seasonDataRaw) {
+      return seasonDataRaw?.sessionNumber
+    }
+    return rawData?.sessionNumber
+  }, [rawData, seasonDataRaw])
+
+  useEffect(() => {
+    getSeasonDataRaw({
+      url: `sessions/getSessionById/${seasonId}`,
+    })
+  }, [seasonId, getSeasonDataRaw])
 
   useEffect(() => {
     const getTraders = async () => {
@@ -183,8 +212,13 @@ const Leaderboard = () => {
 
   return (
     <PageContainer>
-      <LeaderboardOverview userData={userData} seasonData={{...leaderboardsData, sessionNumber: seasonNumber}} />
-      {rawDataLoading ? (
+      <LeaderboardOverview
+        isLoading={rawDataLoading || seasonDataRawLoading}
+        setSeasonId={setSeasonId}
+        userData={userData}
+        seasonData={{...leaderboardsData, sessionNumber: seasonNumber}}
+      />
+      {rawDataLoading || seasonDataRawLoading ? (
         <LoadingContainer>
           <Loader size="24px" />
         </LoadingContainer>

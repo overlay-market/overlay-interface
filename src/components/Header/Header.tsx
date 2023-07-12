@@ -151,7 +151,7 @@ const DropdownItem = styled(StyledLink)`
   margin: 0;
 `
 
-const RotatingChevron = styled(ChevronDown)`
+export const RotatingChevron = styled(ChevronDown)`
   transition: transform ease-out 0.25s;
 `
 
@@ -180,7 +180,7 @@ export default function Header() {
   const NEW_HEADER_FLAG = true
   const HIDE_POWER_CARDS = true
   const HIDE_BUY_OVL = true
-  const HIDE_EARN_DROPDOWN_FLAG = true
+  const HIDE_EARN_DROPDOWN_FLAG = false
 
   let location = useLocation().pathname
 

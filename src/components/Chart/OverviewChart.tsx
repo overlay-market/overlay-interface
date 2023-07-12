@@ -2,7 +2,10 @@ import styled from 'styled-components'
 import {TEXT} from '../../theme/theme'
 import {LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer} from 'recharts'
 import {Box, Button, ButtonGroup} from '@material-ui/core'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
+import {usePositionsTableData} from '../../state/build/hooks'
+import {useActiveWeb3React} from '../../hooks/web3'
+import {PositionStatus} from '../../pages/Positions/PositionsPage'
 
 const Container = styled.div`
   display: flex;
@@ -92,8 +95,49 @@ const data = [
 const intervals = ['1H', '1D', '1W', '1M', '6M', '1Y']
 
 const OverviewChart = (props: OverviewChartProps) => {
-  const {} = props
   const [selectedInterval, setSelectedInterval] = useState<string>('1M')
+  const {account} = useActiveWeb3React()
+
+  // TODO: separate hook
+  const {positionsTableData: realizedPnlData} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
+
+  const chartData = useMemo(() => {
+    if (!realizedPnlData) return []
+
+    const rows = realizedPnlData.account?.unwinds ?? []
+
+    const data: {realizedPnl: number; date: Date}[] = []
+
+    const rowsWithDate = rows.map((unwind: {timestamp: string; pnl: string}) => {
+      const date = new Date(parseInt(unwind.timestamp) * 1000)
+      return {
+        ...unwind,
+        date,
+        month: date.getMonth(),
+        year: date.getFullYear(),
+      }
+    })
+
+    for (let i = 0; i < rowsWithDate.length; i++) {
+      if (i === 0 || rowsWithDate[i].month !== rowsWithDate[i - 1].month || rowsWithDate[i].year !== rowsWithDate[i - 1].year) {
+        data.push({
+          date: new Date(rowsWithDate[i].year, rowsWithDate[i].month),
+          realizedPnl: 0,
+        })
+      }
+
+      data[data.length - 1].realizedPnl += parseInt(rowsWithDate[i].pnl) / 10 ** 18
+    }
+
+    return data.reverse()
+  }, [realizedPnlData])
+
+  const chartDataFormatted = chartData.map((data: any) => {
+    return {
+      ...data,
+      date: new Date(data.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'}),
+    }
+  })
 
   const handleSelectInterval = (interval: string) => {
     setSelectedInterval(interval)
@@ -132,16 +176,16 @@ const OverviewChart = (props: OverviewChartProps) => {
       </Box>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={data}
+          data={chartDataFormatted}
           margin={{
             left: -20,
             bottom: 5,
           }}
         >
-          <XAxis dy={4} dataKey="time" axisLine={false} tickLine={false} tick={customizedXAxisTick} />
+          <XAxis dy={4} dataKey="date" axisLine={false} tickLine={false} tick={customizedXAxisTick} />
           <YAxis axisLine={false} tickLine={false} tick={customizedYAxisTick} />
           <Tooltip />
-          <Line type="linear" dataKey="realizedPnL" stroke="#71ceff" dot={false} />
+          <Line type="linear" dataKey="realizedPnl" stroke="#71ceff" dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </Container>

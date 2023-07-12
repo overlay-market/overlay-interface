@@ -107,13 +107,13 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
       <Box>
         {account ? (
           <Grid container spacing={3}>
-            {/* TODO: Chart */}
-            <StyledGrid item key={'test'} xs={12} md={8}>
+            {/* Chart */}
+            <StyledGrid item key={'chart'} xs={12} md={8}>
               <OverviewChart />
             </StyledGrid>
 
             {/* Locked Sum + uPnL */}
-            <StyledGrid item key={'test'} xs={12} md={4}>
+            <StyledGrid item key={'mainOverviewCard'} xs={12} md={4}>
               <MainOverviewCard title={'Locked Sum + uPnL'} value={'223 OVL'} percentageChange={23} />
             </StyledGrid>
             {cardsData.map(card => {

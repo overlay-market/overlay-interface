@@ -6,6 +6,7 @@ import {useMemo, useState} from 'react'
 import {usePositionsTableData} from '../../state/build/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {PositionStatus} from '../../pages/Positions/PositionsPage'
+import moment from 'moment'
 
 const Container = styled.div`
   display: flex;
@@ -49,53 +50,12 @@ interface TickProps {
   }
 }
 
-const data = [
-  {
-    time: '2023-07-01T00:00:00Z',
-    realizedPnL: 200,
-  },
-  {
-    time: '2023-07-02T00:00:00Z',
-    realizedPnL: 250,
-  },
-  {
-    time: '2023-07-03T00:00:00Z',
-    realizedPnL: 220,
-  },
-  {
-    time: '2023-07-04T00:00:00Z',
-    realizedPnL: 275,
-  },
-  {
-    time: '2023-07-05T00:00:00Z',
-    realizedPnL: 300,
-  },
-  {
-    time: '2023-07-06T00:00:00Z',
-    realizedPnL: 280,
-  },
-  {
-    time: '2023-07-07T00:00:00Z',
-    realizedPnL: 320,
-  },
-  {
-    time: '2023-07-08T00:00:00Z',
-    realizedPnL: 330,
-  },
-  {
-    time: '2023-07-09T00:00:00Z',
-    realizedPnL: 350,
-  },
-  {
-    time: '2023-07-10T00:00:00Z',
-    realizedPnL: 400,
-  },
-]
+type IntervalType = '1D' | '1W' | '1M' | '6M' | '1Y'
 
-const intervals = ['1H', '1D', '1W', '1M', '6M', '1Y']
+const intervals: IntervalType[] = ['1D', '1W', '1M', '6M', '1Y']
 
 const OverviewChart = (props: OverviewChartProps) => {
-  const [selectedInterval, setSelectedInterval] = useState<string>('1M')
+  const [selectedInterval, setSelectedInterval] = useState<IntervalType>('1M')
   const {account} = useActiveWeb3React()
 
   // TODO: separate hook
@@ -106,50 +66,92 @@ const OverviewChart = (props: OverviewChartProps) => {
 
     const rows = realizedPnlData.account?.unwinds ?? []
 
-    const data: {realizedPnl: number; date: Date}[] = []
+    const dataByPeriod: {[key: string]: {realizedPnl: number; date: Date}} = {}
 
-    const rowsWithDate = rows.map((unwind: {timestamp: string; pnl: string}) => {
-      const date = new Date(parseInt(unwind.timestamp) * 1000)
-      return {
-        ...unwind,
-        date,
-        month: date.getMonth(),
-        year: date.getFullYear(),
+    rows.forEach((unwind: {timestamp: string; pnl: string}) => {
+      console.log(unwind.timestamp)
+      const date = moment.unix(parseInt(unwind.timestamp))
+      let periodKey: string
+
+      switch (selectedInterval) {
+        case '1D':
+          // For daily grouping, the period key is the day, month and year
+          periodKey = date.format('YYYY-MM-DD')
+          break
+        case '1W':
+          // For weekly grouping, calculate period key as the year and the week of the year
+          periodKey = `${date.year()}-${date.week()}`
+          break
+        case '6M':
+          // For semiannual grouping, calculate period key as "1" or "2" plus the year
+          periodKey = `${Math.floor(date.month() / 6) + 1}-${date.year()}`
+          break
+        case '1Y':
+          // For annual grouping, the period key is the year
+          periodKey = date.format('YYYY')
+          break
+        default:
+          // For monthly grouping, the period key is the month and year
+          periodKey = date.format('YYYY-MM')
+          break
       }
+
+      if (!dataByPeriod[periodKey]) {
+        dataByPeriod[periodKey] = {
+          date: date.toDate(),
+          realizedPnl: 0,
+        }
+      }
+
+      dataByPeriod[periodKey].realizedPnl += parseInt(unwind.pnl) / 10 ** 18
     })
 
-    for (let i = 0; i < rowsWithDate.length; i++) {
-      if (i === 0 || rowsWithDate[i].month !== rowsWithDate[i - 1].month || rowsWithDate[i].year !== rowsWithDate[i - 1].year) {
-        data.push({
-          date: new Date(rowsWithDate[i].year, rowsWithDate[i].month),
-          realizedPnl: 0,
-        })
-      }
+    const data = Object.values(dataByPeriod).sort((a, b) => a.date.getTime() - b.date.getTime())
 
-      data[data.length - 1].realizedPnl += parseInt(rowsWithDate[i].pnl) / 10 ** 18
-    }
-
-    return data.reverse()
-  }, [realizedPnlData])
+    return data
+  }, [realizedPnlData, selectedInterval])
 
   const chartDataFormatted = chartData.map((data: any) => {
     return {
       ...data,
-      date: new Date(data.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'}),
+      date: new Date(data.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'}),
     }
   })
 
-  const handleSelectInterval = (interval: string) => {
+  const handleSelectInterval = (interval: IntervalType) => {
     setSelectedInterval(interval)
   }
 
-  const customizedXAxisTick = ({x = 0, y = 0, payload = {value: ''}}: TickProps): JSX.Element => (
-    <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={25} textAnchor="end" fill="#a8a6a6" fontSize={12} fontFamily="Inter">
-        {payload.value}
-      </text>
-    </g>
-  )
+  const customizedXAxisTick = ({x = 0, y = 0, payload = {value: ''}}: TickProps): JSX.Element => {
+    console.log(payload.value)
+    let label
+    switch (selectedInterval) {
+      case '1D':
+        label = moment(payload.value).format('MMM D, YYYY')
+        break
+      case '1W':
+        label = `Week ${moment(payload.value).week()}, ${moment(payload.value).year()}`
+        break
+      case '1M':
+        label = moment(payload.value).format('MMM YYYY')
+        break
+      case '6M':
+        label = `H${Math.floor(moment(payload.value).month() / 6) + 1} ${moment(payload.value).year()}`
+        break
+      case '1Y':
+        label = moment(payload.value).format('YYYY')
+        break
+      default:
+        label = payload.value
+    }
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text x={0} y={0} dy={25} textAnchor="end" fill="#a8a6a6" fontSize={12} fontFamily="Inter">
+          {label}
+        </text>
+      </g>
+    )
+  }
 
   const customizedYAxisTick = ({x = 0, y = 0, payload = {value: ''}}: TickProps): JSX.Element => (
     <g transform={`translate(${x},${y})`}>
@@ -178,7 +180,7 @@ const OverviewChart = (props: OverviewChartProps) => {
         <LineChart
           data={chartDataFormatted}
           margin={{
-            left: -20,
+            left: 20,
             bottom: 5,
           }}
         >

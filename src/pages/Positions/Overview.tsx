@@ -10,6 +10,9 @@ import {useMemo} from 'react'
 import {colors} from '../../theme/theme'
 import MainOverviewCard from '../../components/Card/MainOverviewCard'
 import OverviewChart from '../../components/Chart/OverviewChart'
+import {usePositionsTableData} from '../../state/build/hooks'
+import {PositionStatus} from './PositionsPage'
+import {usePositionValue} from '../../hooks/usePositionValue'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -40,6 +43,11 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const totalCost = useTotalCost(account)
   const totalFees = useTotalFees(account)
 
+  // TODO: separate hooks
+  const {positionsTableData: openPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Open)
+  const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
+  const {positionsTableData: liquidatedPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
+
   const upnl = useMemo(() => {
     let formatValue = 0
     if (totalValueLocked && totalCost && totalFees) {
@@ -62,29 +70,76 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     return formatValue
   }, [totalValueLocked])
 
+  const [openPositionsPercentageChange, lockedSumPercentageChange] = useMemo(() => {
+    if (!openPositions || !openPositions.account?.positions) return [null, null]
+
+    const rows = openPositions.account?.positions
+
+    const now = Math.floor(Date.now() / 1000)
+    const oneDayAgo = now - 24 * 60 * 60
+
+    // Filter to get positions created more than 24 hours ago
+    const positionsMoreThan24HoursAgo = rows.filter((position: {createdAtTimestamp: string}) => Number(position.createdAtTimestamp) < oneDayAgo)
+
+    // Calculate percentage change
+    let percentageChangeOpenPositions = 0
+    if (positionsMoreThan24HoursAgo.length !== 0) {
+      percentageChangeOpenPositions = parseFloat(
+        (((numberOfOpenPositions - positionsMoreThan24HoursAgo.length) / positionsMoreThan24HoursAgo.length) * 100).toFixed(2),
+      )
+    }
+
+    return [percentageChangeOpenPositions, 0]
+  }, [openPositions, numberOfOpenPositions])
+
+  const realizedPnlPercentageChange = useMemo(() => {
+    if (!unwinds || !unwinds.account?.unwinds) return null
+
+    const rows = unwinds.account?.unwinds
+
+    const now = Math.floor(Date.now() / 1000)
+    const oneDayAgo = now - 24 * 60 * 60
+
+    const pnlMoreThan24HoursAgo = rows.reduce((acc: number, curr: any) => {
+      if (Number(curr.timestamp) < oneDayAgo) {
+        return acc + parseInt(curr.pnl) / 10 ** 18
+      } else {
+        return acc
+      }
+    }, 0)
+
+    let percentageChangeRealizedPnl = 0
+
+    percentageChangeRealizedPnl = parseFloat((((Number(realizedPnl) - pnlMoreThan24HoursAgo) / pnlMoreThan24HoursAgo) * 100).toFixed(2))
+
+    return percentageChangeRealizedPnl
+  }, [unwinds, realizedPnl])
+
+  const unrealizedPnlPercentageChange = useMemo(() => {}, [])
+
   const cardsData = [
     {
       title: 'Open Positions',
       value: numberOfOpenPositions.toString(),
-      percentageChange: 25,
+      percentageChange: openPositionsPercentageChange,
       period: '24h',
     },
     {
       title: 'Locked Sum',
-      value: `${numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : null}`,
+      value: numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : null,
       percentageChange: 23,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
     {
       title: 'Realized',
-      value: `${numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl + ' OVL' : 'loading') : null}`,
-      percentageChange: 23,
+      value: numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl + ' OVL' : 'loading') : null,
+      percentageChange: realizedPnlPercentageChange,
       period: '24h',
     },
     {
       title: 'Unrealized',
-      value: `${numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : null}`,
+      value: numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : null,
       percentageChange: -5.65,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
@@ -101,6 +156,15 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     },
   ]
 
+  const mainOverviewValue = useMemo(() => {
+    const lockedSum = numberOfOpenPositions > 0 ? (tvl ? tvl : 0) : 0
+    const unrealized = numberOfOpenPositions > 0 ? (upnl ? upnl : 0) : 0
+    const sum = lockedSum + unrealized
+    const formattedSum = sum < 1 ? sum.toFixed(6) : sum.toFixed(2)
+
+    return `${formattedSum} OVL`
+  }, [numberOfOpenPositions, tvl, upnl])
+
   return (
     <Container mt={marginTop}>
       <TEXT.BoldHeader1 mb="32px">{`${title}`}</TEXT.BoldHeader1>
@@ -114,7 +178,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
 
             {/* Locked Sum + uPnL */}
             <StyledGrid item key={'mainOverviewCard'} xs={12} md={4}>
-              <MainOverviewCard title={'Locked Sum + uPnL'} value={'223 OVL'} percentageChange={23} />
+              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={23} period={'24h'} />
             </StyledGrid>
             {cardsData.map(card => {
               return (

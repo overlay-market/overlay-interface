@@ -41,7 +41,7 @@ const OverviewCard = (props: DataProps) => {
           {value}
         </TEXT.BoldHeader1>
       )}
-      {!!percentageChange && (
+      {value && !!percentageChange && (
         <Box display="flex" alignItems="center">
           <PercentageChangeBox positive={percentageChange > 0}>
             <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>

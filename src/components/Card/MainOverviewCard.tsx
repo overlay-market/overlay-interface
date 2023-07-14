@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import {TEXT} from '../../theme/theme'
+import {Box} from '@material-ui/core'
 
 const Container = styled.div`
   display: flex;
@@ -28,10 +29,11 @@ interface DataProps {
   title: string
   value: string | null
   percentageChange?: number
+  period?: string
 }
 
 const MainOverviewCard = (props: DataProps) => {
-  const {title, value, percentageChange} = props
+  const {title, value, percentageChange, period} = props
 
   return (
     <Container>
@@ -39,12 +41,17 @@ const MainOverviewCard = (props: DataProps) => {
         {value}
       </TEXT.BoldHeader1>
       {!!percentageChange && (
-        <PercentageChangeBox positive={percentageChange > 0}>
-          <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
-            {percentageChange > 0 && '+'}
-            {percentageChange}%
-          </TEXT.Number>
-        </PercentageChangeBox>
+        <Box display="flex" alignItems="center">
+          <PercentageChangeBox positive={percentageChange > 0}>
+            <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
+              {percentageChange > 0 && '+'}
+              {percentageChange}%
+            </TEXT.Number>
+          </PercentageChangeBox>
+          <TEXT.Supplemental color="#c4c4c4" ml={12}>
+            {period}
+          </TEXT.Supplemental>
+        </Box>
       )}
       <TEXT.SmallBody color="#c4c4c4" mt={12}>
         {title}

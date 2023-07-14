@@ -96,7 +96,7 @@ const Markets = () => {
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   // toggle to hide 7d chart if data unavailable
-  const hide7dChart = false
+  const hide7dChart = true
 
   // list of hidden markets from Markets page
 

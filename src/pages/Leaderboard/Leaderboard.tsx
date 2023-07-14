@@ -74,7 +74,7 @@ const UsernameContainer = styled.div`
   min-width: 240px;
 `
 
-const UsernameIcon = styled.div<{display?: string}>`
+const UsernameIcon = styled.img<{display?: string}>`
   background: grey;
   min-height: 48px;
   min-width: 48px;
@@ -211,16 +211,13 @@ const Leaderboard = () => {
     if (userRank) {
       getUserData()
     } else {
+      console.log({account})
       setUserData({
-        walletAddress: '',
+        walletAddress: account || '',
         volumeTraded: 0,
-        username: '',
-        totalVolume: 0,
-        earnings: 0,
-        pnl: 0,
       })
     }
-  }, [userRank, leaderboardsData])
+  }, [userRank, leaderboardsData, account])
 
   return (
     <PageContainer>
@@ -291,7 +288,12 @@ const Leaderboard = () => {
               <StyledTableRow notclickable="true" key={data?.walletAddress}>
                 <TableDataCell>
                   <UsernameContainer>
-                    <UsernameIcon />
+                    <UsernameIcon
+                      src={`https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data?.walletAddress}`}
+                      alt={'Overlay Logo Light'}
+                      height={'48px'}
+                      width={'48px'}
+                    />
                     <TEXT.BoldSmallBody>{data?.username ?? shortenAddress(data?.walletAddress)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
                 </TableDataCell>

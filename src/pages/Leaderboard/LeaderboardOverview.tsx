@@ -56,25 +56,6 @@ const OverviewRightContainer = styled.div`
   `}
 `
 
-const OverviewCardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  background: #1b2131;
-  border: 0.5px solid rgba(113, 206, 255, 0.5);
-  border-radius: 8px;
-  padding: 16px;
-  flex: 1;
-
-  ${({theme}) => theme.mediaWidth.minSmall`
-    flex-direction: row;
-    padding: 24px;
-  `}
-
-  ${({theme}) => theme.mediaWidth.minMedium`
-    max-width: 260px;
-  `}
-`
-
 const CardIcon = styled.div`
   display: flex;
   align-items: center;
@@ -86,19 +67,6 @@ const CardIcon = styled.div`
   background: #474747;
   border-radius: 50%;
   display: flex;
-`
-
-const CardContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 16px 0 0 0;
-  gap: 4px;
-  justify-content: space-between;
-
-  ${({theme}) => theme.mediaWidth.minSmall`
-    padding: 8px 36px 8px 16px;
-    gap: 0;
-  `}
 `
 
 const LearnMoreLink = styled.a`
@@ -356,7 +324,15 @@ const LeaderboardOverview = ({
                 <Clock color={colors(false).dark.tan2} />
               </CardIcon>
             }
-            value={isLoading ? <Loader size="16px" /> : seasonEndCountdown}
+            value={
+              isLoading ? (
+                <Loader size="16px" />
+              ) : seasonEndCountdown === '-' ? (
+                new Date(seasonData?.sessionEnd).toLocaleDateString()
+              ) : (
+                seasonEndCountdown
+              )
+            }
           />
         </OverviewRightContainer>
       </OverviewContainer>

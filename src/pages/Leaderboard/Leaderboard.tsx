@@ -115,6 +115,7 @@ const Leaderboard = () => {
   const {account} = useActiveWeb3React()
   const [seasonId, setSeasonId] = useState()
   const [traders, setTraders] = useState<[ITrader]>()
+  const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState<IUserRank>({
     volumeTraded: 0,
     walletAddress: '',
@@ -163,6 +164,7 @@ const Leaderboard = () => {
   }, [seasonId, getSeasonDataRaw])
 
   useEffect(() => {
+    setIsLoading(true)
     const getTraders = async () => {
       const processedTraders = await Promise.all(
         leaderboardsData?.traders?.map(async data => {
@@ -181,6 +183,7 @@ const Leaderboard = () => {
       )
 
       setTraders(processedTraders as unknown as [ITrader])
+      setIsLoading(false)
     }
 
     if (leaderboardsData?.traders) {
@@ -213,12 +216,12 @@ const Leaderboard = () => {
   return (
     <PageContainer>
       <LeaderboardOverview
-        isLoading={rawDataLoading || seasonDataRawLoading}
+        isLoading={rawDataLoading || seasonDataRawLoading || isLoading}
         setSeasonId={setSeasonId}
         userData={userData}
         seasonData={{...leaderboardsData, sessionNumber: seasonNumber}}
       />
-      {rawDataLoading || seasonDataRawLoading ? (
+      {rawDataLoading || seasonDataRawLoading || isLoading ? (
         <LoadingContainer>
           <Loader size="24px" />
         </LoadingContainer>

@@ -68,8 +68,8 @@ const OverviewChart = () => {
   const {positionsTableData: liquidates} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
 
   const chartData = useMemo(() => {
-    const unwindRows = unwinds ? unwinds.account?.unwinds ?? [] : []
-    const liquidateRows = liquidates ? liquidates.account?.liquidates ?? [] : []
+    const unwindRows = unwinds?.account?.unwinds ?? []
+    const liquidateRows = liquidates?.account?.liquidates ?? []
 
     const dataByPeriod: {[key: string]: {realizedPnl: number; date: Date}} = {}
 
@@ -230,7 +230,7 @@ const OverviewChart = () => {
           <Box display="flex" alignItems="center">
             <TEXT.BoldSupplemental color={colors(false).dark.white}>Realized PnL: </TEXT.BoldSupplemental>
             <TEXT.BoldSupplemental color={checkIsNegative(Number.parseFloat(payload[0].value)) ? '#FF648A' : '#5FD0AB'} ml={1}>
-              {payload[0].value}
+              {+payload[0].value < 1 ? +payload[0].value.toFixed(6) : +payload[0].value.toFixed(2)}
             </TEXT.BoldSupplemental>
           </Box>
         </CustomTooltip>

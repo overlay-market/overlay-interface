@@ -70,8 +70,8 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     return formatValue
   }, [totalValueLocked])
 
-  const [openPositionsPercentageChange, lockedSumPercentageChange] = useMemo(() => {
-    if (!openPositions || !openPositions.account?.positions) return [null, null]
+  const openPositionsPercentageChange = useMemo(() => {
+    if (!openPositions || !openPositions.account?.positions) return null
 
     const rows = openPositions.account?.positions
 
@@ -89,18 +89,17 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
       )
     }
 
-    return [percentageChangeOpenPositions, 0]
+    return percentageChangeOpenPositions
   }, [openPositions, numberOfOpenPositions])
 
   const realizedPnlPercentageChange = useMemo(() => {
-    if (!unwinds || !unwinds.account?.unwinds) return null
-
-    const rows = unwinds.account?.unwinds
+    const unwindRows = unwinds?.account?.unwinds ?? []
+    const liquidatedRows = liquidatedPositions?.account?.liquidates ?? []
 
     const now = Math.floor(Date.now() / 1000)
     const oneDayAgo = now - 24 * 60 * 60
 
-    const pnlMoreThan24HoursAgo = rows.reduce((acc: number, curr: any) => {
+    let pnlMoreThan24HoursAgo = unwindRows.reduce((acc: number, curr: any) => {
       if (Number(curr.timestamp) < oneDayAgo) {
         return acc + parseInt(curr.pnl) / 10 ** 18
       } else {
@@ -108,14 +107,18 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
       }
     }, 0)
 
+    liquidatedRows.forEach((liquidate: any) => {
+      if (Number(liquidate.timestamp) < oneDayAgo) {
+        pnlMoreThan24HoursAgo -= parseInt(liquidate.pnl) / 10 ** 18
+      }
+    })
+
     let percentageChangeRealizedPnl = 0
 
     percentageChangeRealizedPnl = parseFloat((((Number(realizedPnl) - pnlMoreThan24HoursAgo) / pnlMoreThan24HoursAgo) * 100).toFixed(2))
 
     return percentageChangeRealizedPnl
   }, [unwinds, realizedPnl])
-
-  const unrealizedPnlPercentageChange = useMemo(() => {}, [])
 
   const cardsData = [
     {
@@ -127,7 +130,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     {
       title: 'Locked Sum',
       value: numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : null,
-      percentageChange: 23,
+      percentageChange: null,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
@@ -140,7 +143,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     {
       title: 'Unrealized',
       value: numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : null,
-      percentageChange: -5.65,
+      percentageChange: null,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
@@ -178,7 +181,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
 
             {/* Locked Sum + uPnL */}
             <StyledGrid item key={'mainOverviewCard'} xs={12} md={4}>
-              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={23} period={'24h'} />
+              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} />
             </StyledGrid>
             {cardsData.map(card => {
               return (

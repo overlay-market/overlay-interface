@@ -38,8 +38,8 @@ const CardContent = styled.div`
 
 interface DataProps {
   title: string
-  icon: string
-  value: string
+  icon: string | React.ReactNode
+  value: string | React.ReactNode
   valueColor?: string
   isOver1000OpenPositions?: boolean
 }
@@ -50,17 +50,21 @@ const OverviewCard = (props: DataProps) => {
   return (
     <Container>
       <CardIcon>
-        {icon === 'unlock' ? (
-          <Unlock color="#71CEFF" />
-        ) : icon === 'lock' ? (
-          <Lock color="#D5B4FF" />
-        ) : icon === 'up' ? (
-          <TrendingUp color="#5FD0AB" />
-        ) : icon === 'down' ? (
-          <TrendingDown color="#FF648A" />
-        ) : icon === 'book' ? (
-          <Book color="#71CEFF" />
-        ) : null}
+        {typeof icon === 'string' ? (
+          icon === 'unlock' ? (
+            <Unlock color="#71CEFF" />
+          ) : icon === 'lock' ? (
+            <Lock color="#D5B4FF" />
+          ) : icon === 'up' ? (
+            <TrendingUp color="#5FD0AB" />
+          ) : icon === 'down' ? (
+            <TrendingDown color="#FF648A" />
+          ) : icon === 'book' ? (
+            <Book color="#71CEFF" />
+          ) : null
+        ) : (
+          icon
+        )}
       </CardIcon>
       <CardContent>
         <TEXT.SmallBody style={{whiteSpace: 'nowrap'}}>{title}</TEXT.SmallBody>

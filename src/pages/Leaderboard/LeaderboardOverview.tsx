@@ -11,6 +11,7 @@ import useAxios from 'axios-hooks'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {RotatingChevron} from '../../components/Header/Header'
 import Loader from '../../components/Loaders/Loaders'
+import OverviewCard from '../../components/Card/OverviewCard'
 
 const OverviewContainer = styled.div`
   display: flex;
@@ -339,24 +340,24 @@ const LeaderboardOverview = ({
           </FlexRowTextContainer>
         </OverviewLeftContainer>
         <OverviewRightContainer>
-          <OverviewCardContainer>
-            <CardIcon>
-              <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo Light'} height={'32px'} width={'32px'} />
-            </CardIcon>
-            <CardContent>
-              <TEXT.SmallBody color="#C4C4C4">Up for Grabs</TEXT.SmallBody>
-              <TEXT.BoldStandardBody fontSize={18}>{upForGrabs}</TEXT.BoldStandardBody>
-            </CardContent>
-          </OverviewCardContainer>
-          <OverviewCardContainer>
-            <CardIcon>
-              <Clock color={colors(false).dark.tan2} />
-            </CardIcon>
-            <CardContent>
-              <TEXT.SmallBody color="#C4C4C4">{seasonEndCountdown === '-' ? 'Season Ended' : 'Season Ends'}</TEXT.SmallBody>
-              <TEXT.BoldStandardBody fontSize={18}>{isLoading ? <Loader size="16px" /> : seasonEndCountdown}</TEXT.BoldStandardBody>
-            </CardContent>
-          </OverviewCardContainer>
+          <OverviewCard
+            title="Up for Grabs"
+            icon={
+              <CardIcon>
+                <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo Light'} height={'32px'} width={'32px'} />
+              </CardIcon>
+            }
+            value={upForGrabs}
+          />
+          <OverviewCard
+            title={seasonEndCountdown === '-' ? 'Season Ended' : 'Season Ends'}
+            icon={
+              <CardIcon>
+                <Clock color={colors(false).dark.tan2} />
+              </CardIcon>
+            }
+            value={isLoading ? <Loader size="16px" /> : seasonEndCountdown}
+          />
         </OverviewRightContainer>
       </OverviewContainer>
     </>

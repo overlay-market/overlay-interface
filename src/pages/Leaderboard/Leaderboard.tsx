@@ -196,7 +196,6 @@ const Leaderboard = () => {
       const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
       const username = await providerEth.lookupAddress(userRank.walletAddress)
       const earnings = leaderboardsData.totalRewards * (userRank?.volumeTraded / leaderboardsData?.totalVolumeTraded)
-
       const userRankData = {
         ...userRank,
         username,
@@ -210,6 +209,15 @@ const Leaderboard = () => {
 
     if (userRank) {
       getUserData()
+    } else {
+      setUserData({
+        walletAddress: '',
+        volumeTraded: 0,
+        username: '',
+        totalVolume: 0,
+        earnings: 0,
+        pnl: 0,
+      })
     }
   }, [userRank, leaderboardsData])
 

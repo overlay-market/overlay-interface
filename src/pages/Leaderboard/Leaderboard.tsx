@@ -71,6 +71,7 @@ const UsernameContainer = styled.div`
   align-items: center;
   gap: 16px;
   min-height: 50px;
+  min-width: 240px;
 `
 
 const UsernameIcon = styled.div<{display?: string}>`

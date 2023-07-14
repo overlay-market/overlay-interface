@@ -180,7 +180,7 @@ export default function Header() {
   const NEW_HEADER_FLAG = true
   const HIDE_POWER_CARDS = true
   const HIDE_BUY_OVL = true
-  const HIDE_EARN_DROPDOWN_FLAG = false
+  const HIDE_EARN_DROPDOWN_FLAG = true
 
   let location = useLocation().pathname
 

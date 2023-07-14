@@ -224,7 +224,7 @@ const Leaderboard = () => {
   return (
     <PageContainer>
       <LeaderboardOverview
-        isLoading={rawDataLoading || seasonDataRawLoading || isLoading}
+        isLoading={rawDataLoading || seasonDataRawLoading}
         setSeasonId={setSeasonId}
         userData={userData}
         seasonData={{...leaderboardsData, sessionNumber: seasonNumber}}

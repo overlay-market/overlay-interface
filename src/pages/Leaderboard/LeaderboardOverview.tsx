@@ -284,7 +284,7 @@ const LeaderboardOverview = ({
                 You are eligible for
               </TEXT.BoldHeader1>
               <TEXT.BoldHeader1 fontSize={24} color={colors(false).dark.tan1}>
-                {yourRewards}
+                {isLoading ? <Loader size="16px" /> : yourRewards}
               </TEXT.BoldHeader1>
             </FlexRowTextContainer>
           ) : (

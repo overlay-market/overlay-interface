@@ -211,7 +211,6 @@ const Leaderboard = () => {
     if (userRank) {
       getUserData()
     } else {
-      console.log({account})
       setUserData({
         walletAddress: account || '',
         volumeTraded: 0,

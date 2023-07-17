@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import {TEXT} from '../../theme/theme'
+import {TEXT, colors} from '../../theme/theme'
 import {Box} from '@material-ui/core'
 
 const Container = styled.div`
@@ -62,18 +62,19 @@ const OverviewCard = (props: DataProps) => {
           </TEXT.Supplemental>
         </Box>
       )}
-      {/* {isOver1000OpenPositions && (
-        <div style={{position: 'absolute', marginTop: '47px'}}>
-          <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} color={colors(true).dark.red}>
-            Open Positions {'>'} 1000
-          </TEXT.Supplemental>
-          <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} color={colors(true).dark.red}>
-            May output wrong value
-          </TEXT.Supplemental>
-        </div> */}
       <TEXT.SmallBody color="#c4c4c4" mt={12}>
         {title}
       </TEXT.SmallBody>
+      {isOver1000OpenPositions && (
+        <Box mt="4px">
+          <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} fontSize={10} color={colors(true).dark.red}>
+            Open Positions {'>'} 1000
+          </TEXT.Supplemental>
+          <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} fontSize={10} color={colors(true).dark.red}>
+            May output wrong value
+          </TEXT.Supplemental>
+        </Box>
+      )}
     </Container>
   )
 }

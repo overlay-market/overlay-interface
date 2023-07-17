@@ -26,6 +26,7 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
   white-space: nowrap;
   font-size: 28px !important;
   margin-right: 12px !important;
+  margin-bottom: 0;
 
   ${({theme}) => theme.mediaWidth.minMedium`
     margin-bottom: 12px !important;
@@ -44,6 +45,13 @@ const ResponsiveDiv = styled.div`
 
   ${({theme}) => theme.mediaWidth.minMedium`
     display: block;
+    margin-bottom: 0;
+  `}
+`
+
+const StyledBox = styled(Box)`
+  ${({theme}) => theme.mediaWidth.minMedium`
+    margin-bottom: 12px !important;
   `}
 `
 
@@ -63,7 +71,7 @@ interface DataProps {
 const MainOverviewCard = (props: DataProps) => {
   const {title, value, period} = props
 
-  const percentageChange = 20
+  const percentageChange = null
 
   return (
     <Container>
@@ -71,7 +79,7 @@ const MainOverviewCard = (props: DataProps) => {
         <BoldHeader1>{value}</BoldHeader1>
 
         {!!percentageChange && (
-          <Box display="flex" alignItems="center">
+          <StyledBox display="flex" alignItems="center">
             <PercentageChangeBox positive={percentageChange > 0}>
               <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
                 {percentageChange > 0 && '+'}
@@ -81,12 +89,10 @@ const MainOverviewCard = (props: DataProps) => {
             <TEXT.Supplemental color="#c4c4c4" ml={12}>
               {period}
             </TEXT.Supplemental>
-          </Box>
+          </StyledBox>
         )}
       </ResponsiveDiv>
-      <TEXT.SmallBody color="#c4c4c4" mt={12}>
-        {title}
-      </TEXT.SmallBody>
+      <TEXT.SmallBody color="#c4c4c4">{title}</TEXT.SmallBody>
     </Container>
   )
 }

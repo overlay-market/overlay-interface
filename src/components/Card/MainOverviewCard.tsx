@@ -7,16 +7,44 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
   background: radial-gradient(
-      90% 100% at 100% 100%,
-      rgba(113, 206, 255, 0.65),
-      rgba(113, 206, 255, 0.15) 60%,
-      rgba(113, 206, 255, 0.05) 80%,
-      rgba(113, 206, 255, 0) 100%
-    ),
-    #171926;
+    90% 100% at 100% 100%,
+    rgba(113, 206, 255, 0.65),
+    rgba(113, 206, 255, 0.15) 60%,
+    rgba(113, 206, 255, 0.05) 80%,
+    rgba(113, 206, 255, 0) 100%
+  ),
+  #171926;
   border-radius: 8px;
   padding: 40px;
+`};
+`
+
+const BoldHeader1 = styled(TEXT.BoldHeader1)`
+  white-space: nowrap;
+  font-size: 28px !important;
+  margin-right: 12px !important;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    margin-bottom: 12px !important;
+  `}
+
+  ${({theme}) => theme.mediaWidth.minLarge`
+    font-size: 40px !important;
+    margin-right: 0;
+  `}
+`
+
+const ResponsiveDiv = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: block;
+  `}
 `
 
 const PercentageChangeBox = styled.div<{positive: boolean}>`
@@ -33,26 +61,29 @@ interface DataProps {
 }
 
 const MainOverviewCard = (props: DataProps) => {
-  const {title, value, percentageChange, period} = props
+  const {title, value, period} = props
+
+  const percentageChange = 20
 
   return (
     <Container>
-      <TEXT.BoldHeader1 fontSize={40} style={{whiteSpace: 'nowrap'}} mb={12}>
-        {value}
-      </TEXT.BoldHeader1>
-      {!!percentageChange && (
-        <Box display="flex" alignItems="center">
-          <PercentageChangeBox positive={percentageChange > 0}>
-            <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
-              {percentageChange > 0 && '+'}
-              {percentageChange}%
-            </TEXT.Number>
-          </PercentageChangeBox>
-          <TEXT.Supplemental color="#c4c4c4" ml={12}>
-            {period}
-          </TEXT.Supplemental>
-        </Box>
-      )}
+      <ResponsiveDiv>
+        <BoldHeader1>{value}</BoldHeader1>
+
+        {!!percentageChange && (
+          <Box display="flex" alignItems="center">
+            <PercentageChangeBox positive={percentageChange > 0}>
+              <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
+                {percentageChange > 0 && '+'}
+                {percentageChange}%
+              </TEXT.Number>
+            </PercentageChangeBox>
+            <TEXT.Supplemental color="#c4c4c4" ml={12}>
+              {period}
+            </TEXT.Supplemental>
+          </Box>
+        )}
+      </ResponsiveDiv>
       <TEXT.SmallBody color="#c4c4c4" mt={12}>
         {title}
       </TEXT.SmallBody>

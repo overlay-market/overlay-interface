@@ -12,20 +12,56 @@ import MainOverviewCard from '../../components/Card/MainOverviewCard'
 import OverviewChart from '../../components/Chart/OverviewChart'
 import {usePositionsTableData} from '../../state/build/hooks'
 import {PositionStatus} from './PositionsPage'
-import {usePositionValue} from '../../hooks/usePositionValue'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
   flex-direction: column;
   margin-top: 0;
+  position: relative;
+  z-index: 1;
 
   ${({theme, mt}) => theme.mediaWidth.minMedium`
     margin-top: ${mt ? `${mt}` : ''};
   `}
 `
 
-const StyledGrid = styled(Grid)`
+const BackgroundWrapper = styled.div`
+  position: absolute;
+  top: -16px;
+  left: 16px;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+
+  background: radial-gradient(
+    50% 35% at 80% 40%,
+    rgba(113, 206, 255, 0.65),
+    rgba(113, 206, 255, 0.15) 60%,
+    rgba(113, 206, 255, 0.05) 80%,
+    rgba(113, 206, 255, 0) 100%
+  );
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    background: radial-gradient(
+      30% 30% at 80% 25%,
+      rgba(113, 206, 255, 0.65),
+      rgba(113, 206, 255, 0.15) 60%,
+      rgba(113, 206, 255, 0.05) 80%,
+      rgba(113, 206, 255, 0) 100%
+    );
+  `}
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: none;
+  `}
+`
+
+const StyledGrid = styled(Grid)<{order?: number}>`
   display: flex;
+
+  ${({theme, order}) => theme.mediaWidth.minMedium`
+    order: ${order ? `${order}` : 0}
+  `}
 `
 
 export interface Props {
@@ -118,7 +154,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     percentageChangeRealizedPnl = parseFloat((((Number(realizedPnl) - pnlMoreThan24HoursAgo) / pnlMoreThan24HoursAgo) * 100).toFixed(2))
 
     return percentageChangeRealizedPnl
-  }, [unwinds, realizedPnl])
+  }, [unwinds, realizedPnl, liquidatedPositions])
 
   const cardsData = [
     {
@@ -170,19 +206,21 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
 
   return (
     <Container mt={marginTop}>
+      <BackgroundWrapper />
       <TEXT.BoldHeader1 mb="32px">{`${title}`}</TEXT.BoldHeader1>
       <Box>
         {account ? (
           <Grid container spacing={3}>
+            {/* Locked Sum + uPnL */}
+            <StyledGrid order={0} item key={'mainOverviewCard'} xs={12} md={4}>
+              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} />
+            </StyledGrid>
+
             {/* Chart */}
-            <StyledGrid item key={'chart'} xs={12} md={8}>
+            <StyledGrid order={-1} item key={'chart'} xs={12} md={8}>
               <OverviewChart />
             </StyledGrid>
 
-            {/* Locked Sum + uPnL */}
-            <StyledGrid item key={'mainOverviewCard'} xs={12} md={4}>
-              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} />
-            </StyledGrid>
             {cardsData.map(card => {
               return (
                 <StyledGrid item key={card.title} xs={6} sm={4} lg={2}>

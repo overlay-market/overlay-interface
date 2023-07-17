@@ -19,6 +19,14 @@ const PercentageChangeBox = styled.div<{positive: boolean}>`
   background: ${({positive}) => (positive ? 'rgba(95, 208, 171, 0.20)' : 'rgba(255, 100, 138, 0.20)')};
 `
 
+const BoldHeader1 = styled(TEXT.BoldHeader1)`
+  font-size: 16px !important;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    font-size: 20px !important;
+  `}
+`
+
 interface DataProps {
   title: string
   value: string | null
@@ -37,9 +45,9 @@ const OverviewCard = (props: DataProps) => {
           No data
         </TEXT.SmallBody>
       ) : (
-        <TEXT.BoldHeader1 style={{whiteSpace: 'nowrap'}} mb={12}>
+        <BoldHeader1 style={{whiteSpace: 'nowrap'}} mb={12}>
           {value}
-        </TEXT.BoldHeader1>
+        </BoldHeader1>
       )}
       {value && !!percentageChange && (
         <Box display="flex" alignItems="center">

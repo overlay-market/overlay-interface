@@ -11,6 +11,7 @@ import useAxios from 'axios-hooks'
 import {LEADERBOARRDS_API} from '../../constants/applications'
 import {useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
+import {floorToTwoDecimals} from '../../utils/floorToTwoDecimals'
 
 const LeaderboardsTable = styled(StyledTable)`
   .total-volume,
@@ -177,7 +178,7 @@ const Leaderboard = () => {
             ...data,
             username,
             totalVolume: (data?.volumeTraded / 10 ** 18).toFixed(2) || 0,
-            earnings: earnings.toFixed(2) || 0,
+            earnings: floorToTwoDecimals(earnings) || 0,
             pnl: (data?.volumeTraded / earnings / 10 ** 18).toFixed(2),
           }
         }),
@@ -210,7 +211,7 @@ const Leaderboard = () => {
         ...userRank,
         username,
         totalVolume: (userRank?.volumeTraded / 10 ** 18).toFixed(2),
-        earnings: earnings.toFixed(2),
+        earnings: earnings,
         pnl: (userRank?.volumeTraded / 10 ** 18 / earnings).toFixed(2),
       }
 

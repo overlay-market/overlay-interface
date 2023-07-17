@@ -12,6 +12,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {RotatingChevron} from '../../components/Header/Header'
 import Loader from '../../components/Loaders/Loaders'
 import OverviewCard from '../../components/Card/OverviewCard'
+import {floorToTwoDecimals} from '../../utils/floorToTwoDecimals'
 
 const OverviewContainer = styled.div`
   display: flex;
@@ -216,10 +217,7 @@ const LeaderboardOverview = ({
   const {account} = useActiveWeb3React()
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // 2.5 === 2.50 OVL
-  // 10 === 10.00 OVL
-  // 0.5 === 0.50 OVL
-  const yourRewards: string = `${userData?.earnings ? `${userData?.earnings < 0.01 ? '< 0.01' : userData?.earnings}` : '0'} OVL`
+  const yourRewards: string = `${userData?.earnings ? `${userData?.earnings < 0.01 ? '< 0.01' : floorToTwoDecimals(userData?.earnings)}` : '0'} OVL`
   const upForGrabs: string = `${seasonData?.totalRewards ? `${seasonData?.totalRewards} OVL` : '-'}`
   const seasonEndCountdown: string = calculateCountdown(seasonData?.sessionEnd)
   const toggleWalletModal = useWalletModalToggle()

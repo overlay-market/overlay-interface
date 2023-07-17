@@ -11,13 +11,38 @@ import {checkIsNegative} from '../../utils/checkIsNegative'
 
 const Container = styled.div`
   display: flex;
+  min-height: 275px;
   flex-direction: column;
-  height: 275px;
   box-sizing: border-box;
   width: 100%;
   background: #171926;
   border-radius: 8px;
   padding: 24px 16px;
+`
+
+const StyledButtonGroup = styled(ButtonGroup)`
+  width: 100%;
+  justify-content: space-between !important;
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    justify-content: initial !important;
+  `}
+`
+
+const LargeLegendBox = styled(Box)`
+  display: none !important;
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    display: flex !important;
+  `}
+`
+
+const SmallLegendBox = styled(Box)`
+  margin-top: 16px;
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    display: none !important;
+  `}
 `
 
 const LegendLine = styled.div`
@@ -243,17 +268,19 @@ const OverviewChart = () => {
   return (
     <Container>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb="16px">
-        <ButtonGroup variant="text">
+        <StyledButtonGroup variant="text">
           {intervals.map((interval, id) => (
             <StyledButton key={id} selected={selectedInterval === interval} onClick={() => handleSelectInterval(interval)}>
               {interval}
             </StyledButton>
           ))}
-        </ButtonGroup>
-        <Box display="flex" alignItems="center">
+        </StyledButtonGroup>
+        <LargeLegendBox display="flex" alignItems="center">
           <LegendLine />
-          <TEXT.Supplemental color="#c4c4c4">Realized PnL</TEXT.Supplemental>
-        </Box>
+          <TEXT.Supplemental color="#c4c4c4" style={{whiteSpace: 'nowrap'}}>
+            Realized PnL
+          </TEXT.Supplemental>
+        </LargeLegendBox>
       </Box>
       <ResponsiveContainer width="100%" height="100%">
         {chartDataFormatted.length === 0 ? (
@@ -274,6 +301,12 @@ const OverviewChart = () => {
           </LineChart>
         )}
       </ResponsiveContainer>
+      <SmallLegendBox display="flex" alignItems="center">
+        <LegendLine />
+        <TEXT.Supplemental color="#c4c4c4" style={{whiteSpace: 'nowrap'}}>
+          Realized PnL
+        </TEXT.Supplemental>
+      </SmallLegendBox>
     </Container>
   )
 }

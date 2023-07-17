@@ -193,8 +193,17 @@ const Leaderboard = () => {
   }, [leaderboardsData])
 
   useEffect(() => {
+    const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
+    const getAccountENS = async () => {
+      const username = account ? await providerEth.lookupAddress(account) : undefined
+      setUserData({
+        walletAddress: account || '',
+        volumeTraded: 0,
+        username: username ?? undefined,
+      })
+    }
+
     const getUserData = async () => {
-      const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
       const username = await providerEth.lookupAddress(userRank.walletAddress)
       const earnings = leaderboardsData.totalRewards * (userRank?.volumeTraded / leaderboardsData?.totalVolumeTraded)
       const userRankData = {
@@ -211,10 +220,7 @@ const Leaderboard = () => {
     if (userRank) {
       getUserData()
     } else {
-      setUserData({
-        walletAddress: account || '',
-        volumeTraded: 0,
-      })
+      getAccountENS()
     }
   }, [userRank, leaderboardsData, account])
 

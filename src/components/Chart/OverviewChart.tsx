@@ -135,7 +135,7 @@ const OverviewChart = () => {
       dataByPeriod[periodKey].realizedPnl += parseInt(unwind.pnl) / 10 ** 18
     })
 
-    liquidateRows.forEach((liquidate: {timestamp: string; pnl: string}) => {
+    liquidateRows.forEach((liquidate: {timestamp: string; size: string}) => {
       const date = moment.unix(parseInt(liquidate.timestamp))
       let periodKey: string
 
@@ -169,7 +169,7 @@ const OverviewChart = () => {
         }
       }
 
-      dataByPeriod[periodKey].realizedPnl -= parseInt(liquidate.pnl) / 10 ** 18
+      dataByPeriod[periodKey].realizedPnl -= parseInt(liquidate.size) / 10 ** 18
     })
 
     const data = Object.values(dataByPeriod).sort((a, b) => a.date.getTime() - b.date.getTime())

@@ -277,7 +277,7 @@ const Leaderboard = () => {
                   <TEXT.Number>{userData?.totalVolume ? `${userData?.totalVolume ?? 0} OVL` : 'N/A'}</TEXT.Number>
                 </TableDataCell>
                 <TableDataCell className="ovl-earned" noborder="true">
-                  <TEXT.Number>{userData?.earnings ? `${userData?.earnings ?? 0} OVL` : 'N/A'}</TEXT.Number>
+                  <TEXT.Number>{userData?.earnings ? `${userData?.earnings < 0.01 ? '< 0.01' : userData?.earnings} OVL` : 'N/A'}</TEXT.Number>
                 </TableDataCell>
                 <TableDataCell className="pnl" noborder="true" align="center">
                   <TEXT.SmallBody color={userData.pnl && userData?.pnl > 0 ? colors(false).dark.green : ''}>

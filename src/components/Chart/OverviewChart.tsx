@@ -84,6 +84,34 @@ type IntervalType = '1D' | '1W' | '1M' | '6M' | '1Y'
 
 const intervals: IntervalType[] = ['1D', '1W', '1M', '6M', '1Y']
 
+const getPeriodKey = (date: moment.Moment, selectedInterval: IntervalType): string => {
+  switch (selectedInterval) {
+    case '1D':
+      return date.format('YYYY-MM-DD')
+    case '1W':
+      return `${date.year()}-${date.week()}`
+    case '6M':
+      return `${Math.floor(date.month() / 6) + 1}-${date.year()}`
+    case '1Y':
+      return date.format('YYYY')
+    default:
+      return date.format('YYYY-MM')
+  }
+}
+
+const incrementDate = (date: moment.Moment, selectedInterval: IntervalType): void => {
+  const intervalToAddMap: Record<IntervalType, moment.unitOfTime.DurationConstructor> = {
+    '1D': 'day',
+    '1W': 'week',
+    '1M': 'month',
+    '6M': 'months',
+    '1Y': 'year',
+  }
+
+  const intervalToAdd = intervalToAddMap[selectedInterval]
+  date.add(1, intervalToAdd)
+}
+
 const OverviewChart = () => {
   const [selectedInterval, setSelectedInterval] = useState<IntervalType>('1M')
   const {account} = useActiveWeb3React()
@@ -96,81 +124,71 @@ const OverviewChart = () => {
     const unwindRows = unwinds?.account?.unwinds ?? []
     const liquidateRows = liquidates?.account?.liquidates ?? []
 
+    const formattedUnwindRows = unwindRows.map((row: {timestamp: string; pnl: string}) => ({
+      ...row,
+      type: 'unwind',
+    }))
+
+    const formattedLiquidateRows = liquidateRows.map((row: {timestamp: string; size: string}) => ({
+      ...row,
+      type: 'liquidate',
+    }))
+
+    const mergedRows = [...formattedUnwindRows, ...formattedLiquidateRows].sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp))
+
     const dataByPeriod: {[key: string]: {realizedPnl: number; date: Date}} = {}
+    let cumulativeRealizedPnl = 0
+    let currentDate = moment.unix(parseInt(mergedRows[0].timestamp)) // minDate
 
-    unwindRows.forEach((unwind: {timestamp: string; pnl: string}) => {
-      const date = moment.unix(parseInt(unwind.timestamp))
-      let periodKey: string
+    mergedRows.forEach((row: {timestamp: string; pnl?: string; size?: string; type: string}) => {
+      const date = moment.unix(parseInt(row.timestamp))
 
-      switch (selectedInterval) {
-        case '1D':
-          // For daily grouping, the period key is the day, month and year
-          periodKey = date.format('YYYY-MM-DD')
-          break
-        case '1W':
-          // For weekly grouping, calculate period key as the year and the week of the year
-          periodKey = `${date.year()}-${date.week()}`
-          break
-        case '6M':
-          // For semiannual grouping, calculate period key as "1" or "2" plus the year
-          periodKey = `${Math.floor(date.month() / 6) + 1}-${date.year()}`
-          break
-        case '1Y':
-          // For annual grouping, the period key is the year
-          periodKey = date.format('YYYY')
-          break
-        default:
-          // For monthly grouping, the period key is the month and year
-          periodKey = date.format('YYYY-MM')
-          break
+      // Add missing dates
+      while (currentDate.isBefore(date)) {
+        let periodKey: string = getPeriodKey(currentDate, selectedInterval)
+
+        if (!dataByPeriod[periodKey]) {
+          dataByPeriod[periodKey] = {
+            date: currentDate.toDate(),
+            realizedPnl: cumulativeRealizedPnl,
+          }
+        }
+
+        incrementDate(currentDate, selectedInterval)
       }
+
+      let periodKey: string = getPeriodKey(date, selectedInterval)
 
       if (!dataByPeriod[periodKey]) {
         dataByPeriod[periodKey] = {
           date: date.toDate(),
-          realizedPnl: 0,
+          realizedPnl: cumulativeRealizedPnl,
         }
       }
 
-      dataByPeriod[periodKey].realizedPnl += parseInt(unwind.pnl) / 10 ** 18
+      if (row.type === 'unwind') {
+        cumulativeRealizedPnl += parseInt(row?.pnl ?? '0') / 10 ** 18
+      } else if (row.type === 'liquidate') {
+        cumulativeRealizedPnl -= parseInt(row?.size ?? '0') / 10 ** 18
+      }
+
+      dataByPeriod[periodKey].realizedPnl = cumulativeRealizedPnl
     })
 
-    liquidateRows.forEach((liquidate: {timestamp: string; size: string}) => {
-      const date = moment.unix(parseInt(liquidate.timestamp))
-      let periodKey: string
-
-      switch (selectedInterval) {
-        case '1D':
-          // For daily grouping, the period key is the day, month and year
-          periodKey = date.format('YYYY-MM-DD')
-          break
-        case '1W':
-          // For weekly grouping, calculate period key as the year and the week of the year
-          periodKey = `${date.year()}-${date.week()}`
-          break
-        case '6M':
-          // For semiannual grouping, calculate period key as "1" or "2" plus the year
-          periodKey = `${Math.floor(date.month() / 6) + 1}-${date.year()}`
-          break
-        case '1Y':
-          // For annual grouping, the period key is the year
-          periodKey = date.format('YYYY')
-          break
-        default:
-          // For monthly grouping, the period key is the month and year
-          periodKey = date.format('YYYY-MM')
-          break
-      }
+    // Fill up to current date
+    const now = moment()
+    while (currentDate.isBefore(now)) {
+      let periodKey: string = getPeriodKey(currentDate, selectedInterval)
 
       if (!dataByPeriod[periodKey]) {
         dataByPeriod[periodKey] = {
-          date: date.toDate(),
-          realizedPnl: 0,
+          date: currentDate.toDate(),
+          realizedPnl: cumulativeRealizedPnl,
         }
       }
 
-      dataByPeriod[periodKey].realizedPnl -= parseInt(liquidate.size) / 10 ** 18
-    })
+      incrementDate(currentDate, selectedInterval)
+    }
 
     const data = Object.values(dataByPeriod).sort((a, b) => a.date.getTime() - b.date.getTime())
 

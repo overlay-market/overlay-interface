@@ -150,8 +150,9 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     })
 
     let percentageChangeRealizedPnl = 0
-
-    percentageChangeRealizedPnl = parseFloat((((Number(realizedPnl) - pnlMoreThan24HoursAgo) / pnlMoreThan24HoursAgo) * 100).toFixed(2))
+    if (pnlMoreThan24HoursAgo !== 0) {
+      percentageChangeRealizedPnl = parseFloat((((Number(realizedPnl) - pnlMoreThan24HoursAgo) / pnlMoreThan24HoursAgo) * 100).toFixed(2))
+    }
 
     return percentageChangeRealizedPnl
   }, [unwinds, realizedPnl, liquidatedPositions])

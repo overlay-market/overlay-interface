@@ -168,18 +168,19 @@ const Leaderboard = () => {
   useEffect(() => {
     setIsLoading(true)
     const getTraders = async () => {
+      const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
       const processedTraders = await Promise.all(
         leaderboardsData?.traders?.map(async data => {
-          const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
           const username = await providerEth.lookupAddress(data.walletAddress)
           const earnings = leaderboardsData.totalRewards * (data?.volumeTraded / leaderboardsData?.totalVolumeTraded)
+          const volume = data?.volumeTraded / 10 ** 18
 
           return {
             ...data,
             username,
-            totalVolume: (data?.volumeTraded / 10 ** 18).toFixed(2) || 0,
+            totalVolume: volume.toFixed(2) || 0,
             earnings: floorToTwoDecimals(earnings) || 0,
-            pnl: (data?.volumeTraded / earnings / 10 ** 18).toFixed(2),
+            pnl: (earnings / volume).toFixed(2),
           }
         }),
       )
@@ -207,12 +208,13 @@ const Leaderboard = () => {
     const getUserData = async () => {
       const username = await providerEth.lookupAddress(userRank.walletAddress)
       const earnings = leaderboardsData.totalRewards * (userRank?.volumeTraded / leaderboardsData?.totalVolumeTraded)
+      const volume = userRank?.volumeTraded / 10 ** 18
       const userRankData = {
         ...userRank,
         username,
         totalVolume: (userRank?.volumeTraded / 10 ** 18).toFixed(2),
         earnings: earnings,
-        pnl: (userRank?.volumeTraded / 10 ** 18 / earnings).toFixed(2),
+        pnl: (earnings / volume).toFixed(2),
       }
 
       setUserData(userRankData as unknown as IUserRank)

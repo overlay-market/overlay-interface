@@ -212,7 +212,7 @@ const Leaderboard = () => {
       const userRankData = {
         ...userRank,
         username,
-        totalVolume: (userRank?.volumeTraded / 10 ** 18).toFixed(2),
+        totalVolume: volume.toFixed(2),
         earnings: earnings,
         pnl: (earnings / volume).toFixed(2),
       }

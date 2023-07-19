@@ -137,14 +137,49 @@ const OverviewChart = () => {
     const mergedRows = [...formattedUnwindRows, ...formattedLiquidateRows].sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp))
 
     const dataByPeriod: {[key: string]: {realizedPnl: number; date: Date}} = {}
-    let cumulativeRealizedPnl = 0
-    let currentDate = moment.unix(parseInt(mergedRows[0].timestamp)) // minDate
 
-    mergedRows.forEach((row: {timestamp: string; pnl?: string; size?: string; type: string}) => {
-      const date = moment.unix(parseInt(row.timestamp))
+    if (mergedRows.length) {
+      let cumulativeRealizedPnl = 0
+      let currentDate = moment.unix(parseInt(mergedRows[0].timestamp)) // minDate
 
-      // Add missing dates
-      while (currentDate.isBefore(date)) {
+      mergedRows.forEach((row: {timestamp: string; pnl?: string; size?: string; type: string}) => {
+        const date = moment.unix(parseInt(row.timestamp))
+
+        // Add missing dates
+        while (currentDate.isBefore(date)) {
+          let periodKey: string = getPeriodKey(currentDate, selectedInterval)
+
+          if (!dataByPeriod[periodKey]) {
+            dataByPeriod[periodKey] = {
+              date: currentDate.toDate(),
+              realizedPnl: cumulativeRealizedPnl,
+            }
+          }
+
+          incrementDate(currentDate, selectedInterval)
+        }
+
+        let periodKey: string = getPeriodKey(date, selectedInterval)
+
+        if (!dataByPeriod[periodKey]) {
+          dataByPeriod[periodKey] = {
+            date: date.toDate(),
+            realizedPnl: cumulativeRealizedPnl,
+          }
+        }
+
+        if (row.type === 'unwind') {
+          cumulativeRealizedPnl += parseInt(row?.pnl ?? '0') / 10 ** 18
+        } else if (row.type === 'liquidate') {
+          cumulativeRealizedPnl -= parseInt(row?.size ?? '0') / 10 ** 18
+        }
+
+        dataByPeriod[periodKey].realizedPnl = cumulativeRealizedPnl
+      })
+
+      // Fill up to current date
+      const now = moment()
+      while (currentDate.isBefore(now)) {
         let periodKey: string = getPeriodKey(currentDate, selectedInterval)
 
         if (!dataByPeriod[periodKey]) {
@@ -156,38 +191,6 @@ const OverviewChart = () => {
 
         incrementDate(currentDate, selectedInterval)
       }
-
-      let periodKey: string = getPeriodKey(date, selectedInterval)
-
-      if (!dataByPeriod[periodKey]) {
-        dataByPeriod[periodKey] = {
-          date: date.toDate(),
-          realizedPnl: cumulativeRealizedPnl,
-        }
-      }
-
-      if (row.type === 'unwind') {
-        cumulativeRealizedPnl += parseInt(row?.pnl ?? '0') / 10 ** 18
-      } else if (row.type === 'liquidate') {
-        cumulativeRealizedPnl -= parseInt(row?.size ?? '0') / 10 ** 18
-      }
-
-      dataByPeriod[periodKey].realizedPnl = cumulativeRealizedPnl
-    })
-
-    // Fill up to current date
-    const now = moment()
-    while (currentDate.isBefore(now)) {
-      let periodKey: string = getPeriodKey(currentDate, selectedInterval)
-
-      if (!dataByPeriod[periodKey]) {
-        dataByPeriod[periodKey] = {
-          date: currentDate.toDate(),
-          realizedPnl: cumulativeRealizedPnl,
-        }
-      }
-
-      incrementDate(currentDate, selectedInterval)
     }
 
     const data = Object.values(dataByPeriod).sort((a, b) => a.date.getTime() - b.date.getTime())

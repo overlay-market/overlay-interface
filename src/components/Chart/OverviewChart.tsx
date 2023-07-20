@@ -87,29 +87,58 @@ const intervals: IntervalType[] = ['1D', '1W', '1M', '6M', '1Y']
 const getPeriodKey = (date: moment.Moment, selectedInterval: IntervalType): string => {
   switch (selectedInterval) {
     case '1D':
-      return date.format('YYYY-MM-DD')
+      let hour = Math.floor(date.hour())
+      return `${date.format('YYYY-MM-DD')}-${hour}`
     case '1W':
-      return `${date.year()}-${date.week()}`
+      // day
+      return `${date.format('YYYY-MM-DD')}`
     case '6M':
-      return `${Math.floor(date.month() / 6) + 1}-${date.year()}`
+      // week
+      return `${date.year()}-${date.week()}`
     case '1Y':
-      return date.format('YYYY')
-    default:
+      // month
       return date.format('YYYY-MM')
+    default:
+      // day
+      return date.format('YYYY-MM-DD')
   }
 }
 
 const incrementDate = (date: moment.Moment, selectedInterval: IntervalType): void => {
   const intervalToAddMap: Record<IntervalType, moment.unitOfTime.DurationConstructor> = {
-    '1D': 'day',
-    '1W': 'week',
-    '1M': 'month',
-    '6M': 'months',
-    '1Y': 'year',
+    '1D': 'hour',
+    '1W': 'day',
+    '1M': 'day',
+    '6M': 'week',
+    '1Y': 'month',
   }
 
   const intervalToAdd = intervalToAddMap[selectedInterval]
   date.add(1, intervalToAdd)
+}
+
+const getFilterStartDate = (selectedInterval: IntervalType) => {
+  const now = moment()
+  const startDate = now.clone()
+
+  switch (selectedInterval) {
+    case '1D':
+      startDate.subtract(24, 'hours')
+      break
+    case '1W':
+      startDate.subtract(1, 'week')
+      break
+    case '6M':
+      startDate.subtract(6, 'months')
+      break
+    case '1Y':
+      startDate.subtract(1, 'year')
+      break
+    default:
+      startDate.subtract(1, 'month')
+  }
+
+  return startDate
 }
 
 const OverviewChart = () => {
@@ -193,7 +222,13 @@ const OverviewChart = () => {
       }
     }
 
-    const data = Object.values(dataByPeriod).sort((a, b) => a.date.getTime() - b.date.getTime())
+    let data = Object.values(dataByPeriod).sort((a, b) => a.date.getTime() - b.date.getTime())
+
+    // Filter data for selected interval
+    const startDate = getFilterStartDate(selectedInterval)
+    data = data.filter(item => moment(item.date).isSameOrAfter(startDate))
+
+    console.log(data)
 
     return data
   }, [unwinds, liquidates, selectedInterval])
@@ -201,7 +236,7 @@ const OverviewChart = () => {
   const chartDataFormatted = chartData.map((data: any) => {
     return {
       ...data,
-      date: new Date(data.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'}),
+      date: moment(data.date).format('DD MMM YYYY HH:mm'),
     }
   })
 
@@ -213,22 +248,24 @@ const OverviewChart = () => {
     let label
     switch (selectedInterval) {
       case '1D':
-        label = moment(payload.value).format('D MMM YY')
+        // hour
+        label = moment(payload.value).format('HH:00')
         break
       case '1W':
+        // day
         label = moment(payload.value).format('D MMM YY')
         break
-      case '1M':
+      case '6M':
+        // week
         label = moment(payload.value).format('MMM YY')
         break
-      case '6M':
-        label = moment(payload.value).month() < 6 ? `Jan ${moment(payload.value).format('YY')}` : `Jul ${moment(payload.value).format('YY')}`
-        break
       case '1Y':
-        label = moment(payload.value).format('YYYY')
+        // month
+        label = moment(payload.value).format('MMM YY')
         break
       default:
-        label = payload.value
+        // day
+        label = moment(payload.value).format('D MMM')
     }
     return (
       <g transform={`translate(${x},${y})`}>
@@ -253,21 +290,20 @@ const OverviewChart = () => {
       const date = moment(label)
 
       switch (selectedInterval) {
-        case '1M':
-          rangeLabel = date.format('MMM YY')
+        case '1D':
+          rangeLabel = date.format('D MMM YY HH:00')
+          break
+        case '1W':
+          rangeLabel = date.format('D MMM YY')
           break
         case '6M':
-          if (date.month() < 6) {
-            rangeLabel = `Jan - Jun ${date.format('YY')}`
-          } else {
-            rangeLabel = `Jul - Dec ${date.format('YY')}`
-          }
+          rangeLabel = date.format('D MMM YY')
           break
         case '1Y':
-          rangeLabel = date.format('YYYY')
+          rangeLabel = date.format('MMM YY')
           break
         default:
-          rangeLabel = label
+          rangeLabel = date.format('D MMM YY')
       }
 
       return (

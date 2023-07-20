@@ -10,8 +10,14 @@ const StyledFooter = styled.footer`
   bottom: 0;
   width: 100%;
   box-sizing: border-box;
-  min-height: 244px;
+  height: 244px;
   border-top: 1px solid ${({theme}) => theme.dark.grey3};
+`
+
+const FooterContainer = styled.div`
+  margin: auto;
+  box-sizing: border-box;
+  max-width: 1200px;
   padding: 40px 8px;
   display: flex;
   flex-direction: column;
@@ -19,11 +25,7 @@ const StyledFooter = styled.footer`
   ${({theme}) => theme.mediaWidth.minExtraSmall`
     flex-direction: row;
     justify-content: space-between;
-    padding: 40px 64px 40px 24px;
-  `}
-
-  ${({theme}) => theme.mediaWidth.minMedium`
-    padding: 40px 188px 40px 104px;
+    padding: 40px 24px;
   `}
 `
 
@@ -152,29 +154,31 @@ const Footer = () => {
 
   return (
     <StyledFooter>
-      <BrandContainer>
-        {/* Overlay */}
-        <LogoContainer>
-          <StyledIconButton href={LINKS.LANDING} target="_blank">
-            <Image src={OverlayLogoDark} alt="Overlay Logo" height={'auto'} width={138} />
-          </StyledIconButton>
-        </LogoContainer>
+      <FooterContainer>
+        <BrandContainer>
+          {/* Overlay */}
+          <LogoContainer>
+            <StyledIconButton href={LINKS.LANDING} target="_blank">
+              <Image src={OverlayLogoDark} alt="Overlay Logo" height={'auto'} width={138} />
+            </StyledIconButton>
+          </LogoContainer>
 
-        {/* Copyright text */}
-        <CopyrightText lineHeight={'160%'}>Copyright {currentYear} © Overlay Foundation, All Rights Reserved</CopyrightText>
-      </BrandContainer>
+          {/* Copyright text */}
+          <CopyrightText lineHeight={'160%'}>Copyright {currentYear} © Overlay Foundation, All Rights Reserved</CopyrightText>
+        </BrandContainer>
 
-      <LinksContainer>
-        {/* About */}
-        <AboutContainer>
-          <LinkSection title="About" links={ABOUT_LINKS} />
-        </AboutContainer>
+        <LinksContainer>
+          {/* About */}
+          <AboutContainer>
+            <LinkSection title="About" links={ABOUT_LINKS} />
+          </AboutContainer>
 
-        {/* Socials */}
-        <SocialsContainer>
-          <LinkSection title="Socials" links={SOCIAL_LINKS} />
-        </SocialsContainer>
-      </LinksContainer>
+          {/* Socials */}
+          <SocialsContainer>
+            <LinkSection title="Socials" links={SOCIAL_LINKS} />
+          </SocialsContainer>
+        </LinksContainer>
+      </FooterContainer>
     </StyledFooter>
   )
 }

@@ -80,7 +80,6 @@ const UsernameIcon = styled.img<{display?: string}>`
   min-height: 32px;
   min-width: 32px;
   border-radius: 50%;
-  border: 1px solid white;
   display: ${({display}) => (display ? display : 'flex')};
   align-items: center;
   justify-content: center;

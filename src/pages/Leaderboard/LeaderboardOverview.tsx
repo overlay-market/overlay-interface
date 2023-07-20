@@ -78,6 +78,13 @@ const LearnMoreLink = styled.a`
   text-decoration: none;
 `
 
+const ResponsiveFlexRow = styled(FlexRowTextContainer)`
+  flex-direction: column;
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    flex-direction: row;
+  `}
+`
+
 const SeasonContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -255,7 +262,7 @@ const LeaderboardOverview = ({
   return (
     <>
       <SeasonContainer>
-        <TEXT.BoldStandardBody color={colors(false).dark.grey2} mr="4px">
+        <TEXT.BoldStandardBody color={colors(false).dark.white} mr="4px">
           Trading Competition:
         </TEXT.BoldStandardBody>
 
@@ -281,14 +288,14 @@ const LeaderboardOverview = ({
       <OverviewContainer>
         <OverviewLeftContainer>
           {account ? (
-            <FlexRowTextContainer>
+            <ResponsiveFlexRow>
               <TEXT.BoldHeader1 fontSize={24} color={colors(false).dark.blue1}>
                 You are eligible for
               </TEXT.BoldHeader1>
               <TEXT.BoldHeader1 fontSize={24} color={colors(false).dark.tan1}>
                 {isLoading ? <Loader size="16px" /> : yourRewards}
               </TEXT.BoldHeader1>
-            </FlexRowTextContainer>
+            </ResponsiveFlexRow>
           ) : (
             <FlexRowTextContainer>
               <ConnectWalletLink onClick={toggleWalletModal} fontSize={24} color={colors(false).dark.blue2}>
@@ -300,14 +307,16 @@ const LeaderboardOverview = ({
             </FlexRowTextContainer>
           )}
 
-          <TEXT.SmallBody color={colors(false).dark.grey2}>Rewards calculated by User Volume / Total Volume x Monthly Reward Pool</TEXT.SmallBody>
+          <TEXT.SmallBody mt={16} color={colors(false).dark.grey2}>
+            Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
+          </TEXT.SmallBody>
 
-          <FlexRowTextContainer>
+          <ResponsiveFlexRow>
             <TEXT.SmallBody color={colors(false).dark.grey2}>Rewards airdropped first week of every month.</TEXT.SmallBody>
             <LearnMoreLink target="_blank" href="https://docs.google.com/document/d/1IAtRTuijLdG8ytlXElVLjYbIPI0BqnN5BK__RY2aZ9A/edit?usp=sharing">
               Learn more ➞
             </LearnMoreLink>
-          </FlexRowTextContainer>
+          </ResponsiveFlexRow>
         </OverviewLeftContainer>
         <OverviewRightContainer>
           <OverviewCard
@@ -317,7 +326,8 @@ const LeaderboardOverview = ({
                 <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo Light'} height={'32px'} width={'32px'} />
               </CardIcon>
             }
-            value={upForGrabs}
+            value={isLoading ? <Loader size="16px" /> : upForGrabs}
+            isLeaderboardCard
           />
           <OverviewCard
             title={seasonEndCountdown === '-' ? 'Season Ended' : 'Season Ends'}
@@ -326,6 +336,7 @@ const LeaderboardOverview = ({
                 <Clock color={colors(false).dark.tan2} />
               </CardIcon>
             }
+            isLeaderboardCard
             value={
               isLoading ? (
                 <Loader size="16px" />

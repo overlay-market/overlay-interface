@@ -71,14 +71,14 @@ const UsernameContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
-  min-height: 50px;
+  min-height: 32px;
   min-width: 240px;
 `
 
 const UsernameIcon = styled.img<{display?: string}>`
   background: grey;
-  min-height: 48px;
-  min-width: 48px;
+  min-height: 32px;
+  min-width: 32px;
   border-radius: 50%;
   border: 1px solid white;
   display: ${({display}) => (display ? display : 'flex')};
@@ -180,7 +180,7 @@ const Leaderboard = () => {
             username,
             totalVolume: volume.toFixed(2) || 0,
             earnings: floorToTwoDecimals(earnings) || 0,
-            pnl: (earnings / volume).toFixed(2),
+            pnl: ((earnings / volume) * 100).toFixed(2),
           }
         }),
       )
@@ -213,8 +213,8 @@ const Leaderboard = () => {
         ...userRank,
         username,
         totalVolume: volume.toFixed(2),
-        earnings: earnings,
-        pnl: (earnings / volume).toFixed(2),
+        earnings: floorToTwoDecimals(earnings) || 0,
+        pnl: ((earnings / volume) * 100).toFixed(2),
       }
 
       setUserData(userRankData as unknown as IUserRank)
@@ -230,7 +230,7 @@ const Leaderboard = () => {
   return (
     <PageContainer>
       <LeaderboardOverview
-        isLoading={rawDataLoading || seasonDataRawLoading}
+        isLoading={rawDataLoading || seasonDataRawLoading || isLoading}
         setSeasonId={setSeasonId}
         userData={userData}
         seasonData={{...leaderboardsData, sessionNumber: seasonNumber}}
@@ -270,7 +270,6 @@ const Leaderboard = () => {
                     <TEXT.Supplemental color={colors(false).dark.grey1}>
                       {userData?.username ?? shortenAddress(userData.walletAddress || account)}
                     </TEXT.Supplemental>
-                    {/* <UsernameIcon display="hidden" /> */}
                   </UsernameContainer>
                 </TableDataCell>
                 <TableDataCell className="rank" noborder="true">
@@ -297,10 +296,10 @@ const Leaderboard = () => {
                 <TableDataCell>
                   <UsernameContainer>
                     <UsernameIcon
-                      src={`https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data?.walletAddress}`}
+                      src={`https://source.boringavatars.com/marble?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data?.walletAddress}`}
                       alt={'Overlay Logo Light'}
-                      height={'48px'}
-                      width={'48px'}
+                      height={'32px'}
+                      width={'32px'}
                     />
                     <TEXT.BoldSmallBody>{data?.username ?? shortenAddress(data?.walletAddress)}</TEXT.BoldSmallBody>
                   </UsernameContainer>

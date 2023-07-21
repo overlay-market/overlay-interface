@@ -9,7 +9,6 @@ const StyledFooter = styled.footer`
   position: absolute;
   bottom: 0;
   width: 100%;
-  box-sizing: border-box;
   height: 244px;
   border-top: 1px solid ${({theme}) => theme.dark.grey3};
 `

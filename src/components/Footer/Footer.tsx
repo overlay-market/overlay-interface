@@ -27,6 +27,10 @@ const FooterContainer = styled.div`
     justify-content: space-between;
     padding: 40px 24px;
   `}
+
+  ${({theme}) => theme.mediaWidth.minLarge`
+    padding: 40px 0px;
+  `}
 `
 
 const BrandContainer = styled.div`
@@ -72,9 +76,10 @@ const StyledLink = styled(Link)`
 `
 
 const AboutContainer = styled.div`
-  margin-right: 64px;
+  flex: 1;
 
   ${({theme}) => theme.mediaWidth.minExtraSmall`
+    margin-right: 64px;
     width: 100%;
   `}
 
@@ -83,7 +88,9 @@ const AboutContainer = styled.div`
   `}
 `
 
-const SocialsContainer = styled.div``
+const SocialsContainer = styled.div`
+  flex: 1;
+`
 
 interface IconButtonProps {
   href: string

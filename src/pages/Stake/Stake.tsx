@@ -543,10 +543,10 @@ const Stake = ({poolData}: PoolProps) => {
               </div>
 
               {/* TODO */}
-              <FlexRow justify="space-between" mt="16px">
+              {/* <FlexRow justify="space-between" mt="16px">
                 <TEXT.SmallBody color={colors(true).dark.grey2}>Est. Received APY</TEXT.SmallBody>
                 <TEXT.SmallBody color={colors(true).dark.blue1}>~40%</TEXT.SmallBody>
-              </FlexRow>
+              </FlexRow> */}
             </div>
 
             {account ? (

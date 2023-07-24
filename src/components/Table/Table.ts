@@ -32,7 +32,6 @@ export const StyledHeaderCell = styled(StyledTableCell)`
 
 export const StyledTableCellThin = styled(StyledTableCell)`
   font-weight: 400;
-  min-width: 250px;
 `
 
 export const StyledTableRow = styled(TableRow)`

@@ -13,7 +13,7 @@ import {useCurrentMarketState, MarketStateResults, ParsedMarketStateDetails} fro
 import {TEXT} from '../../theme/theme'
 import MarketsRow from './MarketsRow'
 import ReactTooltip from 'react-tooltip'
-import {MarketChartMap} from '../../constants/markets'
+import {MarketChartMap, availableMarkets} from '../../constants/markets'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
@@ -96,17 +96,22 @@ const Markets = () => {
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   // toggle to hide 7d chart if data unavailable
-  const hide7dChart = false
+  const hide7dChart = true
 
   // list of hidden markets from Markets page
-  const hiddenMarkets = [
-    '0x909d893d5e7f250659fa56c2ca2920760eebb17f',
-    '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b',
-    '0x5114215415ee91ab5d973ba62fa9153ece1f6c5a',
-  ]
 
   const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
-    const order = ['MILADY / WETH', 'PUDGIES / WETH', 'PUNKS / WETH', 'BAYC / WETH', 'MAYC / WETH', 'AZUKI / WETH', 'WBTC / USD']
+    const order = [
+      'NFT Blue Chip Index / USD',
+      'Crypto Volatility Index',
+      'MILADY / WETH',
+      'PUDGIES / WETH',
+      'PUNKS / WETH',
+      'BAYC / WETH',
+      'MAYC / WETH',
+      'AZUKI / WETH',
+      'WBTC / USD',
+    ]
     for (let marketOrdered of order) {
       if (a.marketName === marketOrdered) return -1
       if (b.marketName === marketOrdered) return 1
@@ -174,7 +179,7 @@ const Markets = () => {
             <TableBody>
               {marketsData.length > 0 &&
                 marketsData
-                  ?.filter(market => !hiddenMarkets.includes(market.marketAddress.toLowerCase()))
+                  ?.filter(market => availableMarkets.includes(market.marketAddress.toLowerCase()))
                   .sort(customSort)
                   .map((market: ParsedMarketStateDetails, index: number) => (
                     <MarketsRow

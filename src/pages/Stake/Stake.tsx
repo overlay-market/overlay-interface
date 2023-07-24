@@ -335,7 +335,7 @@ const Stake = ({poolData}: PoolProps) => {
   const {callback: claimRewardsCallback} = useClaimRewardsCallback(poolData.poolAddress)
 
   const stakingContract = useThirdWebStakingContract(poolData.poolAddress)
-  const stakeInfo = useSingleCallResult(stakingContract, 'getStakeInfo', [account || '0'])
+  const stakeInfo = useSingleCallResult(stakingContract, 'getStakeInfo', [account || '0x0000000000000000000000000000000000000000'])
   const poolRewardsRatio = useSingleCallResult(stakingContract, 'getRewardRatio')
   const getTimeUnit = useSingleCallResult(stakingContract, 'getTimeUnit')
 

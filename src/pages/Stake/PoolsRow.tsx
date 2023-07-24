@@ -35,7 +35,7 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
   let rewards: string | number = 0
 
   const stakingAddress = useThirdWebStakingContract(poolAddress)
-  const stakeInfo = useSingleCallResult(stakingAddress, 'getStakeInfo', [account || '0'])
+  const stakeInfo = useSingleCallResult(stakingAddress, 'getStakeInfo', [account || '0x0000000000000000000000000000000000000000'])
   const stakingTokenBalance = useSingleCallResult(stakingAddress, 'stakingTokenBalance')
   const poolRewardsRatio = useSingleCallResult(stakingAddress, 'getRewardRatio')
   const getTimeUnit = useSingleCallResult(stakingAddress, 'getTimeUnit')

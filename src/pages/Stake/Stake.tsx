@@ -644,7 +644,15 @@ const Stake = ({poolData}: PoolProps) => {
           </div>
         </div>
       </FlexRow>
-
+      {/* Coming Soon banner */}
+      <div style={{textAlign: 'center', paddingBottom: '20px'}}>
+        <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
+          Coming Soon: NIP-powered NFTs!
+        </TEXT.BoldHeader1>
+        <TEXT.StandardBody fontSize={20} lineHeight={'160%'} mb={0.5}>
+          Note: Shown NFTs are EXAMPLES only. Stay tuned for updates!
+        </TEXT.StandardBody>
+      </div>
       <Grid container spacing={8}>
         {powerCards.map((card, idx) => (
           <Grid item xs={12} md={4} justifyContent="center">

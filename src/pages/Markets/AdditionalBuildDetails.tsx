@@ -87,7 +87,7 @@ export const AdditionalDetails = ({
   oiShort?: number
   priceImpact?: string
   slippageTolerance?: string | number
-  expectedOi?: BigNumber | number | null
+  expectedOi?: BigNumber | string | number | null
   fundingRate?: string | number
   estLiquidationPrice?: string | number
   marketAddress?: string

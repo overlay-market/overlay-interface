@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
@@ -17,6 +17,7 @@ import {MarketChartMap, availableMarkets} from '../../constants/markets'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const activeClassName = 'INACTIVE'
 
@@ -94,6 +95,31 @@ const Markets = () => {
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
+
+  useEffect(() => {
+    console.log(toScientificNumber('1,919,953,498,976')) // Output: 1.91995T
+    console.log(toScientificNumber('919,953,498,976')) // Output: 919.953B
+    console.log(toScientificNumber('19,953,498,976')) // Output: 19.9534B
+    console.log(toScientificNumber('9,953,498,976')) // Output: 9.95349B
+    console.log(toScientificNumber('53,498,976')) // Output: 53.4989M
+    console.log(toScientificNumber('953,498,976')) // Output: 953.498M
+    console.log(toScientificNumber('3,498,976')) // Output: 3.49897M
+    console.log(toScientificNumber('498,976')) // Output: 498,976
+    console.log(toScientificNumber('98,976')) // Output: 98,976
+    console.log(toScientificNumber('8,976.00')) // Output: 8,976.00
+    console.log(toScientificNumber('976.0012')) // Output: 976.001
+    console.log(toScientificNumber('76.0012')) // Output: 76.0012
+    console.log(toScientificNumber('6.0012')) // Output: 6.00120
+    console.log(toScientificNumber('0.0012')) // Output: 0.00120
+    console.log(toScientificNumber('0.00012')) // Output: 0.00012
+    console.log(toScientificNumber('0.000012')) // Output: 120e-7
+    console.log(toScientificNumber('0.0000012')) // Output: 120e-8
+    console.log(toScientificNumber('0.00000012')) // Output: 120e-9
+    console.log(toScientificNumber('0.000000012')) // Output: 120e-10
+    console.log(toScientificNumber('0.00005124136')) // Output: 120e-10
+    console.log(toScientificNumber('0')) // Output: 0
+    console.log(toScientificNumber('1')) // Output: 1
+  }, [])
 
   // toggle to hide 7d chart if data unavailable
   const hide7dChart = true

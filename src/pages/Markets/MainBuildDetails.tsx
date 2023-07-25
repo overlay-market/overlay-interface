@@ -4,6 +4,7 @@ import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import Loader from '../../components/Loaders/Loaders'
 import {BigNumber} from 'ethers'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const ContentContainer = styled(FlexColumn)`
   padding: 0 16px;
@@ -97,7 +98,7 @@ export const MainDetails = ({
     const priceImpactValue = isLong ? estimatedReceivedPrice - askPrice : bidPrice - estimatedReceivedPrice
     const priceImpactPercentage = isLong ? (priceImpactValue / askPrice) * 100 : (priceImpactValue / bidPrice) * 100
 
-    return priceImpactPercentage.toFixed(2)
+    return toScientificNumber(priceImpactPercentage)
   }, [estimatedReceivedPrice, typedValue, isLong, bidPrice, askPrice])
   return (
     <ContentContainer>

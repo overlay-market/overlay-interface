@@ -9,6 +9,8 @@ import {Icon} from '../../components/Icon/Icon'
 import {ExternalLink as LinkIconFeather} from 'react-feather'
 import {useActiveWeb3React} from '../../hooks/web3'
 import ReactTooltip from 'react-tooltip'
+import {BigNumber} from 'ethers'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const ContentContainer = styled(FlexColumn)`
   padding: 0 16px;
@@ -85,7 +87,7 @@ export const AdditionalDetails = ({
   oiShort?: number
   priceImpact?: string
   slippageTolerance?: string | number
-  expectedOi?: string | number | null
+  expectedOi?: BigNumber | number | null
   fundingRate?: string | number
   estLiquidationPrice?: string | number
   marketAddress?: string
@@ -134,7 +136,7 @@ export const AdditionalDetails = ({
 
       <AdditionalDetailRow>
         <PositionDetailType>Expected OI</PositionDetailType>
-        <DetailValue>{expectedOi ? expectedOi : '-'}</DetailValue>
+        <DetailValue>{expectedOi ? toScientificNumber(expectedOi) : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>

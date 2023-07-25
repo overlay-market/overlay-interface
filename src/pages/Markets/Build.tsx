@@ -570,7 +570,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           onChange={handleLeverageInput}
         />
         <NumericalInputLabel htmlFor="Build Amount Input">
-          <NumericalInputTitle> Amount </NumericalInputTitle>
+          <NumericalInputTitle>Amount</NumericalInputTitle>
           <FlexRow ml="auto" mb="4px" width="auto">
             <TransparentUnderlineButton onClick={() => handleQuickInput(25, ovlBalance?.toFixed(6) ?? null)}>25%</TransparentUnderlineButton>
             <TransparentUnderlineButton onClick={() => handleQuickInput(50, ovlBalance?.toFixed(6) ?? null)}>50%</TransparentUnderlineButton>
@@ -579,7 +579,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </FlexRow>
         </NumericalInputLabel>
         <NumericalInputContainer>
-          <NumericalInputDescriptor> OVL </NumericalInputDescriptor>
+          <NumericalInputDescriptor>OVL</NumericalInputDescriptor>
           <NumericalInput align={'right'} onUserInput={handleUserInput} value={typedValue?.toString()} />
         </NumericalInputContainer>
         <NumericalInputBottomText>

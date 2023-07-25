@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import {BigNumber as EthersBigNumber} from 'ethers'
 
 const BIG_ZERO = new BigNumber(0)
 const BIG_ONE = new BigNumber(1)
@@ -7,7 +8,7 @@ const TRILLION = BIG_ONE.shiftedBy(12)
 const BILLION = BIG_ONE.shiftedBy(9)
 const MILLION = BIG_ONE.shiftedBy(6)
 
-const parseBigNumberOrZero = (input: string | BigNumber | number | null) => {
+const parseBigNumberOrZero = (input: string | BigNumber | EthersBigNumber | number | null) => {
   if (!input) return BIG_ZERO
 
   // Remove any commas
@@ -21,16 +22,36 @@ const parseBigNumberOrZero = (input: string | BigNumber | number | null) => {
 }
 
 const toPrecisionTrim = (value: BigNumber, significantFigures: number) => {
-  let formattedValue = value.toPrecision(significantFigures).replace(/(\.[0-9]*?)0+$/, '$1')
+  let formattedValue = value.toPrecision(significantFigures, 1).replace(/(\.[0-9]*?)0+$/, '$1')
+
+  // Add back commas when necessary
+  const parts = formattedValue.split('.')
+  parts[0] = new BigNumber(parts[0]).toFormat()
+  formattedValue = parts.join('.')
+
   return formattedValue.endsWith('.') ? formattedValue.slice(0, -1) : formattedValue
 }
 
-export const toScientificNumber = (input: string | BigNumber | number | null) => {
-  const value = parseBigNumberOrZero(input)
+export const toScientificNumber = (input: string | BigNumber | EthersBigNumber | number | null | undefined) => {
+  const value = parseBigNumberOrZero(input || 0)
 
   // Check if the value is zero
   if (value.isZero()) {
     return value.toFixed()
+  }
+
+  // Check if value less than 0.0001 for exponential
+  if (value.abs().lt(0.0001)) {
+    let exponent = 0
+    let absValue = value.abs()
+
+    // Multiply till base is > 100
+    while (absValue.lt(100)) {
+      absValue = absValue.times(10)
+      exponent--
+    }
+
+    return `${toPrecisionTrim(absValue, 6)}e-${-exponent}`
   }
 
   // Check if the value is less than 1 million

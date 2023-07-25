@@ -147,10 +147,12 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
           <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
             <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
           </StyledInternalLink>
+          <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
+            <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />
+          </StyledInternalLink>
           <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
           </StyledInternalLink>
-
           <Separator />
           <ExternalLinks mobile isSubMenuOpen={isSubMenuOpen} setIsSubMenuOpen={setIsSubMenuOpen} />
         </Content>

@@ -412,6 +412,9 @@ const Stake = ({poolData}: PoolProps) => {
       })
       .catch(error => {
         console.error(error)
+        setClaimState({
+          attemptingTransaction: false,
+        })
       })
   }, [claimRewardsCallback])
 

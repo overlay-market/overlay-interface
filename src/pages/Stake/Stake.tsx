@@ -528,7 +528,13 @@ const Stake = ({poolData}: PoolProps) => {
               <div className={classes.inputContainer}>
                 <FlexRow justify="space-between" mb="25px">
                   <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
-                  <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
+                  <TEXT.Supplemental
+                    color={colors(true).dark.grey2}
+                    style={{textDecoration: 'underline', cursor: 'pointer'}}
+                    onClick={() =>
+                      handleUserInput(poolType === 'stake' ? ovlBalance?.toExact() ?? '0' : formatBigNumber(stakedAmount, 18, 6)?.toString() ?? '0')
+                    }
+                  >
                     Max: {poolType === 'stake' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
                   </TEXT.Supplemental>
                 </FlexRow>

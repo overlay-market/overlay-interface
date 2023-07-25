@@ -317,7 +317,7 @@ const Stake = ({poolData}: PoolProps) => {
   const toggleWalletModal = useWalletModalToggle()
   const [poolType, setPoolType] = useState<string>('stake')
   const [inputAmount, setInputAmount] = useState<string>('')
-  const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setStakeState] = useState<{
+  const [{attemptingTransaction}, setStakeState] = useState<{
     showConfirm: boolean
     attemptingTransaction: boolean
     transactionErrorMessage: string | undefined

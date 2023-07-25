@@ -20,7 +20,6 @@ import {colors} from '../../theme/theme'
 import {PoolsData} from '../../constants/stake'
 import {useStakeCallback} from '../../hooks/useStakeCallback'
 import {useWithdrawCallback} from '../../hooks/useWithdrawCallback'
-import {useClaimRewardsCallback} from '../../hooks/useClaimRewardsCallback'
 import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useThirdWebStakingContract} from '../../hooks/useContract'
 import {BigNumber} from 'ethers'
@@ -280,7 +279,7 @@ const LiquidityPool = ({poolData}: PoolProps) => {
   const toggleWalletModal = useWalletModalToggle()
   const [poolType, setPoolType] = useState<string>('add')
   const [inputAmount, setInputAmount] = useState<string>('0')
-  const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setStakeState] = useState<{
+  const [{attemptingTransaction}, setStakeState] = useState<{
     showConfirm: boolean
     attemptingTransaction: boolean
     transactionErrorMessage: string | undefined
@@ -291,32 +290,19 @@ const LiquidityPool = ({poolData}: PoolProps) => {
     transactionErrorMessage: undefined,
     transactionHash: undefined,
   })
-  const [{attemptingTransaction: attemptingClaimTransaction}, setClaimState] = useState<{attemptingTransaction: boolean}>({
-    attemptingTransaction: false,
-  })
+
   const chainId = useAppSelector((state: AppState) => state.application.chainId)
   const ovl = chainId ? OVL[chainId] : undefined
 
   const {callback: stakeCallback} = useStakeCallback(inputAmount, poolData.poolAddress)
   const {callback: withdrawCallback} = useWithdrawCallback(inputAmount, poolData.poolAddress)
-  const {callback: claimRewardsCallback} = useClaimRewardsCallback(poolData.poolAddress)
 
   const stakingContract = useThirdWebStakingContract(poolData.poolAddress)
   const stakeInfo = useSingleCallResult(stakingContract, 'getStakeInfo', [account || '0x0000000000000000000000000000000000000000'])
-  const poolRewardsRatio = useSingleCallResult(stakingContract, 'getRewardRatio')
-  const getTimeUnit = useSingleCallResult(stakingContract, 'getTimeUnit')
 
   const stakedAmount: BigNumber = stakeInfo?.result?.[0] ?? (BigNumber.from(0) as BigNumber)
-  const rewardAmount: BigNumber = stakeInfo?.result?.[1] ?? (BigNumber.from(0) as BigNumber)
-  const timeUnitSeconds: number = getTimeUnit?.result?.[0] ?? 0
-  const secondsInDay = 86400
-  const timeUnitDays = timeUnitSeconds / secondsInDay
 
   const stakedAmountFormatted = formatBigNumber(stakedAmount, 18, 2) ?? 0
-  const rewardAmountFormatted = formatBigNumber(rewardAmount, 18, 2) ?? 0
-  const poolRewards = `${poolRewardsRatio?.result?.[0]} NIP/${poolRewardsRatio?.result?.[1]} OVL/${
-    timeUnitSeconds >= secondsInDay ? (timeUnitDays === 1 ? 'DAY' : timeUnitDays + 'd') : timeUnitSeconds / 60 + 'min'
-  }`
 
   const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolData.poolAddress.toLowerCase(), ovl)
 
@@ -363,24 +349,6 @@ const LiquidityPool = ({poolData}: PoolProps) => {
   const handleUserInput = (input: string) => {
     setInputAmount(input)
   }
-
-  const handleClaimRewards = useCallback(() => {
-    if (!claimRewardsCallback) return
-
-    setClaimState({
-      attemptingTransaction: true,
-    })
-
-    claimRewardsCallback()
-      .then(hash => {
-        setClaimState({
-          attemptingTransaction: false,
-        })
-      })
-      .catch(error => {
-        console.error(error)
-      })
-  }, [claimRewardsCallback])
 
   const handleConfirm = useCallback(() => {
     const callback = poolType === 'stake' ? stakeCallback : withdrawCallback

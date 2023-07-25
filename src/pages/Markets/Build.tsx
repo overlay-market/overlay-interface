@@ -47,21 +47,22 @@ import {marketNameFromDescription} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
+import {Trans} from '@lingui/react'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
-  border: 1px solid #f2f2f2;
-  margin: 4px 0;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: ${({theme}) => theme.dark.grey4};
 `
 const SelectLongPositionButton = styled(SelectPositionSideButton)`
-  color: ${({active}) => (active ? '#0B0F1C' : '#10DCB1')};
-  background: ${({active}) => (active ? '#10DCB1' : 'transparent')};
-  border: ${({active}) => active && '1px solid #10DCB1'};
+  color: ${({theme}) => theme.dark.green};
 `
 
 const SelectShortPositionButton = styled(SelectPositionSideButton)`
-  color: ${({active}) => (active ? '#0B0F1C' : '#FF648A')};
-  background: ${({active}) => (active ? '#FF648A' : 'transparent')};
-  border: ${({active}) => active && '1px solid #FF648A'};
+  color: ${({theme}) => theme.dark.red};
 `
 
 const TriggerBuildButton = styled(TriggerActionButton)`
@@ -88,7 +89,6 @@ const PositionsButtonContainer = styled.div`
   flex-direction: row;
   width: 100%;
   gap: 8px;
-  background: red;
 `
 
 export const NumericalInputContainer = styled(FlexRow)`
@@ -412,6 +412,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const estimatedBid: BigNumber | undefined = useBid(market?.id, estimatedFractionOfCapOi)
   const estimatedAsk: BigNumber | undefined = useAsk(market?.id, estimatedFractionOfCapOi)
 
+  console.log({market})
+
   const estimatedLiquidationPriceResult = useEstimatedBuildLiquidationPrice(market?.id, typedValue, selectedLeverage, isLong)
 
   const estimatedLiquidationPrice = estimatedLiquidationPriceResult
@@ -534,10 +536,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </ControlInterfaceHeadContainer>
           <PositionsButtonContainer>
             <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
-              Long
+              <div>Long</div>
+              {/* Add market priceCurrency */}
+              <TEXT.BoldSmallBody fontWeight={500}>{headerPrice}</TEXT.BoldSmallBody>
             </SelectLongPositionButton>
             <SelectShortPositionButton onClick={() => handleSelectPositionSide(false)} active={!isLong && isLong !== undefined}>
-              Short
+              <div>Short</div>
+              {/* Add market priceCurrency */}
+              <TEXT.BoldSmallBody fontWeight={500}>{headerPrice}</TEXT.BoldSmallBody>
             </SelectShortPositionButton>
           </PositionsButtonContainer>
           <LeverageSlider
@@ -545,7 +551,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             min={1}
             max={capLeverage ?? 1}
             step={0.1}
-            margin={'24px 0 0 0'}
             value={Number(selectedLeverage)}
             onChange={handleLeverageInput}
           />

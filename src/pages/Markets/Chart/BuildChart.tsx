@@ -1,57 +1,93 @@
 import {useEffect, useRef} from 'react'
+import {widget, ChartingLibraryWidgetOptions, ResolutionString} from '../../../charting_library'
+import * as React from 'react'
 import styled from 'styled-components'
-import {createChart, ChartOptions} from 'lightweight-charts'
 
-let tvScriptLoadingPromise: Promise<void>
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+const TVChartContainer = styled.div`
   width: 1000px;
-  height: 500px;
   padding-right: 16px;
+  max-height: 600px;
 `
+export interface ChartContainerProps {
+  symbol: ChartingLibraryWidgetOptions['symbol']
+  interval: ChartingLibraryWidgetOptions['interval']
+  // BEWARE: no trailing slash is expected in feed URL
+  datafeedUrl: string
+  libraryPath: ChartingLibraryWidgetOptions['library_path']
+  chartsStorageUrl: ChartingLibraryWidgetOptions['charts_storage_url']
+  chartsStorageApiVersion: ChartingLibraryWidgetOptions['charts_storage_api_version']
+  clientId: ChartingLibraryWidgetOptions['client_id']
+  userId: ChartingLibraryWidgetOptions['user_id']
+  fullscreen: ChartingLibraryWidgetOptions['fullscreen']
+  autosize: ChartingLibraryWidgetOptions['autosize']
+  studiesOverrides: ChartingLibraryWidgetOptions['studies_overrides']
+  container: ChartingLibraryWidgetOptions['container']
+  theme: ChartingLibraryWidgetOptions['theme']
+}
 
-export default function BuildChartV2() {
-  const onLoadScriptRef = useRef<(() => void) | null>()
+export const BuildChart = () => {
+  const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>
 
   useEffect(() => {
-    const chartContainer = document.getElementById('tradingview_overlay')
-    if (chartContainer) {
-      // const chartOptions: ChartOptions = {
-      //   autoSize: true,
-      // }
-      const chart = createChart(chartContainer)
+    const defaultProps: Omit<ChartContainerProps, 'container'> = {
+      symbol: 'AAPL',
+      interval: 'D' as ResolutionString,
+      datafeedUrl: 'https://demo_feed.tradingview.com',
+      libraryPath: '/charting_library/',
+      chartsStorageUrl: 'https://saveload.tradingview.com',
+      chartsStorageApiVersion: '1.1',
+      clientId: 'tradingview.com',
+      userId: 'public_user_id_paul',
+      fullscreen: false,
+      autosize: true,
+      studiesOverrides: {},
+      theme: 'dark',
+    }
+    const widgetOptions: ChartingLibraryWidgetOptions = {
+      symbol: defaultProps.symbol as string,
+      // BEWARE: no trailing slash is expected in feed URL
+      // tslint:disable-next-line:no-any
+      datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(defaultProps.datafeedUrl),
+      interval: defaultProps.interval as ChartingLibraryWidgetOptions['interval'],
+      container: chartContainerRef.current,
+      library_path: defaultProps.libraryPath as string,
+      locale: 'en',
+      disabled_features: ['use_localstorage_for_settings'],
+      enabled_features: ['study_templates'],
+      charts_storage_url: defaultProps.chartsStorageUrl,
+      charts_storage_api_version: defaultProps.chartsStorageApiVersion,
+      client_id: defaultProps.clientId,
+      user_id: defaultProps.userId,
+      fullscreen: defaultProps.fullscreen,
+      autosize: defaultProps.autosize,
+      studies_overrides: defaultProps.studiesOverrides,
+      theme: defaultProps.theme,
+    }
 
-      const candlestickSeries = chart.addCandlestickSeries({
-        upColor: '#26a69a',
-        downColor: '#ef5350',
-        borderVisible: false,
-        wickUpColor: '#26a69a',
-        wickDownColor: '#ef5350',
+    const tvWidget = new widget(widgetOptions)
+
+    tvWidget.onChartReady(() => {
+      tvWidget.headerReady().then(() => {
+        const button = tvWidget.createButton()
+        button.setAttribute('title', 'Click to show a notification popup')
+        button.classList.add('apply-common-tooltip')
+        button.addEventListener('click', () =>
+          tvWidget.showNoticeDialog({
+            title: 'Notification',
+            body: 'TradingView Charting Library API works correctly',
+            callback: () => {
+              console.log('Noticed!')
+            },
+          }),
+        )
+        button.innerHTML = 'Check API'
       })
+    })
 
-      candlestickSeries.setData([
-        {time: '2018-12-22', open: 75.16, high: 82.84, low: 36.16, close: 45.72},
-        {time: '2018-12-23', open: 45.12, high: 53.9, low: 45.12, close: 48.09},
-        {time: '2018-12-24', open: 60.71, high: 60.71, low: 53.39, close: 59.29},
-        {time: '2018-12-25', open: 68.26, high: 68.26, low: 59.04, close: 60.5},
-        {time: '2018-12-26', open: 67.71, high: 105.85, low: 66.67, close: 91.04},
-        {time: '2018-12-27', open: 91.04, high: 121.4, low: 82.7, close: 111.4},
-        {time: '2018-12-28', open: 111.51, high: 142.83, low: 103.34, close: 131.25},
-        {time: '2018-12-29', open: 131.33, high: 151.17, low: 77.68, close: 96.43},
-        {time: '2018-12-30', open: 106.33, high: 110.2, low: 90.39, close: 98.1},
-        {time: '2018-12-31', open: 109.87, high: 114.69, low: 85.66, close: 111.26},
-      ])
-
-      chart.timeScale().fitContent()
+    return () => {
+      tvWidget.remove()
     }
   }, [])
 
-  return (
-    <Container>
-      <div id="tradingview_overlay" />
-    </Container>
-  )
+  return <TVChartContainer ref={chartContainerRef} />
 }

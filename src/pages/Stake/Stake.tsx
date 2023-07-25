@@ -229,7 +229,7 @@ const useStyles = makeStyles(theme => ({
     boxShadow: '0px 0px 12px 6px rgba(91, 96, 164, 0.25)',
     borderRadius: '8px;',
     marginTop: '20px',
-    width: '70%',
+    width: '90%',
   },
   powerCardImage: {
     objectFit: 'cover',
@@ -264,6 +264,7 @@ const useStyles = makeStyles(theme => ({
 
 export interface PowerCardData {
   name: string
+  image: string
   powerType: string
   powerName: string
   powerValue: string
@@ -275,6 +276,7 @@ export interface PowerCardData {
 const powerCards: PowerCardData[] = [
   {
     name: 'Samurai Jack',
+    image: '/images/NIP-NFTs/samurai-jack.png',
     powerType: 'Rebate',
     powerName: 'Rebates on losses',
     powerValue: 'Up to 5 OVL',
@@ -284,6 +286,7 @@ const powerCards: PowerCardData[] = [
   },
   {
     name: 'Fight for Fish',
+    image: '/images/NIP-NFTs/fight-for-fish.png',
     powerType: 'Rebate',
     powerName: 'Negative fees',
     powerValue: 'Get paid to trade',
@@ -293,6 +296,7 @@ const powerCards: PowerCardData[] = [
   },
   {
     name: 'The Silent Warrior',
+    image: '/images/NIP-NFTs/the-silent-warrior.png',
     powerType: 'Leverage',
     powerName: 'Degen Leverage',
     powerValue: '150x Leverage',
@@ -668,13 +672,7 @@ const Stake = ({poolData}: PoolProps) => {
 
               {/* Image */}
               <Card className={classes.powerCardImageCard}>
-                <CardMedia
-                  component="img"
-                  height="245"
-                  image="https://image.lexica.art/full_jpg/0d28e99e-1a39-46d5-b9f4-bc8009a75a81"
-                  title={card.name}
-                  className={classes.powerCardImage}
-                />
+                <CardMedia component="img" height="245" image={card.image} title={card.name} className={classes.powerCardImage} />
                 <CardContent className={classes.powerCardImageContent}>
                   <TEXT.StandardBody mb={12} fontSize="14px">
                     {card.powerName}

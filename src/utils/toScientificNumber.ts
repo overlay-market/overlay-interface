@@ -56,7 +56,7 @@ export const toScientificNumber = (input: string | BigNumber | EthersBigNumber |
       exponent--
     }
 
-    return `${sign}${toPrecisionTrim(absValue, 6)}e-${-exponent}`
+    return `${sign}${toPrecisionTrim(absValue, 3)}e-${-exponent}`
   }
 
   // Check if the value is less than 1 million

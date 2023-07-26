@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
@@ -17,6 +17,7 @@ import {MarketChartMap, availableMarkets} from '../../constants/markets'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const activeClassName = 'INACTIVE'
 

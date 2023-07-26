@@ -22,14 +22,18 @@ const parseBigNumberOrZero = (input: string | BigNumber | EthersBigNumber | numb
 }
 
 const toPrecisionTrim = (value: BigNumber, significantFigures: number) => {
-  let formattedValue = value.toPrecision(significantFigures, 1).replace(/(\.[0-9]*?)0+$/, '$1')
+  const isNegative = value.isNegative()
+  const absValue = value.abs()
+
+  let formattedValue = absValue.toPrecision(significantFigures, 1).replace(/(\.[0-9]*?)0+$/, '$1')
 
   // Add back commas when necessary
   const parts = formattedValue.split('.')
   parts[0] = new BigNumber(parts[0]).toFormat()
   formattedValue = parts.join('.')
 
-  return formattedValue.endsWith('.') ? formattedValue.slice(0, -1) : formattedValue
+  formattedValue = formattedValue.endsWith('.') ? formattedValue.slice(0, -1) : formattedValue
+  return isNegative ? `-${formattedValue}` : formattedValue
 }
 
 export const toScientificNumber = (input: string | BigNumber | EthersBigNumber | number | null | undefined) => {
@@ -42,6 +46,7 @@ export const toScientificNumber = (input: string | BigNumber | EthersBigNumber |
 
   // Check if value less than 0.0001 for exponential
   if (value.abs().lt(0.0001)) {
+    const sign = value.isNegative() ? '-' : ''
     let exponent = 0
     let absValue = value.abs()
 
@@ -51,7 +56,7 @@ export const toScientificNumber = (input: string | BigNumber | EthersBigNumber |
       exponent--
     }
 
-    return `${toPrecisionTrim(absValue, 6)}e-${-exponent}`
+    return `${sign}${toPrecisionTrim(absValue, 6)}e-${-exponent}`
   }
 
   // Check if the value is less than 1 million

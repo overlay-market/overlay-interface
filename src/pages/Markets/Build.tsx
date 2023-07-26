@@ -46,6 +46,7 @@ import {useAsk} from '../../hooks/useAsk'
 import {marketNameFromDescription} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border: 1px solid #f2f2f2;
@@ -183,14 +184,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     if (!baseTokenDecimals && !decimals) return undefined
     if (!marketTokensDecimalsDifference && typeof marketTokensDecimalsDifference !== 'number' && !decimals) return undefined
     if (decimals) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiLong, decimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiLong, decimals, decimals)
     }
     if (marketTokensDecimalsDifference === 0) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiLong, baseTokenDecimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiLong, baseTokenDecimals, baseTokenDecimals)
     } else {
       // divide by ONE or 1e18 based on fixed point calc for OI in solidity
       const divBy1e18 = rawOiLong.div(ethers.constants.WeiPerEther)
-      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, marketTokensDecimalsDifference)
     }
   }, [rawOiLong, baseTokenDecimals, decimals, marketTokensDecimalsDifference])
 
@@ -199,14 +200,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     if (!baseTokenDecimals && !decimals) return undefined
     if (!marketTokensDecimalsDifference && typeof marketTokensDecimalsDifference !== 'number' && !decimals) return undefined
     if (decimals) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiShort, decimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiShort, decimals, decimals)
     }
     if (marketTokensDecimalsDifference === 0) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiShort, baseTokenDecimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiShort, baseTokenDecimals, baseTokenDecimals)
     } else {
       // divide by ONE or 1e18 based on fixed point calc for OI in solidity
       const divBy1e18 = rawOiShort.div(ethers.constants.WeiPerEther)
-      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, marketTokensDecimalsDifference)
     }
   }, [rawOiShort, baseTokenDecimals, decimals, marketTokensDecimalsDifference])
 
@@ -217,14 +218,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     if (!baseTokenDecimals && !decimals) return undefined
     if (!marketTokensDecimalsDifference && typeof marketTokensDecimalsDifference !== 'number' && !decimals) return undefined
     if (decimals) {
-      return formatBigNumberUsingDecimalsToNumber(rawCapOi, decimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawCapOi, decimals, decimals)
     }
     if (marketTokensDecimalsDifference === 0) {
-      return formatBigNumberUsingDecimalsToNumber(rawCapOi, baseTokenDecimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawCapOi, baseTokenDecimals, baseTokenDecimals)
     } else {
       // divide by ONE or 1e18 based on fixed point calc for OI in solidity
       const divBy1e18 = rawCapOi.div(ethers.constants.WeiPerEther)
-      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, marketTokensDecimalsDifference)
     }
   }, [rawCapOi, decimals, baseTokenDecimals, marketTokensDecimalsDifference])
 
@@ -391,7 +392,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const estimatedOiResult = useEstimatedBuildOi(market?.id, typedValue, selectedLeverage, isLong, decimals, baseTokenDecimals, quoteTokenDecimals)
 
   const rawExpectedOi = estimatedOiResult.rawOi ? estimatedOiResult.rawOi : null
-  const expectedOi = estimatedOiResult?.formattedOi ? estimatedOiResult?.formattedOi : null
+  const expectedOi = formatBigNumberUsingDecimalsToNumber(rawExpectedOi?.toString(), 18, 18)
+  console.log({estimatedOiResult, rawOi: rawExpectedOi?.toString(), expectedOi})
   const estimatedFractionOfCapOi = useFractionOfCapOi(market?.id, estimatedOiResult?.rawOi)
   const estimatedBid: BigNumber | undefined = useBid(market?.id, estimatedFractionOfCapOi)
   const estimatedAsk: BigNumber | undefined = useAsk(market?.id, estimatedFractionOfCapOi)
@@ -513,7 +515,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
         <ControlInterfaceHeadContainer>
           <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
-          <TEXT.StandardHeader1>{headerPrice}</TEXT.StandardHeader1>
+          <TEXT.StandardHeader1>{toScientificNumber(headerPrice)}</TEXT.StandardHeader1>
           {isTxnSettingsOpen ? (
             <Icon
               onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
@@ -570,7 +572,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           onChange={handleLeverageInput}
         />
         <NumericalInputLabel htmlFor="Build Amount Input">
-          <NumericalInputTitle> Amount </NumericalInputTitle>
+          <NumericalInputTitle>Amount</NumericalInputTitle>
           <FlexRow ml="auto" mb="4px" width="auto">
             <TransparentUnderlineButton onClick={() => handleQuickInput(25, ovlBalance?.toFixed(6) ?? null)}>25%</TransparentUnderlineButton>
             <TransparentUnderlineButton onClick={() => handleQuickInput(50, ovlBalance?.toFixed(6) ?? null)}>50%</TransparentUnderlineButton>
@@ -579,7 +581,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </FlexRow>
         </NumericalInputLabel>
         <NumericalInputContainer>
-          <NumericalInputDescriptor> OVL </NumericalInputDescriptor>
+          <NumericalInputDescriptor>OVL</NumericalInputDescriptor>
           <NumericalInput align={'right'} onUserInput={handleUserInput} value={typedValue?.toString()} />
         </NumericalInputContainer>
         <NumericalInputBottomText>

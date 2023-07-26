@@ -9,8 +9,9 @@ const StyledInput = styled.input<{
   align?: string
   height?: string
   padding?: string
+  color?: string
 }>`
-  color: ${({error, theme}) => (error ? theme.dark.red : theme.dark.white)};
+  color: ${({error, theme, color}) => (error ? theme.dark.red : color ? color : theme.dark.white)};
   width: 100%;
   position: relative;
   font-weight: 500;
@@ -56,6 +57,7 @@ export const NumericalInput = React.memo(function InnerInput({
   prependSymbol,
   height,
   padding,
+  color,
   ...rest
 }: {
   value: string | number | undefined
@@ -67,6 +69,7 @@ export const NumericalInput = React.memo(function InnerInput({
   height?: string
   padding?: string
   prependSymbol?: string | undefined
+  color?: string
 } & Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'>) {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {

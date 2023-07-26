@@ -13,13 +13,15 @@ export enum SecurityRiskLevels {
 }
 
 enum LambdaEndpoint {
-  REGISTER_ADDRESS = '/api/register/',
-  SCREEN_ADDRESS = '/api/user/',
+  REGISTER_ADDRESS = '/api/register/?walletAddress=',
+  SCREEN_ADDRESS = '/api/user/?walletAddress=',
 }
 
 enum RegisterResponseMessage {
   CREATED = 'Address register successful',
 }
+
+const baseUrl = 'https://api.overlay.market/chainalysis'
 
 export default function ChainalysisManager({children}: {children: JSX.Element | JSX.Element[]}) {
   const {account: connectedAccount} = useActiveWeb3React()
@@ -39,7 +41,7 @@ export default function ChainalysisManager({children}: {children: JSX.Element | 
 
   const [, executeRegisterAddress] = useAxios(
     {
-      url: LambdaEndpoint.REGISTER_ADDRESS + connectedAccount,
+      url: baseUrl + LambdaEndpoint.REGISTER_ADDRESS + connectedAccount,
       method: 'POST',
     },
     {manual: true},
@@ -47,7 +49,7 @@ export default function ChainalysisManager({children}: {children: JSX.Element | 
 
   const [, executeGetAddress] = useAxios(
     {
-      url: LambdaEndpoint.SCREEN_ADDRESS + connectedAccount,
+      url: baseUrl + LambdaEndpoint.SCREEN_ADDRESS + connectedAccount,
       method: 'GET',
     },
     {manual: true},

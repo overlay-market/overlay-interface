@@ -1,9 +1,11 @@
 import Markets from '../pages/Markets/Markets'
 import Positions from '../pages/Positions/PositionsPage'
+import Pools from '../pages/Stake/StakePage'
+import Pool from '../pages/Stake/PoolWrapper'
 import Liquidate from '../pages/Liquidate/Liquidate'
 import {Market} from '../pages/Markets/Market'
 import {Unwind} from '../pages/Positions/Unwind'
-import { ClosedPosition } from '../pages/Positions/ClosedPosition'
+import {ClosedPosition} from '../pages/Positions/ClosedPosition'
 
 const routesConfig = [
   {
@@ -32,6 +34,14 @@ const routesConfig = [
   {
     path: '/closed-positions/:marketPositionId/:positionId',
     component: () => ClosedPosition,
+  },
+  {
+    path: '/stake',
+    component: () => Pools,
+  },
+  {
+    path: '/stake/:poolAddress',
+    component: () => Pool,
   },
   {
     path: '/liquidate',

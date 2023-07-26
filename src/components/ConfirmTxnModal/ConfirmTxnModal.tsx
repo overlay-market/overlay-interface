@@ -67,7 +67,7 @@ export default function ConfirmTxnModal({
             </FlexColumn>
 
             <FlexColumn mt={'16px'} color={'white'}>
-              <AdditionalDetailRow detail={'Price'} detailColor={'#B9BABD'} value={marketPrice} />
+              <AdditionalDetailRow detail={'Price'} detailColor={'#B9BABD'} value={toScientificNumber(marketPrice)} />
 
               <AdditionalDetailRow
                 detail={'Side'}
@@ -84,7 +84,7 @@ export default function ConfirmTxnModal({
 
               <AdditionalDetailRow detail={'Slippage Tolerance'} detailColor={'#B9BABD'} value={`${setSlippageValue}%`} />
 
-              <AdditionalDetailRow detail={'Est. Liquidation Price'} detailColor={'#B9BABD'} value={estimatedLiquidationPrice} />
+              <AdditionalDetailRow detail={'Est. Liquidation Price'} detailColor={'#B9BABD'} value={toScientificNumber(estimatedLiquidationPrice)} />
             </FlexColumn>
 
             <FlexColumn mt={'48px'} color={'white'}>

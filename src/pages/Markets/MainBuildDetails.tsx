@@ -98,18 +98,18 @@ export const MainDetails = ({
     const priceImpactValue = isLong ? estimatedReceivedPrice - askPrice : bidPrice - estimatedReceivedPrice
     const priceImpactPercentage = isLong ? (priceImpactValue / askPrice) * 100 : (priceImpactValue / bidPrice) * 100
 
-    return toScientificNumber(priceImpactPercentage)
+    return priceImpactPercentage.toFixed(2)
   }, [estimatedReceivedPrice, typedValue, isLong, bidPrice, askPrice])
   return (
     <ContentContainer>
       <AdditionalDetailRow>
         <PositionDetailType>Est. Received Price</PositionDetailType>
-        <DetailValue>{estimatedReceivedPrice && minPrice ? estimatedReceivedPrice : '-'}</DetailValue>
+        <DetailValue>{estimatedReceivedPrice && minPrice ? toScientificNumber(estimatedReceivedPrice) : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
         <PositionDetailType>Worst Received Price</PositionDetailType>
-        <DetailValue>{minPrice ? formatBigNumberUsingDecimalsToString(minPrice, 18, 4) : '-'}</DetailValue>
+        <DetailValue>{minPrice ? toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4)) : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>

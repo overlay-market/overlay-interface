@@ -4,22 +4,22 @@ import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import Loader from '../../components/Loaders/Loaders'
 import {BigNumber} from 'ethers'
+import {TEXT, colors} from '../../theme/theme'
 
 const ContentContainer = styled(FlexColumn)`
-  padding: 0 16px;
-  margin-bottom: 20px;
+  gap: 16px;
 `
 
 const AdditionalDetailRow = styled(FlexRow)`
   width: 100%;
   display: flex;
-  margin: 12px 0;
+  justify-content: space-between;
 `
 
 export const PositionDetailType = styled.div`
   color: #b9babd;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
 `
 
 export const PositionDetailTypeDashed = styled.div`
@@ -29,10 +29,8 @@ export const PositionDetailTypeDashed = styled.div`
   text-decoration: underline dashed;
 `
 
-export const DetailValue = styled.div<{color?: string}>`
-  color: ${({color}) => (color ? color : '#B9BABD')};
+export const DetailValue = styled(TEXT.SmallBody)`
   display: flex;
-  font-size: 14px;
   margin-left: auto;
   flex-direction: row;
 `
@@ -102,18 +100,18 @@ export const MainDetails = ({
   return (
     <ContentContainer>
       <AdditionalDetailRow>
-        <PositionDetailType>Est. Received Price</PositionDetailType>
-        <DetailValue>{estimatedReceivedPrice && minPrice ? estimatedReceivedPrice : '-'}</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Price</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{estimatedReceivedPrice && minPrice ? estimatedReceivedPrice : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
-        <PositionDetailType>Worst Received Price</PositionDetailType>
-        <DetailValue>{minPrice ? formatBigNumberUsingDecimalsToString(minPrice, 18, 4) : '-'}</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Worst Price</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{minPrice ? formatBigNumberUsingDecimalsToString(minPrice, 18, 4) : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
-        <PositionDetailType>Price Impact</PositionDetailType>
-        <DetailValue>{priceImpact ? `${priceImpact}%` : `-`}</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Price Impact</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{priceImpact ? `${priceImpact}%` : `-`}</DetailValue>
       </AdditionalDetailRow>
     </ContentContainer>
   )

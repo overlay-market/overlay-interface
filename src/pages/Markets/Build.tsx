@@ -59,13 +59,16 @@ const SelectPositionSideButton = styled(SelectActionButton)`
 `
 const SelectLongPositionButton = styled(SelectPositionSideButton)`
   color: ${({theme}) => theme.dark.green};
+  border: ${({active, theme}) => active && `1px solid ${theme.dark.green}`};
 `
 
 const SelectShortPositionButton = styled(SelectPositionSideButton)`
   color: ${({theme}) => theme.dark.red};
+  border: ${({active, theme}) => active && `1px solid ${theme.dark.red}`};
 `
 
 const TriggerBuildButton = styled(TriggerActionButton)`
+  margin: 32px 0;
   border: 1px solid #f2f2f2;
 `
 
@@ -582,38 +585,38 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             askPrice={prices.ask}
             minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
           />
-
-          {showUnderwaterFlow ? (
-            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-              Position Underwater
-            </TriggerBuildButton>
-          ) : exceedOiCap ? (
-            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-              Exceeds OI Cap
-            </TriggerBuildButton>
-          ) : showBalanceNotEnoughWarning ? (
-            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-              OVL Balance Below Minimum
-            </TriggerBuildButton>
-          ) : showApprovalFlow ? (
-            <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
-          ) : (
-            <TriggerBuildButton
-              onClick={() => {
-                setBuildState({
-                  showConfirm: true,
-                  attemptingTransaction: false,
-                  transactionErrorMessage: undefined,
-                  transactionHash: undefined,
-                })
-              }}
-              isDisabled={disableBuildButton}
-              disabled={disableBuildButton}
-            >
-              Build {isPriceImpactHigh && '- High Price Impact'}
-            </TriggerBuildButton>
-          )}
         </ControlInterfaceContainer>
+
+        {showUnderwaterFlow ? (
+          <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+            Position Underwater
+          </TriggerBuildButton>
+        ) : exceedOiCap ? (
+          <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+            Exceeds OI Cap
+          </TriggerBuildButton>
+        ) : showBalanceNotEnoughWarning ? (
+          <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+            OVL Balance Below Minimum
+          </TriggerBuildButton>
+        ) : showApprovalFlow ? (
+          <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
+        ) : (
+          <TriggerBuildButton
+            onClick={() => {
+              setBuildState({
+                showConfirm: true,
+                attemptingTransaction: false,
+                transactionErrorMessage: undefined,
+                transactionHash: undefined,
+              })
+            }}
+            isDisabled={disableBuildButton}
+            disabled={disableBuildButton}
+          >
+            Build {isPriceImpactHigh && '- High Price Impact'}
+          </TriggerBuildButton>
+        )}
         <AdditionalDetails
           bidPrice={prices.bid}
           askPrice={prices.ask}

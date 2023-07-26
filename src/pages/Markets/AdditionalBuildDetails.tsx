@@ -9,16 +9,16 @@ import {Icon} from '../../components/Icon/Icon'
 import {ExternalLink as LinkIconFeather} from 'react-feather'
 import {useActiveWeb3React} from '../../hooks/web3'
 import ReactTooltip from 'react-tooltip'
+import {TEXT, colors} from '../../theme/theme'
 
 const ContentContainer = styled(FlexColumn)`
-  padding: 0 16px;
-  margin-top: 64px;
+  gap: 16px;
 `
 
 const AdditionalDetailRow = styled(FlexRow)`
   width: 100%;
   display: flex;
-  margin: 12px 0;
+  justify-content: space-between;
 `
 
 export const PositionDetailType = styled.div`
@@ -34,11 +34,8 @@ export const PositionDetailTypeDashed = styled.div`
   text-decoration: underline dashed;
 `
 
-export const DetailValue = styled.div<{color?: string}>`
-  color: ${({color}) => (color ? color : '#B9BABD')};
+export const DetailValue = styled(TEXT.SmallBody)`
   display: flex;
-  font-size: 14px;
-  margin-left: auto;
   flex-direction: row;
 `
 
@@ -108,11 +105,11 @@ export const AdditionalDetails = ({
   return (
     <ContentContainer>
       <AdditionalDetailRow>
-        <PositionDetailType>Fee</PositionDetailType>
-        <DetailValue>{fee === 'loading' ? <Loader stroke="white" size="12px" /> : `${fee}%`}</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Fee</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{fee === 'loading' ? <Loader stroke="white" size="12px" /> : `${fee}%`}</DetailValue>
       </AdditionalDetailRow>
 
-      <AdditionalDetailRow>
+      {/* <AdditionalDetailRow>
         <PositionDetailType>Bid</PositionDetailType>
         <DetailValue>{bidPrice === 'loading' ? <Loader stroke="white" size="12px" /> : bidPrice}</DetailValue>
       </AdditionalDetailRow>
@@ -120,24 +117,24 @@ export const AdditionalDetails = ({
       <AdditionalDetailRow>
         <PositionDetailType>Ask</PositionDetailType>
         <DetailValue>{askPrice === 'loading' ? <Loader stroke="white" size="12px" /> : askPrice}</DetailValue>
+      </AdditionalDetailRow> */}
+
+      <AdditionalDetailRow>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Slippage</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{slippageTolerance}%</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
-        <PositionDetailType>Slippage Tolerance</PositionDetailType>
-        <DetailValue>{slippageTolerance}%</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Liquidation Price</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{estLiquidationPrice}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
-        <PositionDetailType>Est. Liquidation Price</PositionDetailType>
-        <DetailValue>{estLiquidationPrice}</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Expected OI</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{expectedOi ? expectedOi : '-'}</DetailValue>
       </AdditionalDetailRow>
 
-      <AdditionalDetailRow>
-        <PositionDetailType>Expected OI</PositionDetailType>
-        <DetailValue>{expectedOi ? expectedOi : '-'}</DetailValue>
-      </AdditionalDetailRow>
-
-      <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>
+      {/* <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>
         <PositionDetailTypeDashed>OI Long / OI Cap</PositionDetailTypeDashed>
         <FlexColumn width={'auto'} ml={'auto'} alignContent={'end'}>
           <OpenInterestValue>
@@ -152,9 +149,9 @@ export const AdditionalDetails = ({
           <div>The OI Cap is the maximum open interest</div>
           <div>that the protocol allows at a given time.</div>
         </React.Fragment>
-      </ReactTooltip>
+      </ReactTooltip> */}
 
-      <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>
+      {/* <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>
         <PositionDetailTypeDashed>OI Short / OI Cap</PositionDetailTypeDashed>
         <FlexColumn width={'auto'} ml={'auto'} alignContent={'end'}>
           <OpenInterestValue>
@@ -192,7 +189,7 @@ export const AdditionalDetails = ({
             </Icon>
           </HoverableDetailValue>
         )}
-      </AdditionalDetailRow>
+      </AdditionalDetailRow> */}
     </ContentContainer>
   )
 }

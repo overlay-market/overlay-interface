@@ -6,7 +6,7 @@ import styled from 'styled-components'
 const TVChartContainer = styled.div`
   width: 1000px;
   padding-right: 16px;
-  max-height: 600px;
+  max-height: 420px;
 `
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol']

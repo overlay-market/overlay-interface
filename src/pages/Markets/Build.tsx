@@ -43,7 +43,7 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {useFractionOfCapOi} from '../../hooks/useFractionOfCapOi'
 import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
-import {marketNameFromDescription} from '../../constants/markets'
+import {PRICE_CURRENCY_FROM_QUOTE, marketNameFromDescription} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
@@ -174,8 +174,17 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const marketName = useMemo(() => {
     if (description) return marketNameFromDescription(description, market?.id)
     if (baseToken === 'loading' && quoteToken === 'loading') return <Loader stroke="white" size="12px" />
+
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, quoteToken, market])
+
+  const priceCurrency = useMemo(() => {
+    const marketNameArray = marketName.toString().split('/')
+    if (Array.isArray(marketNameArray) && marketNameArray.length > 1) {
+      return PRICE_CURRENCY_FROM_QUOTE[marketNameArray[marketNameArray.length - 1].trim()]
+    }
+    return ''
+  }, [marketName])
 
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
@@ -424,9 +433,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const estimatedFractionOfCapOi = useFractionOfCapOi(market?.id, estimatedOiResult?.rawOi)
   const estimatedBid: BigNumber | undefined = useBid(market?.id, estimatedFractionOfCapOi)
   const estimatedAsk: BigNumber | undefined = useAsk(market?.id, estimatedFractionOfCapOi)
-
-  console.log({market})
-
   const estimatedLiquidationPriceResult = useEstimatedBuildLiquidationPrice(market?.id, typedValue, selectedLeverage, isLong)
 
   const estimatedLiquidationPrice = estimatedLiquidationPriceResult
@@ -453,6 +459,18 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     const formattedPrice = price < 100000 ? price : Math.floor(price)
     return Number(formattedPrice).toLocaleString()
   }, [estimatedReceivedPrice, prices.mid])
+
+  const longPrice: string = useMemo(() => {
+    const price = prices.ask
+    const formattedPrice = price < 100000 ? price : Math.floor(price)
+    return Number(formattedPrice).toLocaleString()
+  }, [estimatedReceivedPrice, prices])
+
+  const shortPrice: string = useMemo(() => {
+    const price = prices.bid
+    const formattedPrice = price < 100000 ? price : Math.floor(price)
+    return Number(formattedPrice).toLocaleString()
+  }, [estimatedReceivedPrice, prices])
 
   const priceImpact = useMemo(() => {
     if (!estimatedReceivedPrice) return null
@@ -550,13 +568,11 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           <PositionsButtonContainer>
             <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
               <div>Long</div>
-              {/* Add market priceCurrency */}
-              <TEXT.BoldSmallBody fontWeight={500}>{headerPrice}</TEXT.BoldSmallBody>
+              <TEXT.BoldSmallBody fontWeight={500}>{`${priceCurrency}${longPrice}`}</TEXT.BoldSmallBody>
             </SelectLongPositionButton>
             <SelectShortPositionButton onClick={() => handleSelectPositionSide(false)} active={!isLong && isLong !== undefined}>
               <div>Short</div>
-              {/* Add market priceCurrency */}
-              <TEXT.BoldSmallBody fontWeight={500}>{headerPrice}</TEXT.BoldSmallBody>
+              <TEXT.BoldSmallBody fontWeight={500}>{`${priceCurrency}${shortPrice}`}</TEXT.BoldSmallBody>
             </SelectShortPositionButton>
           </PositionsButtonContainer>
           <LeverageSlider

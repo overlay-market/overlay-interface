@@ -17,7 +17,7 @@ const FooterContainer = styled.div`
   margin: auto;
   box-sizing: border-box;
   max-width: 1200px;
-  padding: 40px 8px;
+  padding: 40px 16px;
   display: flex;
   flex-direction: column;
 

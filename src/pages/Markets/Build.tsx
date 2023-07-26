@@ -5,7 +5,7 @@ import {Label} from '@rebass/forms'
 import {Sliders, X} from 'react-feather'
 import {MarketCard} from '../../components/Card/MarketCard'
 import {SelectActionButton, TriggerActionButton, TransparentUnderlineButton, ApproveTransactionButton} from '../../components/Button/Button'
-import {TEXT} from '../../theme/theme'
+import {TEXT, colors} from '../../theme/theme'
 import {OVL} from '../../constants/tokens'
 import {Icon} from '../../components/Icon/Icon'
 import {useActiveWeb3React} from '../../hooks/web3'
@@ -68,7 +68,6 @@ const SelectShortPositionButton = styled(SelectPositionSideButton)`
 `
 
 const TriggerBuildButton = styled(TriggerActionButton)`
-  margin: 32px 0;
   border: 1px solid #f2f2f2;
 `
 
@@ -92,6 +91,17 @@ const PositionsButtonContainer = styled.div`
   flex-direction: row;
   width: 100%;
   gap: 8px;
+`
+
+const InputContainer = styled.div`
+  background: #10131d;
+  border-radius: 8px;
+  padding: 8px 10px;
+  width: 100%;
+`
+
+const ButtonContainer = styled.div`
+  margin: 32px 0;
 `
 
 export const NumericalInputContainer = styled(FlexRow)`
@@ -557,22 +567,26 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             value={Number(selectedLeverage)}
             onChange={handleLeverageInput}
           />
-          <NumericalInputLabel htmlFor="Build Amount Input">
-            <NumericalInputTitle> Amount </NumericalInputTitle>
-            <FlexRow ml="auto" mb="4px" width="auto">
-              <TransparentUnderlineButton onClick={() => handleQuickInput(25, ovlBalance?.toFixed(6) ?? null)}>25%</TransparentUnderlineButton>
-              <TransparentUnderlineButton onClick={() => handleQuickInput(50, ovlBalance?.toFixed(6) ?? null)}>50%</TransparentUnderlineButton>
-              <TransparentUnderlineButton onClick={() => handleQuickInput(75, ovlBalance?.toFixed(6) ?? null)}>75%</TransparentUnderlineButton>
-              <TransparentUnderlineButton onClick={() => handleQuickInput(100, maxInputIncludingFees ?? null)}>Max</TransparentUnderlineButton>
+
+          <InputContainer>
+            <FlexRow justify="space-between" mb="25px">
+              <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
+              <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline', cursor: 'pointer'}}>
+                Max: {ovlBalance?.toFixed(2)} OVL
+              </TEXT.Supplemental>
             </FlexRow>
-          </NumericalInputLabel>
-          <NumericalInputContainer>
-            <NumericalInput align={'left'} onUserInput={handleUserInput} value={typedValue?.toString()} />
-            <NumericalInputDescriptor> OVL </NumericalInputDescriptor>
-          </NumericalInputContainer>
-          <NumericalInputBottomText>
-            minimum: {minCollateral !== undefined ? minCollateral : <Loader stroke="white" size="12px" />}
-          </NumericalInputBottomText>
+            <FlexRow justify="space-between">
+              <NumericalInput
+                color={colors(true).dark.blue1}
+                align="left"
+                padding="0px"
+                fontWeight="700"
+                value={typedValue?.toString()}
+                onUserInput={handleUserInput}
+              />
+              <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
+            </FlexRow>
+          </InputContainer>
 
           <MainDetails
             quoteTokenDecimals={quoteTokenDecimals}
@@ -587,36 +601,39 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           />
         </ControlInterfaceContainer>
 
-        {showUnderwaterFlow ? (
-          <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-            Position Underwater
-          </TriggerBuildButton>
-        ) : exceedOiCap ? (
-          <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-            Exceeds OI Cap
-          </TriggerBuildButton>
-        ) : showBalanceNotEnoughWarning ? (
-          <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-            OVL Balance Below Minimum
-          </TriggerBuildButton>
-        ) : showApprovalFlow ? (
-          <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
-        ) : (
-          <TriggerBuildButton
-            onClick={() => {
-              setBuildState({
-                showConfirm: true,
-                attemptingTransaction: false,
-                transactionErrorMessage: undefined,
-                transactionHash: undefined,
-              })
-            }}
-            isDisabled={disableBuildButton}
-            disabled={disableBuildButton}
-          >
-            Build {isPriceImpactHigh && '- High Price Impact'}
-          </TriggerBuildButton>
-        )}
+        <ButtonContainer>
+          {showUnderwaterFlow ? (
+            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+              Position Underwater
+            </TriggerBuildButton>
+          ) : exceedOiCap ? (
+            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+              Exceeds OI Cap
+            </TriggerBuildButton>
+          ) : showBalanceNotEnoughWarning ? (
+            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+              OVL Balance Below Minimum
+            </TriggerBuildButton>
+          ) : showApprovalFlow ? (
+            <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
+          ) : (
+            <TriggerBuildButton
+              onClick={() => {
+                setBuildState({
+                  showConfirm: true,
+                  attemptingTransaction: false,
+                  transactionErrorMessage: undefined,
+                  transactionHash: undefined,
+                })
+              }}
+              isDisabled={disableBuildButton}
+              disabled={disableBuildButton}
+            >
+              Build {isPriceImpactHigh && '- High Price Impact'}
+            </TriggerBuildButton>
+          )}
+        </ButtonContainer>
+
         <AdditionalDetails
           bidPrice={prices.bid}
           askPrice={prices.ask}

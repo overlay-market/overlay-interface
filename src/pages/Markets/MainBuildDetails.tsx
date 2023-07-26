@@ -5,6 +5,9 @@ import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import Loader from '../../components/Loaders/Loaders'
 import {BigNumber} from 'ethers'
 import {TEXT, colors} from '../../theme/theme'
+import SetSlippageModal from '../../components/SetSlippageModal.tsx/SetSlippageModal'
+import {useSetSlippageModalToggle} from '../../state/application/hooks'
+import {useBuildState} from '../../state/build/hooks'
 
 const ContentContainer = styled(FlexColumn)`
   gap: 16px;
@@ -14,6 +17,11 @@ const AdditionalDetailRow = styled(FlexRow)`
   width: 100%;
   display: flex;
   justify-content: space-between;
+`
+
+const SlippageValueContainer = styled.div`
+  display: flex;
+  gap: 8px;
 `
 
 export const PositionDetailType = styled.div`
@@ -31,13 +39,11 @@ export const PositionDetailTypeDashed = styled.div`
 
 export const DetailValue = styled(TEXT.SmallBody)`
   display: flex;
-  margin-left: auto;
   flex-direction: row;
 `
 
 export const HoverableDetailValue = styled(DetailValue)`
   cursor: pointer;
-
   :hover {
     text-decoration: underline;
   }
@@ -97,6 +103,10 @@ export const MainDetails = ({
 
     return priceImpactPercentage.toFixed(2)
   }, [estimatedReceivedPrice, typedValue, isLong, bidPrice, askPrice])
+
+  const toggleSetSlippageModal = useSetSlippageModalToggle()
+  const {setSlippageValue} = useBuildState()
+
   return (
     <ContentContainer>
       <AdditionalDetailRow>
@@ -105,9 +115,20 @@ export const MainDetails = ({
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
-        <TEXT.SmallBody color={colors(false).dark.grey2}>Worst Price</TEXT.SmallBody>
+        <SlippageValueContainer style={{gap: '8px'}}>
+          <TEXT.SmallBody color={colors(false).dark.grey2}>Worst Price</TEXT.SmallBody>
+          <TEXT.Supplemental
+            onClick={toggleSetSlippageModal}
+            color={colors(false).dark.blue2}
+            style={{textDecoration: 'underline', cursor: 'pointer'}}
+          >
+            {`${setSlippageValue}% slippage`}
+          </TEXT.Supplemental>
+        </SlippageValueContainer>
         <DetailValue color={colors(false).dark.blue1}>{minPrice ? formatBigNumberUsingDecimalsToString(minPrice, 18, 4) : '-'}</DetailValue>
       </AdditionalDetailRow>
+
+      <SetSlippageModal />
 
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Price Impact</TEXT.SmallBody>

@@ -2,16 +2,13 @@ import {useState, useCallback, useMemo, useEffect} from 'react'
 import styled from 'styled-components'
 import {utils, BigNumberish, ethers, BigNumber} from 'ethers'
 import {Label} from '@rebass/forms'
-import {Sliders, X} from 'react-feather'
 import {MarketCard} from '../../components/Card/MarketCard'
-import {SelectActionButton, TriggerActionButton, TransparentUnderlineButton, ApproveTransactionButton} from '../../components/Button/Button'
+import {SelectActionButton, TriggerActionButton, ApproveTransactionButton} from '../../components/Button/Button'
 import {TEXT, colors} from '../../theme/theme'
 import {OVL} from '../../constants/tokens'
-import {Icon} from '../../components/Icon/Icon'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useBuildState} from '../../state/build/hooks'
 import {useDerivedBuildInfo} from '../../state/build/hooks'
-import {DefaultTxnSettings} from '../../state/build/actions'
 import {useBuildActionHandlers} from '../../state/build/hooks'
 import {NumericalInput} from '../../components/NumericalInput/NumericalInput'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
@@ -23,9 +20,7 @@ import {
 } from '../../utils/formatWei'
 import {ApprovalState, useApproveCallback} from '../../hooks/useApproveCallback'
 import {LeverageSlider} from '../../components/LeverageSlider/LeverageSlider'
-import {TransactionSettingsModal} from './TransactionSettingsModal'
 import {formatDecimalToPercentage} from '../../utils/formatDecimal'
-import {useIsTxnSettingsAuto} from '../../state/build/hooks'
 import {useEstimatedBuild} from '../../hooks/useEstimatedBuild'
 import {useBuildCallback} from '../../hooks/useBuildCallback'
 import {AdditionalDetails} from './AdditionalBuildDetails'
@@ -47,7 +42,6 @@ import {PRICE_CURRENCY_FROM_QUOTE, marketNameFromDescription} from '../../consta
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
-import {Trans} from '@lingui/react'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -139,7 +133,6 @@ export const MINIMUM_SLIPPAGE_VALUE = 0.05
 // & callbacks for approve/build, data from periphery contract
 // to be moved to respective sub-components to keep clean
 export const BuildInterface = ({marketId}: {marketId: string}) => {
-  const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
   const [showBalanceNotEnoughWarning, setShowBalanceNotEnoughWarning] = useState<boolean>(false)
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setBuildState] = useState<{
     showConfirm: boolean
@@ -164,8 +157,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const {chainId} = useActiveWeb3React()
   const ovlBalance = useOvlBalance()
   const parsedOvlBalance = ovlBalance && ovlBalance.toFixed(8)
-
-  const isTxnSettingsAuto = useIsTxnSettingsAuto()
   const ovl = chainId ? OVL[chainId] : undefined
 
   // @TO-DO: pull market name from feed
@@ -312,16 +303,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return formatFundingRateToDaily(fetchFundingRate.result?.[0], 18, 2)?.toString() + '%'
   }, [fetchFundingRate])
 
-  const {selectedLeverage, isLong, typedValue, setSlippageValue, txnDeadline} = useBuildState()
-  const {onAmountInput, onSelectLeverage, onSelectPositionSide, onSetSlippage, onSetTxnDeadline, onResetBuildState} = useBuildActionHandlers()
-
-  const handleResetTxnSettings = useCallback(
-    (e: any) => {
-      onSetSlippage(DefaultTxnSettings.DEFAULT_SLIPPAGE)
-      onSetTxnDeadline(DefaultTxnSettings.DEFAULT_DEADLINE)
-    },
-    [onSetSlippage, onSetTxnDeadline],
-  )
+  const {selectedLeverage, isLong, typedValue, setSlippageValue} = useBuildState()
+  const {onAmountInput, onSelectLeverage, onSelectPositionSide, onResetBuildState} = useBuildActionHandlers()
 
   const handleLeverageInput = useCallback(
     (e: any) => {
@@ -363,19 +346,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       setShowBalanceNotEnoughWarning(false)
     }
   }, [maxInputIncludingFees, minCollateral])
-
-  const handleQuickInput = (percentage: number, totalSupply: string | null) => {
-    if (totalSupply === '0' || totalSupply === null) return
-
-    let calculatedAmountByPercentage
-    if (percentage < 100) {
-      calculatedAmountByPercentage = (Number(totalSupply) * (percentage / 100)).toFixed(6)
-    } else {
-      calculatedAmountByPercentage = (Number(totalSupply) * (percentage / 100)).toFixed(6)
-    }
-    if (minCollateral && +calculatedAmountByPercentage < minCollateral) return handleUserInput('')
-    return handleUserInput(calculatedAmountByPercentage)
-  }
 
   const handleDismiss = useCallback(() => {
     setBuildState({
@@ -454,23 +424,17 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       : formatBigNumberUsingDecimalsToString(estimatedBid, quoteTokenDecimals, sigFigConstant)
   }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals])
 
-  const headerPrice: string = useMemo(() => {
-    const price = estimatedReceivedPrice ?? prices.mid
-    const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString()
-  }, [estimatedReceivedPrice, prices.mid])
-
   const longPrice: string = useMemo(() => {
     const price = prices.ask
     const formattedPrice = price < 100000 ? price : Math.floor(price)
     return Number(formattedPrice).toLocaleString()
-  }, [estimatedReceivedPrice, prices])
+  }, [prices])
 
   const shortPrice: string = useMemo(() => {
     const price = prices.bid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
     return Number(formattedPrice).toLocaleString()
-  }, [estimatedReceivedPrice, prices])
+  }, [prices])
 
   const priceImpact = useMemo(() => {
     if (!estimatedReceivedPrice) return null
@@ -605,6 +569,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </InputContainer>
 
           <MainDetails
+            priceCurrency={priceCurrency}
             quoteTokenDecimals={quoteTokenDecimals}
             decimals={decimals}
             typedValue={typedValue}
@@ -651,6 +616,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
         </ButtonContainer>
 
         <AdditionalDetails
+          priceCurrency={priceCurrency}
           bidPrice={prices.bid}
           askPrice={prices.ask}
           fee={buildFee ? formatDecimalToPercentage(formatWeiToParsedNumber(buildFee, 18, 5)) : 'loading'}

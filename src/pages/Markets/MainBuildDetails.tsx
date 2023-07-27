@@ -66,6 +66,7 @@ export const MainDetails = ({
   bidPrice,
   askPrice,
   minPrice,
+  priceCurrency,
 }: {
   isLong?: boolean
   quoteTokenDecimals?: number
@@ -76,6 +77,7 @@ export const MainDetails = ({
   bidPrice?: string | number | any
   askPrice?: string | number | any
   minPrice?: BigNumber
+  priceCurrency?: string
 }) => {
   const estimatedReceivedPrice: any = useMemo(() => {
     if (isLong === undefined || estimatedBid === undefined || estimatedAsk === undefined) {
@@ -111,7 +113,9 @@ export const MainDetails = ({
     <ContentContainer>
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Price</TEXT.SmallBody>
-        <DetailValue color={colors(false).dark.blue1}>{estimatedReceivedPrice && minPrice ? estimatedReceivedPrice : '-'}</DetailValue>
+        <DetailValue color={colors(false).dark.blue1}>
+          {estimatedReceivedPrice && minPrice ? `${priceCurrency}${estimatedReceivedPrice}` : '-'}
+        </DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
@@ -125,7 +129,9 @@ export const MainDetails = ({
             {`${setSlippageValue}% slippage`}
           </TEXT.Supplemental>
         </SlippageValueContainer>
-        <DetailValue color={colors(false).dark.blue1}>{minPrice ? formatBigNumberUsingDecimalsToString(minPrice, 18, 4) : '-'}</DetailValue>
+        <DetailValue color={colors(false).dark.blue1}>
+          {minPrice ? `${priceCurrency}${formatBigNumberUsingDecimalsToString(minPrice, 18, 4)}` : '-'}
+        </DetailValue>
       </AdditionalDetailRow>
 
       <SetSlippageModal />

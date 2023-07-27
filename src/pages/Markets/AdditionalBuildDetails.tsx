@@ -1,14 +1,6 @@
-import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import Loader from '../../components/Loaders/Loaders'
-import {ExternalLink} from '../../components/ExternalLink/ExternalLink'
-import {getExplorerLink, ExplorerDataType} from '../../utils/getExplorerLink'
-import {shortenAddress} from '../../utils/web3'
-import {Icon} from '../../components/Icon/Icon'
-import {ExternalLink as LinkIconFeather} from 'react-feather'
-import {useActiveWeb3React} from '../../hooks/web3'
-import ReactTooltip from 'react-tooltip'
 import {TEXT, colors} from '../../theme/theme'
 
 const ContentContainer = styled(FlexColumn)`
@@ -54,25 +46,14 @@ export const OpenInterestValue = styled.div`
   margin-bottom: 3px;
 `
 
-const StyledLinkIcon = styled(LinkIconFeather)`
-  margin: auto;
-  height: 16px;
-  width: 16px;
-  margin-left: 4px;
-`
 export const AdditionalDetails = ({
-  bidPrice,
-  askPrice,
   fee,
-  oiCap,
-  oiLong,
-  oiShort,
   slippageTolerance,
   expectedOi,
-  fundingRate,
   estLiquidationPrice,
   marketAddress,
   feedAddress,
+  priceCurrency,
 }: {
   bidPrice?: string | number | any
   askPrice?: string | number | any
@@ -87,37 +68,14 @@ export const AdditionalDetails = ({
   estLiquidationPrice?: string | number
   marketAddress?: string
   feedAddress?: string
+  priceCurrency?: string
 }) => {
-  const {chainId} = useActiveWeb3React()
-
-  const ShortenedAddresses = useMemo(() => {
-    if (!marketAddress || !feedAddress)
-      return {
-        marketContract: '',
-        feedContract: '',
-      }
-    return {
-      marketContract: shortenAddress(marketAddress),
-      feedContract: shortenAddress(feedAddress),
-    }
-  }, [marketAddress, feedAddress])
-
   return (
     <ContentContainer>
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Fee</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>{fee === 'loading' ? <Loader stroke="white" size="12px" /> : `${fee}%`}</DetailValue>
       </AdditionalDetailRow>
-
-      {/* <AdditionalDetailRow>
-        <PositionDetailType>Bid</PositionDetailType>
-        <DetailValue>{bidPrice === 'loading' ? <Loader stroke="white" size="12px" /> : bidPrice}</DetailValue>
-      </AdditionalDetailRow>
-
-      <AdditionalDetailRow>
-        <PositionDetailType>Ask</PositionDetailType>
-        <DetailValue>{askPrice === 'loading' ? <Loader stroke="white" size="12px" /> : askPrice}</DetailValue>
-      </AdditionalDetailRow> */}
 
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Slippage</TEXT.SmallBody>
@@ -126,70 +84,13 @@ export const AdditionalDetails = ({
 
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Liquidation Price</TEXT.SmallBody>
-        <DetailValue color={colors(false).dark.blue1}>{estLiquidationPrice}</DetailValue>
+        <DetailValue color={colors(false).dark.blue1}>{`${priceCurrency}${estLiquidationPrice}`}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Expected OI</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>{expectedOi ? expectedOi : '-'}</DetailValue>
       </AdditionalDetailRow>
-
-      {/* <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>
-        <PositionDetailTypeDashed>OI Long / OI Cap</PositionDetailTypeDashed>
-        <FlexColumn width={'auto'} ml={'auto'} alignContent={'end'}>
-          <OpenInterestValue>
-            {oiLong || oiLong === 0 ? oiLong + ' ' : <Loader stroke="white" size="12px" />}/
-            {oiCap || oiCap === 0 ? ' ' + oiCap : <Loader stroke="white" size="12px" />}
-          </OpenInterestValue>
-        </FlexColumn>
-      </AdditionalDetailRow>
-
-      <ReactTooltip place="top" type="info" effect="solid" textColor={'#FFFFFF'} backgroundColor="#000000" id={'long info'}>
-        <React.Fragment>
-          <div>The OI Cap is the maximum open interest</div>
-          <div>that the protocol allows at a given time.</div>
-        </React.Fragment>
-      </ReactTooltip> */}
-
-      {/* <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>
-        <PositionDetailTypeDashed>OI Short / OI Cap</PositionDetailTypeDashed>
-        <FlexColumn width={'auto'} ml={'auto'} alignContent={'end'}>
-          <OpenInterestValue>
-            {oiShort || oiShort === 0 ? oiShort + ' ' : <Loader stroke="white" size="12px" />}/
-            {oiCap || oiCap === 0 ? ' ' + oiCap : <Loader stroke="white" size="12px" />}
-          </OpenInterestValue>
-        </FlexColumn>
-      </AdditionalDetailRow>
-
-      <AdditionalDetailRow>
-        <PositionDetailType>Funding Rate</PositionDetailType>
-        <DetailValue color={!(fundingRate?.toString()[0] === '-') ? '#FF648A' : '#5FD0AB'}>
-          {!fundingRate || fundingRate === 'loading' ? <Loader stroke="white" size="12px" /> : fundingRate}
-        </DetailValue>
-      </AdditionalDetailRow>
-
-      <AdditionalDetailRow>
-        <PositionDetailType>Market Contract</PositionDetailType>
-        {chainId && marketAddress && (
-          <HoverableDetailValue>
-            <ExternalLink href={getExplorerLink(chainId, marketAddress, ExplorerDataType.ADDRESS)}>{ShortenedAddresses.marketContract}</ExternalLink>
-            <Icon size={16} margin={'auto'}>
-              <StyledLinkIcon href={''} />
-            </Icon>
-          </HoverableDetailValue>
-        )}
-      </AdditionalDetailRow>
-      <AdditionalDetailRow>
-        <PositionDetailType>Feed Contract</PositionDetailType>
-        {chainId && feedAddress && (
-          <HoverableDetailValue>
-            <ExternalLink href={getExplorerLink(chainId, feedAddress, ExplorerDataType.ADDRESS)}>{ShortenedAddresses.feedContract}</ExternalLink>
-            <Icon size={16} margin={'auto'}>
-              <StyledLinkIcon href={''} />
-            </Icon>
-          </HoverableDetailValue>
-        )}
-      </AdditionalDetailRow> */}
     </ContentContainer>
   )
 }

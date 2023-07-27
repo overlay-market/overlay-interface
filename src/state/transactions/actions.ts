@@ -23,6 +23,7 @@ export enum TransactionType {
   STAKE_OVL = 6,
   WITHDRAW_OVL = 7,
   CLAIM_REWARDS = 8,
+  EMERGENCYWITHDRAW_OVL_POSITION = 9,
 }
 
 export interface BaseTransactionInfo {
@@ -84,6 +85,11 @@ export interface ClaimRewardsTransactionInfo extends BaseTransactionInfo {
   poolAddress: string
 }
 
+export interface EmergencyWithdrawOVLTransactionInfo extends BaseTransactionInfo {
+  type: TransactionType.EMERGENCYWITHDRAW_OVL_POSITION
+  positionId: string
+}
+
 export type TransactionInfo =
   | ApproveTransactionInfo
   | BuildOVLTransactionInfo
@@ -94,6 +100,7 @@ export type TransactionInfo =
   | StakeOVLTransactionInfo
   | WithdrawOVLTransactionInfo
   | ClaimRewardsTransactionInfo
+  | EmergencyWithdrawOVLTransactionInfo
 
 export const addTransaction = createAction<{
   chainId: ChainId

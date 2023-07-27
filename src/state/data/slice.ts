@@ -96,6 +96,7 @@ export const api = createApi({
                 market {
                   id
                   feedAddress
+                  isShutdown
                 }
                 initialOi
                 initialDebt

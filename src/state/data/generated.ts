@@ -2158,7 +2158,7 @@ export type AccountV2Query = (
       & Pick<Position, 'id' | 'positionId' | 'initialOi' | 'initialDebt' | 'initialCollateral' | 'initialNotional' | 'leverage' | 'isLong' | 'entryPrice' | 'isLiquidated' | 'currentOi' | 'currentDebt' | 'mint' | 'createdAtTimestamp' | 'createdAtBlockNumber' | 'numberOfUniwnds' | 'fractionUnwound'>
       & { market: (
         { __typename?: 'Market' }
-        & Pick<Market, 'id' | 'feedAddress'>
+        & Pick<Market, 'id' | 'feedAddress' | 'isShutdown'>
       ), builds: Array<(
         { __typename?: 'Build' }
         & Pick<Build, 'collateral' | 'currentDebt' | 'currentOi' | 'id' | 'price' | 'timestamp' | 'value'>
@@ -2401,6 +2401,7 @@ export const AccountV2Document = `
       market {
         id
         feedAddress
+        isShutdown
       }
       initialOi
       initialDebt

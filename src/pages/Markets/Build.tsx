@@ -663,6 +663,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
         estimatedLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
         transactionHash={transactionHash}
         transactionErrorMessage={transactionErrorMessage}
+        minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
       />
     </MarketCard>
   )

@@ -7,6 +7,7 @@ import {FlexColumn} from '../Container/Container'
 import {ModalContent, WalletHeader, CloseIcon} from '../ConnectWalletModal/ConnectWalletModal'
 import {BigNumber, BigNumberish} from 'ethers'
 import {toScientificNumber} from '../../utils/toScientificNumber'
+import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 
 export default function ConfirmTxnModal({
   marketName,
@@ -24,6 +25,7 @@ export default function ConfirmTxnModal({
   estimatedLiquidationPrice,
   transactionHash,
   transactionErrorMessage,
+  minPrice,
 }: {
   marketName: any
   isOpen: boolean
@@ -42,6 +44,7 @@ export default function ConfirmTxnModal({
   estimatedLiquidationPrice: any
   transactionHash?: any
   transactionErrorMessage?: any
+  minPrice?: BigNumber
 }) {
   return (
     <Modal isOpen={isOpen} onDismiss={() => null} width={'350px'}>
@@ -94,7 +97,9 @@ export default function ConfirmTxnModal({
             </FlexColumn>
 
             <TEXT.Supplemental color={'#B9BABD'} mt={'24px'} mb={'24px'}>
-              The received price will be at least - or the transaction will revert.
+              {`The received price will be at ${isLong ? 'most' : 'least'} ${
+                minPrice ? toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4)) : '-'
+              } or the transaction will revert.`}
             </TEXT.Supplemental>
 
             {attemptingTransaction ? (

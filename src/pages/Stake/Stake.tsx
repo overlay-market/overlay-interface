@@ -312,6 +312,7 @@ export interface PoolProps {
 
 const Stake = ({poolData}: PoolProps) => {
   const classes = useStyles()
+  const HIDE_AIRDROP = true
   const {account} = useActiveWeb3React()
   const ovlBalance = useOvlBalance()
   const toggleWalletModal = useWalletModalToggle()
@@ -481,13 +482,15 @@ const Stake = ({poolData}: PoolProps) => {
             <TEXT.SmallBody color={colors(true).dark.grey2} mb="13px">
               Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
             </TEXT.SmallBody>
-            <TEXT.SmallBody color={colors(true).dark.grey2}>
-              Rewards airdropped first week of every month.
-              <br />
-              <Link to="/" className={classes.link}>
-                Learn more <ArrowRight height={12} width={12} className={classes.arrowRight} />
-              </Link>
-            </TEXT.SmallBody>
+            {HIDE_AIRDROP ? null : (
+              <TEXT.SmallBody color={colors(true).dark.grey2}>
+                Rewards airdropped first week of every month.
+                <br />
+                <Link to="/" className={classes.link}>
+                  Learn more <ArrowRight height={12} width={12} className={classes.arrowRight} />
+                </Link>
+              </TEXT.SmallBody>
+            )}
 
             <div style={{marginTop: '46px', textAlign: 'justify'}}>
               <TEXT.StandardBody color={colors(true).dark.grey2}>

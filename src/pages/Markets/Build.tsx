@@ -47,18 +47,26 @@ const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
   padding: 12px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   background: ${({theme}) => theme.dark.grey4};
 `
 const SelectLongPositionButton = styled(SelectPositionSideButton)`
   color: ${({theme}) => theme.dark.green};
   border: ${({active, theme}) => active && `1px solid ${theme.dark.green}`};
+
+  :hover {
+    box-shadow: 0px 0px 10px 0px ${({theme}) => theme.dark.green};
+  }
 `
 
 const SelectShortPositionButton = styled(SelectPositionSideButton)`
   color: ${({theme}) => theme.dark.red};
   border: ${({active, theme}) => active && `1px solid ${theme.dark.red}`};
+
+  :hover {
+    box-shadow: 0px 0px 10px 0px ${({theme}) => theme.dark.red};
+  }
 `
 
 const TriggerBuildButton = styled(TriggerActionButton)`
@@ -73,7 +81,10 @@ const ControlInterfaceContainer = styled(FlexColumn)`
   gap: 24px;
 `
 
-const ControlInterfaceHeadContainer = styled(FlexColumn)``
+const ControlInterfaceHeadContainer = styled(FlexColumn)`
+  text-align: center;
+  gap: 8px;
+`
 
 const BuildContainer = styled.div`
   display: flex;
@@ -528,15 +539,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
+            <TEXT.Number color={colors(false).dark.blue1}>{isLong ? `${priceCurrency}${longPrice}` : `${priceCurrency}${shortPrice}`}</TEXT.Number>
           </ControlInterfaceHeadContainer>
           <PositionsButtonContainer>
             <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
               <div>Long</div>
-              <TEXT.BoldSmallBody fontWeight={500}>{`${priceCurrency}${longPrice}`}</TEXT.BoldSmallBody>
             </SelectLongPositionButton>
             <SelectShortPositionButton onClick={() => handleSelectPositionSide(false)} active={!isLong && isLong !== undefined}>
               <div>Short</div>
-              <TEXT.BoldSmallBody fontWeight={500}>{`${priceCurrency}${shortPrice}`}</TEXT.BoldSmallBody>
             </SelectShortPositionButton>
           </PositionsButtonContainer>
           <LeverageSlider

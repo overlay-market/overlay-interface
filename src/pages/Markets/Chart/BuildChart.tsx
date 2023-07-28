@@ -2,6 +2,7 @@ import {useEffect, useRef} from 'react'
 import {widget, ChartingLibraryWidgetOptions, ResolutionString} from '../../../charting_library'
 import * as React from 'react'
 import styled from 'styled-components'
+import Datafeed from './chartDatafeed'
 
 const TVChartContainer = styled.div`
   width: 1000px;
@@ -30,9 +31,9 @@ export const BuildChart = () => {
 
   useEffect(() => {
     const defaultProps: Omit<ChartContainerProps, 'container'> = {
-      symbol: 'AAPL',
+      symbol: 'Bitfinex:ETH/GBP',
       interval: 'D' as ResolutionString,
-      datafeedUrl: 'https://demo_feed.tradingview.com',
+      datafeedUrl: 'https://api.overlay.market/charts/v1/charts',
       libraryPath: '/charting_library/',
       chartsStorageUrl: 'https://saveload.tradingview.com',
       chartsStorageApiVersion: '1.1',
@@ -47,12 +48,13 @@ export const BuildChart = () => {
       symbol: defaultProps.symbol as string,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
-      datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(defaultProps.datafeedUrl),
+      // datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(defaultProps.datafeedUrl),
+      library_path: defaultProps.libraryPath as string,
+
       interval: defaultProps.interval as ChartingLibraryWidgetOptions['interval'],
       container: chartContainerRef.current,
-      library_path: defaultProps.libraryPath as string,
       locale: 'en',
-      disabled_features: ['use_localstorage_for_settings'],
+      // disabled_features: ['use_localstorage_for_settings', 'header_widget', 'legend_widget', 'left_toolbar', 'control_bar', 'timeframes_toolbar'],
       enabled_features: ['study_templates'],
       charts_storage_url: defaultProps.chartsStorageUrl,
       charts_storage_api_version: defaultProps.chartsStorageApiVersion,
@@ -62,6 +64,7 @@ export const BuildChart = () => {
       autosize: defaultProps.autosize,
       studies_overrides: defaultProps.studiesOverrides,
       theme: defaultProps.theme,
+      datafeed: Datafeed,
     }
 
     const tvWidget = new widget(widgetOptions)

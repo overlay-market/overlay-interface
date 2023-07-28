@@ -48,8 +48,8 @@ export const availableMarkets = [
   '0xc28350047d006ed387b0f210d4ea3218137a8a38',
   // '0xccd645835ca0033f0c1106e7b24f288e59e867e8', // 'MILADY / WETH'
   // '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b', // 'MAYC / WETH'
-  '0xF30C5cB6205f115799b275430Ea0874359476304'.toLowerCase(), // Total Crypto Market Cap
-  '0x8440E56C2675d9b8E04183dA3a3a744a4a16ED33'.toLowerCase(), // memecoins
+  // '0xF30C5cB6205f115799b275430Ea0874359476304'.toLowerCase(), // Total Crypto Market Cap
+  // '0x8440E56C2675d9b8E04183dA3a3a744a4a16ED33'.toLowerCase(), // memecoins
 ]
 
 export const marketNameFromDescription = (description: string | undefined, address: string = '') => {

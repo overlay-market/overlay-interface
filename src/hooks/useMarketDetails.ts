@@ -78,12 +78,12 @@ export function useMarketDetails(markets: MarketData[] | null | undefined): Addi
             '0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e',
             '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b',
             '0xccd645835ca0033f0c1106e7b24f288e59e867e8',
-            '0x8c7dc90243fc7984583339da8df0a5d57ec491db'
+            '0x8c7dc90243fc7984583339da8df0a5d57ec491db',
           ]
-          
-          if (
-            nftPerpAddresses.includes(market.id.toLowerCase())
-          ) {
+
+          const overlayAddresses = ['0x8440E56C2675d9b8E04183dA3a3a744a4a16ED33'.toLowerCase()]
+
+          if (nftPerpAddresses.includes(market.id.toLowerCase())) {
             return {
               ...market,
               decimalsDifference: undefined,
@@ -91,6 +91,15 @@ export function useMarketDetails(markets: MarketData[] | null | undefined): Addi
               description: String(chainlinkDescriptions[index].result),
               type: FeedType.NFTPERP,
               oracleLogo: ORACLE_LOGO[FeedType.NFTPERP],
+            }
+          } else if (overlayAddresses.includes(market.id.toLowerCase())) {
+            return {
+              ...market,
+              decimalsDifference: undefined,
+              decimals: 18, //temporarily hardcode all chainlink markets for 18 decimals until v2
+              description: String(chainlinkDescriptions[index].result),
+              type: FeedType.CHAINLINK,
+              oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
             }
           } else if (isChainlink) {
             return {

@@ -12,6 +12,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {Build, Liquidate, Unwind} from '../../state/build/hooks'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 export interface PositionProps {
   position: {
@@ -113,9 +114,9 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
           <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
         </FlexRow>
       ),
-      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? parsedEntryPrice : '-'}`,
-      'Current Price': `${priceCurrency ? priceCurrency : ''}${parsedMid ? parsedMid : '-'}`,
-      'Liq. Price': parsedLiquidationPrice ? `${priceCurrency ?? ''} ${parsedLiquidationPrice}` : `-`,
+      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
+      'Current Price': `${priceCurrency ? priceCurrency : ''}${parsedMid ? toScientificNumber(parsedMid) : '-'}`,
+      'Liq. Price': parsedLiquidationPrice ? `${priceCurrency ?? ''} ${toScientificNumber(parsedLiquidationPrice)}` : `-`,
       Created: parsedCreatedTimestamp ?? undefined,
       'Unrealized PnL': unrealizedPnL ? <ProfitLossCell PnL={Number(unrealizedPnL)} /> : '-',
     }

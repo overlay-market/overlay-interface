@@ -42,6 +42,7 @@ import {PRICE_CURRENCY_FROM_QUOTE, marketNameFromDescription} from '../../consta
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -223,14 +224,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     if (!baseTokenDecimals && !decimals) return undefined
     if (!marketTokensDecimalsDifference && typeof marketTokensDecimalsDifference !== 'number' && !decimals) return undefined
     if (decimals) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiLong, decimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiLong, decimals, decimals)
     }
     if (marketTokensDecimalsDifference === 0) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiLong, baseTokenDecimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiLong, baseTokenDecimals, baseTokenDecimals)
     } else {
       // divide by ONE or 1e18 based on fixed point calc for OI in solidity
       const divBy1e18 = rawOiLong.div(ethers.constants.WeiPerEther)
-      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, marketTokensDecimalsDifference)
     }
   }, [rawOiLong, baseTokenDecimals, decimals, marketTokensDecimalsDifference])
 
@@ -239,14 +240,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     if (!baseTokenDecimals && !decimals) return undefined
     if (!marketTokensDecimalsDifference && typeof marketTokensDecimalsDifference !== 'number' && !decimals) return undefined
     if (decimals) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiShort, decimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiShort, decimals, decimals)
     }
     if (marketTokensDecimalsDifference === 0) {
-      return formatBigNumberUsingDecimalsToNumber(rawOiShort, baseTokenDecimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawOiShort, baseTokenDecimals, baseTokenDecimals)
     } else {
       // divide by ONE or 1e18 based on fixed point calc for OI in solidity
       const divBy1e18 = rawOiShort.div(ethers.constants.WeiPerEther)
-      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, marketTokensDecimalsDifference)
     }
   }, [rawOiShort, baseTokenDecimals, decimals, marketTokensDecimalsDifference])
 
@@ -257,14 +258,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     if (!baseTokenDecimals && !decimals) return undefined
     if (!marketTokensDecimalsDifference && typeof marketTokensDecimalsDifference !== 'number' && !decimals) return undefined
     if (decimals) {
-      return formatBigNumberUsingDecimalsToNumber(rawCapOi, decimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawCapOi, decimals, decimals)
     }
     if (marketTokensDecimalsDifference === 0) {
-      return formatBigNumberUsingDecimalsToNumber(rawCapOi, baseTokenDecimals, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(rawCapOi, baseTokenDecimals, baseTokenDecimals)
     } else {
       // divide by ONE or 1e18 based on fixed point calc for OI in solidity
       const divBy1e18 = rawCapOi.div(ethers.constants.WeiPerEther)
-      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, sigFigConstant)
+      return formatBigNumberUsingDecimalsToNumber(divBy1e18, marketTokensDecimalsDifference, marketTokensDecimalsDifference)
     }
   }, [rawCapOi, decimals, baseTokenDecimals, marketTokensDecimalsDifference])
 
@@ -410,7 +411,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const estimatedOiResult = useEstimatedBuildOi(market?.id, typedValue, selectedLeverage, isLong, decimals, baseTokenDecimals, quoteTokenDecimals)
 
   const rawExpectedOi = estimatedOiResult.rawOi ? estimatedOiResult.rawOi : null
-  const expectedOi = estimatedOiResult?.formattedOi ? estimatedOiResult?.formattedOi : null
+  const expectedOi = formatBigNumberUsingDecimalsToNumber(rawExpectedOi?.toString(), 18, 18)
+  console.log({estimatedOiResult, rawOi: rawExpectedOi?.toString(), expectedOi})
   const estimatedFractionOfCapOi = useFractionOfCapOi(market?.id, estimatedOiResult?.rawOi)
   const estimatedBid: BigNumber | undefined = useBid(market?.id, estimatedFractionOfCapOi)
   const estimatedAsk: BigNumber | undefined = useAsk(market?.id, estimatedFractionOfCapOi)
@@ -539,7 +541,9 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
-            <TEXT.Number color={colors(false).dark.blue1}>{isLong ? `${priceCurrency}${longPrice}` : `${priceCurrency}${shortPrice}`}</TEXT.Number>
+            <TEXT.Number color={colors(false).dark.blue1}>
+              {isLong ? `${priceCurrency}${toScientificNumber(longPrice)}` : `${priceCurrency}${toScientificNumber(shortPrice)}`}
+            </TEXT.Number>
           </ControlInterfaceHeadContainer>
           <PositionsButtonContainer>
             <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
@@ -658,6 +662,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
         estimatedLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
         transactionHash={transactionHash}
         transactionErrorMessage={transactionErrorMessage}
+        minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
       />
     </BuildContainer>
   )

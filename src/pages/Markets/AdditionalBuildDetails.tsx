@@ -2,6 +2,8 @@ import styled from 'styled-components'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import Loader from '../../components/Loaders/Loaders'
 import {TEXT, colors} from '../../theme/theme'
+import {toScientificNumber} from '../../utils/toScientificNumber'
+import {BigNumber} from 'ethers'
 
 const ContentContainer = styled(FlexColumn)`
   gap: 16px;
@@ -63,7 +65,7 @@ export const AdditionalDetails = ({
   oiShort?: number
   priceImpact?: string
   slippageTolerance?: string | number
-  expectedOi?: string | number | null
+  expectedOi?: BigNumber | string | number | null
   fundingRate?: string | number
   estLiquidationPrice?: string | number
   marketAddress?: string
@@ -84,12 +86,12 @@ export const AdditionalDetails = ({
 
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Liquidation Price</TEXT.SmallBody>
-        <DetailValue color={colors(false).dark.blue1}>{`${priceCurrency}${estLiquidationPrice}`}</DetailValue>
+        <DetailValue color={colors(false).dark.blue1}>{`${priceCurrency}${toScientificNumber(estLiquidationPrice)}`}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Expected OI</TEXT.SmallBody>
-        <DetailValue color={colors(false).dark.blue1}>{expectedOi ? expectedOi : '-'}</DetailValue>
+        <DetailValue color={colors(false).dark.blue1}>{expectedOi ? toScientificNumber(expectedOi) : '-'}</DetailValue>
       </AdditionalDetailRow>
     </ContentContainer>
   )

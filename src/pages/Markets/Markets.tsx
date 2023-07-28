@@ -101,17 +101,7 @@ const Markets = () => {
   // list of hidden markets from Markets page
 
   const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
-    const order = [
-      'NFT Blue Chip Index / USD',
-      'Crypto Volatility Index',
-      'MILADY / WETH',
-      'PUDGIES / WETH',
-      'PUNKS / WETH',
-      'BAYC / WETH',
-      'MAYC / WETH',
-      'AZUKI / WETH',
-      'WBTC / USD',
-    ]
+    const order = ['Memecoins Index', 'NFT Blue Chip Index / USD', 'Crypto Volatility Index', 'Total Crypto Market Cap / USD', 'WBTC / USD']
     for (let marketOrdered of order) {
       if (a.marketName === marketOrdered) return -1
       if (b.marketName === marketOrdered) return 1

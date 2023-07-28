@@ -39,6 +39,7 @@ import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
 import Loader from '../../components/Loaders/Loaders'
 import {formatDecimalToPercentage} from '../../utils/formatDecimal'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -320,7 +321,7 @@ export function Unwind({
             {marketName}
           </TEXT.StandardHeader1>
           <TEXT.StandardHeader1 minHeight={'30px'}>
-            {isLong !== undefined ? isLong ? bidPrice : askPrice : <Loader stroke="white" size="12px" />}
+            {isLong !== undefined ? isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice) : <Loader stroke="white" size="12px" />}
           </TEXT.StandardHeader1>
           <Icon
             onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
@@ -446,11 +447,14 @@ export function Unwind({
       </FlexColumn>
 
       <FlexColumn mt="48px" padding="0 16px">
-        <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${entryPrice}` : 'loading'} />
-        <AdditionalDetailRow detail={'Current Price'} value={bidPrice && askPrice ? (isLong ? bidPrice : askPrice) : 'loading'} />
-        <AdditionalDetailRow detail={'Est. Received Price'} value={estimatedReceivedPrice ? estimatedReceivedPrice : 'loading'} />
+        <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
+        <AdditionalDetailRow
+          detail={'Current Price'}
+          value={bidPrice && askPrice ? (isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice)) : 'loading'}
+        />
+        <AdditionalDetailRow detail={'Est. Received Price'} value={estimatedReceivedPrice ? toScientificNumber(estimatedReceivedPrice) : 'loading'} />
         <AdditionalDetailRow detail={'Price Impact'} value={priceImpact ? `${priceImpact}%` : '-'} />
-        <AdditionalDetailRow detail={'Liquidation Price (est)'} value={liquidationPrice ? liquidationPrice : 'loading'} />
+        <AdditionalDetailRow detail={'Liquidation Price (est)'} value={liquidationPrice ? toScientificNumber(liquidationPrice) : 'loading'} />
       </FlexColumn>
 
       {/* <FlexColumn mt={"48px"}>

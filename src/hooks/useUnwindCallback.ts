@@ -1,5 +1,4 @@
 import {useMemo} from 'react'
-// import { OVLCollateral } from "@overlay-market/overlay-v1-sdk";
 import {utils} from 'ethers'
 import {BigNumber} from '@ethersproject/bignumber'
 import {useActiveWeb3React} from './web3'

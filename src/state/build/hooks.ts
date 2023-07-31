@@ -219,6 +219,11 @@ interface PositionMarketData {
   id: string
   feedAddress: string
 }
+interface PositionMarketDataV2 {
+  id: string
+  feedAddress: string
+  isShutdown: boolean
+}
 export interface PositionData { 
   id: string
   positionId: string
@@ -234,7 +239,7 @@ export interface PositionData {
 export interface PositionDataV2 { 
   id: string
   positionId: string
-  market: PositionMarketData
+  market: PositionMarketDataV2
   initialOi: string
   initialDebt: string
   initialCollateral: string

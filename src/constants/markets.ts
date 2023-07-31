@@ -56,8 +56,18 @@ export const marketNameFromDescription = (description: string | undefined, addre
   if (!description) {
     description = address
   }
-  if (address === 'some specific address') {
-    return 'specific market name'
+  if (address === '0xb31d222c23104cbc2c04df77941f1f2c478133dd') {
+    return 'BAYC / WETH'
+  } else if (address === '0x35e1d28ad9d8a80cff5bbf163a735c54eb6c1342') {
+    return 'AZUKI / WETH'
+  } else if (address === '0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e') {
+    return 'PUNKS / WETH'
+  } else if (address === '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b') {
+    return 'MAYC / WETH'
+  } else if (address === '0xccd645835ca0033f0c1106e7b24f288e59e867e8') {
+    return 'MILADY / WETH'
+  } else if (address === '0x8c7dc90243fc7984583339da8df0a5d57ec491db') {
+    return 'PUDGIES / WETH'
   } else {
     return MARKET_NAME_FROM_DESCRIPTION[description]
   }

@@ -96,6 +96,7 @@ export const api = createApi({
                 market {
                   id
                   feedAddress
+                  isShutdown
                 }
                 initialOi
                 initialDebt
@@ -191,10 +192,44 @@ export const api = createApi({
         },
       }),
     }),
+    totalMarketsQuery: builder.query({
+      query: () => ({
+        document: gql`
+          query totalMarkets {
+            markets {
+              id
+              feedAddress
+              factory {
+                id
+              }
+              k
+              lmbda
+              delta
+              capPayoff
+              capNotional
+              capLeverage
+              circuitBreakerWindow
+              circuitBreakerMintTarget
+              maintenanceMarginFraction
+              maintenanceMarginBurnRate
+              liquidationFeeRate
+              tradingFeeRate
+              minCollateral
+              priceDriftUpperLimit
+              averageBlockTime
+              isShutdown
+              positions {
+                id
+              }
+            }
+          }
+        `,
+      }),
+    }),
     activeMarketsQuery: builder.query({
       query: () => ({
         document: gql`
-          query markets {
+          query activeMarkets {
             markets(where: {isShutdown: false}) {
               id
               feedAddress

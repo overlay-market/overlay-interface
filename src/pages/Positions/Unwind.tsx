@@ -473,28 +473,7 @@ export function Unwind({
           <TEXT.StandardHeader1 fontWeight={500} m={'20px 0 0 0'}>
             {`Withdraw: ${formatWeiToParsedNumber(cost, 18, 6)} OVL`}
           </TEXT.StandardHeader1>
-          <Icon
-            onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
-            size={24}
-            top={'18px'}
-            right={'0px'}
-            clickable={true}
-            position={'absolute'}
-            margin={'0 0 auto auto'}
-            transform={'rotate(90deg)'}
-          >
-            {isTxnSettingsOpen ? <X color={'#12B4FF'} /> : <Sliders color={'#B9BABD'} />}
-          </Icon>
         </ControlInterfaceHeadContainer>
-        <TransactionSettingsModal
-          isTxnSettingsOpen={isTxnSettingsOpen}
-          setSlippageValue={setSlippageValue}
-          isTxnSettingsAuto={isTxnSettingsAuto}
-          txnDeadline={txnDeadline}
-          onSetSlippage={onSetSlippage}
-          handleResetTxnSettings={handleResetTxnSettings}
-          onSetTxnDeadline={onSetTxnDeadline}
-        />
         <TEXT.StandardBody textAlign={'center'} m={'20px 0 0 0'}>
           This market has been shut down. You may only withdraw any previously deposited OVL.
         </TEXT.StandardBody>

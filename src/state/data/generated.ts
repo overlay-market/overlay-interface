@@ -2190,10 +2190,28 @@ export type MarketQuery = (
   )> }
 );
 
-export type MarketsQueryVariables = Exact<{ [key: string]: never; }>;
+export type TotalMarketsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MarketsQuery = (
+export type TotalMarketsQuery = (
+  { __typename?: 'Query' }
+  & { markets: Array<(
+    { __typename?: 'Market' }
+    & Pick<Market, 'id' | 'feedAddress' | 'k' | 'lmbda' | 'delta' | 'capPayoff' | 'capNotional' | 'capLeverage' | 'circuitBreakerWindow' | 'circuitBreakerMintTarget' | 'maintenanceMarginFraction' | 'maintenanceMarginBurnRate' | 'liquidationFeeRate' | 'tradingFeeRate' | 'minCollateral' | 'priceDriftUpperLimit' | 'averageBlockTime' | 'isShutdown'>
+    & { factory: (
+      { __typename?: 'Factory' }
+      & Pick<Factory, 'id'>
+    ), positions: Array<(
+      { __typename?: 'Position' }
+      & Pick<Position, 'id'>
+    )> }
+  )> }
+);
+
+export type ActiveMarketsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ActiveMarketsQuery = (
   { __typename?: 'Query' }
   & { markets: Array<(
     { __typename?: 'Market' }
@@ -2485,8 +2503,38 @@ export const MarketDocument = `
   }
 }
     `;
-export const MarketsDocument = `
-    query markets {
+export const TotalMarketsDocument = `
+    query totalMarkets {
+  markets {
+    id
+    feedAddress
+    factory {
+      id
+    }
+    k
+    lmbda
+    delta
+    capPayoff
+    capNotional
+    capLeverage
+    circuitBreakerWindow
+    circuitBreakerMintTarget
+    maintenanceMarginFraction
+    maintenanceMarginBurnRate
+    liquidationFeeRate
+    tradingFeeRate
+    minCollateral
+    priceDriftUpperLimit
+    averageBlockTime
+    isShutdown
+    positions {
+      id
+    }
+  }
+}
+    `;
+export const ActiveMarketsDocument = `
+    query activeMarkets {
   markets(where: {isShutdown: false}) {
     id
     feedAddress
@@ -2667,8 +2715,11 @@ const injectedRtkApi = api.injectEndpoints({
     market: build.query<MarketQuery, MarketQueryVariables>({
       query: (variables) => ({ document: MarketDocument, variables })
     }),
-    markets: build.query<MarketsQuery, MarketsQueryVariables | void>({
-      query: (variables) => ({ document: MarketsDocument, variables })
+    totalMarkets: build.query<TotalMarketsQuery, TotalMarketsQueryVariables | void>({
+      query: (variables) => ({ document: TotalMarketsDocument, variables })
+    }),
+    activeMarkets: build.query<ActiveMarketsQuery, ActiveMarketsQueryVariables | void>({
+      query: (variables) => ({ document: ActiveMarketsDocument, variables })
     }),
     positions: build.query<PositionsQuery, PositionsQueryVariables | void>({
       query: (variables) => ({ document: PositionsDocument, variables })
@@ -2692,5 +2743,5 @@ const injectedRtkApi = api.injectEndpoints({
 });
 
 export { injectedRtkApi as api };
-export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useMarketQuery, useLazyMarketQuery, useMarketsQuery, useLazyMarketsQuery, usePositionsQuery, useLazyPositionsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
+export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, usePositionsQuery, useLazyPositionsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
 

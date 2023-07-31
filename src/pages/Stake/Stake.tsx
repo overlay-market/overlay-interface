@@ -3,7 +3,6 @@ import {NumericalInput} from '../../components/NumericalInput/NumericalInput'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
 import {Image} from 'rebass'
 import {TEXT} from '../../theme/theme'
-import {Link} from 'react-router-dom'
 import {ArrowRight} from 'react-feather'
 import {makeStyles} from '@material-ui/core/styles'
 import {Button, Card, CardContent, CardMedia, CircularProgress, Grid} from '@material-ui/core'
@@ -486,9 +485,14 @@ const Stake = ({poolData}: PoolProps) => {
               <TEXT.SmallBody color={colors(true).dark.grey2}>
                 Rewards airdropped first week of every month.
                 <br />
-                <Link to="/" className={classes.link}>
+                <a
+                  href="https://docs.google.com/document/d/1IAtRTuijLdG8ytlXElVLjYbIPI0BqnN5BK__RY2aZ9A/edit#heading=h.a7olfzb9d8rn"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className={classes.link}
+                >
                   Learn more <ArrowRight height={12} width={12} className={classes.arrowRight} />
-                </Link>
+                </a>
               </TEXT.SmallBody>
             )}
 

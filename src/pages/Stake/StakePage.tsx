@@ -59,6 +59,7 @@ const useStyles = makeStyles(theme => ({
 
 const StakePage = () => {
   const classes = useStyles()
+  const HIDE_AIRDROP = true
 
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
   const [filteredPoolsData, setFilteredPoolsData] = useState<PoolsData[]>([])
@@ -88,12 +89,14 @@ const StakePage = () => {
           <TEXT.SmallBody color={colors(true).dark.grey2} mb="1px">
             Rewards calculated by User Volume / Total Volume x Monthly Reward Pool
           </TEXT.SmallBody>
-          <TEXT.SmallBody color={colors(true).dark.grey2}>
-            Rewards airdropped first week of every month.{' '}
-            <Link to="/" className={classes.link}>
-              Learn more <ArrowRight height={14} width={14} className={classes.arrowRight} />
-            </Link>
-          </TEXT.SmallBody>
+          {HIDE_AIRDROP ? null : (
+            <TEXT.SmallBody color={colors(true).dark.grey2}>
+              Rewards airdropped first week of every month.{' '}
+              <Link to="/" className={classes.link}>
+                Learn more <ArrowRight height={14} width={14} className={classes.arrowRight} />
+              </Link>
+            </TEXT.SmallBody>
+          )}
         </FlexColumn>
 
         <div className={classes.totalStakedCard}>

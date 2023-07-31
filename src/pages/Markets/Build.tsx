@@ -412,7 +412,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   const rawExpectedOi = estimatedOiResult.rawOi ? estimatedOiResult.rawOi : null
   const expectedOi = formatBigNumberUsingDecimalsToNumber(rawExpectedOi?.toString(), 18, 18)
-  console.log({estimatedOiResult, rawOi: rawExpectedOi?.toString(), expectedOi})
   const estimatedFractionOfCapOi = useFractionOfCapOi(market?.id, estimatedOiResult?.rawOi)
   const estimatedBid: BigNumber | undefined = useBid(market?.id, estimatedFractionOfCapOi)
   const estimatedAsk: BigNumber | undefined = useAsk(market?.id, estimatedFractionOfCapOi)

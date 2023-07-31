@@ -535,7 +535,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   return (
     <BuildContainer>
-      <BuildChart />
+      <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
       <MarketCard align={'left'} padding={'0px'}>
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>

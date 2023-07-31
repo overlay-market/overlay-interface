@@ -1,7 +1,9 @@
+import {useMarketData} from '../../../state/markets/hooks'
+
 // DatafeedConfiguration implementation
 const configurationData = {
   // Represents the resolutions for bars supported by your datafeed
-  supported_resolutions: ['1D', '1W', '1M'],
+  supported_resolutions: ['15', '60', '1D'],
 }
 
 export default {
@@ -11,20 +13,22 @@ export default {
   },
 
   searchSymbols: async (userInput, exchange, symbolType, onResultReadyCallback) => {
+    // Get all symbols
     console.log('[searchSymbols]: Method call')
   },
 
   resolveSymbol: async (symbolName, onSymbolResolvedCallback, onResolveErrorCallback, extension) => {
     console.log('[resolveSymbol]: Method call', symbolName)
+    const {marketId, description} = JSON.parse(symbolName || '{}')
 
     const symbolInfo = {
-      ticker: 'Market 0xtest',
-      name: 'Market 0xtest',
-      description: 'Market 0xtest',
+      ticker: symbolName,
+      name: description,
+      description: description,
       type: 'crypto',
       session: '24x7',
       timezone: 'Etc/UTC',
-      exchange: 'TestChange',
+      exchange: 'Overlay',
       minmov: 1,
       pricescale: 100,
       has_intraday: false,
@@ -33,6 +37,7 @@ export default {
       supported_resolutions: configurationData.supported_resolutions,
       volume_precision: 2,
       data_status: 'streaming',
+      marketAddress: marketId,
     }
 
     onSymbolResolvedCallback(symbolInfo)
@@ -43,10 +48,12 @@ export default {
 
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
+    console.log({resolution, periodParams})
+
     const urlParameters = {
-      market: '0x1067b7df86552a53d816ce3fed50d6d01310b48f',
-      binSize: 1, // must match tradingView resolution
-      binUnit: 'day', // must match tradingView resolution
+      market: symbolInfo?.marketAddress,
+      binSize: 24, // must match tradingView resolution
+      binUnit: 'hour', // must match tradingView resolution
       from: from * 1000,
       to: to * 1000,
       limit: 2000,
@@ -66,6 +73,8 @@ export default {
         onHistoryCallback([], {noData: true})
         return
       }
+
+      // console.log({res})
 
       res.forEach(bar => {
         bars = [

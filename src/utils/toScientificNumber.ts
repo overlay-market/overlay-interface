@@ -66,14 +66,14 @@ export const toScientificNumber = (input: string | BigNumber | EthersBigNumber |
 
   // Check if the value is less than 1 billion
   if (value.abs().lt(BILLION)) {
-    return `${toPrecisionTrim(value.div(MILLION), 6)}M`
+    return `${toPrecisionTrim(value.div(MILLION), 6)} M`
   }
 
   // Check if the value is less than 1 trillion
   if (value.abs().lt(TRILLION)) {
-    return `${toPrecisionTrim(value.div(BILLION), 6)}B`
+    return `${toPrecisionTrim(value.div(BILLION), 6)} B`
   }
 
   // Value is greater than or equal to 1 trillion
-  return `${toPrecisionTrim(value.div(TRILLION), 6)}T`
+  return `${toPrecisionTrim(value.div(TRILLION), 6)} T`
 }

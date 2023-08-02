@@ -43,7 +43,6 @@ import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
 import {toScientificNumber} from '../../utils/toScientificNumber'
-import {Button} from 'rebass'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;

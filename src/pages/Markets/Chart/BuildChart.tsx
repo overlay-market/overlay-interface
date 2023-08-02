@@ -28,21 +28,16 @@ export interface ChartContainerProps {
 }
 
 type BuildChartProps = {
-  symbol?: string
   feedAddress?: string
   marketId?: string
 }
 
-export const BuildChart = ({symbol = 'aa', feedAddress, marketId}: BuildChartProps) => {
+export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>
   const {description} = useMarketName(feedAddress)
 
-  // console.log({marketId})
-
   useEffect(() => {
     if (marketId && description) {
-      console.log({marketId, description})
-
       const defaultProps: Omit<ChartContainerProps, 'container'> = {
         symbol: JSON.stringify({marketId, description}),
         interval: '60' as ResolutionString,
@@ -59,83 +54,38 @@ export const BuildChart = ({symbol = 'aa', feedAddress, marketId}: BuildChartPro
       }
       const widgetOptions: ChartingLibraryWidgetOptions = {
         symbol: defaultProps.symbol as string,
-        // BEWARE: no trailing slash is expected in feed URL
-        // tslint:disable-next-line:no-any
-        // datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(defaultProps.datafeedUrl),
+        datafeed: Datafeed,
         library_path: defaultProps.libraryPath as string,
         interval: defaultProps.interval as ChartingLibraryWidgetOptions['interval'],
         container: chartContainerRef.current,
         locale: 'en',
-        // disabled_features: [
-        //   'use_localstorage_for_settings',
-        //   // 'header_widget',
-        //   'left_toolbar',
-        //   'control_bar',
-        //   'timeframes_toolbar',
-        //   'axis_pressed_mouse_move_scale',
-        // ],
-        // disabled_features: ['use_localstorage_for_settings', 'header_widget', 'left_toolbar', 'control_bar'],
-        // disabled_features: [
-        //   'use_localstorage_for_settings',
-        //   'left_toolbar',
-        //   'control_bar',
-        //   'timeframes_toolbar',
-        //   'header_symbol_search',
-        //   // 'header_resolutions',
-        // ],
-        // enabled_features: ['custom_resolutions', 'header_resolutions'],
+        disabled_features: [
+          'use_localstorage_for_settings',
+          'left_toolbar',
+          'control_bar',
+          'timeframes_toolbar',
+          'header_symbol_search',
+          'symbol_search_hot_key',
+          'header_chart_type',
+          'header_settings',
+          'header_indicators',
+          'header_compare',
+          'header_undo_redo',
+          'header_screenshot',
+          'header_saveload',
+        ],
         charts_storage_url: defaultProps.chartsStorageUrl,
         charts_storage_api_version: defaultProps.chartsStorageApiVersion,
         client_id: defaultProps.clientId,
         user_id: defaultProps.userId,
         fullscreen: defaultProps.fullscreen,
-        // autosize: defaultProps.autosize,
+        autosize: defaultProps.autosize,
         studies_overrides: defaultProps.studiesOverrides,
         theme: defaultProps.theme,
-        datafeed: Datafeed,
         header_widget_buttons_mode: 'fullsize',
-        timeframe: '2D',
-        // time_frames: [
-        //   // {text: '1dasdasd', resolution: '6M' as ResolutionString, description: '50 Years'},
-        //   // {text: '3yasdas', resolution: '1W' as ResolutionString, description: '3 Years', title: '3yr'},
-        //   // {text: '8mss', resolution: '1D' as ResolutionString, description: '8 Month'},
-        // ],
-        // saved_data: {
-        //   description,
-        // },
       }
 
       const tvWidget = new widget(widgetOptions)
-
-      tvWidget.onChartReady(() => {
-        tvWidget.headerReady().then(() => {
-          // const button = tvWidget.createButton()
-          // button.setAttribute('title', 'Click to show a notification popup')
-          // button.classList.add('apply-common-tooltip')
-          // button.addEventListener('click', () =>
-          //   tvWidget.showNoticeDialog({
-          //     title: 'Notification',
-          //     body: 'TradingView Charting Library API works correctly',
-          //     callback: () => {
-          //       console.log('Noticed!')
-          //     },
-          //   }),
-          // )
-          // button.innerHTML = 'Check API'
-        })
-      })
-
-      // tvWidget
-      //   .activeChart()
-      //   .onIntervalChanged()
-      //   .subscribe(null, (interval, timeframeObj) => {
-      //     console.log('asdas')
-      //     return (timeframeObj.timeframe = {
-      //       value: '12M',
-      //       // @ts-ignore
-      //       type: 'period-back',
-      //     })
-      //   })
 
       return () => {
         tvWidget.remove()

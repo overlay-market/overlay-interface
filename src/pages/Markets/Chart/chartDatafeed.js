@@ -1,4 +1,5 @@
 import {useMarketData} from '../../../state/markets/hooks'
+import {LibrarySymbolInfo} from '../../../charting_library/charting_library'
 
 // DatafeedConfiguration implementation
 const configurationData = {
@@ -21,7 +22,7 @@ export default {
     console.log('[resolveSymbol]: Method call', symbolName)
     const {marketId, description} = JSON.parse(symbolName || '{}')
 
-    const symbolInfo = {
+    const symbolInfo: LibrarySymbolInfo = {
       ticker: symbolName,
       name: description,
       description: description,
@@ -38,6 +39,7 @@ export default {
       volume_precision: 2,
       data_status: 'streaming',
       marketAddress: marketId,
+      has_intraday: true,
     }
 
     onSymbolResolvedCallback(symbolInfo)
@@ -45,15 +47,12 @@ export default {
 
   getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
     const {from, to, firstDataRequest} = periodParams
-
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
-
-    console.log({resolution, periodParams})
 
     const urlParameters = {
       market: symbolInfo?.marketAddress,
-      binSize: 1, // must match tradingView resolution
-      binUnit: 'hour', // must match tradingView resolution
+      binSize: isNaN(Number(resolution)) ? 1 : Number(resolution),
+      binUnit: isNaN(Number(resolution)) ? 'day' : 'minute',
       from: from * 1000,
       to: to * 1000,
       limit: 2000,
@@ -73,8 +72,6 @@ export default {
         onHistoryCallback([], {noData: true})
         return
       }
-
-      console.log({res})
 
       res.forEach(bar => {
         bars = [

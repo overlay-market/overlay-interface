@@ -52,7 +52,7 @@ export default {
 
     const urlParameters = {
       market: symbolInfo?.marketAddress,
-      binSize: 24, // must match tradingView resolution
+      binSize: 1, // must match tradingView resolution
       binUnit: 'hour', // must match tradingView resolution
       from: from * 1000,
       to: to * 1000,
@@ -74,7 +74,7 @@ export default {
         return
       }
 
-      // console.log({res})
+      console.log({res})
 
       res.forEach(bar => {
         bars = [

@@ -66,14 +66,14 @@ export const BuildChart = ({symbol = 'aa', feedAddress, marketId}: BuildChartPro
         interval: defaultProps.interval as ChartingLibraryWidgetOptions['interval'],
         container: chartContainerRef.current,
         locale: 'en',
-        disabled_features: [
-          'use_localstorage_for_settings',
-          'header_widget',
-          'left_toolbar',
-          'control_bar',
-          'timeframes_toolbar',
-          'axis_pressed_mouse_move_scale',
-        ],
+        // disabled_features: [
+        //   'use_localstorage_for_settings',
+        //   // 'header_widget',
+        //   'left_toolbar',
+        //   'control_bar',
+        //   'timeframes_toolbar',
+        //   'axis_pressed_mouse_move_scale',
+        // ],
         // disabled_features: ['use_localstorage_for_settings', 'header_widget', 'left_toolbar', 'control_bar'],
         // disabled_features: [
         //   'use_localstorage_for_settings',
@@ -83,17 +83,18 @@ export const BuildChart = ({symbol = 'aa', feedAddress, marketId}: BuildChartPro
         //   'header_symbol_search',
         //   // 'header_resolutions',
         // ],
-        enabled_features: ['custom_resolutions', 'header_resolutions'],
+        // enabled_features: ['custom_resolutions', 'header_resolutions'],
         charts_storage_url: defaultProps.chartsStorageUrl,
         charts_storage_api_version: defaultProps.chartsStorageApiVersion,
         client_id: defaultProps.clientId,
         user_id: defaultProps.userId,
         fullscreen: defaultProps.fullscreen,
-        autosize: defaultProps.autosize,
+        // autosize: defaultProps.autosize,
         studies_overrides: defaultProps.studiesOverrides,
         theme: defaultProps.theme,
         datafeed: Datafeed,
         header_widget_buttons_mode: 'fullsize',
+        timeframe: '2D',
         // time_frames: [
         //   // {text: '1dasdasd', resolution: '6M' as ResolutionString, description: '50 Years'},
         //   // {text: '3yasdas', resolution: '1W' as ResolutionString, description: '3 Years', title: '3yr'},
@@ -123,6 +124,18 @@ export const BuildChart = ({symbol = 'aa', feedAddress, marketId}: BuildChartPro
           // button.innerHTML = 'Check API'
         })
       })
+
+      // tvWidget
+      //   .activeChart()
+      //   .onIntervalChanged()
+      //   .subscribe(null, (interval, timeframeObj) => {
+      //     console.log('asdas')
+      //     return (timeframeObj.timeframe = {
+      //       value: '12M',
+      //       // @ts-ignore
+      //       type: 'period-back',
+      //     })
+      //   })
 
       return () => {
         tvWidget.remove()

@@ -44,6 +44,7 @@ import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
 import {toScientificNumber} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
+import BuildHeader from './BuildHeader'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -181,6 +182,15 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, quoteToken, market])
+
+  console.log({
+    decimals,
+    description,
+    baseToken,
+    quoteToken,
+    baseTokenAddress,
+    quoteTokenAddress,
+  })
 
   const priceCurrency = useMemo(() => {
     const marketNameArray = marketName.toString().split('/')
@@ -535,136 +545,139 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   }, [buildCallback, onResetBuildState, isLong, typedValue])
 
   return (
-    <BuildContainer>
-      <BuildChartColumn>
-        <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
-      </BuildChartColumn>
-      <MarketCard align={'left'} padding={'0px'}>
-        <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
-          <ControlInterfaceHeadContainer>
-            <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
-            <TEXT.Number color={colors(false).dark.blue1}>
-              {isLong ? `${priceCurrency}${toScientificNumber(longPrice)}` : `${priceCurrency}${toScientificNumber(shortPrice)}`}
-            </TEXT.Number>
-          </ControlInterfaceHeadContainer>
-          <PositionsButtonContainer>
-            <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
-              <div>Long</div>
-            </SelectLongPositionButton>
-            <SelectShortPositionButton onClick={() => handleSelectPositionSide(false)} active={!isLong && isLong !== undefined}>
-              <div>Short</div>
-            </SelectShortPositionButton>
-          </PositionsButtonContainer>
-          <LeverageSlider
-            name={'Build Position Leverage'}
-            min={1}
-            max={capLeverage ?? 1}
-            step={0.1}
-            value={Number(selectedLeverage)}
-            onChange={handleLeverageInput}
-          />
+    <div>
+      <BuildHeader marketId={marketId} />
+      <BuildContainer>
+        <BuildChartColumn>
+          <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
+        </BuildChartColumn>
+        <MarketCard align={'left'} padding={'0px'}>
+          <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
+            <ControlInterfaceHeadContainer>
+              <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
+              <TEXT.Number color={colors(false).dark.blue1}>
+                {isLong ? `${priceCurrency}${toScientificNumber(longPrice)}` : `${priceCurrency}${toScientificNumber(shortPrice)}`}
+              </TEXT.Number>
+            </ControlInterfaceHeadContainer>
+            <PositionsButtonContainer>
+              <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
+                <div>Long</div>
+              </SelectLongPositionButton>
+              <SelectShortPositionButton onClick={() => handleSelectPositionSide(false)} active={!isLong && isLong !== undefined}>
+                <div>Short</div>
+              </SelectShortPositionButton>
+            </PositionsButtonContainer>
+            <LeverageSlider
+              name={'Build Position Leverage'}
+              min={1}
+              max={capLeverage ?? 1}
+              step={0.1}
+              value={Number(selectedLeverage)}
+              onChange={handleLeverageInput}
+            />
 
-          <InputContainer>
-            <FlexRow justify="space-between" mb="25px">
-              <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
-              <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline', cursor: 'pointer'}}>
-                Max: {ovlBalance?.toFixed(2)} OVL
-              </TEXT.Supplemental>
-            </FlexRow>
-            <FlexRow justify="space-between">
-              <NumericalInput
-                color={colors(true).dark.blue1}
-                align="left"
-                padding="0px"
-                fontWeight="700"
-                value={typedValue?.toString()}
-                onUserInput={handleUserInput}
-              />
-              <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
-            </FlexRow>
-          </InputContainer>
+            <InputContainer>
+              <FlexRow justify="space-between" mb="25px">
+                <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
+                <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline', cursor: 'pointer'}}>
+                  Max: {ovlBalance?.toFixed(2)} OVL
+                </TEXT.Supplemental>
+              </FlexRow>
+              <FlexRow justify="space-between">
+                <NumericalInput
+                  color={colors(true).dark.blue1}
+                  align="left"
+                  padding="0px"
+                  fontWeight="700"
+                  value={typedValue?.toString()}
+                  onUserInput={handleUserInput}
+                />
+                <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
+              </FlexRow>
+            </InputContainer>
 
-          <MainDetails
+            <MainDetails
+              priceCurrency={priceCurrency}
+              quoteTokenDecimals={quoteTokenDecimals}
+              decimals={decimals}
+              typedValue={typedValue}
+              isLong={isLong}
+              estimatedBid={estimatedBid}
+              estimatedAsk={estimatedAsk}
+              bidPrice={prices.bid}
+              askPrice={prices.ask}
+              minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+            />
+          </ControlInterfaceContainer>
+
+          <ButtonContainer>
+            {showUnderwaterFlow ? (
+              <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                Position Underwater
+              </TriggerBuildButton>
+            ) : exceedOiCap ? (
+              <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                Exceeds OI Cap
+              </TriggerBuildButton>
+            ) : showBalanceNotEnoughWarning ? (
+              <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                OVL Balance Below Minimum
+              </TriggerBuildButton>
+            ) : showApprovalFlow ? (
+              <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
+            ) : (
+              <TriggerBuildButton
+                onClick={() => {
+                  setBuildState({
+                    showConfirm: true,
+                    attemptingTransaction: false,
+                    transactionErrorMessage: undefined,
+                    transactionHash: undefined,
+                  })
+                }}
+                isDisabled={disableBuildButton}
+                disabled={disableBuildButton}
+              >
+                Build {isPriceImpactHigh && '- High Price Impact'}
+              </TriggerBuildButton>
+            )}
+          </ButtonContainer>
+
+          <AdditionalDetails
             priceCurrency={priceCurrency}
-            quoteTokenDecimals={quoteTokenDecimals}
-            decimals={decimals}
-            typedValue={typedValue}
-            isLong={isLong}
-            estimatedBid={estimatedBid}
-            estimatedAsk={estimatedAsk}
             bidPrice={prices.bid}
             askPrice={prices.ask}
-            minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+            fee={buildFee ? formatDecimalToPercentage(formatWeiToParsedNumber(buildFee, 18, 5)) : 'loading'}
+            oiCap={formattedCapOi}
+            oiLong={formattedOiLong}
+            oiShort={formattedOiShort}
+            slippageTolerance={setSlippageValue}
+            fundingRate={fundingRate}
+            expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
+            estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
+            marketAddress={market?.id}
+            feedAddress={market?.feedAddress}
           />
-        </ControlInterfaceContainer>
-
-        <ButtonContainer>
-          {showUnderwaterFlow ? (
-            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-              Position Underwater
-            </TriggerBuildButton>
-          ) : exceedOiCap ? (
-            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-              Exceeds OI Cap
-            </TriggerBuildButton>
-          ) : showBalanceNotEnoughWarning ? (
-            <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-              OVL Balance Below Minimum
-            </TriggerBuildButton>
-          ) : showApprovalFlow ? (
-            <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
-          ) : (
-            <TriggerBuildButton
-              onClick={() => {
-                setBuildState({
-                  showConfirm: true,
-                  attemptingTransaction: false,
-                  transactionErrorMessage: undefined,
-                  transactionHash: undefined,
-                })
-              }}
-              isDisabled={disableBuildButton}
-              disabled={disableBuildButton}
-            >
-              Build {isPriceImpactHigh && '- High Price Impact'}
-            </TriggerBuildButton>
-          )}
-        </ButtonContainer>
-
-        <AdditionalDetails
-          priceCurrency={priceCurrency}
-          bidPrice={prices.bid}
-          askPrice={prices.ask}
-          fee={buildFee ? formatDecimalToPercentage(formatWeiToParsedNumber(buildFee, 18, 5)) : 'loading'}
-          oiCap={formattedCapOi}
-          oiLong={formattedOiLong}
-          oiShort={formattedOiShort}
-          slippageTolerance={setSlippageValue}
-          fundingRate={fundingRate}
+        </MarketCard>
+        <ConfirmTxnModal
+          marketName={marketName}
+          isOpen={showConfirm}
+          attemptingTransaction={attemptingTransaction}
+          isLong={isLong}
+          buildFee={buildFee && formatDecimalToPercentage(formatWeiToParsedNumber(buildFee, 18, 5))}
+          onConfirm={() => handleBuild()}
+          onDismiss={handleDismiss}
+          marketPrice={!isLong ? prices.bid : prices.ask}
+          setSlippageValue={setSlippageValue}
+          selectedLeverage={selectedLeverage}
+          adjustedCollateral={adjustedCollateral}
           expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
-          estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
-          marketAddress={market?.id}
-          feedAddress={market?.feedAddress}
+          estimatedLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
+          transactionHash={transactionHash}
+          transactionErrorMessage={transactionErrorMessage}
+          minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
         />
-      </MarketCard>
-      <ConfirmTxnModal
-        marketName={marketName}
-        isOpen={showConfirm}
-        attemptingTransaction={attemptingTransaction}
-        isLong={isLong}
-        buildFee={buildFee && formatDecimalToPercentage(formatWeiToParsedNumber(buildFee, 18, 5))}
-        onConfirm={() => handleBuild()}
-        onDismiss={handleDismiss}
-        marketPrice={!isLong ? prices.bid : prices.ask}
-        setSlippageValue={setSlippageValue}
-        selectedLeverage={selectedLeverage}
-        adjustedCollateral={adjustedCollateral}
-        expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
-        estimatedLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
-        transactionHash={transactionHash}
-        transactionErrorMessage={transactionErrorMessage}
-        minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
-      />
-    </BuildContainer>
+      </BuildContainer>
+    </div>
   )
 }

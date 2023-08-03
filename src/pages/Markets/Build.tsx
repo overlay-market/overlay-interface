@@ -43,6 +43,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
 import {toScientificNumber} from '../../utils/toScientificNumber'
+import {BuildChartColumn} from './BuildChartColumn'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -535,7 +536,9 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   return (
     <BuildContainer>
-      <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
+      <BuildChartColumn>
+        <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
+      </BuildChartColumn>
       <MarketCard align={'left'} padding={'0px'}>
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
@@ -644,7 +647,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           feedAddress={market?.feedAddress}
         />
       </MarketCard>
-
       <ConfirmTxnModal
         marketName={marketName}
         isOpen={showConfirm}

@@ -4,7 +4,63 @@ import {LibrarySymbolInfo} from '../../../charting_library/charting_library'
 // DatafeedConfiguration implementation
 const configurationData = {
   // Represents the resolutions for bars supported by your datafeed
-  supported_resolutions: ['15', '60', '1D'],
+  supported_resolutions: ['5', '15', '30', '60', '240', '720', '1D', '3D', '1W', '1M'],
+}
+
+function getBinSizeAndUnit(input: string): {binSize: number, binUnit: 'minute' | 'day' | 'week' | 'month'} | null {
+  const numValue = Number(input)
+
+  if (!isNaN(numValue) && isFinite(numValue)) {
+    return {
+      binSize: numValue,
+      binUnit: 'minute',
+    }
+  }
+
+  const dayRegex = /^(\d+)D$/
+  const weekRegex = /^(\d+)W$/
+  const monthRegex = /^(\d+)M$/
+
+  if (dayRegex.test(input)) {
+    const match = dayRegex.exec(input)
+    if (match) {
+      const numValueD = Number(match[1])
+      if (!isNaN(numValueD) && isFinite(numValueD)) {
+        return {
+          binSize: numValueD,
+          binUnit: 'day',
+        }
+      }
+    }
+  }
+
+  if (weekRegex.test(input)) {
+    const match = weekRegex.exec(input)
+    if (match) {
+      const numValueW = Number(match[1])
+      if (!isNaN(numValueW) && isFinite(numValueW)) {
+        return {
+          binSize: numValueW,
+          binUnit: 'week',
+        }
+      }
+    }
+  }
+
+  if (monthRegex.test(input)) {
+    const match = monthRegex.exec(input)
+    if (match) {
+      const numValueM = Number(match[1])
+      if (!isNaN(numValueM) && isFinite(numValueM)) {
+        return {
+          binSize: numValueM,
+          binUnit: 'month',
+        }
+      }
+    }
+  }
+
+  return null
 }
 
 export default {
@@ -49,10 +105,12 @@ export default {
     const {from, to, firstDataRequest} = periodParams
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
+    const {binSize, binUnit} = getBinSizeAndUnit(resolution)
+
     const urlParameters = {
       market: symbolInfo?.marketAddress,
-      binSize: isNaN(Number(resolution)) ? 1 : Number(resolution),
-      binUnit: isNaN(Number(resolution)) ? 'day' : 'minute',
+      binSize: binSize,
+      binUnit: binUnit,
       from: from * 1000,
       to: to * 1000,
       limit: 2000,

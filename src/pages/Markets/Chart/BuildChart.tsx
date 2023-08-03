@@ -6,9 +6,9 @@ import Datafeed from './chartDatafeed'
 import {useMarketName} from '../../../hooks/useMarketName'
 
 const TVChartContainer = styled.div`
-  width: 1000px;
+  width: 100%;
   padding-right: 16px;
-  max-height: 420px;
+  height: 100%;
 `
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol']
@@ -66,13 +66,7 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
           'timeframes_toolbar',
           'header_symbol_search',
           'symbol_search_hot_key',
-          'header_chart_type',
-          'header_settings',
-          'header_indicators',
           'header_compare',
-          'header_undo_redo',
-          'header_screenshot',
-          'header_saveload',
         ],
         charts_storage_url: defaultProps.chartsStorageUrl,
         charts_storage_api_version: defaultProps.chartsStorageApiVersion,

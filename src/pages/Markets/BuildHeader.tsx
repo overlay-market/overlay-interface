@@ -10,6 +10,8 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {getCharactersBeforeSlash} from '../../utils/getCharactersBeforeSlash'
 import {MARKET_LOGO_FROM_BASE} from '../../constants/markets'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
+import Dropdown from '../../components/Dropdown/Dropdown'
+import {useHistory} from 'react-router-dom'
 
 const Container = styled(FlexColumn)`
   padding: 12px;
@@ -20,13 +22,20 @@ const MarketNameContainer = styled(FlexRow)`
 `
 
 const BuildHeader = ({marketId}: {marketId: string}) => {
-  const {market} = useMarketData(marketId)
+  const {market, isLoading} = useMarketData(marketId)
   const {description: marketName} = useMarketName(market?.feedAddress)
   const baseToken = useMemo(() => getCharactersBeforeSlash(marketName || ''), [marketName])
   const marketLogo = useMemo(() => MARKET_LOGO_FROM_BASE[baseToken], [baseToken])
 
   const {markets} = useTotalMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
+  const history = useHistory()
+
+  const marketOptions = marketDetails.map(market => ({
+    value: market?.id,
+    label: getCharactersBeforeSlash(market?.description || ''),
+    onClick: () => history.push(`/markets/${market?.id}`),
+  }))
 
   return (
     <Container align="flex-start">
@@ -34,6 +43,14 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
       <MarketNameContainer>
         <Icon size={20}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
         <TEXT.BoldSmallBody>{marketName}</TEXT.BoldSmallBody>
+        <Dropdown
+          value={{
+            value: market?.id,
+            label: baseToken,
+          }}
+          isLoading={isLoading}
+          options={marketOptions}
+        />
       </MarketNameContainer>
     </Container>
   )

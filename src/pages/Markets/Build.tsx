@@ -183,15 +183,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, quoteToken, market])
 
-  console.log({
-    decimals,
-    description,
-    baseToken,
-    quoteToken,
-    baseTokenAddress,
-    quoteTokenAddress,
-  })
-
   const priceCurrency = useMemo(() => {
     const marketNameArray = marketName.toString().split('/')
     if (Array.isArray(marketNameArray) && marketNameArray.length > 1) {

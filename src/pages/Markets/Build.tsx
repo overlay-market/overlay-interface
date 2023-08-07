@@ -505,6 +505,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return false
   }, [typedValue, isLong, minCollateral, parsedOvlBalance, estPrice])
 
+  const handleMaxInput = (totalSupply: string | null) => {
+    return handleUserInput(Number(totalSupply).toFixed(6))
+  }
+
   const handleBuild = useCallback(() => {
     if (!typedValue) throw new Error('missing position input size')
     if (isLong === undefined) throw new Error('please choose a long/short position')
@@ -576,7 +580,11 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             <InputContainer>
               <FlexRow justify="space-between" mb="25px">
                 <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
-                <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline', cursor: 'pointer'}}>
+                <TEXT.Supplemental
+                  onClick={() => handleMaxInput(maxInputIncludingFees ?? null)}
+                  color={colors(true).dark.grey2}
+                  style={{textDecoration: 'underline', cursor: 'pointer'}}
+                >
                   Max: {ovlBalance?.toFixed(2)} OVL
                 </TEXT.Supplemental>
               </FlexRow>

@@ -78,8 +78,8 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
         ) : (
           <MarketPriceContainer>
             <TEXT.BoldNumber>{`${marketData?.priceCurrency}${toScientificNumber(marketData?.headerPrice)}`}</TEXT.BoldNumber>
-            <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
-            <TEXT.SmallBody>24h</TEXT.SmallBody>
+            {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
+            <TEXT.SmallBody>24h</TEXT.SmallBody> */}
           </MarketPriceContainer>
         )}
 

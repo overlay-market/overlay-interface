@@ -557,7 +557,9 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             <ControlInterfaceHeadContainer>
               <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
               <TEXT.Number color={colors(false).dark.blue1}>
-                {isLong ? `${priceCurrency}${toScientificNumber(longPrice)}` : `${priceCurrency}${toScientificNumber(shortPrice)}`}
+                {isLong
+                  ? `Long Price: ${priceCurrency}${toScientificNumber(longPrice)}`
+                  : `Short Price: ${priceCurrency}${toScientificNumber(shortPrice)}`}
               </TEXT.Number>
             </ControlInterfaceHeadContainer>
             <PositionsButtonContainer>

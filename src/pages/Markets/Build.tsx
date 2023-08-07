@@ -438,6 +438,12 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       : formatBigNumberUsingDecimalsToString(estimatedBid, quoteTokenDecimals, sigFigConstant)
   }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals])
 
+  const headerPrice: string = useMemo(() => {
+    const price = estimatedReceivedPrice ?? prices.mid
+    const formattedPrice = price < 100000 ? price : Math.floor(price)
+    return Number(formattedPrice).toLocaleString()
+  }, [estimatedReceivedPrice, prices])
+
   const longPrice: string = useMemo(() => {
     const price = prices.ask
     const formattedPrice = price < 100000 ? price : Math.floor(price)
@@ -539,7 +545,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     <div>
       <BuildHeader marketId={marketId} />
       <BuildContainer>
-        <BuildChartColumn>
+        <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
           <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
         </BuildChartColumn>
         <MarketCard align={'left'} padding={'0px'}>

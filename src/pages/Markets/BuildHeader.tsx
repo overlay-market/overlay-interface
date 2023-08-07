@@ -12,6 +12,7 @@ import {MARKET_LOGO_FROM_BASE} from '../../constants/markets'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Dropdown from '../../components/Dropdown/Dropdown'
 import {useHistory} from 'react-router-dom'
+import Loader from '../../components/Loaders/Loaders'
 
 const Container = styled(FlexColumn)`
   padding: 12px;
@@ -22,7 +23,7 @@ const MarketNameContainer = styled(FlexRow)`
 `
 
 const BuildHeader = ({marketId}: {marketId: string}) => {
-  const {market, isLoading} = useMarketData(marketId)
+  const {market, isLoading, refetch} = useMarketData(marketId)
   const {description: marketName} = useMarketName(market?.feedAddress)
   const baseToken = useMemo(() => getCharactersBeforeSlash(marketName || ''), [marketName])
   const marketLogo = useMemo(() => MARKET_LOGO_FROM_BASE[baseToken], [baseToken])
@@ -34,8 +35,13 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
   const marketOptions = marketDetails.map(market => ({
     value: market?.id,
     label: getCharactersBeforeSlash(market?.description || ''),
-    onClick: () => history.push(`/markets/${market?.id}`),
+    onClick: () => {
+      refetch()
+      history.push(`/markets/${market?.id}`)
+    },
   }))
+
+  console.log({isLoading, marketName, baseToken, marketDetails})
 
   return (
     <Container align="flex-start">
@@ -43,14 +49,18 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
       <MarketNameContainer>
         <Icon size={20}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
         <TEXT.BoldSmallBody>{marketName}</TEXT.BoldSmallBody>
-        <Dropdown
-          value={{
-            value: market?.id,
-            label: baseToken,
-          }}
-          isLoading={isLoading}
-          options={marketOptions}
-        />
+        {isLoading || !marketDetails.length || !baseToken || !marketName ? (
+          <Loader size="12px" />
+        ) : (
+          <Dropdown
+            value={{
+              value: market?.id,
+              label: baseToken,
+            }}
+            isLoading={isLoading || !marketDetails.length || !baseToken || !marketName}
+            options={marketOptions}
+          />
+        )}
       </MarketNameContainer>
     </Container>
   )

@@ -43,8 +43,6 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
       },
     }))
 
-  console.log({marketLogo})
-
   return (
     <Container align="flex-start">
       <Back arrowSize={16} fontSize={14} fontColor={colors(false).dark.blue2} />

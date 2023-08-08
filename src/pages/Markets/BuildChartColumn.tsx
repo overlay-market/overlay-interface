@@ -34,6 +34,14 @@ const MarketOIContainer = styled.div`
   align-items: center;
 `
 
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 380px;
+`
+
 type BuildChartProps = {
   children?: React.ReactNode
   marketData?: any
@@ -74,40 +82,40 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
     <Container>
       <MarketDetailsContainer>
         {!marketDataDetails ? (
-          <Loader size="12px" />
+          <LoadingContainer>
+            <Loader size="24px" />
+          </LoadingContainer>
         ) : (
-          <MarketPriceContainer>
-            <TEXT.BoldNumber>{`${marketData?.priceCurrency}${toScientificNumber(marketData?.headerPrice)}`}</TEXT.BoldNumber>
-            {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
+          <>
+            <MarketPriceContainer>
+              <TEXT.BoldNumber>{`${marketData?.priceCurrency}${toScientificNumber(marketData?.headerPrice)}`}</TEXT.BoldNumber>
+              {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
             <TEXT.SmallBody>24h</TEXT.SmallBody> */}
-          </MarketPriceContainer>
-        )}
+            </MarketPriceContainer>
 
-        {!marketDataDetails ? (
-          <Loader size="12px" />
-        ) : (
-          <FlexRow style={{gap: '28px'}}>
-            <FlexRow style={{gap: '16px', justifyContent: 'flex-end', alignItems: 'center'}}>
-              <TEXT.SmallBody>Funding</TEXT.SmallBody>
-              <TEXT.BoldNumber color={isFundingRatePositive ? colors(false).dark.red : colors(false).dark.green}>
-                {`${marketDataDetails?.parsedDailyFundingRate}%`}
-              </TEXT.BoldNumber>
+            <FlexRow style={{gap: '28px'}}>
+              <FlexRow style={{gap: '16px', justifyContent: 'flex-end', alignItems: 'center'}}>
+                <TEXT.SmallBody>Funding</TEXT.SmallBody>
+                <TEXT.BoldNumber color={isFundingRatePositive ? colors(false).dark.red : colors(false).dark.green}>
+                  {`${marketDataDetails?.parsedDailyFundingRate}%`}
+                </TEXT.BoldNumber>
+              </FlexRow>
+
+              <MarketOIContainer>
+                <TEXT.SmallBody style={{whiteSpace: 'nowrap'}}>OI Balance</TEXT.SmallBody>
+                <FlexColumn width="150px">
+                  <FlexRow justify="space-between">
+                    <TEXT.BoldNumber color="#FF648A">{`${shortPercentageOfTotalOi}%`}</TEXT.BoldNumber>
+                    <TEXT.BoldNumber color="#5FD0AB">{`${longPercentageOfTotalOi}%`}</TEXT.BoldNumber>
+                  </FlexRow>
+                  <ProgressBar reverse={false} split={false} max={total} value={short} width={'100%'} margin={'0'} color={'#FF648A'} />
+                </FlexColumn>
+              </MarketOIContainer>
             </FlexRow>
-
-            <MarketOIContainer>
-              <TEXT.SmallBody style={{whiteSpace: 'nowrap'}}>OI Balance</TEXT.SmallBody>
-              <FlexColumn width="150px">
-                <FlexRow justify="space-between">
-                  <TEXT.BoldNumber color="#FF648A">{`${shortPercentageOfTotalOi}%`}</TEXT.BoldNumber>
-                  <TEXT.BoldNumber color="#5FD0AB">{`${longPercentageOfTotalOi}%`}</TEXT.BoldNumber>
-                </FlexRow>
-                <ProgressBar reverse={false} split={false} max={total} value={short} width={'100%'} margin={'0'} color={'#FF648A'} />
-              </FlexColumn>
-            </MarketOIContainer>
-          </FlexRow>
+          </>
         )}
       </MarketDetailsContainer>
-      {children}
+      {!marketDataDetails ? null : children}
     </Container>
   )
 }

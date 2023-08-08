@@ -4,6 +4,7 @@ import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import Loader from '../../components/Loaders/Loaders'
 import {BigNumber} from 'ethers'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const ContentContainer = styled(FlexColumn)`
   padding: 0 16px;
@@ -103,12 +104,12 @@ export const MainDetails = ({
     <ContentContainer>
       <AdditionalDetailRow>
         <PositionDetailType>Est. Received Price</PositionDetailType>
-        <DetailValue>{estimatedReceivedPrice && minPrice ? estimatedReceivedPrice : '-'}</DetailValue>
+        <DetailValue>{estimatedReceivedPrice && minPrice ? toScientificNumber(estimatedReceivedPrice) : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
         <PositionDetailType>Worst Received Price</PositionDetailType>
-        <DetailValue>{minPrice ? formatBigNumberUsingDecimalsToString(minPrice, 18, 4) : '-'}</DetailValue>
+        <DetailValue>{minPrice ? toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4)) : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>

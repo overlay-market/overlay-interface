@@ -9,6 +9,8 @@ import {Icon} from '../../components/Icon/Icon'
 import {ExternalLink as LinkIconFeather} from 'react-feather'
 import {useActiveWeb3React} from '../../hooks/web3'
 import ReactTooltip from 'react-tooltip'
+import {BigNumber} from 'ethers'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const ContentContainer = styled(FlexColumn)`
   padding: 0 16px;
@@ -85,7 +87,7 @@ export const AdditionalDetails = ({
   oiShort?: number
   priceImpact?: string
   slippageTolerance?: string | number
-  expectedOi?: string | number | null
+  expectedOi?: BigNumber | string | number | null
   fundingRate?: string | number
   estLiquidationPrice?: string | number
   marketAddress?: string
@@ -114,12 +116,12 @@ export const AdditionalDetails = ({
 
       <AdditionalDetailRow>
         <PositionDetailType>Bid</PositionDetailType>
-        <DetailValue>{bidPrice === 'loading' ? <Loader stroke="white" size="12px" /> : bidPrice}</DetailValue>
+        <DetailValue>{bidPrice === 'loading' ? <Loader stroke="white" size="12px" /> : toScientificNumber(bidPrice)}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
         <PositionDetailType>Ask</PositionDetailType>
-        <DetailValue>{askPrice === 'loading' ? <Loader stroke="white" size="12px" /> : askPrice}</DetailValue>
+        <DetailValue>{askPrice === 'loading' ? <Loader stroke="white" size="12px" /> : toScientificNumber(askPrice)}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
@@ -129,20 +131,20 @@ export const AdditionalDetails = ({
 
       <AdditionalDetailRow>
         <PositionDetailType>Est. Liquidation Price</PositionDetailType>
-        <DetailValue>{estLiquidationPrice}</DetailValue>
+        <DetailValue>{toScientificNumber(estLiquidationPrice)}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
         <PositionDetailType>Expected OI</PositionDetailType>
-        <DetailValue>{expectedOi ? expectedOi : '-'}</DetailValue>
+        <DetailValue>{expectedOi ? toScientificNumber(expectedOi) : '-'}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow data-for={'long info'} data-tip={'long info'}>
         <PositionDetailTypeDashed>OI Long / OI Cap</PositionDetailTypeDashed>
         <FlexColumn width={'auto'} ml={'auto'} alignContent={'end'}>
           <OpenInterestValue>
-            {oiLong || oiLong === 0 ? oiLong + ' ' : <Loader stroke="white" size="12px" />}/
-            {oiCap || oiCap === 0 ? ' ' + oiCap : <Loader stroke="white" size="12px" />}
+            {oiLong || oiLong === 0 ? toScientificNumber(oiLong) + ' ' : <Loader stroke="white" size="12px" />}/
+            {oiCap || oiCap === 0 ? ' ' + toScientificNumber(oiCap) : <Loader stroke="white" size="12px" />}
           </OpenInterestValue>
         </FlexColumn>
       </AdditionalDetailRow>
@@ -158,8 +160,8 @@ export const AdditionalDetails = ({
         <PositionDetailTypeDashed>OI Short / OI Cap</PositionDetailTypeDashed>
         <FlexColumn width={'auto'} ml={'auto'} alignContent={'end'}>
           <OpenInterestValue>
-            {oiShort || oiShort === 0 ? oiShort + ' ' : <Loader stroke="white" size="12px" />}/
-            {oiCap || oiCap === 0 ? ' ' + oiCap : <Loader stroke="white" size="12px" />}
+            {oiShort || oiShort === 0 ? toScientificNumber(oiShort) + ' ' : <Loader stroke="white" size="12px" />}/
+            {oiCap || oiCap === 0 ? ' ' + toScientificNumber(oiCap) : <Loader stroke="white" size="12px" />}
           </OpenInterestValue>
         </FlexColumn>
       </AdditionalDetailRow>

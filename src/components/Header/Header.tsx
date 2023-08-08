@@ -224,6 +224,13 @@ export default function Header() {
           <TEXT.Menu>Positions</TEXT.Menu>
         </Trans>
       </StyledLink>
+
+      <StyledLink to={'/stake'}>
+        <Trans>
+          <TEXT.Menu>Stake</TEXT.Menu>
+        </Trans>
+      </StyledLink>
+
       <StyledLink to={'/bridge'}>
         <Trans>
           <TEXT.Menu>Bridge</TEXT.Menu>

@@ -39,6 +39,8 @@ import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
 import Loader from '../../components/Loaders/Loaders'
 import {formatDecimalToPercentage} from '../../utils/formatDecimal'
+import {toScientificNumber} from '../../utils/toScientificNumber'
+import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCallback'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -99,6 +101,7 @@ export function Unwind({
   const filtered = positions?.filter((index, key) => index.id === marketPositionId)
 
   const position = filtered ? filtered[0] : null
+  const isMarketShutDown = position?.market.isShutdown
 
   const {baseToken, quoteToken, baseTokenAddress, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
 
@@ -205,7 +208,7 @@ export function Unwind({
 
   const {unwindData} = useDerivedUnwindInfo()
   const {callback: unwindCallback} = useUnwindCallback(unwindData, position?.market.id, typedValue, value, positionId, isLong, prices)
-
+  const {callback: emergencyWithdrawCallback} = useEmergencyWithdrawCallback(position?.market.id, positionId)
   useEffect(() => {
     onResetUnwindState()
   }, [positionId, onResetUnwindState])
@@ -293,6 +296,17 @@ export function Unwind({
       .catch(err => console.error('Error from handleUnwind: ', err))
   }, [history, position, marketPositionId, positionId, unwindCallback, onResetUnwindState])
 
+  const handleWithdrawFromShutDownMarket = useCallback(() => {
+    if (!emergencyWithdrawCallback) return
+    emergencyWithdrawCallback()
+      .then(success => {
+        onResetUnwindState()
+        const numberOfUnwinds = position && Number(position['numberOfUniwnds'])
+        history.push(`/closed-positions/${marketPositionId}-${numberOfUnwinds}/${positionId}`)
+      })
+      .catch(err => console.error('Error from handleWithdrawFromShutDownMarket: ', JSON.stringify(err)))
+  }, [history, position, marketPositionId, positionId, emergencyWithdrawCallback, onResetUnwindState])
+
   const isUnwindAmountTooLow: boolean = useMemo(() => {
     if (Number(typedValue) < 0.01 && customInput) {
       return true
@@ -307,7 +321,7 @@ export function Unwind({
     return false
   }, [customInput, currentValue])
 
-  return (
+  return !isMarketShutDown ? (
     <InterfaceWrapper>
       {handleSelectPosition(Number(position?.positionId))}
       <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
@@ -320,7 +334,7 @@ export function Unwind({
             {marketName}
           </TEXT.StandardHeader1>
           <TEXT.StandardHeader1 minHeight={'30px'}>
-            {isLong !== undefined ? isLong ? bidPrice : askPrice : <Loader stroke="white" size="12px" />}
+            {isLong !== undefined ? isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice) : <Loader stroke="white" size="12px" />}
           </TEXT.StandardHeader1>
           <Icon
             onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
@@ -385,9 +399,6 @@ export function Unwind({
           margin={'20px 0 0 0'}
           justifyContent={'flex-end'}
         ></PercentageSlider>
-        {/* <Label htmlFor="Amount" mt={"24px"}>
-
-        </Label> */}
         {showUnderwaterFlow ? (
           <UnwindButton onClick={() => null} isDisabled={true} disabled={true}>
             Position Underwater
@@ -414,15 +425,6 @@ export function Unwind({
         />
         <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
       </FlexColumn>
-
-      {/* <Accordion 
-        activeAccordionText={"Less"}
-        inactiveAccordionText={"More"}
-        activeColor={"#12B4FF"}
-        inactiveColor={"#12B4FF"}
-        width={"fit-content"}
-        clickableMargin={"auto"}
-        > */}
       <FlexColumn mt="48px" padding="0 16px">
         <AdditionalDetailRow detail={'Value'} value={value ? `${formatWeiToParsedNumber(value, 18, 4)} OVL` : 'loading'} />
         <AdditionalDetailRow detail={'Open Interest'} value={oi.formattedOi || oi.formattedOi === 0 ? oi.formattedOi : 'loading'} />
@@ -446,24 +448,37 @@ export function Unwind({
       </FlexColumn>
 
       <FlexColumn mt="48px" padding="0 16px">
-        <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${entryPrice}` : 'loading'} />
-        <AdditionalDetailRow detail={'Current Price'} value={bidPrice && askPrice ? (isLong ? bidPrice : askPrice) : 'loading'} />
-        <AdditionalDetailRow detail={'Est. Received Price'} value={estimatedReceivedPrice ? estimatedReceivedPrice : 'loading'} />
+        <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
+        <AdditionalDetailRow
+          detail={'Current Price'}
+          value={bidPrice && askPrice ? (isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice)) : 'loading'}
+        />
+        <AdditionalDetailRow detail={'Est. Received Price'} value={estimatedReceivedPrice ? toScientificNumber(estimatedReceivedPrice) : 'loading'} />
         <AdditionalDetailRow detail={'Price Impact'} value={priceImpact ? `${priceImpact}%` : '-'} />
-        <AdditionalDetailRow detail={'Liquidation Price (est)'} value={liquidationPrice ? liquidationPrice : 'loading'} />
+        <AdditionalDetailRow detail={'Liquidation Price (est)'} value={liquidationPrice ? toScientificNumber(liquidationPrice) : 'loading'} />
       </FlexColumn>
-
-      {/* <FlexColumn mt={"48px"}>
-          <AdditionalDetailRow
-            detail={"Total Shares Outstanding"}
-            value={`${position?.totalSupply ? Number(utils.formatUnits(position?.totalSupply, 18)).toFixed(2) + " OVL" : "loading..."}`}
-          />
-          <AdditionalDetailRow 
-            detail={"Position Shares"} 
-            value={`${position?.currentOi ? Number(utils.formatUnits(position?.currentOi, 18)).toFixed(2) + " OVL" : "loading..."}`}
-          />
-        </FlexColumn> */}
-      {/* </Accordion> */}
+    </InterfaceWrapper>
+  ) : (
+    <InterfaceWrapper>
+      {handleSelectPosition(Number(position?.positionId))}
+      <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+      <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
+        <ControlInterfaceHeadContainer>
+          <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
+            ID: {positionIdConverted}
+          </TEXT.StandardHeader1>
+          <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
+            {marketName}
+          </TEXT.StandardHeader1>
+          <TEXT.StandardHeader1 fontWeight={500} m={'20px 0 0 0'}>
+            {`Withdraw: ${formatWeiToParsedNumber(cost, 18, 6)} OVL`}
+          </TEXT.StandardHeader1>
+        </ControlInterfaceHeadContainer>
+        <TEXT.StandardBody textAlign={'center'} m={'20px 0 0 0'}>
+          This market has been shut down. You may only withdraw any previously deposited OVL.
+        </TEXT.StandardBody>
+        <UnwindButton onClick={() => handleWithdrawFromShutDownMarket()}>Withdraw OVL</UnwindButton>
+      </ControlInterfaceContainer>
     </InterfaceWrapper>
   )
 }

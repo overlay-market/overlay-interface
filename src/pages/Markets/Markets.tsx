@@ -3,7 +3,7 @@ import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
 import {Trans} from '@lingui/macro'
-import {useTotalMarketsData} from '../../state/markets/hooks'
+import {useActiveMarketsData} from '../../state/markets/hooks'
 import {PageContainer} from '../../components/Container/Container'
 import {FlexRow} from '../../components/Container/Container'
 import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../components/Table/Table'
@@ -90,7 +90,7 @@ const infoTipDescriptions = {
 }
 
 const Markets = () => {
-  const {markets} = useTotalMarketsData()
+  const {markets} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
@@ -101,17 +101,7 @@ const Markets = () => {
   // list of hidden markets from Markets page
 
   const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
-    const order = [
-      'NFT Blue Chip Index / USD',
-      'Crypto Volatility Index',
-      'MILADY / WETH',
-      'PUDGIES / WETH',
-      'PUNKS / WETH',
-      'BAYC / WETH',
-      'MAYC / WETH',
-      'AZUKI / WETH',
-      'WBTC / USD',
-    ]
+    const order = ['Memecoins Index', 'NFT Blue Chip Index / USD', 'Crypto Volatility Index', 'Total Crypto Market Cap / USD', 'WBTC / USD']
     for (let marketOrdered of order) {
       if (a.marketName === marketOrdered) return -1
       if (b.marketName === marketOrdered) return 1

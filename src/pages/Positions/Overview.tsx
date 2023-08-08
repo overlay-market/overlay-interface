@@ -161,7 +161,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     {
       title: 'Open Positions',
       value: numberOfOpenPositions.toString(),
-      percentageChange: openPositionsPercentageChange,
+      percentageChange: null,
       period: '24h',
     },
     {
@@ -184,16 +184,16 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
-    {
-      title: 'NFTs worth',
-      percentageChange: null,
-      period: '7d',
-      value: null,
-    },
-    {
-      title: 'NFTs',
-      value: null,
-    },
+    // {
+    //   title: 'NFTs worth',
+    //   percentageChange: null,
+    //   period: '7d',
+    //   value: null,
+    // },
+    // {
+    //   title: 'NFTs',
+    //   value: null,
+    // },
   ]
 
   const mainOverviewValue = useMemo(() => {
@@ -224,7 +224,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
 
             {cardsData.map(card => {
               return (
-                <StyledGrid item key={card.title} xs={6} sm={4} lg={2}>
+                <StyledGrid item key={card.title} xs={6} sm={4} lg={3}>
                   <OverviewCard
                     title={card.title}
                     value={card.value}

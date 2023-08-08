@@ -82,6 +82,7 @@ export const MARKET_LOGO_FROM_BASE: MarketLogoMap = {
   MAYC: MaycLogo,
   NFT: BlueChipLogo,
   Crypto: CVIXLogo,
+  CV: CVIXLogo,
   Memecoins: MemecoinLogo,
   Total: Mcap1000Logo,
 }

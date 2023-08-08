@@ -171,25 +171,28 @@ const Markets = () => {
                 marketsData
                   ?.filter(market => availableMarkets.includes(market.marketAddress.toLowerCase()))
                   .sort(customSort)
-                  .map((market: ParsedMarketStateDetails, index: number) => (
-                    <MarketsRow
-                      key={market.marketAddress}
-                      index={index + 1} //start count at 1
-                      marketId={market.marketAddress}
-                      marketName={market.marketName}
-                      midPrice={market.parsedMid}
-                      oiLong={market.parsedOiLong}
-                      oiShort={market.parsedOiShort}
-                      capOi={market.parsedCapOi}
-                      dailyFundingRate={market.parsedDailyFundingRate}
-                      annualFundingRate={market.parsedAnnualFundingRate}
-                      oracleLogo={market.oracleLogo}
-                      marketLogo={market.marketLogo}
-                      priceCurrency={market.priceCurrency}
-                      marketChartData={MarketChartMap[market.marketName ?? '']}
-                      hide7dChart={hide7dChart}
-                    />
-                  ))}
+                  .map((market: ParsedMarketStateDetails, index: number) => {
+                    console.log('logo:', market.marketName, market.marketLogo)
+                    return (
+                      <MarketsRow
+                        key={market.marketAddress}
+                        index={index + 1} //start count at 1
+                        marketId={market.marketAddress}
+                        marketName={market.marketName}
+                        midPrice={market.parsedMid}
+                        oiLong={market.parsedOiLong}
+                        oiShort={market.parsedOiShort}
+                        capOi={market.parsedCapOi}
+                        dailyFundingRate={market.parsedDailyFundingRate}
+                        annualFundingRate={market.parsedAnnualFundingRate}
+                        oracleLogo={market.oracleLogo}
+                        marketLogo={market.marketLogo}
+                        priceCurrency={market.priceCurrency}
+                        marketChartData={MarketChartMap[market.marketName ?? '']}
+                        hide7dChart={hide7dChart}
+                      />
+                    )
+                  })}
             </TableBody>
           </StyledTable>
         ) : (

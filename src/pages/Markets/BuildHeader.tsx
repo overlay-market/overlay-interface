@@ -32,14 +32,18 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const history = useHistory()
 
-  const marketOptions = marketDetails.map(market => ({
-    value: market?.id,
-    label: getCharactersBeforeSlash(market?.description || ''),
-    onClick: () => {
-      refetch()
-      history.push(`/markets/${market?.id}`)
-    },
-  }))
+  const marketOptions = marketDetails
+    .filter(market => market?.id !== marketId)
+    .map(market => ({
+      value: market?.id,
+      label: getCharactersBeforeSlash(market?.description || ''),
+      onClick: () => {
+        refetch()
+        history.push(`/markets/${market?.id}`)
+      },
+    }))
+
+  console.log({marketLogo})
 
   return (
     <Container align="flex-start">

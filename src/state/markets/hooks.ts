@@ -1,6 +1,6 @@
 import {AppState} from '../state'
 import {useAppSelector} from '../hooks'
-import {useMarketsQuery, useMarketQuery} from '../data/enhanced'
+import {useTotalMarketsQuery, useActiveMarketsQuery, useMarketQuery} from '../data/enhanced'
 import {skipToken} from '@reduxjs/toolkit/dist/query'
 
 export function useMarketsState(): AppState['markets'] {
@@ -69,7 +69,7 @@ export function useMarketData(marketAddress: string | undefined | null): {
 export function useTotalMarketsDataFromSubgraph() {
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
-  return useMarketsQuery(
+  return useTotalMarketsQuery(
     {},
     {
       pollingInterval: chainId === 42161 ? 10000 : 1000,
@@ -99,5 +99,41 @@ export function useTotalMarketsData(): {
     error: totalMarketsData.error,
     markets: totalMarketsData.data?.markets,
     refetch: totalMarketsData.refetch,
+  }
+}
+
+export function useActiveMarketsDataFromSubgraph() {
+  let chainId = useAppSelector((state: AppState) => state.application.chainId)
+
+  return useActiveMarketsQuery(
+    {},
+    {
+      pollingInterval: chainId === 42161 ? 10000 : 1000,
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+      skip: false,
+    },
+  )
+}
+
+export function useActiveMarketsData(): {
+  isLoading: boolean
+  isFetching: boolean
+  isUninitialized: boolean
+  isError: boolean
+  error: unknown
+  markets: MarketData[] | null | undefined
+  refetch: () => void
+} {
+  const activeMarketsData = useActiveMarketsDataFromSubgraph()
+
+  return {
+    isLoading: activeMarketsData.isLoading,
+    isFetching: activeMarketsData.isFetching,
+    isUninitialized: activeMarketsData.isUninitialized,
+    isError: activeMarketsData.isError,
+    error: activeMarketsData.error,
+    markets: activeMarketsData.data?.markets,
+    refetch: activeMarketsData.refetch,
   }
 }

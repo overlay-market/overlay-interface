@@ -290,22 +290,20 @@ export function Unwind({
     unwindCallback()
       .then(success => {
         onResetUnwindState()
-        const numberOfUnwinds = position && Number(position['numberOfUniwnds'])
-        history.push(`/closed-positions/${marketPositionId}-${numberOfUnwinds}/${positionId}`)
+        history.push(`/positions`)
       })
       .catch(err => console.error('Error from handleUnwind: ', err))
-  }, [history, position, marketPositionId, positionId, unwindCallback, onResetUnwindState])
+  }, [history, unwindCallback, onResetUnwindState])
 
   const handleWithdrawFromShutDownMarket = useCallback(() => {
     if (!emergencyWithdrawCallback) return
     emergencyWithdrawCallback()
       .then(success => {
         onResetUnwindState()
-        const numberOfUnwinds = position && Number(position['numberOfUniwnds'])
-        history.push(`/closed-positions/${marketPositionId}-${numberOfUnwinds}/${positionId}`)
+        history.push(`/positions`)
       })
       .catch(err => console.error('Error from handleWithdrawFromShutDownMarket: ', JSON.stringify(err)))
-  }, [history, position, marketPositionId, positionId, emergencyWithdrawCallback, onResetUnwindState])
+  }, [history, emergencyWithdrawCallback, onResetUnwindState])
 
   const isUnwindAmountTooLow: boolean = useMemo(() => {
     if (Number(typedValue) < 0.01 && customInput) {

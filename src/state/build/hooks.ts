@@ -418,7 +418,7 @@ export function usePositionsTableData(
 } { 
   let query;
 
-  if (status === PositionStatus.Open) {
+  if (status === PositionStatus.Open || status === PositionStatus.Build) {
     query = useOpenPositionsFromSubgraph;
   } else if (status === PositionStatus.Closed) {
     query = useUnwindsFromSubgraph;

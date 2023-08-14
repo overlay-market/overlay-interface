@@ -19,10 +19,12 @@ import {colors} from '../../theme/theme'
 import Pagination from '../../components/Pagination/Pagination'
 import Loader from '../../components/Loaders/Loaders'
 import {formatBigNumber} from '../../utils/formatBigNumber'
+import {useParams} from 'react-router-dom'
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `
 
 const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Liquidated']
@@ -30,10 +32,14 @@ const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Pr
 const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL']
 
 const closedPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Closed', 'PnL']
+
+const buildPositionsColumns = ['Size', 'Position', 'Entry Price', 'Liq. Price', 'Unrealized PnL', 'Action']
+
 const positionColumns = {
   open: openPositionsColumns,
   closed: closedPositionsColumns,
   liquidated: liquidatedColumns,
+  build: buildPositionsColumns,
 }
 
 interface PositionsTableProps {
@@ -50,6 +56,7 @@ export enum PositionStatus {
   Open = 'open',
   Closed = 'closed',
   Liquidated = 'liquidated',
+  Build = 'build',
 }
 
 export const TriangleButton = styled(Button)`
@@ -127,13 +134,14 @@ const StyledTableCell = styled(TableCell)`
 
 const ROWS_PER_PAGE = [10, 20, 40, 50]
 
-const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
+export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
   const {account} = useActiveWeb3React()
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(account, rowsPerPage, (page - 1) * rowsPerPage, positionStatus)
   const [showLoader, setShowLoader] = useState(false)
+  const params = useParams<{marketId: string}>()
 
   // Show loader only on page change
   useEffect(() => {
@@ -165,7 +173,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     if (!positionsTableData) return null
 
     const rows =
-      positionStatus === PositionStatus.Open
+      positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build
         ? positionsTableData.account?.positions
         : positionStatus === PositionStatus.Closed
         ? positionsTableData.account?.unwinds
@@ -175,54 +183,72 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
     return rows && rows.length > 0 ? (
       <>
-        {rows.map((row: any) => {
-          const marketAddress = positionStatus === PositionStatus.Open ? row.market.id : row.position.market.id
-          const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
+        {rows
+          .map((row: any) => {
+            const marketAddress =
+              positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
+            const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
 
-          if (positionStatus === PositionStatus.Open) {
-            return (
-              <OpenPosition
-                key={row.id}
-                position={{
-                  ...marketState,
-                  ...row,
-                }}
-                columns={positionColumns[PositionStatus.Open]}
-              />
-            )
-          } else if (positionStatus === PositionStatus.Closed) {
-            return (
-              <UnwindsTransactions
-                key={row.id}
-                transaction={{
-                  ...row,
-                  position: {
+            if (positionStatus === PositionStatus.Open) {
+              return (
+                <OpenPosition
+                  key={row.id}
+                  position={{
                     ...marketState,
-                    ...row.position,
-                  },
-                }}
-                columns={positionColumns[PositionStatus.Closed]}
-              />
-            )
-          } else {
-            return (
-              <LiquidatesTransactions
-                key={row.id}
-                transaction={{
-                  ...row,
-                  position: {
-                    ...marketState,
-                    ...row.position,
-                  },
-                }}
-                columns={positionColumns[PositionStatus.Liquidated]}
-              />
-            )
-          }
-        })}
+                    ...row,
+                  }}
+                  columns={positionColumns[PositionStatus.Open]}
+                />
+              )
+            } else if (positionStatus === PositionStatus.Build) {
+              if (marketAddress === params?.marketId) {
+                return (
+                  <OpenPosition
+                    key={row.id}
+                    position={{
+                      ...marketState,
+                      ...row,
+                    }}
+                    columns={positionColumns[PositionStatus.Build]}
+                  />
+                )
+              }
+
+              return null
+            } else if (positionStatus === PositionStatus.Closed) {
+              return (
+                <UnwindsTransactions
+                  key={row.id}
+                  transaction={{
+                    ...row,
+                    position: {
+                      ...marketState,
+                      ...row.position,
+                    },
+                  }}
+                  columns={positionColumns[PositionStatus.Closed]}
+                />
+              )
+            } else {
+              return (
+                <LiquidatesTransactions
+                  key={row.id}
+                  transaction={{
+                    ...row,
+                    position: {
+                      ...marketState,
+                      ...row.position,
+                    },
+                  }}
+                  columns={positionColumns[PositionStatus.Liquidated]}
+                />
+              )
+            }
+          })
+          .filter((position: any) => position !== null)}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData])
+  }, [positionStatus, marketsData, positionsTableData, params])
 
   return (
     <Container>
@@ -234,7 +260,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
       </TEXT.BoldStandardBody>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <TableContainer>
-          <StyledTable>
+          <StyledTable minWidth={PositionStatus.Build ? 'unset' : ''}>
             <TableHead>
               <StyledTableHeaderRow>
                 {positionColumns[positionStatus].map((column: string) => {
@@ -306,7 +332,6 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 const Positions = () => {
   const {account} = useActiveWeb3React()
   const {positionsTableDetails} = usePositionsTableDetails(account)
-
   const {markets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData} = useCurrentMarketState(marketDetails)

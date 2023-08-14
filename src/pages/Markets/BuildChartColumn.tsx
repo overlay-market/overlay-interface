@@ -8,11 +8,14 @@ import {useTotalMarketsData} from '../../state/markets/hooks'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
+import {PositionStatus, PositionsTable} from '../Positions/PositionsPage'
+import {useActiveWeb3React} from '../../hooks/web3'
+import {usePositionsTableDetails} from '../../state/build/hooks'
 
 const Container = styled.div`
-  width: 1000px;
   padding-right: 16px;
   max-height: 420px;
+  width: 800px;
 `
 
 const MarketDetailsContainer = styled.div`
@@ -42,6 +45,10 @@ const LoadingContainer = styled.div`
   height: 380px;
 `
 
+const PositionsTableContainer = styled.div`
+  max-width: 800px;
+`
+
 type BuildChartProps = {
   children?: React.ReactNode
   marketData?: any
@@ -52,6 +59,10 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const [long, setLong] = React.useState<number>(0)
   const [short, setShort] = React.useState<number>(0)
   const [total, setTotal] = React.useState<number>(0)
+
+  const {account} = useActiveWeb3React()
+  const {positionsTableDetails} = usePositionsTableDetails(account)
+
   const {markets} = useTotalMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
@@ -116,6 +127,16 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
         )}
       </MarketDetailsContainer>
       {!marketDataDetails ? null : children}
+
+      <PositionsTableContainer>
+        <PositionsTable
+          title="Open Positions"
+          marginTop="50px"
+          positionStatus={PositionStatus.Build}
+          rowsCount={Number(positionsTableDetails?.numberOfOpenPositions ?? 0)}
+          marketsData={marketsData}
+        />
+      </PositionsTableContainer>
     </Container>
   )
 }

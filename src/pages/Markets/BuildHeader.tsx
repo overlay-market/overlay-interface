@@ -4,7 +4,7 @@ import {AlertCircle} from 'react-feather'
 import {Back} from '../../components/Back/Back'
 import {TEXT, colors} from '../../theme/theme'
 import {Icon} from '../../components/Icon/Icon'
-import {useMarketData, useTotalMarketsData} from '../../state/markets/hooks'
+import {useMarketData, useActiveMarketsData} from '../../state/markets/hooks'
 import {useMemo} from 'react'
 import {useMarketName} from '../../hooks/useMarketName'
 import {getCharactersBeforeSlash} from '../../utils/getCharactersBeforeSlash'
@@ -28,7 +28,7 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
   const baseToken = useMemo(() => getCharactersBeforeSlash(marketName || ''), [marketName])
   const marketLogo = useMemo(() => MARKET_LOGO_FROM_BASE[baseToken], [baseToken])
 
-  const {markets} = useTotalMarketsData()
+  const {markets} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const history = useHistory()
 

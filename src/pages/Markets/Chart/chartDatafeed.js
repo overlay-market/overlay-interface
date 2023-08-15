@@ -65,13 +65,13 @@ function getBinSizeAndUnit(input: string): {binSize: number, binUnit: 'minute' |
 
 export default {
   onReady: callback => {
-    console.log('[onReady]: Method call')
+    // console.log('[onReady]: Method call')
     setTimeout(() => callback(configurationData))
   },
 
   searchSymbols: async (userInput, exchange, symbolType, onResultReadyCallback) => {
     // Get all symbols
-    console.log('[searchSymbols]: Method call')
+    // console.log('[searchSymbols]: Method call')
   },
 
   resolveSymbol: async (symbolName, onSymbolResolvedCallback, onResolveErrorCallback, extension) => {
@@ -153,9 +153,9 @@ export default {
   },
 
   subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
-    console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID)
+    // console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID)
   },
   unsubscribeBars: subscriberUID => {
-    console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID)
+    // console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID)
   },
 }

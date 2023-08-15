@@ -76,8 +76,8 @@
     "@walletconnect/web3-provider": "1.5.2"
   },
   "scripts": {
-    "start": "react-scripts  --openssl-legacy-provider start",
-    "build": "CI= react-scripts build",
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "CI= react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "graphql:generate": "graphql-codegen --config codegen.yml",
     "eject": "react-scripts eject",

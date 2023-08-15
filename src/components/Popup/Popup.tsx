@@ -64,12 +64,12 @@ export default function Popup({removeAfterMs, content, popKey, title, children}:
     popupContent = <TransactionPopup hash={hash} info={info} success={success} summary={summary} />
   }
 
-  if ('info' in content) {
-    const {
-      txn: {hash, failed, summary, info},
-    } = content
-    popupContent = <TransactionPopup hash={hash} info={info} success={failed} summary={summary} />
-  }
+  // if ('info' in content) {
+  //   const {
+  //     txn: {hash, failed, summary, info},
+  //   } = content
+  //   popupContent = <TransactionPopup hash={hash} info={info} success={failed} summary={summary} />
+  // }
 
   const faderStyle = useSpring({
     from: {width: '100%'},

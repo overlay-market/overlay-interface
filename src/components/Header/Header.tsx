@@ -2,7 +2,6 @@ import {useState, useEffect} from 'react'
 import {Link, NavLink, useLocation} from 'react-router-dom'
 import styled from 'styled-components/macro'
 import {IconButton} from '@material-ui/core'
-import {Trans} from '@lingui/macro'
 import {Image} from 'rebass'
 import {useDarkModeManager} from '../../state/user/hooks'
 import {FlexRow} from '../Container/Container'
@@ -215,26 +214,23 @@ export default function Header() {
         </IconButton>
       </LogoContainer>
       <StyledLink to={'/markets'}>
-        <Trans>
-          <TEXT.Menu>Markets</TEXT.Menu>
-        </Trans>
+        <TEXT.Menu>Markets</TEXT.Menu>
       </StyledLink>
       <StyledLink to={'/positions'}>
-        <Trans>
-          <TEXT.Menu>Positions</TEXT.Menu>
-        </Trans>
+        <TEXT.Menu>Positions</TEXT.Menu>
       </StyledLink>
+
+      <StyledLink to={'/stake'}>
+        <TEXT.Menu>Stake</TEXT.Menu>
+      </StyledLink>
+
       <StyledLink to={'/bridge'}>
-        <Trans>
-          <TEXT.Menu>Bridge</TEXT.Menu>
-        </Trans>
+        <TEXT.Menu>Bridge</TEXT.Menu>
       </StyledLink>
 
       {HIDE_POWER_CARDS ? null : (
         <PowerCardLink to={'/powercards'}>
-          <Trans>
-            <TEXT.Menu>Power Cards</TEXT.Menu>
-          </Trans>
+          <TEXT.Menu>Power Cards</TEXT.Menu>
         </PowerCardLink>
       )}
 
@@ -255,19 +251,13 @@ export default function Header() {
 
           <DropdownList className="dropdown-list">
             <DropdownItem to={'/stake'}>
-              <Trans>
-                <TEXT.Menu>Stake</TEXT.Menu>
-              </Trans>
+              <TEXT.Menu>Stake</TEXT.Menu>
             </DropdownItem>
             <DropdownItem to={'/leaderboard'}>
-              <Trans>
-                <TEXT.Menu>Leaderboard</TEXT.Menu>
-              </Trans>
+              <TEXT.Menu>Leaderboard</TEXT.Menu>
             </DropdownItem>
             <DropdownItem to={'/referrals'}>
-              <Trans>
-                <TEXT.Menu>Referrals</TEXT.Menu>
-              </Trans>
+              <TEXT.Menu>Referrals</TEXT.Menu>
             </DropdownItem>
           </DropdownList>
         </Dropdown>

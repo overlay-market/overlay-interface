@@ -224,7 +224,7 @@ export function useBuildCallback(
           })
           .catch(error => {
             // if the user rejected the tx, pass this along
-            if (error?.code === 4001) {
+            if (error?.code === 4001 || error?.code === 'ACTION_REJECTED') {
               addPopup(
                 {
                   txn: {

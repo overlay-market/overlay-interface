@@ -15,6 +15,7 @@ import {useToken} from '../../hooks/useToken'
 import {useMarketName} from '../../hooks/useMarketName'
 import {marketNameFromDescription} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -66,7 +67,7 @@ export function ClosedPosition({
   let filteredPosition: PositionDataV2 | undefined = undefined
   if (positions) {
     for (let position of positions) {
-      let selectedUnwind = position.unwinds.filter((transaction) => transaction.id === unwindId)
+      let selectedUnwind = position.unwinds.filter(transaction => transaction.id === unwindId)
       if (selectedUnwind.length > 0) {
         filteredUnwind = selectedUnwind[0]
         filteredPosition = position
@@ -79,7 +80,7 @@ export function ClosedPosition({
   const {baseToken, quoteToken, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
 
   const marketName = useMemo(() => {
-    if (description) return marketNameFromDescription(description, unwindId.substring(0,42))
+    if (description) return marketNameFromDescription(description, unwindId.substring(0, 42))
     if (baseToken === 'loading' && quoteToken === 'loading') return <Loader stroke="white" size="12px" />
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, quoteToken, unwindId])
@@ -96,7 +97,7 @@ export function ClosedPosition({
   const positionInfo = usePositionInfo(position?.market.id, positionId)
   const isLong = positionInfo ? positionInfo.isLong : undefined
 
-  const parsedPnL = filteredUnwind ? (+filteredUnwind.pnl / 10**18) : 0
+  const parsedPnL = filteredUnwind ? +filteredUnwind.pnl / 10 ** 18 : 0
   const entryPrice: number | string | null | undefined =
     position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, 4)
 
@@ -116,31 +117,33 @@ export function ClosedPosition({
 
   return (
     <InterfaceWrapper>
-      {handleSelectPosition(Number(position?.positionId))}
-      <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
-      <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
-        <ControlInterfaceHeadContainer>
-          <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
-            ID: {positionIdConverted}
-          </TEXT.StandardHeader1>
-          <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
-            {marketName}
-          </TEXT.StandardHeader1>
-        </ControlInterfaceHeadContainer>
-      </ControlInterfaceContainer>
-      <FlexColumn mt="48px">
-        <AdditionalDetailRow
-          detail={'Profit/Loss'}
-          valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
-          value={parsedPnL ? `${Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2) } OVL` : 'loading'}
-        />
-        <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
-      </FlexColumn>
+      <>
+        {handleSelectPosition(Number(position?.positionId))}
+        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
+          <ControlInterfaceHeadContainer>
+            <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
+              ID: {positionIdConverted}
+            </TEXT.StandardHeader1>
+            <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
+              {marketName}
+            </TEXT.StandardHeader1>
+          </ControlInterfaceHeadContainer>
+        </ControlInterfaceContainer>
+        <FlexColumn mt="48px">
+          <AdditionalDetailRow
+            detail={'Profit/Loss'}
+            valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
+            value={parsedPnL ? `${Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2)} OVL` : 'loading'}
+          />
+          <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
+        </FlexColumn>
 
-      <FlexColumn mt="48px">
-        <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${entryPrice}` : 'loading'} />
-        <AdditionalDetailRow detail={'Exit Price'} value={exitPrice ? `${exitPrice}` : 'loading'} />
-      </FlexColumn>
+        <FlexColumn mt="48px">
+          <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
+          <AdditionalDetailRow detail={'Exit Price'} value={exitPrice ? `${toScientificNumber(exitPrice)}` : 'loading'} />
+        </FlexColumn>
+      </>
     </InterfaceWrapper>
   )
 }

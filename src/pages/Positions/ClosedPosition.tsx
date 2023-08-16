@@ -55,11 +55,7 @@ export function ClosedPosition({
   },
 }: RouteComponentProps<{unwindId: string; positionId: string}>) {
   const {account} = useActiveWeb3React()
-  const {isLoading, positions, refetch} = useCurrentWalletPositionsV2(account)
-
-  useEffect(() => {
-    refetch()
-  }, [account, refetch, isLoading])
+  const {positions} = useCurrentWalletPositionsV2(account)
 
   const {onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
 
@@ -115,10 +111,13 @@ export function ClosedPosition({
     [onSelectPositionId],
   )
 
+  useEffect(() => {
+    handleSelectPosition(Number(position?.positionId))
+  }, [position, handleSelectPosition])
+
   return (
     <InterfaceWrapper>
       <>
-        {handleSelectPosition(Number(position?.positionId))}
         <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>

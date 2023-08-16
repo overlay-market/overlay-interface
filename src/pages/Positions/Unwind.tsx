@@ -88,11 +88,7 @@ export function Unwind({
   const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
   const {account} = useActiveWeb3React()
-  const {isLoading, positions, refetch} = useCurrentWalletPositionsV2(account)
-
-  useEffect(() => {
-    refetch()
-  }, [account, refetch, isLoading])
+  const {positions} = useCurrentWalletPositionsV2(account)
 
   const {typedValue, setSlippageValue, txnDeadline} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onSetSlippage, onSetTxnDeadline, onResetUnwindState} = useUnwindActionHandlers()
@@ -277,6 +273,10 @@ export function Unwind({
     [onSelectPositionId],
   )
 
+  useEffect(() => {
+    handleSelectPosition(Number(position?.positionId))
+  }, [position, handleSelectPosition])
+
   // const handleClearInput = useCallback(() => {
   //   onAmountInput('')
   // }, [onAmountInput])
@@ -322,7 +322,6 @@ export function Unwind({
   return !isMarketShutDown ? (
     <InterfaceWrapper>
       <>
-        {handleSelectPosition(Number(position?.positionId))}
         <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
@@ -464,7 +463,6 @@ export function Unwind({
   ) : (
     <InterfaceWrapper>
       <>
-        {handleSelectPosition(Number(position?.positionId))}
         <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>

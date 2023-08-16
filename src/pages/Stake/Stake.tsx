@@ -462,13 +462,13 @@ const Stake = ({poolData}: PoolProps) => {
     }
 
     if (poolType === 'withdraw') {
-      if (Number(inputAmount) > Number(stakedAmountFormatted)) {
+      if (Number(inputAmount) > Number(formatBigNumber(stakedAmount, 18, 6))) {
         return true
       }
     }
 
     return Number(inputAmount) === 0 || attemptingTransaction
-  }, [inputAmount, attemptingTransaction, poolType, ovlBalance, stakedAmountFormatted])
+  }, [inputAmount, attemptingTransaction, poolType, ovlBalance, stakedAmount])
 
   return (
     <Fragment>

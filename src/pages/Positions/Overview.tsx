@@ -80,7 +80,6 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const totalFees = useTotalFees(account)
 
   // TODO: separate hooks
-  const {positionsTableData: openPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Open)
   const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
   const {positionsTableData: liquidatedPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
 
@@ -105,28 +104,6 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     }
     return formatValue
   }, [totalValueLocked])
-
-  const openPositionsPercentageChange = useMemo(() => {
-    if (!openPositions || !openPositions.account?.positions) return null
-
-    const rows = openPositions.account?.positions
-
-    const now = Math.floor(Date.now() / 1000)
-    const oneDayAgo = now - 24 * 60 * 60
-
-    // Filter to get positions created more than 24 hours ago
-    const positionsMoreThan24HoursAgo = rows.filter((position: {createdAtTimestamp: string}) => Number(position.createdAtTimestamp) < oneDayAgo)
-
-    // Calculate percentage change
-    let percentageChangeOpenPositions = 0
-    if (positionsMoreThan24HoursAgo.length !== 0) {
-      percentageChangeOpenPositions = parseFloat(
-        (((numberOfOpenPositions - positionsMoreThan24HoursAgo.length) / positionsMoreThan24HoursAgo.length) * 100).toFixed(2),
-      )
-    }
-
-    return percentageChangeOpenPositions
-  }, [openPositions, numberOfOpenPositions])
 
   const realizedPnlPercentageChange = useMemo(() => {
     const unwindRows = unwinds?.account?.unwinds ?? []

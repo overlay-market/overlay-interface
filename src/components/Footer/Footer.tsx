@@ -147,7 +147,7 @@ const LinkSection = ({title, links}: {title: string; links: Array<LinkAsset>}) =
         {title}
       </TEXT.BoldSmallBody>
       {links.map(link => (
-        <StyledLink target="_blank" href={link.href} underline="none">
+        <StyledLink key={link.label} target="_blank" href={link.href} underline="none">
           <TEXT.SmallBody lineHeight={'160%'}>{link.label}</TEXT.SmallBody>
         </StyledLink>
       ))}

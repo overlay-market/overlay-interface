@@ -117,31 +117,33 @@ export function ClosedPosition({
 
   return (
     <InterfaceWrapper>
-      {handleSelectPosition(Number(position?.positionId))}
-      <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
-      <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
-        <ControlInterfaceHeadContainer>
-          <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
-            ID: {positionIdConverted}
-          </TEXT.StandardHeader1>
-          <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
-            {marketName}
-          </TEXT.StandardHeader1>
-        </ControlInterfaceHeadContainer>
-      </ControlInterfaceContainer>
-      <FlexColumn mt="48px">
-        <AdditionalDetailRow
-          detail={'Profit/Loss'}
-          valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
-          value={parsedPnL ? `${Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2)} OVL` : 'loading'}
-        />
-        <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
-      </FlexColumn>
+      <>
+        {handleSelectPosition(Number(position?.positionId))}
+        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
+          <ControlInterfaceHeadContainer>
+            <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
+              ID: {positionIdConverted}
+            </TEXT.StandardHeader1>
+            <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
+              {marketName}
+            </TEXT.StandardHeader1>
+          </ControlInterfaceHeadContainer>
+        </ControlInterfaceContainer>
+        <FlexColumn mt="48px">
+          <AdditionalDetailRow
+            detail={'Profit/Loss'}
+            valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
+            value={parsedPnL ? `${Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2)} OVL` : 'loading'}
+          />
+          <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
+        </FlexColumn>
 
-      <FlexColumn mt="48px">
-        <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
-        <AdditionalDetailRow detail={'Exit Price'} value={exitPrice ? `${toScientificNumber(exitPrice)}` : 'loading'} />
-      </FlexColumn>
+        <FlexColumn mt="48px">
+          <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
+          <AdditionalDetailRow detail={'Exit Price'} value={exitPrice ? `${toScientificNumber(exitPrice)}` : 'loading'} />
+        </FlexColumn>
+      </>
     </InterfaceWrapper>
   )
 }

@@ -1,5 +1,4 @@
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
-import {Trans} from '@lingui/macro'
 import {FlexRow} from '../../components/Container/Container'
 import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../components/Table/Table'
 import Loader from '../../components/Loaders/Loaders'
@@ -31,44 +30,32 @@ const Pools = ({
             <StyledTableHeaderRow>
               {/* Index */}
               <StyledHeaderCell className={classes.headerCell} width={1}>
-                <TEXT.Supplemental color={colors(true).dark.blue1}>
-                  <Trans>#</Trans>
-                </TEXT.Supplemental>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>#</TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* Pools */}
               <StyledHeaderCell className={classes.headerCell} width={25}>
-                <TEXT.Supplemental color={colors(true).dark.blue1}>
-                  <Trans>Pools</Trans>
-                </TEXT.Supplemental>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>Pools</TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* TVL */}
               <StyledHeaderCell className={classes.headerCell} align="right">
-                <TEXT.Supplemental color={colors(true).dark.blue1}>
-                  <Trans>TVL</Trans>
-                </TEXT.Supplemental>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>TVL</TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* Rewards */}
               <StyledHeaderCell className={classes.headerCell} align="right">
-                <TEXT.Supplemental color={colors(true).dark.blue1}>
-                  <Trans>Rewards</Trans>
-                </TEXT.Supplemental>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>Rewards</TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* My Balance */}
               <StyledHeaderCell className={classes.headerCell} align="right">
-                <TEXT.Supplemental color={colors(true).dark.blue1}>
-                  <Trans>My Balance</Trans>
-                </TEXT.Supplemental>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>My Balance</TEXT.Supplemental>
               </StyledHeaderCell>
 
               {/* Rewards */}
               <StyledHeaderCell className={classes.headerCell} align="right">
-                <TEXT.Supplemental color={colors(true).dark.blue1}>
-                  <Trans>My Rewards</Trans>
-                </TEXT.Supplemental>
+                <TEXT.Supplemental color={colors(true).dark.blue1}>My Rewards</TEXT.Supplemental>
               </StyledHeaderCell>
             </StyledTableHeaderRow>
           </TableHead>

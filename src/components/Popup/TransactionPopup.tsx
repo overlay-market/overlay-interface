@@ -45,6 +45,7 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
           {info?.type === TransactionType.CLAIM_OVL && 'Claim Successful'}
           {/* {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)} */}
           {info?.code === 4001 && 'Transaction Rejected'}
+          {info?.code === 'ACTION_REJECTED' && 'Transaction Rejected'}
           {info?.code === -32603 && 'Transaction Failed'}
         </TEXT.BoldSmallBody>
 

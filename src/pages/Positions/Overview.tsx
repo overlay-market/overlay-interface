@@ -137,26 +137,30 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const cardsData = [
     {
       title: 'Open Positions',
-      value: numberOfOpenPositions.toString(),
+      value: numberOfOpenPositions,
+      valueType: null,
       percentageChange: null,
       period: '24h',
     },
     {
       title: 'Locked Sum',
-      value: numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : null,
+      value: numberOfOpenPositions > 0 ? (tvl ? tvl : 'loading') : null,
+      valueType: 'OVL',
       percentageChange: null,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
     {
       title: 'Realized',
-      value: numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl + ' OVL' : 'loading') : null,
+      value: numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl : 'loading') : null,
+      valueType: 'OVL',
       percentageChange: realizedPnlPercentageChange,
       period: '24h',
     },
     {
       title: 'Unrealized',
-      value: numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : null,
+      value: numberOfOpenPositions > 0 ? (upnl ? upnl : 'loading') : null,
+      valueType: 'OVL',
       percentageChange: null,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
@@ -191,7 +195,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
           <Grid container spacing={3}>
             {/* Locked Sum + uPnL */}
             <StyledGrid order={0} item key={'mainOverviewCard'} xs={12} md={4}>
-              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} />
+              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} valueType={''} />
             </StyledGrid>
 
             {/* Chart */}
@@ -205,6 +209,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
                   <OverviewCard
                     title={card.title}
                     value={card.value}
+                    valueType={card.valueType}
                     percentageChange={card.percentageChange}
                     period={card.period}
                     isOver1000OpenPositions={card.isOver1000OpenPositions}

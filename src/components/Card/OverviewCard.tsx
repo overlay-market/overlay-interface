@@ -29,26 +29,18 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
 
 interface DataProps {
   title: string
-  value: string | null
+  value: string | number | null
+  valueType: string | null
   percentageChange?: number | null
   period?: string
   isOver1000OpenPositions?: boolean
 }
 
 const OverviewCard = (props: DataProps) => {
-  const {title, value, percentageChange, period, isOver1000OpenPositions} = props
+  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions} = props
 
   return (
     <Container>
-      {!value ? (
-        <TEXT.SmallBody color="#c4c4c4" style={{whiteSpace: 'nowrap'}} mb={12}>
-          No data
-        </TEXT.SmallBody>
-      ) : (
-        <BoldHeader1 style={{whiteSpace: 'nowrap'}} mb={12}>
-          {value}
-        </BoldHeader1>
-      )}
       {value && !!percentageChange && (
         <Box display="flex" alignItems="center">
           <PercentageChangeBox positive={percentageChange > 0}>
@@ -62,7 +54,7 @@ const OverviewCard = (props: DataProps) => {
           </TEXT.Supplemental>
         </Box>
       )}
-      <TEXT.SmallBody color="#c4c4c4" mt={12}>
+      <TEXT.SmallBody fontSize={14} color="#c4c4c4" mt={12}>
         {title}
       </TEXT.SmallBody>
       {isOver1000OpenPositions && (
@@ -75,6 +67,22 @@ const OverviewCard = (props: DataProps) => {
           </TEXT.Supplemental>
         </Box>
       )}
+      {!value ? (
+        <TEXT.SmallBody color="#c4c4c4" style={{whiteSpace: 'nowrap'}} mb={12}>
+          No data
+        </TEXT.SmallBody>
+      ) : (
+        <BoldHeader1 style={{whiteSpace: 'nowrap', marginTop: '15px'}} mb={12}>
+          {value}
+        </BoldHeader1>
+      )}
+      {!valueType ? (
+        <Box mt={"18px"}>
+        </Box>
+      ) : (
+      <TEXT.SmallBody fontSize={14} color="#c4c4c4" mt={"4px"}>
+        {valueType}
+      </TEXT.SmallBody>)}
     </Container>
   )
 }

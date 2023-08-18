@@ -54,7 +54,7 @@ const OverviewCard = (props: DataProps) => {
           </TEXT.Supplemental>
         </Box>
       )}
-      <TEXT.SmallBody fontSize={14} color="#c4c4c4" mt={12}>
+      <TEXT.SmallBody fontSize={14} color="#c4c4c4">
         {title}
       </TEXT.SmallBody>
       {isOver1000OpenPositions && (

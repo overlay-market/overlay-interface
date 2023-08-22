@@ -58,9 +58,11 @@ const BackgroundWrapper = styled.div`
 
 const StyledGrid = styled(Grid)<{order?: number}>`
   display: flex;
+  padding: 4px !important;
 
   ${({theme, order}) => theme.mediaWidth.minMedium`
-    order: ${order ? `${order}` : 0}
+  order: ${order ? `${order}` : 0};
+  padding: 12px !important;
   `}
 `
 
@@ -112,8 +114,8 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     const now = Math.floor(Date.now() / 1000)
     const oneDayAgo = now - 24 * 60 * 60
 
-    let pnlMoreThan24HoursAgo = unwindRows.reduce((acc: number, curr: any) => {
-      if (Number(curr.timestamp) < oneDayAgo) {
+    let pnl24HoursChange = unwindRows.reduce((acc: number, curr: any) => {
+      if (Number(curr.timestamp) > oneDayAgo) {
         return acc + parseInt(curr.pnl) / 10 ** 18
       } else {
         return acc
@@ -121,14 +123,14 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     }, 0)
 
     liquidatedRows.forEach((liquidate: any) => {
-      if (Number(liquidate.timestamp) < oneDayAgo) {
-        pnlMoreThan24HoursAgo -= parseInt(liquidate.pnl) / 10 ** 18
+      if (Number(liquidate.timestamp) > oneDayAgo) {
+        pnl24HoursChange -= parseInt(liquidate.size) / 10 ** 18
       }
     })
 
     let percentageChangeRealizedPnl = 0
-    if (pnlMoreThan24HoursAgo !== 0) {
-      percentageChangeRealizedPnl = parseFloat((((Number(realizedPnl) - pnlMoreThan24HoursAgo) / pnlMoreThan24HoursAgo) * 100).toFixed(2))
+    if (pnl24HoursChange !== 0) {
+      percentageChangeRealizedPnl = parseFloat(((( pnl24HoursChange) / Math.abs(Number(realizedPnl))) * 100).toFixed(2))
     }
 
     return percentageChangeRealizedPnl

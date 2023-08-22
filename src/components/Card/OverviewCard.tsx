@@ -6,7 +6,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start;
   width: 100%;
   background: #171926;
   border-radius: 8px;
@@ -41,19 +40,6 @@ const OverviewCard = (props: DataProps) => {
 
   return (
     <Container>
-      {value && !!percentageChange && (
-        <Box display="flex" alignItems="center">
-          <PercentageChangeBox positive={percentageChange > 0}>
-            <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
-              {percentageChange > 0 && '+'}
-              {percentageChange}%
-            </TEXT.Number>
-          </PercentageChangeBox>
-          <TEXT.Supplemental color="#c4c4c4" ml={12}>
-            {period}
-          </TEXT.Supplemental>
-        </Box>
-      )}
       <TEXT.SmallBody fontSize={14} color="#c4c4c4">
         {title}
       </TEXT.SmallBody>
@@ -76,13 +62,30 @@ const OverviewCard = (props: DataProps) => {
           {value}
         </BoldHeader1>
       )}
-      {!valueType ? (
-        <Box mt={"18px"}>
+  	  <Box display="flex" alignItems="center">
+        {!valueType ? (
+          <Box mt={"18px"}>
+          </Box>
+        ) : (
+        <TEXT.SmallBody fontSize={14} color="#c4c4c4">
+          {valueType}
+        </TEXT.SmallBody>)}
+        <Box display="flex" alignItems="center" marginLeft="auto">
+          {value && !!percentageChange && (
+            <PercentageChangeBox positive={percentageChange > 0}>
+              <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
+                {percentageChange > 0 && '+'}
+                {percentageChange}%
+              </TEXT.Number>
+            </PercentageChangeBox>
+          )}
+          {value && (
+            <TEXT.Supplemental color="#c4c4c4" ml={1}>
+              {period}
+            </TEXT.Supplemental>
+          )}
         </Box>
-      ) : (
-      <TEXT.SmallBody fontSize={14} color="#c4c4c4" mt={"4px"}>
-        {valueType}
-      </TEXT.SmallBody>)}
+      </Box>
     </Container>
   )
 }

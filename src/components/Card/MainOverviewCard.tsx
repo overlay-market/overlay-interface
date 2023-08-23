@@ -63,7 +63,8 @@ const PercentageChangeBox = styled.div<{positive: boolean}>`
 
 interface DataProps {
   title: string
-  value: string | null
+  value: string | number | null
+  valueType: string | null
   percentageChange?: number | null
   period?: string
 }

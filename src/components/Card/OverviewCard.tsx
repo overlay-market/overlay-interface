@@ -79,7 +79,7 @@ const OverviewCard = (props: DataProps) => {
               </TEXT.Number>
             </PercentageChangeBox>
           )}
-          {value && (
+          {value && !!percentageChange && (
             <TEXT.Supplemental color="#c4c4c4" ml={1}>
               {period}
             </TEXT.Supplemental>

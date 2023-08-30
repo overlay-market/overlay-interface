@@ -26,6 +26,7 @@ const ModalContent = styled.div`
 const StyledLink = styled.a`
   text-decoration: underline;
   color: #F0F0F0;
+  cursor: pointer;
 `;
 
 const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
@@ -89,14 +90,13 @@ export enum ClientCookies {
 export default function TermsOfServiceModal() {
   const [userAgreementStatus, setUserAgreementStatus] = useTermsOfServiceStatusManager()
   const [value, setValue] = useState('All');
-  const [disableCookies, setDisableCookies] = useState(false);
   const termsOfServiceModalOpen = useModalOpen(ApplicationModal.TERMS_OF_SERVICE)
   const [, setCookie] = useCookies([ClientCookies.userHasAcceptedServiceAgreement])
 
   const toggleTermsOfServiceModal = useTermsOfServiceModalToggle()
 
   useEffect(() => {
-    window.disableCookies = disableCookies;
+    window.disableCookies = false;
     if (userAgreementStatus === UserTermsOfServiceStatus.ACCEPTED) {
       // maxAge in seconds e.g 1 mo = 2628000 seconds
       setCookie(ClientCookies.userHasAcceptedServiceAgreement, 'true', {path: '/', maxAge: 7884000})
@@ -105,6 +105,10 @@ export default function TermsOfServiceModal() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue((event.target as HTMLInputElement).value);
+  };
+
+  const openLinkInNewTab = (url: string) => {
+    window.open(url, '_blank');
   };
 
   function acceptTermsOfService() {
@@ -127,13 +131,13 @@ export default function TermsOfServiceModal() {
           <TEXT.BoldStandardBody color={'#FFF'} alignSelf={'stretch'} mb={'8px'}>TOS</TEXT.BoldStandardBody>
           <TEXT.BoldSmallBody lineHeight={1.5} m={'auto'}>
             Perpetuals are not available to anyone residents of, or are located, incorporated, or having a registered agent in, the United States or a
-            restricted territory as defined in Overlay's <StyledLink href='https://overlay.market/#/tos'>Terms of Service</StyledLink> (the "TOS").
+            restricted territory as defined in Overlay's <StyledLink onClick={() => openLinkInNewTab('https://overlay.market/#/tos')}>Terms of Service</StyledLink> (the "TOS").
             <br />
             <br />
           </TEXT.BoldSmallBody>
           <TEXT.BoldStandardBody color={'#FFF'} alignSelf={'stretch'} mb={'8px'}>Cookies Settings</TEXT.BoldStandardBody>
           <TEXT.BoldSmallBody lineHeight={1.5} m={'auto'}>
-          Cookies are used to improve the user experience and to analyze user behavior in order to improve the experience for you. <StyledLink href=''>Privacy Policy</StyledLink>
+          Cookies are used to improve the user experience and to analyze user behavior in order to improve the experience for you. <StyledLink onClick={() => openLinkInNewTab('https://overlay.market/#/tos')}>Privacy Policy</StyledLink>
           </TEXT.BoldSmallBody>
             <br />
             <FormControl>

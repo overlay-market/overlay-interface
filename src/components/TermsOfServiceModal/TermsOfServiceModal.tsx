@@ -90,13 +90,14 @@ export enum ClientCookies {
 export default function TermsOfServiceModal() {
   const [userAgreementStatus, setUserAgreementStatus] = useTermsOfServiceStatusManager()
   const [value, setValue] = useState('All');
+  const [disableCookies, setDisableCookies] = useState(false);
   const termsOfServiceModalOpen = useModalOpen(ApplicationModal.TERMS_OF_SERVICE)
   const [, setCookie] = useCookies([ClientCookies.userHasAcceptedServiceAgreement])
 
   const toggleTermsOfServiceModal = useTermsOfServiceModalToggle()
 
   useEffect(() => {
-    window.disableCookies = false;
+    window.disableCookies = disableCookies;
     if (userAgreementStatus === UserTermsOfServiceStatus.ACCEPTED) {
       // maxAge in seconds e.g 1 mo = 2628000 seconds
       setCookie(ClientCookies.userHasAcceptedServiceAgreement, 'true', {path: '/', maxAge: 7884000})
@@ -114,9 +115,9 @@ export default function TermsOfServiceModal() {
   function acceptTermsOfService() {
     setUserAgreementStatus(UserTermsOfServiceStatus.ACCEPTED)
     if (value==='Necessary'){
-      gaOptout();
       // @ts-ignore
-      window.amplitude?.setOptOut(false)
+      window.amplitude.setOptOut(true)
+      gaOptout();
     }
   }
 

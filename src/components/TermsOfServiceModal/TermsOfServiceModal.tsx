@@ -9,7 +9,7 @@ import {FlexRow, FlexColumn} from '../Container/Container'
 import {useTermsOfServiceStatusManager} from '../../state/application/hooks'
 import {UserTermsOfServiceStatus} from '../../state/application/actions'
 import Modal from '../Modal/Modal'
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@material-ui/core'
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core'
 
 const ModalContent = styled.div`
   display: flex;
@@ -90,14 +90,12 @@ export enum ClientCookies {
 export default function TermsOfServiceModal() {
   const [userAgreementStatus, setUserAgreementStatus] = useTermsOfServiceStatusManager()
   const [value, setValue] = useState('All');
-  const [disableCookies, setDisableCookies] = useState(false);
   const termsOfServiceModalOpen = useModalOpen(ApplicationModal.TERMS_OF_SERVICE)
   const [, setCookie] = useCookies([ClientCookies.userHasAcceptedServiceAgreement])
 
   const toggleTermsOfServiceModal = useTermsOfServiceModalToggle()
 
   useEffect(() => {
-    window.disableCookies = disableCookies;
     if (userAgreementStatus === UserTermsOfServiceStatus.ACCEPTED) {
       // maxAge in seconds e.g 1 mo = 2628000 seconds
       setCookie(ClientCookies.userHasAcceptedServiceAgreement, 'true', {path: '/', maxAge: 7884000})

@@ -15,11 +15,10 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   padding: 32px 24px;
-  min-width: 400px;
   width: 100%;
   background: #0b0f1c;
   @media (max-width: 768px) {
-    min-width: 300px; /* Change this value for mobile */
+    padding: 32px 16px;
   }
 `
 
@@ -124,7 +123,7 @@ export default function TermsOfServiceModal() {
   }
 
   return (
-    <Modal isOpen={termsOfServiceModalOpen} onDismiss={toggleTermsOfServiceModal} minHeight={false} maxHeight={90}>
+    <Modal isOpen={termsOfServiceModalOpen} onDismiss={toggleTermsOfServiceModal} minHeight={false} maxHeight={90} width='520px'>
       <ModalContent>
         <FlexColumn>
           <TEXT.BoldStandardBody color={'#FFF'} alignSelf={'stretch'} mb={'8px'}>TOS</TEXT.BoldStandardBody>

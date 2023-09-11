@@ -590,7 +590,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             <TransparentUnderlineButton onClick={() => handleQuickInput(50, ovlBalance?.toFixed(6) ?? null)}>50%</TransparentUnderlineButton>
             <TransparentUnderlineButton onClick={() => handleQuickInput(75, ovlBalance?.toFixed(6) ?? null)}>75%</TransparentUnderlineButton>
             <TransparentUnderlineButton
-              backgroundColor={isMaxSelected ? '#10DCB1 !important' : ''}
+              backgroundColor={isMaxSelected ? '#2E3343 !important' : ''}
               onClick={() => handleQuickInput(100, maxInputIncludingFees ?? null)}
             >
               Max

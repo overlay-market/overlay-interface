@@ -619,7 +619,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
         {showUnderwaterFlow ? (
           <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-            Position Underwater
+            Instantly Liquidated
           </TriggerBuildButton>
         ) : exceedOiCap ? (
           <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>

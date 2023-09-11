@@ -113,6 +113,7 @@ export const MINIMUM_SLIPPAGE_VALUE = 0.05
 export const BuildInterface = ({marketId}: {marketId: string}) => {
   const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
   const [showBalanceNotEnoughWarning, setShowBalanceNotEnoughWarning] = useState<boolean>(false)
+  const [isMaxSelected, setIsMaxSelected] = useState<boolean>(false)
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setBuildState] = useState<{
     showConfirm: boolean
     attemptingTransaction: boolean
@@ -300,23 +301,33 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     [onSelectPositionSide],
   )
 
-  const handleUserInput = useCallback(
-    (input: string) => {
-      onAmountInput(input)
-    },
-    [onAmountInput],
-  )
-
   const maxInputIncludingFees: string | undefined = useMemo(() => {
     const parsedBuildFee = formatWeiToParsedNumber(buildFee, 18, 6)
     let buildFeeValueFromMaxInput
 
     if (!ovlBalance || !buildFee) return parsedOvlBalance
-    buildFeeValueFromMaxInput = Number(ovlBalance && ovlBalance.toFixed(18)) * Number(parsedBuildFee)
+    buildFeeValueFromMaxInput = Number(ovlBalance && ovlBalance.toFixed(18)) * Number(parsedBuildFee) * Number(selectedLeverage)
     let returnValue = Number(ovlBalance && ovlBalance.toFixed(18)) - buildFeeValueFromMaxInput
     const decimals = 6
     return (Math.trunc(returnValue * Math.pow(10, decimals)) / Math.pow(10, decimals)).toString()
-  }, [buildFee, ovlBalance, parsedOvlBalance])
+  }, [buildFee, ovlBalance, parsedOvlBalance, selectedLeverage])
+
+  const handleUserInput = useCallback(
+    (input: string) => {
+      if (input !== maxInputIncludingFees) {
+        setIsMaxSelected(false)
+      }
+      onAmountInput(input)
+    },
+    [onAmountInput, setIsMaxSelected, maxInputIncludingFees],
+  )
+
+  // Update amount input when max selected and leverage is changed (thus maxInputIncludingFees changes)
+  useEffect(() => {
+    if (isMaxSelected && maxInputIncludingFees) {
+      handleUserInput(maxInputIncludingFees)
+    }
+  }, [isMaxSelected, maxInputIncludingFees, handleUserInput])
 
   // Show warning with wallet balance is below minimum
   useEffect(() => {
@@ -332,8 +343,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
     let calculatedAmountByPercentage
     if (percentage < 100) {
+      setIsMaxSelected(false)
       calculatedAmountByPercentage = (Number(totalSupply) * (percentage / 100)).toFixed(6)
     } else {
+      setIsMaxSelected(true)
       calculatedAmountByPercentage = (Number(totalSupply) * (percentage / 100)).toFixed(6)
     }
     if (minCollateral && +calculatedAmountByPercentage < minCollateral) return handleUserInput('')
@@ -461,17 +474,17 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const estPrice = isLong ? estimatedAsk : estimatedBid
   const {callback: buildCallback, minPrice} = useBuildCallback(buildData, market?.id, estPrice, minCollateral, inputError) //change here
   const disableBuildButton: boolean = useMemo(() => {
-    if (!typedValue || !parsedOvlBalance || !minCollateral || isLong === undefined || !estPrice) {
+    if (!typedValue || !maxInputIncludingFees || !minCollateral || isLong === undefined || !estPrice) {
       return true
     }
-    if (Number(typedValue) > Number(parsedOvlBalance)) {
+    if (Number(typedValue) > Number(maxInputIncludingFees)) {
       return true
     }
     if (minCollateral > Number(typedValue)) {
       return true
     }
     return false
-  }, [typedValue, isLong, minCollateral, parsedOvlBalance, estPrice])
+  }, [typedValue, isLong, minCollateral, maxInputIncludingFees, estPrice])
 
   const handleBuild = useCallback(() => {
     if (!typedValue) throw new Error('missing position input size')
@@ -576,7 +589,12 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             <TransparentUnderlineButton onClick={() => handleQuickInput(25, ovlBalance?.toFixed(6) ?? null)}>25%</TransparentUnderlineButton>
             <TransparentUnderlineButton onClick={() => handleQuickInput(50, ovlBalance?.toFixed(6) ?? null)}>50%</TransparentUnderlineButton>
             <TransparentUnderlineButton onClick={() => handleQuickInput(75, ovlBalance?.toFixed(6) ?? null)}>75%</TransparentUnderlineButton>
-            <TransparentUnderlineButton onClick={() => handleQuickInput(100, maxInputIncludingFees ?? null)}>Max</TransparentUnderlineButton>
+            <TransparentUnderlineButton
+              backgroundColor={isMaxSelected ? '#10DCB1 !important' : ''}
+              onClick={() => handleQuickInput(100, maxInputIncludingFees ?? null)}
+            >
+              Max
+            </TransparentUnderlineButton>
           </FlexRow>
         </NumericalInputLabel>
         <NumericalInputContainer>

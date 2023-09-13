@@ -13,6 +13,9 @@ const Container = styled.div`
   width: 1000px;
   padding-right: 16px;
   max-height: 420px;
+  @media (max-width: 1238px) {
+    display: none;
+  }
 `
 
 const MarketDetailsContainer = styled.div`

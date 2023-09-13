@@ -16,10 +16,16 @@ import Loader from '../../components/Loaders/Loaders'
 
 const Container = styled(FlexColumn)`
   padding: 12px;
+  @media (max-width: 768px) {
+    padding: 12px 0px;
+  }
 `
 
 const MarketNameContainer = styled(FlexRow)`
   gap: 6px;
+  @media (max-width: 768px) {
+    margin-top: 28px;
+  }
 `
 
 const BuildHeader = ({marketId}: {marketId: string}) => {

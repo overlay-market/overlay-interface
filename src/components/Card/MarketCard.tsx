@@ -9,6 +9,9 @@ const Container = styled(FlexColumn)<{maxWidth?: string}>`
   margin: auto;
   z-index: 6.9;
   max-width: 375px;
+  @media (max-width: 768px) {
+    margin-top: 8px;
+  }
 
   ${({theme}) => theme.mediaWidth.minSmall`
     max-width: 400px;

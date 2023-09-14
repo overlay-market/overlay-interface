@@ -150,7 +150,7 @@ const DropdownItem = styled(StyledLink)`
   margin: 0;
 `
 
-const RotatingChevron = styled(ChevronDown)`
+export const RotatingChevron = styled(ChevronDown)`
   transition: transform ease-out 0.25s;
 `
 

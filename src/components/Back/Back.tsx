@@ -13,24 +13,27 @@ const Container = styled.div<{margin?: string}>`
   margin-bottom: 0px;
 
   ${({theme}) => theme.mediaWidth.minSmall`
-    margin-bottom: 16px; 
+    margin-bottom: 24px; 
   `}}
 `
 
 type BackProps = {
   arrowSize: number
-  textSize: number
-  margin?: string
+  fontSize: number
+  fontColor?: string
+  toUrl?: string
 }
-export const Back = ({arrowSize, textSize, margin}: BackProps) => {
+export const Back = ({arrowSize, fontSize, fontColor, toUrl}: BackProps) => {
   let history = useHistory()
   return (
     <>
-      <Container onClick={() => history.goBack()}>
-        <Icon size={arrowSize} clickable={true} margin={'auto 3px auto auto'}>
+      <Container onClick={() => (toUrl ? history.push(toUrl) : history.goBack())}>
+        <Icon size={arrowSize} color={fontColor} clickable={true} margin={'auto 3px auto auto'}>
           <ArrowLeft size={arrowSize} />
         </Icon>
-        <TEXT.AdjustableSize fontSize={textSize}>Back</TEXT.AdjustableSize>
+        <TEXT.AdjustableSize fontSize={fontSize} color={fontColor}>
+          Back
+        </TEXT.AdjustableSize>
       </Container>
     </>
   )

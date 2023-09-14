@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJR084KXFT"></script> <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-QJR084KXFT'); </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJR084KXFT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'G-QJR084KXFT')
+    </script>
     <script>
       var gaProperty = 'G-QJR084KXFT'
       var disableStr = 'ga-disable-' + gaProperty
@@ -10,20 +19,99 @@
       }
     </script>
     <script type="text/javascript">
-      !function(){"use strict";!function(e,t){var n=e.amplitude||{_q:[],_iq:{}};if(n.invoked)e.console&&console.error&&console.error("Amplitude snippet has been loaded.");else{var r=function(e,t){e.prototype[t]=function(){return this._q.push({name:t,args:Array.prototype.slice.call(arguments,0)}),this}},s=function(e,t,n){return function(r){e._q.push({name:t,args:Array.prototype.slice.call(n,0),resolve:r})}},o=function(e,t,n){e[t]=function(){if(n)return{promise:new Promise(s(e,t,Array.prototype.slice.call(arguments)))}}},i=function(e){for(var t=0;t<m.length;t++)o(e,m[t],!1);for(var n=0;n<g.length;n++)o(e,g[n],!0)};n.invoked=!0;var u=t.createElement("script");u.type="text/javascript",u.integrity="sha384-x0ik2D45ZDEEEpYpEuDpmj05fY91P7EOZkgdKmq4dKL/ZAVcufJ+nULFtGn0HIZE",u.crossOrigin="anonymous",u.async=!0,u.src="https://cdn.amplitude.com/libs/analytics-browser-2.0.0-min.js.gz",u.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK")};var a=t.getElementsByTagName("script")[0];a.parentNode.insertBefore(u,a);for(var c=function(){return this._q=[],this},p=["add","append","clearAll","prepend","set","setOnce","unset","preInsert","postInsert","remove","getUserProperties"],l=0;l<p.length;l++)r(c,p[l]);n.Identify=c;for(var d=function(){return this._q=[],this},f=["getEventProperties","setProductId","setQuantity","setPrice","setRevenue","setRevenueType","setEventProperties"],v=0;v<f.length;v++)r(d,f[v]);n.Revenue=d;var m=["getDeviceId","setDeviceId","getSessionId","setSessionId","getUserId","setUserId","setOptOut","setTransport","reset","extendSession"],g=["init","add","remove","track","logEvent","identify","groupIdentify","setGroup","revenue","flush"];i(n),n.createInstance=function(e){return n._iq[e]={_q:[]},i(n._iq[e]),n._iq[e]},e.amplitude=n}}(window,document)}();
-      amplitude.init('f7274b300ed1bbed0ee00b99edacafd5');
+      !(function () {
+        'use strict'
+        !(function (e, t) {
+          var n = e.amplitude || {_q: [], _iq: {}}
+          if (n.invoked) e.console && console.error && console.error('Amplitude snippet has been loaded.')
+          else {
+            var r = function (e, t) {
+                e.prototype[t] = function () {
+                  return this._q.push({name: t, args: Array.prototype.slice.call(arguments, 0)}), this
+                }
+              },
+              s = function (e, t, n) {
+                return function (r) {
+                  e._q.push({name: t, args: Array.prototype.slice.call(n, 0), resolve: r})
+                }
+              },
+              o = function (e, t, n) {
+                e[t] = function () {
+                  if (n) return {promise: new Promise(s(e, t, Array.prototype.slice.call(arguments)))}
+                }
+              },
+              i = function (e) {
+                for (var t = 0; t < m.length; t++) o(e, m[t], !1)
+                for (var n = 0; n < g.length; n++) o(e, g[n], !0)
+              }
+            n.invoked = !0
+            var u = t.createElement('script')
+            ;(u.type = 'text/javascript'),
+              (u.integrity = 'sha384-x0ik2D45ZDEEEpYpEuDpmj05fY91P7EOZkgdKmq4dKL/ZAVcufJ+nULFtGn0HIZE'),
+              (u.crossOrigin = 'anonymous'),
+              (u.async = !0),
+              (u.src = 'https://cdn.amplitude.com/libs/analytics-browser-2.0.0-min.js.gz'),
+              (u.onload = function () {
+                e.amplitude.runQueuedFunctions || console.log('[Amplitude] Error: could not load SDK')
+              })
+            var a = t.getElementsByTagName('script')[0]
+            a.parentNode.insertBefore(u, a)
+            for (
+              var c = function () {
+                  return (this._q = []), this
+                },
+                p = ['add', 'append', 'clearAll', 'prepend', 'set', 'setOnce', 'unset', 'preInsert', 'postInsert', 'remove', 'getUserProperties'],
+                l = 0;
+              l < p.length;
+              l++
+            )
+              r(c, p[l])
+            n.Identify = c
+            for (
+              var d = function () {
+                  return (this._q = []), this
+                },
+                f = ['getEventProperties', 'setProductId', 'setQuantity', 'setPrice', 'setRevenue', 'setRevenueType', 'setEventProperties'],
+                v = 0;
+              v < f.length;
+              v++
+            )
+              r(d, f[v])
+            n.Revenue = d
+            var m = [
+                'getDeviceId',
+                'setDeviceId',
+                'getSessionId',
+                'setSessionId',
+                'getUserId',
+                'setUserId',
+                'setOptOut',
+                'setTransport',
+                'reset',
+                'extendSession',
+              ],
+              g = ['init', 'add', 'remove', 'track', 'logEvent', 'identify', 'groupIdentify', 'setGroup', 'revenue', 'flush']
+            i(n),
+              (n.createInstance = function (e) {
+                return (n._iq[e] = {_q: []}), i(n._iq[e]), n._iq[e]
+              }),
+              (e.amplitude = n)
+          }
+        })(window, document)
+      })()
+      amplitude.init('f7274b300ed1bbed0ee00b99edacafd5')
     </script>
-    <meta charset="utf-8"/>
-    <link href="%PUBLIC_URL%/overlay-logo-white.png" rel="icon"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <meta content="#000000" name="theme-color"/>
-    <meta content="Overlay Protocol" name="description"/>
-    <link href="%PUBLIC_URL%/overlay-logo-white.png" rel="apple-touch-icon"/>
+    <meta charset="utf-8" />
+    <link href="%PUBLIC_URL%/overlay-logo-white.png" rel="icon" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="#000000" name="theme-color" />
+    <meta content="Overlay Protocol" name="description" />
+    <link href="%PUBLIC_URL%/overlay-logo-white.png" rel="apple-touch-icon" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link href="%PUBLIC_URL%/manifest.json" rel="manifest"/>
+    <link href="%PUBLIC_URL%/manifest.json" rel="manifest" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -33,16 +121,14 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link
-    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600&family=Inter:wght@400;600&display=swap"
-    rel="stylesheet"
-  />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
     <title>Overlay</title>
+    <script src="%PUBLIC_URL%/datafeeds/udf/dist/bundle.js"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

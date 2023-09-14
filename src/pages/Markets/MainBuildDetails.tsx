@@ -4,23 +4,31 @@ import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import Loader from '../../components/Loaders/Loaders'
 import {BigNumber} from 'ethers'
+import {TEXT, colors} from '../../theme/theme'
+import SetSlippageModal from '../../components/SetSlippageModal.tsx/SetSlippageModal'
+import {useSetSlippageModalToggle} from '../../state/application/hooks'
+import {useBuildState} from '../../state/build/hooks'
 import {toScientificNumber} from '../../utils/toScientificNumber'
 
 const ContentContainer = styled(FlexColumn)`
-  padding: 0 16px;
-  margin-bottom: 20px;
+  gap: 16px;
 `
 
 const AdditionalDetailRow = styled(FlexRow)`
   width: 100%;
   display: flex;
-  margin: 12px 0;
+  justify-content: space-between;
+`
+
+const SlippageValueContainer = styled.div`
+  display: flex;
+  gap: 8px;
 `
 
 export const PositionDetailType = styled.div`
   color: #b9babd;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
 `
 
 export const PositionDetailTypeDashed = styled.div`
@@ -30,17 +38,13 @@ export const PositionDetailTypeDashed = styled.div`
   text-decoration: underline dashed;
 `
 
-export const DetailValue = styled.div<{color?: string}>`
-  color: ${({color}) => (color ? color : '#B9BABD')};
+export const DetailValue = styled(TEXT.SmallBody)`
   display: flex;
-  font-size: 14px;
-  margin-left: auto;
   flex-direction: row;
 `
 
 export const HoverableDetailValue = styled(DetailValue)`
   cursor: pointer;
-
   :hover {
     text-decoration: underline;
   }
@@ -63,6 +67,7 @@ export const MainDetails = ({
   bidPrice,
   askPrice,
   minPrice,
+  priceCurrency,
 }: {
   isLong?: boolean
   quoteTokenDecimals?: number
@@ -73,6 +78,7 @@ export const MainDetails = ({
   bidPrice?: string | number | any
   askPrice?: string | number | any
   minPrice?: BigNumber
+  priceCurrency?: string
 }) => {
   const estimatedReceivedPrice: any = useMemo(() => {
     if (isLong === undefined || estimatedBid === undefined || estimatedAsk === undefined) {
@@ -100,21 +106,40 @@ export const MainDetails = ({
 
     return priceImpactPercentage.toFixed(2)
   }, [estimatedReceivedPrice, typedValue, isLong, bidPrice, askPrice])
+
+  const toggleSetSlippageModal = useSetSlippageModalToggle()
+  const {setSlippageValue} = useBuildState()
+
   return (
     <ContentContainer>
       <AdditionalDetailRow>
-        <PositionDetailType>Est. Received Price</PositionDetailType>
-        <DetailValue>{estimatedReceivedPrice && minPrice ? toScientificNumber(estimatedReceivedPrice) : '-'}</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Price</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>
+          {estimatedReceivedPrice && minPrice ? `${priceCurrency}${toScientificNumber(estimatedReceivedPrice)}` : '-'}
+        </DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>
-        <PositionDetailType>Worst Received Price</PositionDetailType>
-        <DetailValue>{minPrice ? toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4)) : '-'}</DetailValue>
+        <SlippageValueContainer style={{gap: '8px'}}>
+          <TEXT.SmallBody color={colors(false).dark.grey2}>Worst Price</TEXT.SmallBody>
+          <TEXT.Supplemental
+            onClick={toggleSetSlippageModal}
+            color={colors(false).dark.blue2}
+            style={{textDecoration: 'underline', cursor: 'pointer'}}
+          >
+            {`${setSlippageValue}% slippage`}
+          </TEXT.Supplemental>
+        </SlippageValueContainer>
+        <DetailValue color={colors(false).dark.blue1}>
+          {minPrice ? `${priceCurrency}${toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))}` : '-'}
+        </DetailValue>
       </AdditionalDetailRow>
 
+      <SetSlippageModal />
+
       <AdditionalDetailRow>
-        <PositionDetailType>Price Impact</PositionDetailType>
-        <DetailValue>{priceImpact ? `${priceImpact}%` : `-`}</DetailValue>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Price Impact</TEXT.SmallBody>
+        <DetailValue color={colors(false).dark.blue1}>{priceImpact ? `${priceImpact}%` : `-`}</DetailValue>
       </AdditionalDetailRow>
     </ContentContainer>
   )

@@ -24,6 +24,10 @@ const StyledLabel = styled(Label)`
   margin-bottom: 8px !important;
 `
 
+const StyledSlider = styled(Slider)`
+  background-image: linear-gradient(to right, #ffffff, #ff648a);
+`
+
 type LeverageSliderProps = {
   value: number
   liquidationPrice?: any
@@ -38,22 +42,22 @@ type LeverageSliderProps = {
 export const LeverageSlider = ({value, liquidationPrice, onChange, name, min, max, step, margin}: LeverageSliderProps) => {
   const SLIDER_CONSTANTS = {
     backgroundColor: '#F2F2F2',
-    sliderColor: '#12B4FF',
+    sliderColor: '#FF648A',
   }
   return (
     <SliderContainer margin={margin}>
       <StyledLabel htmlFor={name}>
-        <Header>Leverage:</Header>
+        <Header>Leverage</Header>
         <Value>{value}x</Value>
       </StyledLabel>
-      <Slider
+      <StyledSlider
         value={value}
         name={name}
         min={min}
         max={max}
         step={step}
         onChange={onChange}
-        backgroundColor={SLIDER_CONSTANTS.backgroundColor}
+        backgroundColor={'linear-gradient(to right, #FFFFFF, #FF648A)'}
         color={SLIDER_CONSTANTS.sliderColor}
       />
     </SliderContainer>

@@ -11,6 +11,7 @@ import {MARKET_LOGO_FROM_BASE, PRICE_CURRENCY_FROM_QUOTE, marketNameFromDescript
 import {getCharactersBeforeSlash, getCharactersAfterSlash} from '../utils/getCharactersBeforeSlash'
 
 export interface MarketStateDetails {
+  id: string
   marketAddress: string
   bid: BigNumber
   ask: BigNumber

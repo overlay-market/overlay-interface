@@ -21,6 +21,10 @@ const Container = styled(FlexColumn)`
   }
 `
 
+const DropdownContainer = styled.div`
+  z-index: 50;
+`
+
 const MarketNameContainer = styled(FlexRow)`
   gap: 6px;
   @media (max-width: 768px) {
@@ -58,14 +62,16 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
         {isLoading || !marketDetails.length || !baseToken || !marketName ? (
           <Loader size="12px" />
         ) : (
-          <Dropdown
-            value={{
-              value: market?.id,
-              label: baseToken,
-            }}
-            isLoading={isLoading || !marketDetails.length || !baseToken || !marketName}
-            options={marketOptions}
-          />
+          <DropdownContainer>
+            <Dropdown
+              value={{
+                value: market?.id,
+                label: baseToken,
+              }}
+              isLoading={isLoading || !marketDetails.length || !baseToken || !marketName}
+              options={marketOptions}
+            />
+          </DropdownContainer>
         )}
       </MarketNameContainer>
     </Container>

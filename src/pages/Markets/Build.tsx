@@ -517,7 +517,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   }, [typedValue, isLong, minCollateral, maxInputIncludingFees, estPrice])
 
   const handleMaxInput = (totalSupply: string | null) => {
-    return handleUserInput(Number(totalSupply).toFixed(6))
+    setIsMaxSelected(true)
+    return handleUserInput(Number(maxInputIncludingFees).toFixed(6))
   }
 
   const handleBuild = useCallback(() => {
@@ -595,10 +596,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
                 <TEXT.Supplemental
                   onClick={() => handleMaxInput(maxInputIncludingFees ?? null)}
-                  color={colors(true).dark.grey2}
+                  color={isMaxSelected ? 'white' : colors(true).dark.grey2}
                   style={{textDecoration: 'underline', cursor: 'pointer'}}
                 >
-                  Max: {ovlBalance?.toFixed(2)} OVL
+                  Max: {maxInputIncludingFees} OVL
                 </TEXT.Supplemental>
               </FlexRow>
               <FlexRow justify="space-between">

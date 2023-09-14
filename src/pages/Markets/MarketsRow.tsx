@@ -123,7 +123,9 @@ const MarketsRow = ({
       <StyledTableCellThin align="left" id="marketPrice">
         <TEXT.BoldNumber>
           {priceCurrency}
-          {toScientificNumber(Number(midPrice) < 100000 ? Number(midPrice).toLocaleString() : Math.floor(Number(midPrice)).toLocaleString())}
+          {toScientificNumber(
+            Number(midPrice) < 100000 ? Number(midPrice).toLocaleString('en-US') : Math.floor(Number(midPrice)).toLocaleString('en-US'),
+          )}
         </TEXT.BoldNumber>
       </StyledTableCellThin>
 

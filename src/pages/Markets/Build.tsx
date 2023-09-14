@@ -421,7 +421,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const headerPrice: string = useMemo(() => {
     const price = estimatedReceivedPrice ?? prices.mid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString()
+    return Number(formattedPrice).toLocaleString('en-US')
   }, [estimatedReceivedPrice, prices.mid])
 
   const priceImpact = useMemo(() => {

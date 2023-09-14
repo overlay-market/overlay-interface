@@ -1,6 +1,15 @@
 /// <reference types="react-scripts" />
 
 interface Window {
+  amplitude?: {
+    setOptOut?: (...args: any[]) => void
+    getInstance?: (...args: any[]) => void
+    enableTracking?: (...args: any[]) => void
+  },
+  cookie3Options?: {
+    cookielessEnabled: boolean;
+  },
+  disableCookies: boolean;
   ethereum?: {
     isMetaMask?: true
     on?: (...args: any[]) => void

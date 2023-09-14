@@ -47,7 +47,7 @@ export default function ConfirmTxnModal({
   minPrice?: BigNumber
 }) {
   return (
-    <Modal isOpen={isOpen} onDismiss={() => null} width={'350px'}>
+    <Modal isOpen={isOpen} onDismiss={() => null} width={'350px'} maxWidth='90%'>
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>

@@ -88,11 +88,7 @@ export function Unwind({
   const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
   const {account} = useActiveWeb3React()
-  const {isLoading, positions, refetch} = useCurrentWalletPositionsV2(account)
-
-  useEffect(() => {
-    refetch()
-  }, [account, refetch, isLoading])
+  const {positions} = useCurrentWalletPositionsV2(account)
 
   const {typedValue, setSlippageValue, txnDeadline} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onSetSlippage, onSetTxnDeadline, onResetUnwindState} = useUnwindActionHandlers()
@@ -277,6 +273,10 @@ export function Unwind({
     [onSelectPositionId],
   )
 
+  useEffect(() => {
+    handleSelectPosition(Number(position?.positionId))
+  }, [position, handleSelectPosition])
+
   // const handleClearInput = useCallback(() => {
   //   onAmountInput('')
   // }, [onAmountInput])
@@ -290,22 +290,20 @@ export function Unwind({
     unwindCallback()
       .then(success => {
         onResetUnwindState()
-        const numberOfUnwinds = position && Number(position['numberOfUniwnds'])
-        history.push(`/closed-positions/${marketPositionId}-${numberOfUnwinds}/${positionId}`)
+        history.push(`/positions`)
       })
       .catch(err => console.error('Error from handleUnwind: ', err))
-  }, [history, position, marketPositionId, positionId, unwindCallback, onResetUnwindState])
+  }, [history, unwindCallback, onResetUnwindState])
 
   const handleWithdrawFromShutDownMarket = useCallback(() => {
     if (!emergencyWithdrawCallback) return
     emergencyWithdrawCallback()
       .then(success => {
         onResetUnwindState()
-        const numberOfUnwinds = position && Number(position['numberOfUniwnds'])
-        history.push(`/closed-positions/${marketPositionId}-${numberOfUnwinds}/${positionId}`)
+        history.push(`/positions`)
       })
       .catch(err => console.error('Error from handleWithdrawFromShutDownMarket: ', JSON.stringify(err)))
-  }, [history, position, marketPositionId, positionId, emergencyWithdrawCallback, onResetUnwindState])
+  }, [history, emergencyWithdrawCallback, onResetUnwindState])
 
   const isUnwindAmountTooLow: boolean = useMemo(() => {
     if (Number(typedValue) < 0.01 && customInput) {
@@ -324,7 +322,6 @@ export function Unwind({
   return !isMarketShutDown ? (
     <InterfaceWrapper>
       <>
-        {handleSelectPosition(Number(position?.positionId))}
         <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
@@ -466,7 +463,6 @@ export function Unwind({
   ) : (
     <InterfaceWrapper>
       <>
-        {handleSelectPosition(Number(position?.positionId))}
         <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>

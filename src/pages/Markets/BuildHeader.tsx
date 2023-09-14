@@ -55,7 +55,7 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
 
   return (
     <Container align="flex-start">
-      <Back arrowSize={16} fontSize={14} fontColor={colors(false).dark.blue2} />
+      <Back arrowSize={16} fontSize={14} fontColor={colors(false).dark.blue2} toUrl={'/markets'} />
       <MarketNameContainer>
         <Icon size={20}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
         <TEXT.BoldSmallBody>{marketName}</TEXT.BoldSmallBody>

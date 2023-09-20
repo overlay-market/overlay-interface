@@ -21,12 +21,13 @@ type BackProps = {
   arrowSize: number
   fontSize: number
   fontColor?: string
+  toUrl?: string
 }
-export const Back = ({arrowSize, fontSize, fontColor}: BackProps) => {
+export const Back = ({arrowSize, fontSize, fontColor, toUrl}: BackProps) => {
   let history = useHistory()
   return (
     <>
-      <Container onClick={() => history.goBack()}>
+      <Container onClick={() => (toUrl ? history.push(toUrl) : history.goBack())}>
         <Icon size={arrowSize} color={fontColor} clickable={true} margin={'auto 3px auto auto'}>
           <ArrowLeft size={arrowSize} />
         </Icon>

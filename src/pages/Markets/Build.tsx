@@ -148,6 +148,7 @@ export const MINIMUM_SLIPPAGE_VALUE = 0.05
 // to be moved to respective sub-components to keep clean
 export const BuildInterface = ({marketId}: {marketId: string}) => {
   const [showBalanceNotEnoughWarning, setShowBalanceNotEnoughWarning] = useState<boolean>(false)
+  const [isMaxSelected, setIsMaxSelected] = useState<boolean>(false)
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setBuildState] = useState<{
     showConfirm: boolean
     attemptingTransaction: boolean
@@ -334,23 +335,33 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     [onSelectPositionSide],
   )
 
-  const handleUserInput = useCallback(
-    (input: string) => {
-      onAmountInput(input)
-    },
-    [onAmountInput],
-  )
-
   const maxInputIncludingFees: string | undefined = useMemo(() => {
     const parsedBuildFee = formatWeiToParsedNumber(buildFee, 18, 6)
     let buildFeeValueFromMaxInput
 
     if (!ovlBalance || !buildFee) return parsedOvlBalance
-    buildFeeValueFromMaxInput = Number(ovlBalance && ovlBalance.toFixed(18)) * Number(parsedBuildFee)
+    buildFeeValueFromMaxInput = Number(ovlBalance && ovlBalance.toFixed(18)) * Number(parsedBuildFee) * Number(selectedLeverage)
     let returnValue = Number(ovlBalance && ovlBalance.toFixed(18)) - buildFeeValueFromMaxInput
     const decimals = 6
     return (Math.trunc(returnValue * Math.pow(10, decimals)) / Math.pow(10, decimals)).toString()
-  }, [buildFee, ovlBalance, parsedOvlBalance])
+  }, [buildFee, ovlBalance, parsedOvlBalance, selectedLeverage])
+
+  const handleUserInput = useCallback(
+    (input: string) => {
+      if (input !== maxInputIncludingFees) {
+        setIsMaxSelected(false)
+      }
+      onAmountInput(input)
+    },
+    [onAmountInput, setIsMaxSelected, maxInputIncludingFees],
+  )
+
+  // Update amount input when max selected and leverage is changed (thus maxInputIncludingFees changes)
+  useEffect(() => {
+    if (isMaxSelected && maxInputIncludingFees) {
+      handleUserInput(maxInputIncludingFees)
+    }
+  }, [isMaxSelected, maxInputIncludingFees, handleUserInput])
 
   // Show warning with wallet balance is below minimum
   useEffect(() => {
@@ -441,19 +452,19 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const headerPrice: string = useMemo(() => {
     const price = estimatedReceivedPrice ?? prices.mid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString()
+    return Number(formattedPrice).toLocaleString('en-US')
   }, [estimatedReceivedPrice, prices])
 
   const longPrice: string = useMemo(() => {
     const price = prices.ask
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString()
+    return Number(formattedPrice).toLocaleString('en-US')
   }, [prices])
 
   const shortPrice: string = useMemo(() => {
     const price = prices.bid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString()
+    return Number(formattedPrice).toLocaleString('en-US')
   }, [prices])
 
   const priceImpact = useMemo(() => {
@@ -493,20 +504,21 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const estPrice = isLong ? estimatedAsk : estimatedBid
   const {callback: buildCallback, minPrice} = useBuildCallback(buildData, market?.id, estPrice, minCollateral, inputError) //change here
   const disableBuildButton: boolean = useMemo(() => {
-    if (!typedValue || !parsedOvlBalance || !minCollateral || isLong === undefined || !estPrice) {
+    if (!typedValue || !maxInputIncludingFees || !minCollateral || isLong === undefined || !estPrice) {
       return true
     }
-    if (Number(typedValue) > Number(parsedOvlBalance)) {
+    if (Number(typedValue) > Number(maxInputIncludingFees)) {
       return true
     }
     if (minCollateral > Number(typedValue)) {
       return true
     }
     return false
-  }, [typedValue, isLong, minCollateral, parsedOvlBalance, estPrice])
+  }, [typedValue, isLong, minCollateral, maxInputIncludingFees, estPrice])
 
   const handleMaxInput = (totalSupply: string | null) => {
-    return handleUserInput(Number(totalSupply).toFixed(6))
+    setIsMaxSelected(true)
+    return handleUserInput(Number(maxInputIncludingFees).toFixed(6))
   }
 
   const handleBuild = useCallback(() => {
@@ -584,10 +596,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
                 <TEXT.Supplemental
                   onClick={() => handleMaxInput(maxInputIncludingFees ?? null)}
-                  color={colors(true).dark.grey2}
+                  color={isMaxSelected ? 'white' : colors(true).dark.grey2}
                   style={{textDecoration: 'underline', cursor: 'pointer'}}
                 >
-                  Max: {ovlBalance?.toFixed(2)} OVL
+                  Max: {maxInputIncludingFees} OVL
                 </TEXT.Supplemental>
               </FlexRow>
               <FlexRow justify="space-between">

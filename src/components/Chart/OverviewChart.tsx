@@ -269,16 +269,16 @@ const OverviewChart = () => {
     }
     return (
       <g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={25} textAnchor="end" fill="#a8a6a6" fontSize={12} fontFamily="Inter">
+        <text x={0} y={0} dy={25} dx={20} textAnchor="end" fill="#a8a6a6" fontSize={12} fontFamily="Inter">
           {label}
         </text>
       </g>
     )
   }
 
-  const customizedYAxisTick = ({x = 0, y = 0, payload = {value: ''}}: TickProps): JSX.Element => (
+  const customizedYAxisTick = ({x = 0, y = 0, payload = {value: '98'}}: TickProps): JSX.Element => (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={5} textAnchor="end" fill="#a8a6a6" fontSize={12} fontFamily="Inter">
+      <text x={0} y={0} dy={5} dx={50} textAnchor="end" fill="#a8a6a6" fontSize={12} fontFamily="Inter">
         {payload.value}
       </text>
     </g>
@@ -349,10 +349,12 @@ const OverviewChart = () => {
             data={chartDataFormatted}
             margin={{
               bottom: 5,
+              top: 5,
+              left: 8,
             }}
           >
             <XAxis dy={4} dataKey="date" axisLine={false} tickLine={false} tick={customizedXAxisTick} />
-            <YAxis axisLine={false} tickLine={false} tick={customizedYAxisTick} />
+            <YAxis orientation="right" axisLine={false} tickLine={false} interval={0} tick={customizedYAxisTick} />
             <Tooltip content={customTooltip} />
             <Line type="linear" dataKey="realizedPnl" stroke="#71ceff" dot={false} />
           </LineChart>

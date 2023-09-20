@@ -40,13 +40,12 @@ const StyledDialogContent = styled(({minHeight, maxHeight, mobile, isOpen, width
     box-shadow: 0 4px 8px 0 ${({theme}) => transparentize(0.95, theme.dark.background)};
     box-shadow: ${({boxShadow, theme}) => boxShadow ?? `0 4px 8px 0 ${transparentize(0.95, theme.dark.background)}`};
     padding: 0px;
-    width: 85vw;
+    max-width: ${({maxWidth}) => (maxWidth ? maxWidth : '80%')} !important;
     overflow-y: auto;
     overflow-x: hidden;
+    width: ${({width}) => (width)} !important;
 
     align-self: ${({mobile}) => (mobile ? 'flex-end' : 'center')};
-
-    max-width: ${({width}) => (width ? width : '420px')};
 
     ${({maxHeight}) =>
       maxHeight &&
@@ -89,6 +88,7 @@ interface ModalProps {
   boxShadow?: string
   initialFocusRef?: React.RefObject<any>
   children?: React.ReactNode
+  maxWidth?: string
 }
 
 export default function Modal({
@@ -101,6 +101,7 @@ export default function Modal({
   boxShadow,
   initialFocusRef,
   children,
+  maxWidth,
 }: ModalProps) {
   const fadeTransition = useTransition(isOpen, null, {
     config: {duration: 200},
@@ -147,6 +148,7 @@ export default function Modal({
                 width={width}
                 borderColor={borderColor}
                 boxShadow={boxShadow}
+                maxWidth={maxWidth}
               >
                 {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
                 {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}

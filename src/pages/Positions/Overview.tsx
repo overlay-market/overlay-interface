@@ -58,9 +58,11 @@ const BackgroundWrapper = styled.div`
 
 const StyledGrid = styled(Grid)<{order?: number}>`
   display: flex;
+  padding: 4px !important;
 
   ${({theme, order}) => theme.mediaWidth.minMedium`
-    order: ${order ? `${order}` : 0}
+  order: ${order ? `${order}` : 0};
+  padding: 12px !important;
   `}
 `
 
@@ -112,8 +114,8 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     const now = Math.floor(Date.now() / 1000)
     const oneDayAgo = now - 24 * 60 * 60
 
-    let pnlMoreThan24HoursAgo = unwindRows.reduce((acc: number, curr: any) => {
-      if (Number(curr.timestamp) < oneDayAgo) {
+    let pnl24HoursChange = unwindRows.reduce((acc: number, curr: any) => {
+      if (Number(curr.timestamp) > oneDayAgo) {
         return acc + parseInt(curr.pnl) / 10 ** 18
       } else {
         return acc
@@ -121,14 +123,14 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     }, 0)
 
     liquidatedRows.forEach((liquidate: any) => {
-      if (Number(liquidate.timestamp) < oneDayAgo) {
-        pnlMoreThan24HoursAgo -= parseInt(liquidate.pnl) / 10 ** 18
+      if (Number(liquidate.timestamp) > oneDayAgo) {
+        pnl24HoursChange -= parseInt(liquidate.size) / 10 ** 18
       }
     })
 
     let percentageChangeRealizedPnl = 0
-    if (pnlMoreThan24HoursAgo !== 0) {
-      percentageChangeRealizedPnl = parseFloat((((Number(realizedPnl) - pnlMoreThan24HoursAgo) / pnlMoreThan24HoursAgo) * 100).toFixed(2))
+    if (pnl24HoursChange !== 0) {
+      percentageChangeRealizedPnl = parseFloat(((( pnl24HoursChange) / Math.abs(Number(realizedPnl))) * 100).toFixed(2))
     }
 
     return percentageChangeRealizedPnl
@@ -137,26 +139,30 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const cardsData = [
     {
       title: 'Open Positions',
-      value: numberOfOpenPositions.toString(),
+      value: numberOfOpenPositions,
+      valueType: null,
       percentageChange: null,
       period: '24h',
     },
     {
       title: 'Locked Sum',
-      value: numberOfOpenPositions > 0 ? (tvl ? tvl + ' OVL' : 'loading') : null,
+      value: numberOfOpenPositions > 0 ? (tvl ? tvl : 'loading') : null,
+      valueType: 'OVL',
       percentageChange: null,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
     },
     {
       title: 'Realized',
-      value: numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl + ' OVL' : 'loading') : null,
+      value: numberOfUnwinds > 0 ? (realizedPnl ? realizedPnl : 'loading') : null,
+      valueType: 'OVL',
       percentageChange: realizedPnlPercentageChange,
       period: '24h',
     },
     {
       title: 'Unrealized',
-      value: numberOfOpenPositions > 0 ? (upnl ? upnl + ' OVL' : 'loading') : null,
+      value: numberOfOpenPositions > 0 ? (upnl ? upnl : 'loading') : null,
+      valueType: 'OVL',
       percentageChange: null,
       period: '24h',
       isOver1000OpenPositions: numberOfOpenPositions > 1000,
@@ -191,7 +197,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
           <Grid container spacing={3}>
             {/* Locked Sum + uPnL */}
             <StyledGrid order={0} item key={'mainOverviewCard'} xs={12} md={4}>
-              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} />
+              <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} valueType={''} />
             </StyledGrid>
 
             {/* Chart */}
@@ -205,6 +211,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
                   <OverviewCard
                     title={card.title}
                     value={card.value}
+                    valueType={card.valueType}
                     percentageChange={card.percentageChange}
                     period={card.period}
                     isOver1000OpenPositions={card.isOver1000OpenPositions}

@@ -17,7 +17,6 @@ const ModalContainer = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 24px;
-  padding-bottom: 60px;
   flex: 1;
   position: relative;
   gap: 4px;
@@ -92,6 +91,7 @@ export default function SetSlippageModal() {
       onDismiss={onClose}
       minHeight={false}
       maxHeight={90}
+      width='375px'
     >
       <ModalContainer>
         <CloseIcon onClick={onClose}>

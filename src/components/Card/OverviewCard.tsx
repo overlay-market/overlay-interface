@@ -6,7 +6,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start;
   width: 100%;
   background: #171926;
   border-radius: 8px;
@@ -29,40 +28,19 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
 
 interface DataProps {
   title: string
-  value: string | null
+  value: string | number | null
+  valueType: string | null
   percentageChange?: number | null
   period?: string
   isOver1000OpenPositions?: boolean
 }
 
 const OverviewCard = (props: DataProps) => {
-  const {title, value, percentageChange, period, isOver1000OpenPositions} = props
+  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions} = props
 
   return (
     <Container>
-      {!value ? (
-        <TEXT.SmallBody color="#c4c4c4" style={{whiteSpace: 'nowrap'}} mb={12}>
-          No data
-        </TEXT.SmallBody>
-      ) : (
-        <BoldHeader1 style={{whiteSpace: 'nowrap'}} mb={12}>
-          {value}
-        </BoldHeader1>
-      )}
-      {value && !!percentageChange && (
-        <Box display="flex" alignItems="center">
-          <PercentageChangeBox positive={percentageChange > 0}>
-            <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
-              {percentageChange > 0 && '+'}
-              {percentageChange}%
-            </TEXT.Number>
-          </PercentageChangeBox>
-          <TEXT.Supplemental color="#c4c4c4" ml={12}>
-            {period}
-          </TEXT.Supplemental>
-        </Box>
-      )}
-      <TEXT.SmallBody color="#c4c4c4" mt={12}>
+      <TEXT.SmallBody fontSize={14} color="#c4c4c4">
         {title}
       </TEXT.SmallBody>
       {isOver1000OpenPositions && (
@@ -75,6 +53,39 @@ const OverviewCard = (props: DataProps) => {
           </TEXT.Supplemental>
         </Box>
       )}
+      {!value ? (
+        <TEXT.SmallBody color="#c4c4c4" style={{whiteSpace: 'nowrap'}} mb={12}>
+          No data
+        </TEXT.SmallBody>
+      ) : (
+        <BoldHeader1 style={{whiteSpace: 'nowrap', marginTop: '15px'}} mb={12}>
+          {value}
+        </BoldHeader1>
+      )}
+  	  <Box display="flex" alignItems="center">
+        {!valueType ? (
+          <Box mt={"18px"}>
+          </Box>
+        ) : (
+        <TEXT.SmallBody fontSize={14} color="#c4c4c4">
+          {valueType}
+        </TEXT.SmallBody>)}
+        <Box display="flex" alignItems="center" marginLeft="auto">
+          {value && !!percentageChange && (
+            <PercentageChangeBox positive={percentageChange > 0}>
+              <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
+                {percentageChange > 0 && '+'}
+                {percentageChange}%
+              </TEXT.Number>
+            </PercentageChangeBox>
+          )}
+          {value && !!percentageChange && (
+            <TEXT.Supplemental color="#c4c4c4" ml={1}>
+              {period}
+            </TEXT.Supplemental>
+          )}
+        </Box>
+      </Box>
     </Container>
   )
 }

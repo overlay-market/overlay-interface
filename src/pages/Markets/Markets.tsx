@@ -161,7 +161,6 @@ const Markets = () => {
                   ?.filter(market => availableMarkets.includes(market.marketAddress.toLowerCase()))
                   .sort(customSort)
                   .map((market: ParsedMarketStateDetails, index: number) => {
-                    console.log('logo:', market.marketName, market.marketLogo)
                     return (
                       <MarketsRow
                         key={market.marketAddress}

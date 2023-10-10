@@ -33,7 +33,7 @@ const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Curr
 
 const closedPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Closed', 'PnL']
 
-const buildPositionsColumns = ['Size', 'Position', 'Entry Price', 'Liq. Price', 'Unrealized PnL', 'Action']
+const buildPositionsColumns = ['Size', 'Position', 'Entry Price', 'Liq. Price', 'Unrealized PnL']
 
 const positionColumns = {
   open: openPositionsColumns,
@@ -139,9 +139,9 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
-  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(account, rowsPerPage, (page - 1) * rowsPerPage, positionStatus)
-  const [showLoader, setShowLoader] = useState(false)
   const params = useParams<{marketId: string}>()
+  const {positionsTableData, isUninitialized, isLoading, numberOfPositions} = usePositionsTableData(account, 1000, 0, positionStatus, params?.marketId)
+  const [showLoader, setShowLoader] = useState(false)
 
   // Show loader only on page change
   useEffect(() => {
@@ -260,7 +260,7 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
       </TEXT.BoldStandardBody>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <TableContainer>
-          <StyledTable minWidth={PositionStatus.Build ? 'unset' : ''}>
+          <StyledTable minWidth={(PositionStatus.Build && !PositionStatus.Open) ? 'unset' : (PositionStatus.Open ? '100%' : '')}>
             <TableHead>
               <StyledTableHeaderRow>
                 {positionColumns[positionStatus].map((column: string) => {
@@ -285,7 +285,206 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
             </TableBody>
           </StyledTable>
         </TableContainer>
-        {paginatedRows && (
+        {paginatedRows && numberOfPositions > 9 &&(
+          <Box display="flex" justifyContent="flex-start" alignItems="center" paddingTop={'28px'} paddingBottom={'8px'}>
+            <Pagination count={pageCount} page={page} onChange={handlePageChange} />
+            <Box display="flex" alignItems="center" ml="28px">
+              <TEXT.SmallBody color={colors(true).dark.grey2}>Show:</TEXT.SmallBody>
+              <Dropdown>
+                <Box display="flex" alignItems="center">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{rowsPerPage} / page</TEXT.SmallBody>
+                  <RotatingChevron className="chevron" color={colors(true).dark.white} strokeWidth={1} height={18} width={18} />
+                </Box>
+
+                <DropdownMenu className="dropdown-menu">
+                  {ROWS_PER_PAGE.map(
+                    option =>
+                      option !== rowsPerPage && (
+                        <div key={option} onClick={() => handleRowsPerPageChange(option)}>
+                          <TEXT.SmallBody>{option} / page</TEXT.SmallBody>
+                        </div>
+                      ),
+                  )}
+                </DropdownMenu>
+              </Dropdown>
+            </Box>
+          </Box>
+        )}
+      </Collapse>
+
+      {!account ? (
+        <FlexRow marginTop="32px" marginLeft="8px" justifyContent="left" width="100%">
+          <TEXT.StandardBody color="#858585">No wallet connected. </TEXT.StandardBody>
+        </FlexRow>
+      ) : isUninitialized || isLoading ? (
+        <FlexRow marginTop="32px" marginLeft="8px" justifyContent="center !important" width="100%">
+          <Loader />
+        </FlexRow>
+      ) : !paginatedRows ? (
+        <FlexRow marginTop="32px" marginLeft="8px" justifyContent="left" width="100%">
+          <TEXT.StandardBody color="#858585">You have no {positionStatus} positions.</TEXT.StandardBody>
+        </FlexRow>
+      ) : null}
+    </Container>
+  )
+}
+
+export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, marketsData}: PositionsTableProps) => {
+  const {account} = useActiveWeb3React()
+  const [open, setOpen] = useState<boolean>(true)
+  const [page, setPage] = useState<number>(1)
+  const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
+  const params = useParams<{marketId: string}>()
+  const {positionsTableData, isUninitialized, isLoading, numberOfPositions} = usePositionsTableData(account, 1000, 0, positionStatus, params?.marketId)
+  const [showLoader, setShowLoader] = useState(false)
+
+  // Show loader only on page change
+  useEffect(() => {
+    setShowLoader(true)
+  }, [page])
+
+  useEffect(() => {
+    setShowLoader(false)
+  }, [positionsTableData])
+
+  const handleToggle = () => {
+    setOpen(prevOpen => !prevOpen)
+  }
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value)
+  }
+
+  const handleRowsPerPageChange = (newValue: number) => {
+    setRowsPerPage(newValue)
+    setPage(1)
+  }
+
+
+  const pageCount = useMemo(() => {
+    const positionsAmount = positionsTableData ? positionsTableData.account.positions : [];
+    return Math.ceil(positionsAmount.length / rowsPerPage)
+  }, [positionsTableData, rowsPerPage])
+
+  const paginatedRows = useMemo(() => {
+    if (!positionsTableData) return null
+
+    const rows =
+      positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build
+        ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+        : positionStatus === PositionStatus.Closed
+        ? positionsTableData.account?.unwinds
+        : positionStatus === PositionStatus.Liquidated
+        ? positionsTableData.account?.liquidates
+        : []
+
+    setShowLoader(false)
+
+    return rows && rows.length > 0 ? (
+      <>
+        {rows
+          .map((row: any) => {
+            const marketAddress =
+              positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
+            const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
+
+            if (positionStatus === PositionStatus.Open) {
+              return (
+                <OpenPosition
+                  key={row.id}
+                  position={{
+                    ...marketState,
+                    ...row,
+                  }}
+                  columns={positionColumns[PositionStatus.Open]}
+                />
+              )
+            } else if (positionStatus === PositionStatus.Build) {
+              if (marketAddress === params?.marketId) {
+                return (
+                  <OpenPosition
+                    key={row.id}
+                    position={{
+                      ...marketState,
+                      ...row,
+                    }}
+                    columns={positionColumns[PositionStatus.Build]}
+                  />
+                )
+              }
+
+              return null
+            } else if (positionStatus === PositionStatus.Closed) {
+              return (
+                <UnwindsTransactions
+                  key={row.id}
+                  transaction={{
+                    ...row,
+                    position: {
+                      ...marketState,
+                      ...row.position,
+                    },
+                  }}
+                  columns={positionColumns[PositionStatus.Closed]}
+                />
+              )
+            } else {
+              return (
+                <LiquidatesTransactions
+                  key={row.id}
+                  transaction={{
+                    ...row,
+                    position: {
+                      ...marketState,
+                      ...row.position,
+                    },
+                  }}
+                  columns={positionColumns[PositionStatus.Liquidated]}
+                />
+              )
+            }
+          })
+          .filter((position: any) => position !== null)}
+      </>
+    ) : null
+  }, [positionStatus, marketsData, positionsTableData, params, page, rowsPerPage])
+
+  return (
+    <Container>
+      <TEXT.BoldStandardBody mt={marginTop} mb="16px">
+        {`${title}`}
+        <TriangleButton onClick={handleToggle}>
+          <RotatingTriangle color={'white'} fill={'white'} height={10} width={10} open={open} />
+        </TriangleButton>
+      </TEXT.BoldStandardBody>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <TableContainer>
+          <StyledTable minWidth={(PositionStatus.Build && !PositionStatus.Open) ? 'unset' : (PositionStatus.Open ? '100%' : '')}>
+            <TableHead>
+              <StyledTableHeaderRow>
+                {positionColumns[positionStatus].map((column: string) => {
+                  return (
+                    <StyledHeaderCell key={column} width={20}>
+                      <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                    </StyledHeaderCell>
+                  )
+                })}
+              </StyledTableHeaderRow>
+            </TableHead>
+            <TableBody>
+              {showLoader ? (
+                <TableRow>
+                  <StyledTableCell colSpan={positionColumns[positionStatus].length}>
+                    <Loader />
+                  </StyledTableCell>
+                </TableRow>
+              ) : (
+                paginatedRows
+              )}
+            </TableBody>
+          </StyledTable>
+        </TableContainer>
+        {paginatedRows && numberOfPositions > 10 &&(
           <Box display="flex" justifyContent="flex-start" alignItems="center" paddingTop={'28px'} paddingBottom={'8px'}>
             <Pagination count={pageCount} page={page} onChange={handlePageChange} />
             <Box display="flex" alignItems="center" ml="28px">

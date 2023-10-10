@@ -6,9 +6,12 @@ import Datafeed from './chartDatafeed'
 import {useMarketName} from '../../../hooks/useMarketName'
 
 const TVChartContainer = styled.div`
+  height: 450px;
   width: 100%;
   padding-right: 16px;
-  height: 100%;
+  @media (max-width: 600px) {
+    height: 60vh;
+  }
 `
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol']

@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, usePositionsQuery, useUnwindsQuery } from "../data/generated";
+import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -406,7 +406,8 @@ export function usePositionsTableData(
   address: string | undefined | null,
   first: number,
   skip: number,
-  status: PositionStatus
+  status: PositionStatus,
+  marketId: string | undefined,
 ): {
   isLoading: boolean
   isFetching: boolean
@@ -414,12 +415,15 @@ export function usePositionsTableData(
   isError: boolean
   error: unknown
   positionsTableData: any | undefined
+  numberOfPositions: any | undefined
   refetch: () => void
 } { 
   let query;
 
-  if (status === PositionStatus.Open || status === PositionStatus.Build) {
+  if (status === PositionStatus.Open) {
     query = useOpenPositionsFromSubgraph;
+  } else if (status === PositionStatus.Build) {
+    query = useMarketOpenPositionsFromSubgraph;
   } else if (status === PositionStatus.Closed) {
     query = useUnwindsFromSubgraph;
   } else if (status === PositionStatus.Liquidated) {
@@ -428,17 +432,33 @@ export function usePositionsTableData(
     throw new Error(`Invalid position status: ${status}`);
   }
 
-  const res = query(address ?? undefined, first, skip);
-  const positionsTableData = res.data;
+  let res;
+  if(status === PositionStatus.Build){
+    res = query(address ?? undefined, 1000, 0, marketId ?? undefined);
+  } else{
+    res = query(address ?? undefined, first, skip, undefined);
+  }
+  const positionsTableData = res?.data;
+  const hasPositions = (data: any): data is { account: { positions: any[] } } => {
+    return data?.account?.positions !== undefined;
+  };
+  
+  // Usage
+  const numberOfPositions = hasPositions(positionsTableData)
+  ? positionsTableData.account.positions.length
+  : null!;
+
+  console.log({positionsTableData})
 
   return {
-    isLoading: res.isLoading,
-    isFetching: res.isFetching,
-    isUninitialized: res.isUninitialized,
-    isError: res.isError, 
-    error: res.error,
+    isLoading: res?.isLoading,
+    isFetching: res?.isFetching,
+    isUninitialized: res?.isUninitialized,
+    isError: res?.isError, 
+    error: res?.error,
+    numberOfPositions,
     positionsTableData,
-    refetch: res.refetch
+    refetch: res?.refetch
   }
 }
 
@@ -447,6 +467,19 @@ export function useOpenPositionsFromSubgraph(address: string | undefined | null,
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   return useOpenPositionsQuery(accountAddress ? { account: accountAddress, first, skip } : skipToken, {
+    pollingInterval: chainId === 42161 ? 30000 : 1000, 
+    refetchOnMountOrArgChange: true, 
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    skip: false
+  })
+}
+
+export function useMarketOpenPositionsFromSubgraph(address: string | undefined | null, first: number, skip: number, marketId: string | undefined) {
+  const accountAddress = address ? address.toLowerCase() : undefined;
+  let chainId = useAppSelector((state: AppState) => state.application.chainId)
+
+  return useMarketOpenPositionsQuery(accountAddress ? { account: accountAddress, first, skip, marketId } : skipToken, {
     pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,

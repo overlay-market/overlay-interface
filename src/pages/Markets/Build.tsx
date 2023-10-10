@@ -25,7 +25,7 @@ import {useEstimatedBuild} from '../../hooks/useEstimatedBuild'
 import {useBuildCallback} from '../../hooks/useBuildCallback'
 import {AdditionalDetails} from './AdditionalBuildDetails'
 import ConfirmTxnModal from '../../components/ConfirmTxnModal/ConfirmTxnModal'
-import {useMarketData} from '../../state/markets/hooks'
+import {useMarketData, useTotalMarketsData} from '../../state/markets/hooks'
 import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useToken} from '../../hooks/useToken'
 import {useV1PeripheryContract} from '../../hooks/useContract'
@@ -45,6 +45,9 @@ import {BuildChart} from './Chart/BuildChart'
 import {toScientificNumber} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
 import BuildHeader from './BuildHeader'
+import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
+import { AdditionalMarketData, useMarketDetails } from '../../hooks/useMarketDetails'
+import { MarketStateResults, useCurrentMarketState } from '../../hooks/useCurrentMarketState'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -92,6 +95,11 @@ const ControlInterfaceHeadContainer = styled(FlexColumn)`
 const BuildContainer = styled.div`
   display: flex;
   max-width: 1200px;
+  flex-direction: row;
+  flex-direction: row-reverse;
+  @media (max-width: 600px) {
+      flex-direction: column;
+    }
 `
 
 const PositionsButtonContainer = styled.div`
@@ -138,6 +146,38 @@ export const NumericalInputBottomText = styled(TEXT.Supplemental)`
   margin: 4px 0 24px auto !important;
 `
 
+const PositionsTableContainer = styled.div`
+  max-width: 800px;
+  @media (max-width: 600px) {
+    max-width: 350px;
+  }
+`
+
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column; 
+  width: 70%;
+  @media (max-width: 600px) {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+`
+
+const RightColumn = styled.div`
+  padding-left: 20px;
+  order: -1;
+  @media (max-width: 600px) {
+    width: 100%;
+    padding-left: 0px;
+  }
+`
+const ChartContainer = styled.div`
+  @media (max-width: 600px) {
+    display: none;
+  }
+`
+
+
 export const MINIMUM_SLIPPAGE_VALUE = 0.05
 
 // @TO-DO: Break down BuildInterface into sub-components
@@ -162,6 +202,12 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   })
 
   const {market, isLoading, refetch} = useMarketData(marketId)
+
+  const {markets} = useTotalMarketsData()
+  const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
+  const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
+
+  console.log({markets})
 
   // force refetch when refreshing page
   useEffect(() => {
@@ -561,123 +607,139 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     <div>
       <BuildHeader marketId={marketId} />
       <BuildContainer>
-        <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
-          <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
-        </BuildChartColumn>
-        <MarketCard align={'left'} padding={'0px'}>
-          <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
-            <ControlInterfaceHeadContainer>
-              <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
-              <TEXT.Number color={colors(false).dark.blue1}>
-                {isLong
-                  ? `Long Price: ${priceCurrency}${toScientificNumber(longPrice)}`
-                  : `Short Price: ${priceCurrency}${toScientificNumber(shortPrice)}`}
-              </TEXT.Number>
-            </ControlInterfaceHeadContainer>
-            <PositionsButtonContainer>
-              <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
-                <div>Long</div>
-              </SelectLongPositionButton>
-              <SelectShortPositionButton onClick={() => handleSelectPositionSide(false)} active={!isLong && isLong !== undefined}>
-                <div>Short</div>
-              </SelectShortPositionButton>
-            </PositionsButtonContainer>
-            <LeverageSlider
-              name={'Build Position Leverage'}
-              min={1}
-              max={capLeverage ?? 1}
-              step={0.1}
-              value={Number(selectedLeverage)}
-              onChange={handleLeverageInput}
+        <LeftColumn>
+          <ChartContainer>
+            <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
+              <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
+            </BuildChartColumn>
+          </ChartContainer>
+          <PositionsTableContainer>
+            <PositionsTableForBuildPage
+              title="Positions"
+              marginTop="64px"
+              positionStatus={PositionStatus.Build}
+              rowsCount={0}
+              marketsData={marketsData}
             />
+          </PositionsTableContainer>
+        </LeftColumn>
+        <RightColumn>
+          <MarketCard align={'left'} padding={'0px'}>
+            <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
+              <ControlInterfaceHeadContainer>
+                <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
+                <TEXT.Number color={colors(false).dark.blue1}>
+                  {isLong
+                    ? `Long Price: ${priceCurrency}${toScientificNumber(longPrice)}`
+                    : `Short Price: ${priceCurrency}${toScientificNumber(shortPrice)}`}
+                </TEXT.Number>
+              </ControlInterfaceHeadContainer>
+              <PositionsButtonContainer>
+                <SelectLongPositionButton onClick={() => handleSelectPositionSide(true)} active={isLong}>
+                  <div>Long</div>
+                </SelectLongPositionButton>
+                <SelectShortPositionButton onClick={() => handleSelectPositionSide(false)} active={!isLong && isLong !== undefined}>
+                  <div>Short</div>
+                </SelectShortPositionButton>
+              </PositionsButtonContainer>
+              <LeverageSlider
+                name={'Build Position Leverage'}
+                min={1}
+                max={capLeverage ?? 1}
+                step={0.1}
+                value={Number(selectedLeverage)}
+                onChange={handleLeverageInput}
+              />
 
-            <InputContainer>
-              <FlexRow justify="space-between" mb="25px">
-                <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
-                <TEXT.Supplemental
-                  onClick={() => handleMaxInput(maxInputIncludingFees ?? null)}
-                  color={isMaxSelected ? 'white' : colors(true).dark.grey2}
-                  style={{textDecoration: 'underline', cursor: 'pointer'}}
+              <InputContainer>
+                <FlexRow justify="space-between" mb="25px">
+                  <TEXT.Supplemental color={colors(true).dark.grey2}>Amount</TEXT.Supplemental>
+                  <TEXT.Supplemental
+                    onClick={() => handleMaxInput(maxInputIncludingFees ?? null)}
+                    color={isMaxSelected ? 'white' : colors(true).dark.grey2}
+                    style={{textDecoration: 'underline', cursor: 'pointer'}}
+                  >
+                    Max: {maxInputIncludingFees} OVL
+                  </TEXT.Supplemental>
+                </FlexRow>
+                <FlexRow justify="space-between">
+                  <NumericalInput
+                    color={colors(true).dark.blue1}
+                    align="left"
+                    padding="0px"
+                    fontWeight="700"
+                    value={typedValue?.toString()}
+                    onUserInput={handleUserInput}
+                  />
+                  <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
+                </FlexRow>
+              </InputContainer>
+
+              <MainDetails
+                priceCurrency={priceCurrency}
+                quoteTokenDecimals={quoteTokenDecimals}
+                decimals={decimals}
+                typedValue={typedValue}
+                isLong={isLong}
+                estimatedBid={estimatedBid}
+                estimatedAsk={estimatedAsk}
+                bidPrice={prices.bid}
+                askPrice={prices.ask}
+                minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+              />
+            </ControlInterfaceContainer>
+
+            <ButtonContainer>
+              {showUnderwaterFlow ? (
+                <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                  Position Underwater
+                </TriggerBuildButton>
+              ) : exceedOiCap ? (
+                <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                  Exceeds OI Cap
+                </TriggerBuildButton>
+              ) : showBalanceNotEnoughWarning ? (
+                <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                  OVL Balance Below Minimum
+                </TriggerBuildButton>
+              ) : showApprovalFlow ? (
+                <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
+              ) : (
+                <TriggerBuildButton
+                  onClick={() => {
+                    setBuildState({
+                      showConfirm: true,
+                      attemptingTransaction: false,
+                      transactionErrorMessage: undefined,
+                      transactionHash: undefined,
+                    })
+                  }}
+                  isDisabled={disableBuildButton}
+                  disabled={disableBuildButton}
                 >
-                  Max: {maxInputIncludingFees} OVL
-                </TEXT.Supplemental>
-              </FlexRow>
-              <FlexRow justify="space-between">
-                <NumericalInput
-                  color={colors(true).dark.blue1}
-                  align="left"
-                  padding="0px"
-                  fontWeight="700"
-                  value={typedValue?.toString()}
-                  onUserInput={handleUserInput}
-                />
-                <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
-              </FlexRow>
-            </InputContainer>
+                  Build {isPriceImpactHigh && '- High Price Impact'}
+                </TriggerBuildButton>
+              )}
+            </ButtonContainer>
 
-            <MainDetails
+            <AdditionalDetails
               priceCurrency={priceCurrency}
-              quoteTokenDecimals={quoteTokenDecimals}
-              decimals={decimals}
-              typedValue={typedValue}
-              isLong={isLong}
-              estimatedBid={estimatedBid}
-              estimatedAsk={estimatedAsk}
               bidPrice={prices.bid}
               askPrice={prices.ask}
-              minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+              fee={buildFee ? formatDecimalToPercentage(formatWeiToParsedNumber(buildFee, 18, 5)) : 'loading'}
+              oiCap={formattedCapOi}
+              oiLong={formattedOiLong}
+              oiShort={formattedOiShort}
+              slippageTolerance={setSlippageValue}
+              fundingRate={fundingRate}
+              expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
+              estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
+              marketAddress={market?.id}
+              feedAddress={market?.feedAddress}
             />
-          </ControlInterfaceContainer>
-
-          <ButtonContainer>
-            {showUnderwaterFlow ? (
-              <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-                Position Underwater
-              </TriggerBuildButton>
-            ) : exceedOiCap ? (
-              <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-                Exceeds OI Cap
-              </TriggerBuildButton>
-            ) : showBalanceNotEnoughWarning ? (
-              <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-                OVL Balance Below Minimum
-              </TriggerBuildButton>
-            ) : showApprovalFlow ? (
-              <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
-            ) : (
-              <TriggerBuildButton
-                onClick={() => {
-                  setBuildState({
-                    showConfirm: true,
-                    attemptingTransaction: false,
-                    transactionErrorMessage: undefined,
-                    transactionHash: undefined,
-                  })
-                }}
-                isDisabled={disableBuildButton}
-                disabled={disableBuildButton}
-              >
-                Build {isPriceImpactHigh && '- High Price Impact'}
-              </TriggerBuildButton>
-            )}
-          </ButtonContainer>
-
-          <AdditionalDetails
-            priceCurrency={priceCurrency}
-            bidPrice={prices.bid}
-            askPrice={prices.ask}
-            fee={buildFee ? formatDecimalToPercentage(formatWeiToParsedNumber(buildFee, 18, 5)) : 'loading'}
-            oiCap={formattedCapOi}
-            oiLong={formattedOiLong}
-            oiShort={formattedOiShort}
-            slippageTolerance={setSlippageValue}
-            fundingRate={fundingRate}
-            expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
-            estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
-            marketAddress={market?.id}
-            feedAddress={market?.feedAddress}
-          />
-        </MarketCard>
+          </MarketCard>
+        </RightColumn>
+        
         <ConfirmTxnModal
           marketName={marketName}
           isOpen={showConfirm}

@@ -8,16 +8,16 @@ import {useTotalMarketsData} from '../../state/markets/hooks'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
-import {PositionStatus, PositionsTable} from '../Positions/PositionsPage'
-import {useActiveWeb3React} from '../../hooks/web3'
-import {usePositionsTableDetails} from '../../state/build/hooks'
 
 const Container = styled.div`
   padding-right: 16px;
-  max-height: 420px;
+  // max-height: 420px;
   width: 800px;
-  @media (max-width: 1238px) {
-    display: none;
+  @media (max-width: 600px) {
+    max-width: 350px;
+    height: 600px;
+    padding-bottom: 32px;
+    padding-right: 0px;
   }
 `
 
@@ -48,10 +48,6 @@ const LoadingContainer = styled.div`
   height: 380px;
 `
 
-const PositionsTableContainer = styled.div`
-  max-width: 800px;
-`
-
 type BuildChartProps = {
   children?: React.ReactNode
   marketData?: any
@@ -62,9 +58,6 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const [long, setLong] = React.useState<number>(0)
   const [short, setShort] = React.useState<number>(0)
   const [total, setTotal] = React.useState<number>(0)
-
-  const {account} = useActiveWeb3React()
-  const {positionsTableDetails} = usePositionsTableDetails(account)
 
   const {markets} = useTotalMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
@@ -130,16 +123,6 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
         )}
       </MarketDetailsContainer>
       {!marketDataDetails ? null : children}
-
-      <PositionsTableContainer>
-        <PositionsTable
-          title="Open Positions"
-          marginTop="50px"
-          positionStatus={PositionStatus.Build}
-          rowsCount={Number(positionsTableDetails?.numberOfOpenPositions ?? 0)}
-          marketsData={marketsData}
-        />
-      </PositionsTableContainer>
     </Container>
   )
 }

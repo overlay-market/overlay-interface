@@ -140,7 +140,7 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const params = useParams<{marketId: string}>()
-  const {positionsTableData, isUninitialized, isLoading, numberOfPositions} = usePositionsTableData(account, 1000, 0, positionStatus, params?.marketId)
+  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(account, rowsPerPage, (page - 1) * rowsPerPage, positionStatus, params?.marketId)
   const [showLoader, setShowLoader] = useState(false)
 
   // Show loader only on page change
@@ -173,7 +173,7 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
     if (!positionsTableData) return null
 
     const rows =
-      positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build
+      positionStatus === PositionStatus.Open
         ? positionsTableData.account?.positions
         : positionStatus === PositionStatus.Closed
         ? positionsTableData.account?.unwinds
@@ -183,39 +183,22 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
 
     return rows && rows.length > 0 ? (
       <>
-        {rows
-          .map((row: any) => {
-            const marketAddress =
-              positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
-            const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
+        {rows.map((row: any) => {
+          const marketAddress = positionStatus === PositionStatus.Open ? row.market.id : row.position.market.id
+          const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
 
-            if (positionStatus === PositionStatus.Open) {
-              return (
-                <OpenPosition
-                  key={row.id}
-                  position={{
-                    ...marketState,
-                    ...row,
-                  }}
-                  columns={positionColumns[PositionStatus.Open]}
-                />
-              )
-            } else if (positionStatus === PositionStatus.Build) {
-              if (marketAddress === params?.marketId) {
-                return (
-                  <OpenPosition
-                    key={row.id}
-                    position={{
-                      ...marketState,
-                      ...row,
-                    }}
-                    columns={positionColumns[PositionStatus.Build]}
-                  />
-                )
-              }
-
-              return null
-            } else if (positionStatus === PositionStatus.Closed) {
+          if (positionStatus === PositionStatus.Open) {
+            return (
+              <OpenPosition
+                key={row.id}
+                position={{
+                  ...marketState,
+                  ...row,
+                }}
+                columns={positionColumns[PositionStatus.Open]}
+              />
+            )
+          } else if (positionStatus === PositionStatus.Closed) {
               return (
                 <UnwindsTransactions
                   key={row.id}
@@ -248,7 +231,7 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
           .filter((position: any) => position !== null)}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData, params])
+  }, [positionStatus, marketsData, positionsTableData])
 
   return (
     <Container>
@@ -285,7 +268,7 @@ export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, mar
             </TableBody>
           </StyledTable>
         </TableContainer>
-        {paginatedRows && numberOfPositions > 9 &&(
+        {paginatedRows &&(
           <Box display="flex" justifyContent="flex-start" alignItems="center" paddingTop={'28px'} paddingBottom={'8px'}>
             <Pagination count={pageCount} page={page} onChange={handlePageChange} />
             <Box display="flex" alignItems="center" ml="28px">

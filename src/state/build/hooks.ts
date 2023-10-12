@@ -434,9 +434,9 @@ export function usePositionsTableData(
 
   let res;
   if(status === PositionStatus.Build){
-    res = query(address ?? undefined, 1000, 0, marketId ?? undefined);
+    res = query(address ?? undefined, first, skip, marketId ?? undefined);
   } else{
-    res = query(address ?? undefined, first, skip, undefined);
+    res = query(address ?? undefined, first, skip, undefined)
   }
   const positionsTableData = res?.data;
   const hasPositions = (data: any): data is { account: { positions: any[] } } => {

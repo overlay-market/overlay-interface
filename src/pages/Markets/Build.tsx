@@ -97,7 +97,7 @@ const BuildContainer = styled.div`
   max-width: 1200px;
   flex-direction: row;
   flex-direction: row-reverse;
-  @media (max-width: 600px) {
+  @media (max-width: 1400px) {
       flex-direction: column;
     }
 `
@@ -157,7 +157,7 @@ const LeftColumn = styled.div`
   display: flex;
   flex-direction: column; 
   width: 70%;
-  @media (max-width: 600px) {
+  @media (max-width: 1400px) {
     width: 100%;
     margin-bottom: 16px;
   }
@@ -166,13 +166,13 @@ const LeftColumn = styled.div`
 const RightColumn = styled.div`
   padding-left: 20px;
   order: -1;
-  @media (max-width: 600px) {
+  @media (max-width: 1400px) {
     width: 100%;
     padding-left: 0px;
   }
 `
 const ChartContainer = styled.div`
-  @media (max-width: 600px) {
+  @media (max-width: 1400px) {
     display: none;
   }
 `

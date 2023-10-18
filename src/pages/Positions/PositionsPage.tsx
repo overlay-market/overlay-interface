@@ -134,7 +134,7 @@ const StyledTableCell = styled(TableCell)`
 
 const ROWS_PER_PAGE = [10, 20, 40, 50]
 
-export const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
+const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
   const {account} = useActiveWeb3React()
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
@@ -352,13 +352,8 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   const paginatedRows = useMemo(() => {
     if (!positionsTableData) return null
 
-    const rows =
-      positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build
+    const rows = positionStatus === PositionStatus.Build
         ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage)
-        : positionStatus === PositionStatus.Closed
-        ? positionsTableData.account?.unwinds
-        : positionStatus === PositionStatus.Liquidated
-        ? positionsTableData.account?.liquidates
         : []
 
     setShowLoader(false)
@@ -366,23 +361,12 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     return rows && rows.length > 0 ? (
       <>
         {rows
+          // eslint-disable-next-line array-callback-return
           .map((row: any) => {
-            const marketAddress =
-              positionStatus === PositionStatus.Open || positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
+            const marketAddress = positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
             const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
 
-            if (positionStatus === PositionStatus.Open) {
-              return (
-                <OpenPosition
-                  key={row.id}
-                  position={{
-                    ...marketState,
-                    ...row,
-                  }}
-                  columns={positionColumns[PositionStatus.Open]}
-                />
-              )
-            } else if (positionStatus === PositionStatus.Build) {
+             if (positionStatus === PositionStatus.Build) {
               if (marketAddress === params?.marketId) {
                 return (
                   <OpenPosition
@@ -397,34 +381,6 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
               }
 
               return null
-            } else if (positionStatus === PositionStatus.Closed) {
-              return (
-                <UnwindsTransactions
-                  key={row.id}
-                  transaction={{
-                    ...row,
-                    position: {
-                      ...marketState,
-                      ...row.position,
-                    },
-                  }}
-                  columns={positionColumns[PositionStatus.Closed]}
-                />
-              )
-            } else {
-              return (
-                <LiquidatesTransactions
-                  key={row.id}
-                  transaction={{
-                    ...row,
-                    position: {
-                      ...marketState,
-                      ...row.position,
-                    },
-                  }}
-                  columns={positionColumns[PositionStatus.Liquidated]}
-                />
-              )
             }
           })
           .filter((position: any) => position !== null)}

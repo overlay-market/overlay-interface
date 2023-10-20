@@ -139,8 +139,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
-  const params = useParams<{marketId: string}>()
-  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(account, rowsPerPage, (page - 1) * rowsPerPage, positionStatus, params?.marketId)
+  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(account, rowsPerPage, (page - 1) * rowsPerPage, positionStatus, undefined)
   const [showLoader, setShowLoader] = useState(false)
 
   // Show loader only on page change

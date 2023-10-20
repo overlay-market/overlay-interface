@@ -361,12 +361,12 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     return rows && rows.length > 0 ? (
       <>
         {rows
-          // eslint-disable-next-line array-callback-return
           .map((row: any) => {
-            const marketAddress = positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
-            const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
+            const marketAddress =
+              positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id;
+            const marketState = marketsData.find((market: any) => market.marketAddress === marketAddress);
 
-             if (positionStatus === PositionStatus.Build) {
+            if (positionStatus === PositionStatus.Build) {
               if (marketAddress === params?.marketId) {
                 return (
                   <OpenPosition
@@ -377,11 +377,11 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
                     }}
                     columns={positionColumns[PositionStatus.Build]}
                   />
-                )
+                );
               }
-
-              return null
             }
+
+            return null;
           })
           .filter((position: any) => position !== null)}
       </>

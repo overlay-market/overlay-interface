@@ -226,8 +226,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                 />
               )
             }
-          })
-          .filter((position: any) => position !== null)}
+          })}
       </>
     ) : null
   }, [positionStatus, marketsData, positionsTableData])

@@ -21,15 +21,15 @@ const Container = styled(FlexColumn)`
   }
 `
 
-const DropdownContainer = styled.div`
-  z-index: 50;
-`
-
 const MarketNameContainer = styled(FlexRow)`
   gap: 6px;
   @media (max-width: 768px) {
     margin-top: 28px;
   }
+`
+
+const DropdownContainer = styled.div`
+  z-index: 50;
 `
 
 const BuildHeader = ({marketId}: {marketId: string}) => {

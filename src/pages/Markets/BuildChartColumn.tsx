@@ -10,11 +10,14 @@ import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetai
 import Loader from '../../components/Loaders/Loaders'
 
 const Container = styled.div`
-  width: 1000px;
   padding-right: 16px;
-  max-height: 420px;
-  @media (max-width: 1238px) {
-    display: none;
+  // max-height: 420px;
+  width: 800px;
+  @media (max-width: 600px) {
+    max-width: 350px;
+    height: 600px;
+    padding-bottom: 32px;
+    padding-right: 0px;
   }
 `
 
@@ -55,6 +58,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const [long, setLong] = React.useState<number>(0)
   const [short, setShort] = React.useState<number>(0)
   const [total, setTotal] = React.useState<number>(0)
+
   const {markets} = useTotalMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)

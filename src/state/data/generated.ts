@@ -13,6 +13,11 @@ export type Scalars = {
   BigDecimal: any;
   BigInt: any;
   Bytes: any;
+  /**
+   * 8 bytes signed integer
+   *
+   */
+  Int8: any;
 };
 
 
@@ -903,6 +908,7 @@ export enum Factory_OrderBy {
   Owner = 'owner',
   Markets = 'markets'
 }
+
 
 export type Liquidate = {
   __typename?: 'Liquidate';
@@ -3989,6 +3995,29 @@ export type OpenPositionsQuery = (
   )> }
 );
 
+export type MarketOpenPositionsQueryVariables = Exact<{
+  account: Scalars['ID'];
+  first?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars['Int']>;
+  marketId?: Maybe<Scalars['String']>;
+}>;
+
+
+export type MarketOpenPositionsQuery = (
+  { __typename?: 'Query' }
+  & { account?: Maybe<(
+    { __typename?: 'Account' }
+    & { positions: Array<(
+      { __typename?: 'Position' }
+      & Pick<Position, 'id' | 'createdAtTimestamp' | 'currentOi' | 'entryPrice' | 'initialCollateral' | 'isLiquidated' | 'isLong' | 'leverage' | 'numberOfUniwnds' | 'positionId'>
+      & { market: (
+        { __typename?: 'Market' }
+        & Pick<Market, 'feedAddress' | 'id'>
+      ) }
+    )> }
+  )> }
+);
+
 export type OpenPositionsOverviewQueryVariables = Exact<{
   account: Scalars['ID'];
 }>;
@@ -4326,6 +4355,34 @@ export const OpenPositionsDocument = `
   }
 }
     `;
+export const MarketOpenPositionsDocument = `
+    query marketOpenPositions($account: ID!, $first: Int, $skip: Int, $marketId: String) {
+  account(id: $account) {
+    positions(
+      where: {isLiquidated: false, currentOi_gt: "0", market: $marketId}
+      orderBy: createdAtTimestamp
+      orderDirection: desc
+      first: $first
+      skip: $skip
+    ) {
+      id
+      createdAtTimestamp
+      currentOi
+      entryPrice
+      initialCollateral
+      isLiquidated
+      isLong
+      leverage
+      numberOfUniwnds
+      positionId
+      market {
+        feedAddress
+        id
+      }
+    }
+  }
+}
+    `;
 export const OpenPositionsOverviewDocument = `
     query openPositionsOverview($account: ID!) {
   account(id: $account) {
@@ -4440,6 +4497,9 @@ const injectedRtkApi = api.injectEndpoints({
     openPositions: build.query<OpenPositionsQuery, OpenPositionsQueryVariables>({
       query: (variables) => ({ document: OpenPositionsDocument, variables })
     }),
+    marketOpenPositions: build.query<MarketOpenPositionsQuery, MarketOpenPositionsQueryVariables>({
+      query: (variables) => ({ document: MarketOpenPositionsDocument, variables })
+    }),
     openPositionsOverview: build.query<OpenPositionsOverviewQuery, OpenPositionsOverviewQueryVariables>({
       query: (variables) => ({ document: OpenPositionsOverviewDocument, variables })
     }),
@@ -4453,5 +4513,5 @@ const injectedRtkApi = api.injectEndpoints({
 });
 
 export { injectedRtkApi as api };
-export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, usePositionsQuery, useLazyPositionsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
+export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, usePositionsQuery, useLazyPositionsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useMarketOpenPositionsQuery, useLazyMarketOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
 

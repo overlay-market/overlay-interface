@@ -14,7 +14,7 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.ARBITRUM]: 'https://api.studio.thegraph.com/proxy/46086/overlay-subgraph-arbitrum/v2.0.12',
   [SupportedChainId.ARBITRUM]:
     'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/7RuVCeRzAHL5apu6SWHyUEVt3Ko2pUv2wMTiHQJaiUW9',
-  [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arb-goerli',
+  [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.studio.thegraph.com/query/49419/overlay-arbitrum-goerli/version/latest',
 }
 
 export const api = createApi({

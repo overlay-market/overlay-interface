@@ -343,7 +343,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
 
 
   const pageCount = useMemo(() => {
-    const positionsAmount = positionsTableData ? positionsTableData.account.positions : [];
+    const positionsAmount = positionsTableData && positionsTableData.account ? positionsTableData.account.positions : []
     return Math.ceil(positionsAmount.length / rowsPerPage)
   }, [positionsTableData, rowsPerPage])
 

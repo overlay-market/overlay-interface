@@ -19,6 +19,8 @@ import Pools from './Stake/StakePage'
 import Pool from './Stake/PoolWrapper'
 import Popups from '../components/Popup/Popups'
 import {ClosedPosition} from './Positions/ClosedPosition'
+import { cookie3Analytics } from "@cookie3/analytics";
+import { useEffect } from 'react'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -34,6 +36,17 @@ export const ContentWrapper = styled.div`
 `
 
 const App = () => {
+
+  useEffect(() => {
+    var gaProperty: string = 'G-QJR084KXFT'
+    var disableStr: string = 'ga-disable-' + gaProperty
+
+    const analytics = cookie3Analytics({"siteId":260,
+    disabled: document.cookie.indexOf(disableStr + '=true') > -1,});
+  
+    analytics.trackPageView();
+  }, [])
+
   return (
     <AppWrapper>
       <Popups />

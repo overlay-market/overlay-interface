@@ -13,7 +13,7 @@ const Container = styled.div`
   padding-right: 16px;
   // max-height: 420px;
   width: 800px;
-  @media (max-width: 600px) {
+  @media (max-width: 1400px) {
     max-width: 350px;
     height: 600px;
     padding-bottom: 32px;
@@ -26,6 +26,9 @@ const MarketDetailsContainer = styled.div`
   padding: 16px 16px;
   display: flex;
   justify-content: space-between;
+  @media (max-width: 1400px) {
+    padding: 32px 0px;
+  }
 `
 
 const MarketPriceContainer = styled.div`

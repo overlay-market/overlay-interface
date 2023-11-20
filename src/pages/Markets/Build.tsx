@@ -169,6 +169,7 @@ const RightColumn = styled.div`
   @media (max-width: 1400px) {
     width: 100%;
     padding-left: 0px;
+    margin-bottom: 16px;
   }
 `
 

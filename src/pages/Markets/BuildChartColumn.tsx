@@ -16,7 +16,7 @@ const Container = styled.div`
   @media (max-width: 1400px) {
     max-width: 350px;
     height: 600px;
-    padding-bottom: 32px;
+    padding-bottom: 64px;
     padding-right: 0px;
   }
 `
@@ -35,6 +35,9 @@ const MarketPriceContainer = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+  @media (max-width: 1400px) {
+    display: none;
+  }
 `
 
 const MarketOIContainer = styled.div`
@@ -113,7 +116,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
 
               <MarketOIContainer>
                 <TEXT.SmallBody style={{whiteSpace: 'nowrap'}}>OI Balance</TEXT.SmallBody>
-                <FlexColumn width="150px">
+                <FlexColumn width="135px">
                   <FlexRow justify="space-between">
                     <TEXT.BoldNumber color="#FF648A">{`${shortPercentageOfTotalOi}%`}</TEXT.BoldNumber>
                     <TEXT.BoldNumber color="#5FD0AB">{`${longPercentageOfTotalOi}%`}</TEXT.BoldNumber>

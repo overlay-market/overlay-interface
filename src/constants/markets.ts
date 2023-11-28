@@ -50,6 +50,7 @@ export const availableMarkets = [
   // '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b', // 'MAYC / WETH'
   // '0xF30C5cB6205f115799b275430Ea0874359476304'.toLowerCase(), // Total Crypto Market Cap
   // '0x8440E56C2675d9b8E04183dA3a3a744a4a16ED33'.toLowerCase(), // memecoins
+  '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9',
 ]
 
 export const marketNameFromDescription = (description: string | undefined, address: string = '') => {
@@ -68,6 +69,8 @@ export const marketNameFromDescription = (description: string | undefined, addre
     return 'MILADY / WETH'
   } else if (address === '0x8c7dc90243fc7984583339da8df0a5d57ec491db') {
     return 'PUDGIES / WETH'
+  } else if (address === '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9') {
+    return 'Sepolia CSGO / USD'
   } else {
     return MARKET_NAME_FROM_DESCRIPTION[description]
   }

@@ -15,6 +15,7 @@ import BlueChipLogo from '../assets/images/tokens/Blue-Chip-NFT-logo.png'
 import CVIXLogo from '../assets/images/tokens/Crypto-VIX-logo.png'
 import MemecoinLogo from '../assets/images/tokens/memecoin-logo.png'
 import Mcap1000Logo from '../assets/images/tokens/mcap1000-logo.png'
+import csgoLogo from '../assets/images/tokens/csgo-logo.png'
 
 export type DescriptionNameMap = {[description: string]: string}
 export const MARKET_NAME_FROM_DESCRIPTION: DescriptionNameMap = {
@@ -70,7 +71,7 @@ export const marketNameFromDescription = (description: string | undefined, addre
   } else if (address === '0x8c7dc90243fc7984583339da8df0a5d57ec491db') {
     return 'PUDGIES / WETH'
   } else if (address === '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9') {
-    return 'Sepolia CSGO / USD'
+    return 'CSGO Sepolia / USD'
   } else {
     return MARKET_NAME_FROM_DESCRIPTION[description]
   }
@@ -98,6 +99,7 @@ export const MARKET_LOGO_FROM_BASE: MarketLogoMap = {
   CV: CVIXLogo,
   Memecoins: MemecoinLogo,
   Total: Mcap1000Logo,
+  CSGO: csgoLogo,
 }
 
 export type CurrencyMap = {[marketQuoteToken: string]: string}

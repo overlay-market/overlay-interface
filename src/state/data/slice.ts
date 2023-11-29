@@ -5,7 +5,7 @@ import {AppState} from '../state'
 import {DocumentNode} from 'graphql'
 import {SupportedChainId} from '../../constants/chains'
 
-const CHAIN_SUBGRAPH_URL: Record<number, string> = {
+export const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
   [SupportedChainId.MAINNET]: 'https://api.studio.thegraph.com/query/46086/overlay-subgraph-eth/v2.0.2',
   [SupportedChainId.GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-goerli',
@@ -14,6 +14,7 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.ARBITRUM]: 'https://api.studio.thegraph.com/proxy/46086/overlay-subgraph-arbitrum/v2.0.12',
   [SupportedChainId.ARBITRUM]: 'https://api.studio.thegraph.com/query/46086/overlay-v2-subgraph-arbitrum/version/latest',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arb-goerli',
+  [SupportedChainId.ARBITRUM_SEPOLIA]: 'https://api.studio.thegraph.com/proxy/50057/overlay-arbitrum-sepolia/version/latest',
 }
 
 export const api = createApi({

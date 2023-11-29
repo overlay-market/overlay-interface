@@ -38,10 +38,10 @@ interface ReferralTypeSelectProps {
 export const ReferralsOverview = ({value, onSelect}: ReferralTypeSelectProps) => {
   return (
     <ReferralTypeSelectContainer>
-      <ReferralType active={value === 'traders'} onClick={() => (onSelect ? onSelect('traders') : null)}>
-        <TEXT.BoldSmallBody>Traders</TEXT.BoldSmallBody>
+      <ReferralType active={value === 'dashboard'} onClick={() => (onSelect ? onSelect('dashboard') : null)}>
+        <TEXT.BoldSmallBody>Dashboard</TEXT.BoldSmallBody>
       </ReferralType>
-      <ReferralType active={value === 'affiliates'} onClick={() => (onSelect ? onSelect('traders') : null)}>
+      <ReferralType active={value === 'affiliates'} onClick={() => (onSelect ? onSelect('affiliates') : null)}>
         <TEXT.BoldSmallBody>Affiliates</TEXT.BoldSmallBody>
       </ReferralType>
     </ReferralTypeSelectContainer>

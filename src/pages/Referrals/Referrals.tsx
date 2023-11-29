@@ -4,11 +4,11 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {MEDIA_WIDTHS, TEXT} from '../../theme/theme'
 import {ReferralTypeSelect} from './ReferralTypeSelect'
 import {useHistory, useLocation} from 'react-router-dom'
-import Traders from './Traders'
+import Dashboard from './Dashboard'
 import Affiliates from './Affiliates'
 
 export const REFERRAL_TYPES = {
-  TRADERS: 'traders',
+  DASHBOARD: 'dashboard',
   AFFILIATES: 'affiliates',
 }
 
@@ -39,13 +39,13 @@ const FixedWidthContainer = styled.div`
 const Referrals = () => {
   const location = useLocation()
   const history = useHistory()
-  const [type, setType] = useState<string>(REFERRAL_TYPES.TRADERS)
+  const [type, setType] = useState<string>(REFERRAL_TYPES.DASHBOARD)
   const {account} = useActiveWeb3React()
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
     const tab = queryParams.get('tab')
-    if (tab === REFERRAL_TYPES.AFFILIATES || tab === REFERRAL_TYPES.TRADERS) {
+    if (tab === REFERRAL_TYPES.AFFILIATES || tab === REFERRAL_TYPES.DASHBOARD) {
       setType(tab)
     }
   }, [location, account])
@@ -64,7 +64,7 @@ const Referrals = () => {
           }}
         />
       </FixedWidthContainer>
-      {type === REFERRAL_TYPES.TRADERS && <Traders />}
+      {type === REFERRAL_TYPES.DASHBOARD && <Dashboard />}
       {type === REFERRAL_TYPES.AFFILIATES && <Affiliates />}
     </ReferralsContainer>
   )

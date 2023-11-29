@@ -39,8 +39,8 @@ interface ReferralTypeSelectProps {
 export const ReferralTypeSelect = ({value, onSelect}: ReferralTypeSelectProps) => {
   return (
     <ReferralTypeSelectContainer>
-      <ReferralType active={value === REFERRAL_TYPES.TRADERS} onClick={() => onSelect(REFERRAL_TYPES.TRADERS)}>
-        <TEXT.BoldSmallBody>Traders</TEXT.BoldSmallBody>
+      <ReferralType active={value === REFERRAL_TYPES.DASHBOARD} onClick={() => onSelect(REFERRAL_TYPES.DASHBOARD)}>
+        <TEXT.BoldSmallBody>Dashboard</TEXT.BoldSmallBody>
       </ReferralType>
       <ReferralType active={value === REFERRAL_TYPES.AFFILIATES} onClick={() => onSelect(REFERRAL_TYPES.AFFILIATES)}>
         <TEXT.BoldSmallBody>Affiliates</TEXT.BoldSmallBody>

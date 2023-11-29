@@ -13,6 +13,10 @@ import {REFERRALS_API} from '../../constants/referrals'
 import useDebounce from '../../hooks/useDebounce'
 import {ReferralContext} from '../../state/referrals/referralContext'
 import Loader from '../../components/Loaders/Loaders'
+import {useReferralListContract} from '../../hooks/useContract'
+import {REFERRAL_LIST_ADDRESS} from '../../constants/addresses'
+import {SupportedChainId} from '../../constants/chains'
+import {useLocation} from 'react-router-dom'
 
 export const FixedWidthContainer = styled.div`
   width: 100%;
@@ -150,6 +154,8 @@ export const ReferralInfoRow = styled.div<ReferralInfoRowProps>`
 const referralCodeRegex = RegExp(`^[a-zA-Z0-9_]+$`)
 
 const Affiliates = () => {
+  const location = useLocation()
+
   const {userInfo, getUserInfo, userInfoLoading, referralCode, setReferralCode, executeCheckReferralCode, checkReferralCodeLoading} =
     useContext(ReferralContext)
 
@@ -161,6 +167,8 @@ const Affiliates = () => {
 
   const debouncedReferralCode = useDebounce(referralCode, 400)
 
+  const referralContract = useReferralListContract(REFERRAL_LIST_ADDRESS[SupportedChainId.ARBITRUM_SEPOLIA])
+
   const myReferralLink: string | undefined = useMemo(() => {
     const links = Object.keys(userInfo?.referralLinks || {})
     return links.length && links[0] !== 'none' ? links[0] : ''
@@ -170,17 +178,9 @@ const Affiliates = () => {
     setReferralCode(value)
   }
 
-  const submitReferralCode = async () => {
-    const res = await executeCreateReferralCode({
-      url: 'createReferralCode',
-      method: 'POST',
-      data: {
-        sender: account,
-        username: referralCode,
-      },
-    })
+  const submitAffiliateAddress = async () => {
+    referralContract?.addAffiliate(referralCode)
     setReferralCode('')
-    getUserInfo()
   }
 
   const myAffiliateLink: string = useMemo<string>(
@@ -199,6 +199,12 @@ const Affiliates = () => {
 Use with fee discounts: ${myAffiliateLink}`)
     window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank')
   }
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const affiliate = queryParams.get('affiliate')
+    setReferralCode(affiliate ?? '')
+  }, [])
 
   // TODO: Where does Overlay Referral Program ➞ link go
   useEffect(() => {
@@ -280,7 +286,7 @@ Use with fee discounts: ${myAffiliateLink}`)
             </ReferralInfoRow>
             <ReferralInfoRow margin="32px 0 0 0" flexDirection="column">
               <InputContainer>
-                <Input value={referralCode} onUserInput={handleInputChange} placeholder="Enter referral code" />
+                <Input value={referralCode} onUserInput={handleInputChange} placeholder="Enter affiliate market address" />
               </InputContainer>
               {showError && (
                 <ErrorContainer>
@@ -329,16 +335,17 @@ Use with fee discounts: ${myAffiliateLink}`)
         <FixedWidthContainer>
           {account && active ? (
             <SubmitReferralCodeButton
-              onClick={submitReferralCode}
-              disabled={!referralCode || createReferralCodeLoading || !isReferralCodeAvailable || showError || checkReferralCodeLoading}
+              onClick={submitAffiliateAddress}
+              // disabled={!referralCode || createReferralCodeLoading || !isReferralCodeAvailable || showError || checkReferralCodeLoading}
             >
-              {createReferralCodeLoading
+              {/* {createReferralCodeLoading
                 ? 'Processing...'
                 : checkReferralCodeLoading
                 ? 'Checking Code...'
                 : debouncedReferralCode && !isReferralCodeAvailable
                 ? 'Code Already Exists'
-                : 'Submit Code'}
+                : 'Submit Code'} */}
+              Add Affiliate
             </SubmitReferralCodeButton>
           ) : (
             <TriggerConnectWalletButton onClick={toggleWalletModal}>Connect Wallet</TriggerConnectWalletButton>

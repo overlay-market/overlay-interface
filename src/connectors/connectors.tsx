@@ -11,6 +11,7 @@ const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.RINKEBY,
   SupportedChainId.ARBITRUM,
   SupportedChainId.ARBITRUM_GÖRLI,
+  SupportedChainId.ARBITRUM_SEPOLIA,
 ]
 
 export const injected = new InjectedConnector({
@@ -35,11 +36,12 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   // [SupportedChainId.ARBITRUM]: `https://arbitrum-mainnet.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM]: `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
   [SupportedChainId.ARBITRUM_GÖRLI]: `https://arbitrum-goerli.infura.io/v3/${INFURA_KEY}`,
+  [SupportedChainId.ARBITRUM_SEPOLIA]: `https://arbitrum-sepolia.infura.io/v3/${INFURA_KEY}`,
 }
 
 export const network = new NetworkConnector({
   urls: NETWORK_URLS,
-  defaultChainId: SupportedChainId.ARBITRUM,
+  defaultChainId: SupportedChainId.ARBITRUM_SEPOLIA,
 })
 
 let networkLibrary: Web3Provider | undefined

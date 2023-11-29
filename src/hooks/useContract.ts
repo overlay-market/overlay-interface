@@ -14,6 +14,7 @@ import UNISWAP_V3_FEED_ABI from '../constants/abis/OverlayV1UniswapV3Feed.json'
 import CHAINLINK_FEED_ABI from '../constants/abis/OverlayV1ChainlinkFeed.json'
 import LAYER_ZERO_ABI from '../constants/abis/LzApp.json'
 import LAYER_ZERO_ENDPOINT_ABI from '../constants/abis/LayerZeroEndpoint.json'
+import REFERRAL_LIST_ABI from '../constants/abis/ReferralList.json'
 
 // returns null on errors
 export function useContract<T extends Contract = Contract>(
@@ -89,4 +90,8 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
 
 export function useBytes32TokenContract(tokenAddress?: string, withSignerIfPossible?: boolean): Contract | null {
   return useContract(tokenAddress, ERC20_BYTES32_ABI, withSignerIfPossible)
+}
+
+export function useReferralListContract(contractAddress: string, withSignerIfPossible?: boolean): Contract | null {
+  return useContract(contractAddress, REFERRAL_LIST_ABI, withSignerIfPossible)
 }

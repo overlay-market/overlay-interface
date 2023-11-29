@@ -152,6 +152,7 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: string} = 
   [SupportedChainId.RINKEBY]: 'Rinkeby Testnet',
   [SupportedChainId.ARBITRUM]: 'Arbitrum One',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'Arbitrum Goerli Testnet',
+  [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia Testnet',
 }
 
 function Web3StatusInner() {
@@ -208,6 +209,10 @@ function Web3StatusInner() {
           )}
 
           {chainId && NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.ARBITRUM_GÖRLI] && (
+            <Dropdown connectedNetwork={NETWORK_LABELS[chainId]} colorStatus={'yellow'} />
+          )}
+
+          {chainId && NETWORK_LABELS[chainId] === NETWORK_LABELS[SupportedChainId.ARBITRUM_SEPOLIA] && (
             <Dropdown connectedNetwork={NETWORK_LABELS[chainId]} colorStatus={'yellow'} />
           )}
         </Account>

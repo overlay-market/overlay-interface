@@ -22,6 +22,10 @@ export const OVL_TOKEN_ADDRESS: AddressMap = {
   [SupportedChainId.ARBITRUM_GÖRLI]: '0x1023b1BC47b9b449eAD9329EE0eFD4fDAcA3D767',
 }
 
+export const REFERRAL_LIST_ADDRESS: AddressMap = {
+  [SupportedChainId.ARBITRUM_SEPOLIA]: '0x426cB483cad253aa7E514c6C2B76a3c215d9065b',
+}
+
 //@dev: remove LL Token addresses after bridge testing
 export const LL_TOKEN_ADDRESS: AddressMap = {
   [ChainId.MAINNET]: '0xc3fA4890C42066F12d0A1cc44093C1Bf7E5aBB64',

@@ -47,7 +47,7 @@
       "no-debugger": "off"
     }
   },
-  "workbench.colorTheme": "Night Owl",
+  "workbench.colorTheme": "Community Material Theme Palenight High Contrast",
   "workbench.iconTheme": "material-icon-theme",
   "breadcrumbs.enabled": true,
   "grunt.autoDetect": "off",

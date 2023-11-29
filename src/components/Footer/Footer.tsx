@@ -1,9 +1,15 @@
 import styled from 'styled-components/macro'
-import {IconButton, Link} from '@material-ui/core'
+import {Button, IconButton, Link} from '@material-ui/core'
 import {Image} from 'rebass'
 import OverlayLogoDark from '../../assets/images/overlay-logo-dark.png'
 import {LINKS} from '../../constants/links'
 import {TEXT, colors} from '../../theme/theme'
+import {useWithdrawCallback} from '../../hooks/useWithdrawCallback'
+import {BigNumber} from 'ethers'
+import {useSingleCallResult} from '../../state/multicall/hooks'
+import {useThirdWebStakingContract} from '../../hooks/useContract'
+import {useActiveWeb3React} from '../../hooks/web3'
+import {formatBigNumber} from '../../utils/formatBigNumber'
 
 const StyledFooter = styled.footer`
   position: absolute;
@@ -91,6 +97,10 @@ const SocialsContainer = styled.div`
   flex: 1;
 `
 
+const WithdrawMaxButton = styled(Button)`
+  margin: 16px;
+`
+
 interface IconButtonProps {
   href: string
   target: string
@@ -99,7 +109,8 @@ interface IconButtonProps {
 
 interface LinkAsset {
   label: string
-  href: string
+  href?: string
+  onClick?: () => void
 }
 
 const ABOUT_LINKS: Array<LinkAsset> = [
@@ -114,6 +125,10 @@ const ABOUT_LINKS: Array<LinkAsset> = [
   {
     label: 'Arbiscan',
     href: LINKS.ARBISCAN,
+  },
+  {
+    label: 'Withdraw Max Amount',
+    onClick: () => {},
   },
 ]
 
@@ -157,6 +172,19 @@ const LinkSection = ({title, links}: {title: string; links: Array<LinkAsset>}) =
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+  const {account} = useActiveWeb3React()
+  const poolAddress = '0x1921054a4f8817F9783628F0694744F91Dd9d34e'
+  const stakingContract = useThirdWebStakingContract(poolAddress)
+  const stakeInfo = useSingleCallResult(stakingContract, 'getStakeInfo', [account || '0x0000000000000000000000000000000000000000'])
+  const stakedAmount: BigNumber = stakeInfo?.result?.[0] ?? (BigNumber.from(0) as BigNumber)
+
+  const {callback: withdrawCallback} = useWithdrawCallback(formatBigNumber(stakedAmount, 18, 6)?.toString() ?? '0', poolAddress)
+
+  const handleStakeWithdraw = () => {
+    if (!withdrawCallback) return
+
+    withdrawCallback()
+  }
 
   return (
     <StyledFooter>
@@ -177,6 +205,8 @@ const Footer = () => {
           {/* About */}
           <AboutContainer>
             <LinkSection title="About" links={ABOUT_LINKS} />
+            {/* <WithdrawMaxButton onClick={() => handleStakeWithdraw()}>Widthdraw</WithdrawMaxButton> */}
+            <WithdrawMaxButton onClick={handleStakeWithdraw}>UnStake</WithdrawMaxButton>
           </AboutContainer>
 
           {/* Socials */}

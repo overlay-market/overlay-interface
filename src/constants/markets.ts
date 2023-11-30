@@ -1,5 +1,5 @@
-import BitcoinLogo from '../assets/images/tokens/bitcoin-logo.png'
-import EthereumLogo from '../assets/images/tokens/ethereum-logo.png'
+import BitcoinLogo from '../assets/images/tokens/btc-dom.png'
+import EthereumLogo from '../assets/images/tokens/eth-burn-logo.png'
 import LinkLogo from '../assets/images/tokens/link-logo.png'
 import AvaxLogo from '../assets/images/tokens/avax-logo.png'
 import SolanaLogo from '../assets/images/tokens/solana-logo.png'
@@ -15,17 +15,19 @@ import BlueChipLogo from '../assets/images/tokens/Blue-Chip-NFT-logo.png'
 import CVIXLogo from '../assets/images/tokens/Crypto-VIX-logo.png'
 import MemecoinLogo from '../assets/images/tokens/memecoin-logo.png'
 import Mcap1000Logo from '../assets/images/tokens/mcap1000-logo.png'
+import UnrealizedPnlLogo from '../assets/images/tokens/unrealised-pnl-logo.png'
+import CsgoLogo from '../assets/images/tokens/csgo-logo.png'
 
 export type DescriptionNameMap = {[description: string]: string}
 export const MARKET_NAME_FROM_DESCRIPTION: DescriptionNameMap = {
   'Azuki Floor Price': 'Azuki/ WETH',
   'BAYC Floor Price': 'BAYC / WETH',
-  'LINK / USD': 'LINK / USD',
-  'WBTC / USD': 'WBTC / USD',
-  'APE / USD': 'APE / USD',
-  'SOL / USD': 'SOL / USD',
-  'AVAX / USD': 'AVAX / USD',
-  'MATIC / USD': 'MATIC / USD',
+  'LINK / USD': 'ETH Burn / WETH',
+  'WBTC / USD': 'CSGO Index / USD',
+  'APE / USD': 'BTC Dominance',
+  'SOL / USD': 'Unrealized PnL',
+  'AVAX / USD': 'BAYC / WETH',
+  'MATIC / USD': 'NFT Blue Chip Index / USD',
   'MCap1000 Feed': 'Memecoins Index',
   'CV Index': 'Crypto Volatility Index',
   'NFT Blue Chip Total Market Cap-USD': 'NFT Blue Chip Index / USD',
@@ -95,6 +97,8 @@ export const MARKET_LOGO_FROM_BASE: MarketLogoMap = {
   CV: CVIXLogo,
   Memecoins: MemecoinLogo,
   Total: Mcap1000Logo,
+  Unrealized: UnrealizedPnlLogo,
+  CSGO: CsgoLogo,
 }
 
 export type CurrencyMap = {[marketQuoteToken: string]: string}
@@ -113,7 +117,7 @@ export type MarketChartData = {
   schemaName?: string
 }
 export const MarketChartMap: {[name: string]: MarketChartData} = {
-  'WBTC / USD': {
+  'CSGO Index / USD': {
     contractAddress: '0xb20bd22d3d2e5a628523d37b3ded569598eb649b',
     isNft: false,
     schemaName: 'ethereum-mainnet-arbitrum-1',

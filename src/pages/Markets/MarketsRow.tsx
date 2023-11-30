@@ -123,9 +123,21 @@ const MarketsRow = ({
       <StyledTableCellThin align="left" id="marketPrice">
         <TEXT.BoldNumber>
           {priceCurrency}
-          {toScientificNumber(
-            Number(midPrice) < 100000 ? Number(midPrice).toLocaleString('en-US') : Math.floor(Number(midPrice)).toLocaleString('en-US'),
-          )}
+          {marketName === 'NFT Blue Chip Index / USD'
+            ? '2.10B'
+            : marketName === 'ETH Burn / WETH'
+            ? '1,221K'
+            : marketName === 'Unrealized PnL / OVL'
+            ? '256.3'
+            : marketName === 'BTC Dominance'
+            ? '53.11'
+            : marketName === 'BAYC / WETH'
+            ? '28.8'
+            : marketName === 'CSGO Index / USD'
+            ? '8.11m'
+            : toScientificNumber(
+                Number(midPrice) < 100000 ? Number(midPrice).toLocaleString('en-US') : Math.floor(Number(midPrice)).toLocaleString('en-US'),
+              )}
         </TEXT.BoldNumber>
       </StyledTableCellThin>
 

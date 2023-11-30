@@ -224,6 +224,10 @@ export default function Header() {
         <TEXT.Menu>Bridge</TEXT.Menu>
       </StyledLink>
 
+      <StyledLink to={'/claimpage'}>
+        <TEXT.Menu>Claim</TEXT.Menu>
+      </StyledLink>
+
       {HIDE_POWER_CARDS ? null : (
         <PowerCardLink to={'/powercards'}>
           <TEXT.Menu>Power Cards</TEXT.Menu>

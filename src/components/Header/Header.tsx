@@ -220,10 +220,6 @@ export default function Header() {
         <TEXT.Menu>Positions</TEXT.Menu>
       </StyledLink>
 
-      <StyledLink to={'/stake'}>
-        <TEXT.Menu>Stake</TEXT.Menu>
-      </StyledLink>
-
       <StyledLink to={'/bridge'}>
         <TEXT.Menu>Bridge</TEXT.Menu>
       </StyledLink>
@@ -243,16 +239,13 @@ export default function Header() {
           </StyledLink> */}
         </>
       ) : (
-        <Dropdown active={location === '/stake' || location === '/leaderboard' || location === '/referrals'}>
+        <Dropdown active={location === '/leaderboard' || location === '/referrals'}>
           <DropdownContent>
             <TEXT.Menu>Earn</TEXT.Menu>
             <RotatingChevron className="chevron" height={17} width={17} />
           </DropdownContent>
 
           <DropdownList className="dropdown-list">
-            <DropdownItem to={'/stake'}>
-              <TEXT.Menu>Stake</TEXT.Menu>
-            </DropdownItem>
             <DropdownItem to={'/leaderboard'}>
               <TEXT.Menu>Leaderboard</TEXT.Menu>
             </DropdownItem>

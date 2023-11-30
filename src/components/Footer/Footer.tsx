@@ -97,10 +97,6 @@ const SocialsContainer = styled.div`
   flex: 1;
 `
 
-const WithdrawMaxButton = styled(Button)`
-  margin: 16px;
-`
-
 interface IconButtonProps {
   href: string
   target: string
@@ -109,8 +105,7 @@ interface IconButtonProps {
 
 interface LinkAsset {
   label: string
-  href?: string
-  onClick?: () => void
+  href: string
 }
 
 const ABOUT_LINKS: Array<LinkAsset> = [
@@ -125,10 +120,6 @@ const ABOUT_LINKS: Array<LinkAsset> = [
   {
     label: 'Arbiscan',
     href: LINKS.ARBISCAN,
-  },
-  {
-    label: 'Withdraw Max Amount',
-    onClick: () => {},
   },
 ]
 
@@ -205,8 +196,17 @@ const Footer = () => {
           {/* About */}
           <AboutContainer>
             <LinkSection title="About" links={ABOUT_LINKS} />
-            {/* <WithdrawMaxButton onClick={() => handleStakeWithdraw()}>Widthdraw</WithdrawMaxButton> */}
-            <WithdrawMaxButton onClick={handleStakeWithdraw}>UnStake</WithdrawMaxButton>
+            <Button
+              onClick={handleStakeWithdraw}
+              style={{
+                color: '#71CEFF',
+                textDecoration: 'underline',
+                fontSize: '14px',
+                padding: '0px 0px',
+              }}
+            >
+              UnStake
+            </Button>
           </AboutContainer>
 
           {/* Socials */}

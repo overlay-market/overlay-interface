@@ -19,7 +19,6 @@ import Pools from './Stake/StakePage'
 import Pool from './Stake/PoolWrapper'
 import Popups from '../components/Popup/Popups'
 import {ClosedPosition} from './Positions/ClosedPosition'
-import WithdrawModal from '../components/Withdraw/WithdrawModal'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -61,7 +60,6 @@ const App = () => {
           </Web3ReactManager>
           <Footer />
         </TermsOfServiceManager>
-        <WithdrawModal />
       </ChainalysisManager>
       <CurrentBlock />
     </AppWrapper>

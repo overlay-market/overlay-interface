@@ -12,6 +12,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import ExternalLinks from '../Header/ExternalLinks'
 import {useState} from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
+import {ClaimId} from '../../constants/claims'
 
 const NEW_MOBILE_MENU_FLAG = true
 
@@ -150,7 +151,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
           <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
           </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/claimpage'}>
+          <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.BEACON_HOLDERS}`}>
             <StyledMenuLink displayText={'Clime'} linkDestination={'/claimpage'} currentLocation={location} />
           </StyledInternalLink>
           <Separator />

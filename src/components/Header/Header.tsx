@@ -16,6 +16,7 @@ import {ChevronDown} from 'react-feather'
 import WalletMenu from './WalletMenu'
 import MobileWalletMenu from './WalletMenuMobile'
 import SetSlippageModal from '../SetSlippageModal.tsx/SetSlippageModal'
+import {ClaimId} from '../../constants/claims'
 
 export const HeaderContainer = styled.div`
   color: ${({theme}) => theme.dark.white};
@@ -224,7 +225,7 @@ export default function Header() {
         <TEXT.Menu>Bridge</TEXT.Menu>
       </StyledLink>
 
-      <StyledLink to={'/claimpage'}>
+      <StyledLink to={`/claim/${ClaimId.BEACON_HOLDERS}`}>
         <TEXT.Menu>Claim</TEXT.Menu>
       </StyledLink>
 

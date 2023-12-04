@@ -2,8 +2,7 @@ import React from 'react'
 import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
-import {Trans} from '@lingui/macro'
-import {useTotalMarketsData} from '../../state/markets/hooks'
+import {useActiveMarketsData} from '../../state/markets/hooks'
 import {PageContainer} from '../../components/Container/Container'
 import {FlexRow} from '../../components/Container/Container'
 import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../components/Table/Table'
@@ -90,7 +89,7 @@ const infoTipDescriptions = {
 }
 
 const Markets = () => {
-  const {markets} = useTotalMarketsData()
+  const {markets} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
@@ -101,17 +100,7 @@ const Markets = () => {
   // list of hidden markets from Markets page
 
   const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
-    const order = [
-      'NFT Blue Chip Index / USD',
-      'Crypto Volatility Index',
-      'MILADY / WETH',
-      'PUDGIES / WETH',
-      'PUNKS / WETH',
-      'BAYC / WETH',
-      'MAYC / WETH',
-      'AZUKI / WETH',
-      'WBTC / USD',
-    ]
+    const order = ['Memecoins Index', 'NFT Blue Chip Index / USD', 'Crypto Volatility Index', 'Total Crypto Market Cap / USD', 'WBTC / USD']
     for (let marketOrdered of order) {
       if (a.marketName === marketOrdered) return -1
       if (b.marketName === marketOrdered) return 1
@@ -127,28 +116,22 @@ const Markets = () => {
             <TableHead>
               <MarketsStyledTableHeaderRow>
                 <StyledHeaderCell width={1} smWidth={2} id="marketIndex">
-                  <TEXT.Supplemental>
-                    <Trans>#</Trans>
-                  </TEXT.Supplemental>
+                  <TEXT.Supplemental>#</TEXT.Supplemental>
                 </StyledHeaderCell>
                 <StyledHeaderCell width={25} smWidth={50} id="marketName">
-                  <TEXT.Supplemental>
-                    <Trans>Market</Trans>
-                  </TEXT.Supplemental>
+                  <TEXT.Supplemental>Market</TEXT.Supplemental>
                 </StyledHeaderCell>
                 <StyledHeaderCell>
-                  <TEXT.Supplemental id="marketPrice">
-                    <Trans>Price</Trans>
-                  </TEXT.Supplemental>
+                  <TEXT.Supplemental id="marketPrice">Price</TEXT.Supplemental>
                 </StyledHeaderCell>
                 {/* <StyledHeaderCell>
-                  <Trans>
+                  
                     <TEXT.Supplemental>7d</TEXT.Supplemental>
-                  </Trans>
+                  
                 </StyledHeaderCell> */}
                 <StyledHeaderCell id="marketFundingRate">
                   <TEXT.SupplementalUnderlinedDashes data-for={'funding info'} data-tip={'funding info'}>
-                    <Trans>Funding</Trans>
+                    Funding
                   </TEXT.SupplementalUnderlinedDashes>
                   <ReactTooltip place="bottom" type="info" effect="solid" textColor={'#FFFFFF'} backgroundColor="#000000" id={'funding info'}>
                     {infoTipDescriptions.fundingRate}
@@ -156,22 +139,18 @@ const Markets = () => {
                 </StyledHeaderCell>
                 <StyledHeaderCell id="marketOi">
                   <TEXT.SupplementalUnderlinedDashes data-for={'Balance info'} data-tip={'Balance info'}>
-                    <Trans>OI Balance</Trans>
+                    OI Balance
                   </TEXT.SupplementalUnderlinedDashes>
                   <ReactTooltip place="bottom" type="info" effect="solid" textColor={'#FFFFFF'} backgroundColor="#000000" id={'Balance info'}>
                     {infoTipDescriptions.openInterest}
                   </ReactTooltip>
                 </StyledHeaderCell>
                 <StyledHeaderCell align="center" id="marketFeedLogo">
-                  <TEXT.Supplemental>
-                    <Trans>Oracle</Trans>
-                  </TEXT.Supplemental>
+                  <TEXT.Supplemental>Oracle</TEXT.Supplemental>
                 </StyledHeaderCell>
                 {!hide7dChart && (
                   <StyledHeaderCell align="center" id="market7dChart">
-                    <TEXT.Supplemental>
-                      <Trans>7D Chart</Trans>
-                    </TEXT.Supplemental>
+                    <TEXT.Supplemental>7D Chart</TEXT.Supplemental>
                   </StyledHeaderCell>
                 )}
               </MarketsStyledTableHeaderRow>
@@ -181,25 +160,27 @@ const Markets = () => {
                 marketsData
                   ?.filter(market => availableMarkets.includes(market.marketAddress.toLowerCase()))
                   .sort(customSort)
-                  .map((market: ParsedMarketStateDetails, index: number) => (
-                    <MarketsRow
-                      key={market.marketAddress}
-                      index={index + 1} //start count at 1
-                      marketId={market.marketAddress}
-                      marketName={market.marketName}
-                      midPrice={market.parsedMid}
-                      oiLong={market.parsedOiLong}
-                      oiShort={market.parsedOiShort}
-                      capOi={market.parsedCapOi}
-                      dailyFundingRate={market.parsedDailyFundingRate}
-                      annualFundingRate={market.parsedAnnualFundingRate}
-                      oracleLogo={market.oracleLogo}
-                      marketLogo={market.marketLogo}
-                      priceCurrency={market.priceCurrency}
-                      marketChartData={MarketChartMap[market.marketName ?? '']}
-                      hide7dChart={hide7dChart}
-                    />
-                  ))}
+                  .map((market: ParsedMarketStateDetails, index: number) => {
+                    return (
+                      <MarketsRow
+                        key={market.marketAddress}
+                        index={index + 1} //start count at 1
+                        marketId={market.marketAddress}
+                        marketName={market.marketName}
+                        midPrice={market.parsedMid}
+                        oiLong={market.parsedOiLong}
+                        oiShort={market.parsedOiShort}
+                        capOi={market.parsedCapOi}
+                        dailyFundingRate={market.parsedDailyFundingRate}
+                        annualFundingRate={market.parsedAnnualFundingRate}
+                        oracleLogo={market.oracleLogo}
+                        marketLogo={market.marketLogo}
+                        priceCurrency={market.priceCurrency}
+                        marketChartData={MarketChartMap[market.marketName ?? '']}
+                        hide7dChart={hide7dChart}
+                      />
+                    )
+                  })}
             </TableBody>
           </StyledTable>
         ) : (

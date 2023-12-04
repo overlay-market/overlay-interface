@@ -5,7 +5,9 @@ import {TriggerActionButton as TriggerConfirmBuildButton, PendingActionButton as
 import {AdditionalDetailRow} from '../../pages/Positions/Unwind'
 import {FlexColumn} from '../Container/Container'
 import {ModalContent, WalletHeader, CloseIcon} from '../ConnectWalletModal/ConnectWalletModal'
-import {BigNumberish} from 'ethers'
+import {BigNumber, BigNumberish} from 'ethers'
+import {toScientificNumber} from '../../utils/toScientificNumber'
+import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 
 export default function ConfirmTxnModal({
   marketName,
@@ -23,6 +25,7 @@ export default function ConfirmTxnModal({
   estimatedLiquidationPrice,
   transactionHash,
   transactionErrorMessage,
+  minPrice,
 }: {
   marketName: any
   isOpen: boolean
@@ -31,7 +34,7 @@ export default function ConfirmTxnModal({
   buildFee: number | string | undefined | null
   onConfirm?: () => void
   onDismiss?: () => void
-  expectedOi?: number | string | null
+  expectedOi?: BigNumber | number | string | null
   estimatedBid?: BigNumberish
   estimatedAsk?: BigNumberish
   marketPrice: string | undefined
@@ -41,9 +44,10 @@ export default function ConfirmTxnModal({
   estimatedLiquidationPrice: any
   transactionHash?: any
   transactionErrorMessage?: any
+  minPrice?: BigNumber
 }) {
   return (
-    <Modal isOpen={isOpen} onDismiss={() => null} width={'350px'}>
+    <Modal isOpen={isOpen} onDismiss={() => null} width={'350px'} maxWidth='90%'>
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>
@@ -66,7 +70,7 @@ export default function ConfirmTxnModal({
             </FlexColumn>
 
             <FlexColumn mt={'16px'} color={'white'}>
-              <AdditionalDetailRow detail={'Price'} detailColor={'#B9BABD'} value={marketPrice} />
+              <AdditionalDetailRow detail={'Price'} detailColor={'#B9BABD'} value={toScientificNumber(marketPrice)} />
 
               <AdditionalDetailRow
                 detail={'Side'}
@@ -83,17 +87,19 @@ export default function ConfirmTxnModal({
 
               <AdditionalDetailRow detail={'Slippage Tolerance'} detailColor={'#B9BABD'} value={`${setSlippageValue}%`} />
 
-              <AdditionalDetailRow detail={'Est. Liquidation Price'} detailColor={'#B9BABD'} value={estimatedLiquidationPrice} />
+              <AdditionalDetailRow detail={'Est. Liquidation Price'} detailColor={'#B9BABD'} value={toScientificNumber(estimatedLiquidationPrice)} />
             </FlexColumn>
 
             <FlexColumn mt={'48px'} color={'white'}>
               <AdditionalDetailRow detail={'Estimated Collateral'} detailColor={'#B9BABD'} value={`${adjustedCollateral} OVL`} />
 
-              <AdditionalDetailRow detail={'Estimated OI'} detailColor={'#B9BABD'} value={`${expectedOi}`} />
+              <AdditionalDetailRow detail={'Estimated OI'} detailColor={'#B9BABD'} value={`${toScientificNumber(expectedOi)}`} />
             </FlexColumn>
 
             <TEXT.Supplemental color={'#B9BABD'} mt={'24px'} mb={'24px'}>
-              The received price will be at least - or the transaction will revert.
+              {`The received price will be at ${isLong ? 'most' : 'least'} ${
+                minPrice ? toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4)) : '-'
+              } or the transaction will revert.`}
             </TEXT.Supplemental>
 
             {attemptingTransaction ? (

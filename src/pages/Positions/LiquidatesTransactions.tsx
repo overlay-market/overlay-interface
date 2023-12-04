@@ -6,6 +6,7 @@ import {formatBigNumber} from '../../utils/formatBigNumber'
 import Loader from '../../components/Loaders/Loaders'
 import {TEXT} from '../../theme/theme'
 import {Build, Liquidate, Unwind} from '../../state/build/hooks'
+import {toScientificNumber} from '../../utils/toScientificNumber'
 
 export interface PositionProps {
   transaction: {
@@ -94,8 +95,8 @@ export const LiquidatesTransactions = ({transaction, columns}: PositionProps) =>
           <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
         </FlexRow>
       ),
-      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? parsedEntryPrice : '-'}`,
-      'Exit Price': `${priceCurrency ? priceCurrency : ''}${parsedExitPrice ?? '-'}`,
+      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
+      'Exit Price': `${priceCurrency ? priceCurrency : ''}${parsedExitPrice ? toScientificNumber(parsedExitPrice) : '-'}`,
       Liquidated: parsedClosedTimestamp,
       Created: parsedCreatedTimestamp,
     }

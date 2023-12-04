@@ -39,6 +39,8 @@ import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
 import Loader from '../../components/Loaders/Loaders'
 import {formatDecimalToPercentage} from '../../utils/formatDecimal'
+import {toScientificNumber} from '../../utils/toScientificNumber'
+import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCallback'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -86,11 +88,7 @@ export function Unwind({
   const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
   const {account} = useActiveWeb3React()
-  const {isLoading, positions, refetch} = useCurrentWalletPositionsV2(account)
-
-  useEffect(() => {
-    refetch()
-  }, [account, refetch, isLoading])
+  const {positions} = useCurrentWalletPositionsV2(account)
 
   const {typedValue, setSlippageValue, txnDeadline} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onSetSlippage, onSetTxnDeadline, onResetUnwindState} = useUnwindActionHandlers()
@@ -99,6 +97,7 @@ export function Unwind({
   const filtered = positions?.filter((index, key) => index.id === marketPositionId)
 
   const position = filtered ? filtered[0] : null
+  const isMarketShutDown = position?.market.isShutdown
 
   const {baseToken, quoteToken, baseTokenAddress, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
 
@@ -205,7 +204,7 @@ export function Unwind({
 
   const {unwindData} = useDerivedUnwindInfo()
   const {callback: unwindCallback} = useUnwindCallback(unwindData, position?.market.id, typedValue, value, positionId, isLong, prices)
-
+  const {callback: emergencyWithdrawCallback} = useEmergencyWithdrawCallback(position?.market.id, positionId)
   useEffect(() => {
     onResetUnwindState()
   }, [positionId, onResetUnwindState])
@@ -274,6 +273,10 @@ export function Unwind({
     [onSelectPositionId],
   )
 
+  useEffect(() => {
+    handleSelectPosition(Number(position?.positionId))
+  }, [position, handleSelectPosition])
+
   // const handleClearInput = useCallback(() => {
   //   onAmountInput('')
   // }, [onAmountInput])
@@ -287,11 +290,20 @@ export function Unwind({
     unwindCallback()
       .then(success => {
         onResetUnwindState()
-        const numberOfUnwinds = position && Number(position['numberOfUniwnds'])
-        history.push(`/closed-positions/${marketPositionId}-${numberOfUnwinds}/${positionId}`)
+        history.push(`/positions`)
       })
       .catch(err => console.error('Error from handleUnwind: ', err))
-  }, [history, position, marketPositionId, positionId, unwindCallback, onResetUnwindState])
+  }, [history, unwindCallback, onResetUnwindState])
+
+  const handleWithdrawFromShutDownMarket = useCallback(() => {
+    if (!emergencyWithdrawCallback) return
+    emergencyWithdrawCallback()
+      .then(success => {
+        onResetUnwindState()
+        history.push(`/positions`)
+      })
+      .catch(err => console.error('Error from handleWithdrawFromShutDownMarket: ', JSON.stringify(err)))
+  }, [history, emergencyWithdrawCallback, onResetUnwindState])
 
   const isUnwindAmountTooLow: boolean = useMemo(() => {
     if (Number(typedValue) < 0.01 && customInput) {
@@ -307,163 +319,169 @@ export function Unwind({
     return false
   }, [customInput, currentValue])
 
-  return (
+  return !isMarketShutDown ? (
     <InterfaceWrapper>
-      {handleSelectPosition(Number(position?.positionId))}
-      <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
-      <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
-        <ControlInterfaceHeadContainer>
-          <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
-            ID: {positionIdConverted}
-          </TEXT.StandardHeader1>
-          <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
-            {marketName}
-          </TEXT.StandardHeader1>
-          <TEXT.StandardHeader1 minHeight={'30px'}>
-            {isLong !== undefined ? isLong ? bidPrice : askPrice : <Loader stroke="white" size="12px" />}
-          </TEXT.StandardHeader1>
-          <Icon
-            onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
-            size={24}
-            top={'18px'}
-            right={'0px'}
-            clickable={true}
-            position={'absolute'}
-            margin={'0 0 auto auto'}
-            transform={'rotate(90deg)'}
-          >
-            {isTxnSettingsOpen ? <X color={'#12B4FF'} /> : <Sliders color={'#B9BABD'} />}
-          </Icon>
-        </ControlInterfaceHeadContainer>
-        <TransactionSettingsModal
-          isTxnSettingsOpen={isTxnSettingsOpen}
-          setSlippageValue={setSlippageValue}
-          isTxnSettingsAuto={isTxnSettingsAuto}
-          txnDeadline={txnDeadline}
-          onSetSlippage={onSetSlippage}
-          handleResetTxnSettings={handleResetTxnSettings}
-          onSetTxnDeadline={onSetTxnDeadline}
-        />
-
-        <FlexRow mb="4px" width="100%">
-          <TEXT.StandardBody margin={'0 auto 4px 0'} color={'white'}>
-            Unwind Amount
-          </TEXT.StandardBody>
-          <TransparentUnderlineButton onClick={() => handleQuickInput(25)} border={'none'}>
-            25%
-          </TransparentUnderlineButton>
-          <TransparentUnderlineButton onClick={() => handleQuickInput(50)} border={'none'}>
-            50%
-          </TransparentUnderlineButton>
-          <TransparentUnderlineButton onClick={() => handleQuickInput(75)} border={'none'}>
-            75%
-          </TransparentUnderlineButton>
-          <TransparentUnderlineButton onClick={() => handleQuickInput(100)} border={'none'}>
-            Max
-          </TransparentUnderlineButton>
-        </FlexRow>
-
-        <NumericalInputContainer>
-          <NumericalInputDescriptor> OVL </NumericalInputDescriptor>
-          <NumericalInput
-            align={'right'}
-            onUserInput={input => handleUserInput(input, currentValue)}
-            value={customInput}
-            onKeyPress={handleUserInputKeyPress}
+      <>
+        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
+          <ControlInterfaceHeadContainer>
+            <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
+              ID: {positionIdConverted}
+            </TEXT.StandardHeader1>
+            <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
+              {marketName}
+            </TEXT.StandardHeader1>
+            <TEXT.StandardHeader1 minHeight={'30px'}>
+              {isLong !== undefined ? isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice) : <Loader stroke="white" size="12px" />}
+            </TEXT.StandardHeader1>
+            <Icon
+              onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
+              size={24}
+              top={'18px'}
+              right={'0px'}
+              clickable={true}
+              position={'absolute'}
+              margin={'0 0 auto auto'}
+              transform={'rotate(90deg)'}
+            >
+              {isTxnSettingsOpen ? <X color={'#12B4FF'} /> : <Sliders color={'#B9BABD'} />}
+            </Icon>
+          </ControlInterfaceHeadContainer>
+          <TransactionSettingsModal
+            isTxnSettingsOpen={isTxnSettingsOpen}
+            setSlippageValue={setSlippageValue}
+            isTxnSettingsAuto={isTxnSettingsAuto}
+            txnDeadline={txnDeadline}
+            onSetSlippage={onSetSlippage}
+            handleResetTxnSettings={handleResetTxnSettings}
+            onSetTxnDeadline={onSetTxnDeadline}
           />
-        </NumericalInputContainer>
-        <NumericalInputBottomText>minimum: 0.01%</NumericalInputBottomText>
 
-        <PercentageSlider
-          name={'Unwind Position Amount'}
-          min={0}
-          max={100}
-          step={1}
-          showTilde={Number(typedValue) <= 0.01 && Boolean(typedValue)}
-          value={Number(typedValue) >= 0.01 ? Number(Number(typedValue).toFixed(2)) : 0.0}
-          onChange={e => handleUserAmount(e, currentValue)}
-          margin={'20px 0 0 0'}
-          justifyContent={'flex-end'}
-        ></PercentageSlider>
-        {/* <Label htmlFor="Amount" mt={"24px"}>
+          <FlexRow mb="4px" width="100%">
+            <TEXT.StandardBody margin={'0 auto 4px 0'} color={'white'}>
+              Unwind Amount
+            </TEXT.StandardBody>
+            <TransparentUnderlineButton onClick={() => handleQuickInput(25)} border={'none'}>
+              25%
+            </TransparentUnderlineButton>
+            <TransparentUnderlineButton onClick={() => handleQuickInput(50)} border={'none'}>
+              50%
+            </TransparentUnderlineButton>
+            <TransparentUnderlineButton onClick={() => handleQuickInput(75)} border={'none'}>
+              75%
+            </TransparentUnderlineButton>
+            <TransparentUnderlineButton onClick={() => handleQuickInput(100)} border={'none'}>
+              Max
+            </TransparentUnderlineButton>
+          </FlexRow>
 
-        </Label> */}
-        {showUnderwaterFlow ? (
-          <UnwindButton onClick={() => null} isDisabled={true} disabled={true}>
-            Position Underwater
-          </UnwindButton>
-        ) : isUnwindAmountTooLow ? (
-          <UnwindButton onClick={() => null} isDisabled={true} disabled={true}>
-            Percentage Below Minimum
-          </UnwindButton>
-        ) : (
-          <UnwindButton
-            onClick={() => handleUnwind()}
-            isDisabled={isUnwindAmountTooHigh || disableUnwindButton}
-            disabled={isUnwindAmountTooHigh || disableUnwindButton}
-          >
-            Unwind
-          </UnwindButton>
-        )}
-      </ControlInterfaceContainer>
-      <FlexColumn mt="48px" padding="0 16px">
-        <AdditionalDetailRow
-          detail={'Profit/Loss'}
-          valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
-          value={PnL ? `${formatWeiToParsedNumber(PnL, 18, 2)} OVL` : 'loading'}
-        />
-        <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
-      </FlexColumn>
+          <NumericalInputContainer>
+            <NumericalInputDescriptor> OVL </NumericalInputDescriptor>
+            <NumericalInput
+              align={'right'}
+              onUserInput={input => handleUserInput(input, currentValue)}
+              value={customInput}
+              onKeyPress={handleUserInputKeyPress}
+            />
+          </NumericalInputContainer>
+          <NumericalInputBottomText>minimum: 0.01%</NumericalInputBottomText>
 
-      {/* <Accordion 
-        activeAccordionText={"Less"}
-        inactiveAccordionText={"More"}
-        activeColor={"#12B4FF"}
-        inactiveColor={"#12B4FF"}
-        width={"fit-content"}
-        clickableMargin={"auto"}
-        > */}
-      <FlexColumn mt="48px" padding="0 16px">
-        <AdditionalDetailRow detail={'Value'} value={value ? `${formatWeiToParsedNumber(value, 18, 4)} OVL` : 'loading'} />
-        <AdditionalDetailRow detail={'Open Interest'} value={oi.formattedOi || oi.formattedOi === 0 ? oi.formattedOi : 'loading'} />
-        <AdditionalDetailRow detail={'Leverage'} value={position?.leverage ? `${Number(position.leverage).toFixed(1)}x` : 'loading'} />
-        <AdditionalDetailRow detail={'Debt'} value={debt ? `${formatWeiToParsedNumber(debt, 18, 4)} OVL` : 'loading'} />
-        <AdditionalDetailRow detail={'Cost'} value={cost ? `${formatWeiToParsedNumber(cost, 18, 4)} OVL` : 'loading'} />
-        <AdditionalDetailRow detail={'Current Collateral'} value={collateral ? `${formatWeiToParsedNumber(collateral, 18, 4)} OVL` : 'loading'} />
-        <AdditionalDetailRow detail={'Current Notional'} value={notional ? `${formatWeiToParsedNumber(notional, 18, 4)} OVL` : 'loading'} />
-        <AdditionalDetailRow
-          detail={'Initial Collateral'}
-          value={position?.initialCollateral ? `${formatWeiToParsedNumber(position?.initialCollateral, 18, 4)} OVL` : 'loading'}
-        />
-        <AdditionalDetailRow
-          detail={'Initial Notional'}
-          value={position?.initialNotional ? `${formatWeiToParsedNumber(position?.initialNotional, 18, 4)} OVL` : 'loading'}
-        />
-        <AdditionalDetailRow
-          detail={'Maintenance'}
-          value={maintenanceMargin ? `${formatWeiToParsedNumber(maintenanceMargin, 18, 4)} OVL` : 'loading'}
-        />
-      </FlexColumn>
-
-      <FlexColumn mt="48px" padding="0 16px">
-        <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${entryPrice}` : 'loading'} />
-        <AdditionalDetailRow detail={'Current Price'} value={bidPrice && askPrice ? (isLong ? bidPrice : askPrice) : 'loading'} />
-        <AdditionalDetailRow detail={'Est. Received Price'} value={estimatedReceivedPrice ? estimatedReceivedPrice : 'loading'} />
-        <AdditionalDetailRow detail={'Price Impact'} value={priceImpact ? `${priceImpact}%` : '-'} />
-        <AdditionalDetailRow detail={'Liquidation Price (est)'} value={liquidationPrice ? liquidationPrice : 'loading'} />
-      </FlexColumn>
-
-      {/* <FlexColumn mt={"48px"}>
+          <PercentageSlider
+            name={'Unwind Position Amount'}
+            min={0}
+            max={100}
+            step={1}
+            showTilde={Number(typedValue) <= 0.01 && Boolean(typedValue)}
+            value={Number(typedValue) >= 0.01 ? Number(Number(typedValue).toFixed(2)) : 0.0}
+            onChange={e => handleUserAmount(e, currentValue)}
+            margin={'20px 0 0 0'}
+            justifyContent={'flex-end'}
+          ></PercentageSlider>
+          {showUnderwaterFlow ? (
+            <UnwindButton onClick={() => null} isDisabled={true} disabled={true}>
+              Position Underwater
+            </UnwindButton>
+          ) : isUnwindAmountTooLow ? (
+            <UnwindButton onClick={() => null} isDisabled={true} disabled={true}>
+              Percentage Below Minimum
+            </UnwindButton>
+          ) : (
+            <UnwindButton
+              onClick={() => handleUnwind()}
+              isDisabled={isUnwindAmountTooHigh || disableUnwindButton}
+              disabled={isUnwindAmountTooHigh || disableUnwindButton}
+            >
+              Unwind
+            </UnwindButton>
+          )}
+        </ControlInterfaceContainer>
+        <FlexColumn mt="48px" padding="0 16px">
           <AdditionalDetailRow
-            detail={"Total Shares Outstanding"}
-            value={`${position?.totalSupply ? Number(utils.formatUnits(position?.totalSupply, 18)).toFixed(2) + " OVL" : "loading..."}`}
+            detail={'Profit/Loss'}
+            valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
+            value={PnL ? `${formatWeiToParsedNumber(PnL, 18, 2)} OVL` : 'loading'}
           />
-          <AdditionalDetailRow 
-            detail={"Position Shares"} 
-            value={`${position?.currentOi ? Number(utils.formatUnits(position?.currentOi, 18)).toFixed(2) + " OVL" : "loading..."}`}
+          <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
+        </FlexColumn>
+        <FlexColumn mt="48px" padding="0 16px">
+          <AdditionalDetailRow detail={'Value'} value={value ? `${formatWeiToParsedNumber(value, 18, 4)} OVL` : 'loading'} />
+          <AdditionalDetailRow detail={'Open Interest'} value={oi.formattedOi || oi.formattedOi === 0 ? oi.formattedOi : 'loading'} />
+          <AdditionalDetailRow detail={'Leverage'} value={position?.leverage ? `${Number(position.leverage).toFixed(1)}x` : 'loading'} />
+          <AdditionalDetailRow detail={'Debt'} value={debt ? `${formatWeiToParsedNumber(debt, 18, 4)} OVL` : 'loading'} />
+          <AdditionalDetailRow detail={'Cost'} value={cost ? `${formatWeiToParsedNumber(cost, 18, 4)} OVL` : 'loading'} />
+          <AdditionalDetailRow detail={'Current Collateral'} value={collateral ? `${formatWeiToParsedNumber(collateral, 18, 4)} OVL` : 'loading'} />
+          <AdditionalDetailRow detail={'Current Notional'} value={notional ? `${formatWeiToParsedNumber(notional, 18, 4)} OVL` : 'loading'} />
+          <AdditionalDetailRow
+            detail={'Initial Collateral'}
+            value={position?.initialCollateral ? `${formatWeiToParsedNumber(position?.initialCollateral, 18, 4)} OVL` : 'loading'}
           />
-        </FlexColumn> */}
-      {/* </Accordion> */}
+          <AdditionalDetailRow
+            detail={'Initial Notional'}
+            value={position?.initialNotional ? `${formatWeiToParsedNumber(position?.initialNotional, 18, 4)} OVL` : 'loading'}
+          />
+          <AdditionalDetailRow
+            detail={'Maintenance'}
+            value={maintenanceMargin ? `${formatWeiToParsedNumber(maintenanceMargin, 18, 4)} OVL` : 'loading'}
+          />
+        </FlexColumn>
+
+        <FlexColumn mt="48px" padding="0 16px">
+          <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
+          <AdditionalDetailRow
+            detail={'Current Price'}
+            value={bidPrice && askPrice ? (isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice)) : 'loading'}
+          />
+          <AdditionalDetailRow
+            detail={'Est. Received Price'}
+            value={estimatedReceivedPrice ? toScientificNumber(estimatedReceivedPrice) : 'loading'}
+          />
+          <AdditionalDetailRow detail={'Price Impact'} value={priceImpact ? `${priceImpact}%` : '-'} />
+          <AdditionalDetailRow detail={'Liquidation Price (est)'} value={liquidationPrice ? toScientificNumber(liquidationPrice) : 'loading'} />
+        </FlexColumn>
+      </>
+    </InterfaceWrapper>
+  ) : (
+    <InterfaceWrapper>
+      <>
+        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
+          <ControlInterfaceHeadContainer>
+            <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
+              ID: {positionIdConverted}
+            </TEXT.StandardHeader1>
+            <TEXT.StandardHeader1 fontWeight={500} m={'0 4px 4px 4px'}>
+              {marketName}
+            </TEXT.StandardHeader1>
+            <TEXT.StandardHeader1 fontWeight={500} m={'20px 0 0 0'}>
+              {`Withdraw: ${formatWeiToParsedNumber(cost, 18, 6)} OVL`}
+            </TEXT.StandardHeader1>
+          </ControlInterfaceHeadContainer>
+          <TEXT.StandardBody textAlign={'center'} m={'20px 0 0 0'}>
+            This market has been shut down. You may only withdraw any previously deposited OVL.
+          </TEXT.StandardBody>
+          <UnwindButton onClick={() => handleWithdrawFromShutDownMarket()}>Withdraw OVL</UnwindButton>
+        </ControlInterfaceContainer>
+      </>
     </InterfaceWrapper>
   )
 }

@@ -1,18 +1,28 @@
-import {Lock, Unlock, TrendingDown, TrendingUp, Book} from 'react-feather'
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
+import {Box} from '@material-ui/core'
 
 const Container = styled.div<{isLeaderboardCard?: boolean}>`
   display: flex;
-  flex-direction: ${({isLeaderboardCard}) => (isLeaderboardCard ? 'column' : 'row')};
-  background: #1b2131;
-  border: 0.5px solid rgba(113, 206, 255, 0.5);
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  background: #171926;
   border-radius: 8px;
-  padding: 16px;
-  max-width: 260px;
+  padding: 20px 24px;
+`
+
+const PercentageChangeBox = styled.div<{positive: boolean}>`
+  padding: 4px;
+  border-radius: 5px;
+  background: ${({positive}) => (positive ? 'rgba(95, 208, 171, 0.20)' : 'rgba(255, 100, 138, 0.20)')};
+`
+
+const BoldHeader1 = styled(TEXT.BoldHeader1)`
+  font-size: 16px !important;
 
   ${({theme}) => theme.mediaWidth.minMedium`
-    max-width: unset;
+    font-size: 20px !important;
   `}
 
   ${({theme}) => theme.mediaWidth.minExtraSmall`
@@ -21,82 +31,67 @@ const Container = styled.div<{isLeaderboardCard?: boolean}>`
   `}
 `
 
-const CardIcon = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-  min-height: 64px;
-  background: #474747;
-  border-radius: 50%;
-  display: flex;
-`
-
-const CardContent = styled.div<{isLeaderboardCard?: boolean}>`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: ${({isLeaderboardCard}) => (isLeaderboardCard ? '12px 0 0 0' : '8px 0 8px 16px')};
-
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
-    padding: 8px 0 8px 16px;
-  `}
-`
-
-interface OverviewCardProps {
+interface DataProps {
   title: string
-  icon: string | React.ReactNode
-  value: string | React.ReactNode
-  valueColor?: string
+  value: string | number | null
+  valueType: string | null
+  percentageChange?: number | null
+  period?: string
   isOver1000OpenPositions?: boolean
   isLeaderboardCard?: boolean
 }
 
-const OverviewCard = (props: OverviewCardProps) => {
-  const {title, icon, value, valueColor, isOver1000OpenPositions, isLeaderboardCard} = props
+const OverviewCard = (props: DataProps) => {
+  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions} = props
 
   return (
-    <Container isLeaderboardCard={isLeaderboardCard}>
-      <CardIcon>
-        {typeof icon === 'string' ? (
-          icon === 'unlock' ? (
-            <Unlock color="#71CEFF" />
-          ) : icon === 'lock' ? (
-            <Lock color="#D5B4FF" />
-          ) : icon === 'up' ? (
-            <TrendingUp color="#5FD0AB" />
-          ) : icon === 'down' ? (
-            <TrendingDown color="#FF648A" />
-          ) : icon === 'book' ? (
-            <Book color="#71CEFF" />
-          ) : null
-        ) : (
-          icon
-        )}
-      </CardIcon>
-      <CardContent isLeaderboardCard={isLeaderboardCard}>
-        <TEXT.SmallBody style={{whiteSpace: 'nowrap'}}>{title}</TEXT.SmallBody>
-        <TEXT.BoldNumber
-          fontSize={18}
-          style={{
-            color: `${valueColor ?? '#E5F6FF'}`,
-          }}
-        >
+    <Container>
+      <TEXT.SmallBody fontSize={14} color="#c4c4c4">
+        {title}
+      </TEXT.SmallBody>
+      {isOver1000OpenPositions && (
+        <Box mt="4px">
+          <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} fontSize={10} color={colors(true).dark.red}>
+            Open Positions {'>'} 1000
+          </TEXT.Supplemental>
+          <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} fontSize={10} color={colors(true).dark.red}>
+            May output wrong value
+          </TEXT.Supplemental>
+        </Box>
+      )}
+      {!value ? (
+        <TEXT.SmallBody color="#c4c4c4" style={{whiteSpace: 'nowrap'}} mb={12}>
+          No data
+        </TEXT.SmallBody>
+      ) : (
+        <BoldHeader1 style={{whiteSpace: 'nowrap', marginTop: '15px'}} mb={12}>
           {value}
-        </TEXT.BoldNumber>
-        {isOver1000OpenPositions && (
-          <div style={{position: 'absolute', marginTop: '47px'}}>
-            <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} color={colors(true).dark.red}>
-              Open Positions {'>'} 1000
-            </TEXT.Supplemental>
-            <TEXT.Supplemental style={{whiteSpace: 'nowrap'}} color={colors(true).dark.red}>
-              May output wrong value
-            </TEXT.Supplemental>
-          </div>
+        </BoldHeader1>
+      )}
+      <Box display="flex" alignItems="center">
+        {!valueType ? (
+          <Box mt={'18px'}></Box>
+        ) : (
+          <TEXT.SmallBody fontSize={14} color="#c4c4c4">
+            {valueType}
+          </TEXT.SmallBody>
         )}
-      </CardContent>
+        <Box display="flex" alignItems="center" marginLeft="auto">
+          {value && !!percentageChange && (
+            <PercentageChangeBox positive={percentageChange > 0}>
+              <TEXT.Number color={percentageChange > 0 ? '#5FD0AB' : '#FF648A'}>
+                {percentageChange > 0 && '+'}
+                {percentageChange}%
+              </TEXT.Number>
+            </PercentageChangeBox>
+          )}
+          {value && !!percentageChange && (
+            <TEXT.Supplemental color="#c4c4c4" ml={1}>
+              {period}
+            </TEXT.Supplemental>
+          )}
+        </Box>
+      </Box>
     </Container>
   )
 }

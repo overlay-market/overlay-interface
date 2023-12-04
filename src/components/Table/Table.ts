@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro'
 import {Table, TableCell, TableRow} from '@material-ui/core'
 
-export const StyledTable = styled(Table)<{smWidth?: string}>`
+export const StyledTable = styled(Table)<{smWidth?: string; minWidth?: string}>`
   white-space: nowrap !important;
   table-layout: fixed !important;
   width: ${({smWidth}) => (smWidth ? `${smWidth}` : 'auto')} !important;
@@ -10,8 +10,9 @@ export const StyledTable = styled(Table)<{smWidth?: string}>`
     table-layout: fixed !important;
   `}
 
-  ${({theme}) => theme.mediaWidth.minLarge`
+  ${({theme, minWidth}) => theme.mediaWidth.minMedium`
     min-width: 1200px !important;
+    min-width: ${minWidth ? `${minWidth} !important` : ''};
   `}
 `
 
@@ -32,7 +33,6 @@ export const StyledHeaderCell = styled(StyledTableCell)`
 
 export const StyledTableCellThin = styled(StyledTableCell)`
   font-weight: 400;
-  min-width: 250px;
 `
 
 export const StyledTableRow = styled(TableRow)<{notclickable?: string}>`

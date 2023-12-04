@@ -12,7 +12,8 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   [SupportedChainId.RINKEBY]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-rinkeby',
   // [SupportedChainId.ARBITRUM]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arbitrum',
   // [SupportedChainId.ARBITRUM]: 'https://api.studio.thegraph.com/proxy/46086/overlay-subgraph-arbitrum/v2.0.12',
-  [SupportedChainId.ARBITRUM]: 'https://api.studio.thegraph.com/query/46086/overlay-v2-subgraph-arbitrum/version/latest',
+  [SupportedChainId.ARBITRUM]:
+    'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/7RuVCeRzAHL5apu6SWHyUEVt3Ko2pUv2wMTiHQJaiUW9',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arb-goerli',
 }
 
@@ -96,6 +97,7 @@ export const api = createApi({
                 market {
                   id
                   feedAddress
+                  isShutdown
                 }
                 initialOi
                 initialDebt
@@ -191,10 +193,44 @@ export const api = createApi({
         },
       }),
     }),
+    totalMarketsQuery: builder.query({
+      query: () => ({
+        document: gql`
+          query totalMarkets {
+            markets {
+              id
+              feedAddress
+              factory {
+                id
+              }
+              k
+              lmbda
+              delta
+              capPayoff
+              capNotional
+              capLeverage
+              circuitBreakerWindow
+              circuitBreakerMintTarget
+              maintenanceMarginFraction
+              maintenanceMarginBurnRate
+              liquidationFeeRate
+              tradingFeeRate
+              minCollateral
+              priceDriftUpperLimit
+              averageBlockTime
+              isShutdown
+              positions {
+                id
+              }
+            }
+          }
+        `,
+      }),
+    }),
     activeMarketsQuery: builder.query({
       query: () => ({
         document: gql`
-          query markets {
+          query activeMarkets {
             markets(where: {isShutdown: false}) {
               id
               feedAddress
@@ -295,6 +331,44 @@ export const api = createApi({
           account,
           first,
           skip,
+        },
+      }),
+    }),
+    marketOpenPositionsQuery: builder.query({
+      query: ({account, first, skip, marketId}) => ({
+        document: gql`
+          query marketOpenPositions($account: ID!, $first: Int, $skip: Int, $marketId: String) {
+            account(id: $account) {
+              positions(
+                where: {isLiquidated: false, currentOi_gt: "0", market: $marketId}
+                orderBy: createdAtTimestamp
+                orderDirection: desc
+                first: $first
+                skip: $skip
+              ) {
+                id
+                createdAtTimestamp
+                currentOi
+                entryPrice
+                initialCollateral
+                isLiquidated
+                isLong
+                leverage
+                numberOfUniwnds
+                positionId
+                market {
+                  feedAddress
+                  id
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          account,
+          first,
+          skip,
+          marketId,
         },
       }),
     }),

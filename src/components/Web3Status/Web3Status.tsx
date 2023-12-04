@@ -1,6 +1,5 @@
 import {useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components/macro'
-import {Trans} from '@lingui/macro'
 import {AlertTriangle} from 'react-feather'
 import {UnsupportedChainIdError} from '@web3-react/core'
 import {TEXT, colors} from '../../theme/theme'
@@ -145,7 +144,7 @@ export const TokenBalance = ({balance, network}: TokenBalanceProps) => {
     return (
       <>
         <BalanceContainer minWidth={'auto'}>
-          {NEW_HEADER_FLAG ? null : <Trans>Balance:</Trans>}
+          {NEW_HEADER_FLAG ? null : `Balance:`}
           <Amount>{NumberSpring(balance, 'OVL')}</Amount>
         </BalanceContainer>
       </>

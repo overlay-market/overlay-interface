@@ -104,9 +104,11 @@ export default function WalletOption({
 
         {subheader && <SubHeader>{subheader}</SubHeader>}
       </CardHeader>
-      <IconWrapper size={size}>
-        <img src={icon} alt={'Icon'} />
-      </IconWrapper>
+      {icon !== 'empty' && (
+        <IconWrapper size={size}>
+          <img src={icon} alt={'Icon'} />
+        </IconWrapper>
+      )}
     </OptionCardClickable>
   )
   if (link) {

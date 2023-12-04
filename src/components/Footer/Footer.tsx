@@ -1,45 +1,94 @@
 import styled from 'styled-components/macro'
-import {IconButton} from '@material-ui/core'
+import {IconButton, Link} from '@material-ui/core'
 import {Image} from 'rebass'
 import OverlayLogoDark from '../../assets/images/overlay-logo-dark.png'
-import DiscordIcon from '../../assets/images/footer/discord.png'
-import TwitterIcon from '../../assets/images/footer/twitter.png'
-import TelegramIcon from '../../assets/images/footer/telegram.png'
-import MirrorIcon from '../../assets/images/footer/mirror.png'
-import ArbiscanIcon from '../../assets/images/footer/arbiscan.png'
 import {LINKS} from '../../constants/links'
+import {TEXT, colors} from '../../theme/theme'
 
 const StyledFooter = styled.footer`
   position: absolute;
   bottom: 0;
   width: 100%;
-  min-height: 140px;
+  height: 244px;
   border-top: 1px solid ${({theme}) => theme.dark.grey3};
+`
+
+const FooterContainer = styled.div`
+  margin: auto;
+  box-sizing: border-box;
+  max-width: 1200px;
+  padding: 40px 16px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
 
-  ${({theme}) => theme.mediaWidth.minSmall`
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
     flex-direction: row;
+    justify-content: space-between;
+    padding: 40px 24px;
+  `}
+
+  ${({theme}) => theme.mediaWidth.minLarge`
+    padding: 40px 0px;
   `}
 `
 
-const LogoContainer = styled.div`
+const BrandContainer = styled.div`
   display: flex;
-  align-items: center;
-  margin-right: 0px;
-  margin-bottom: 24px;
+  flex-direction: column;
+  justify-content: space-between;
+`
+
+const LogoContainer = styled.div`
+  margin-bottom: 32px;
 
   ${({theme}) => theme.mediaWidth.minSmall`
-    margin-right: 40px;
     margin-bottom: 0px;
   `}
 `
 
-const IconContainer = styled.div`
+const CopyrightText = styled(TEXT.SmallBody)`
+  margin-bottom: 32px !important;
+  color: ${colors(false).dark.grey1} !important;
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    margin-bottom: 0px !important;
+    color: ${colors(true).dark.white} !important;
+  `}
+`
+
+const StyledIconButton = styled(IconButton)<IconButtonProps>(props => ({
+  marginRight: props.marginRight ? `${props.marginRight}px !important` : 0,
+  padding: '0px !important',
+}))
+
+const LinksContainer = styled.div`
   display: flex;
-  align-items: center;
+`
+
+const LinkColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const StyledLink = styled(Link)`
+  margin-bottom: 4px !important;
+`
+
+const AboutContainer = styled.div`
+  flex: 1;
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    margin-right: 64px;
+    width: 100%;
+  `}
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    margin-right: 100px;
+  `}
+`
+
+const SocialsContainer = styled.div`
+  flex: 1;
 `
 
 interface IconButtonProps {
@@ -48,47 +97,94 @@ interface IconButtonProps {
   marginRight?: number
 }
 
-const StyledIconButton = styled(IconButton)<IconButtonProps>(props => ({
-  marginRight: props.marginRight ? `${props.marginRight}px !important` : 0,
-  padding: '0px !important',
-}))
+interface LinkAsset {
+  label: string
+  href: string
+}
+
+const ABOUT_LINKS: Array<LinkAsset> = [
+  {
+    label: 'About Overlay',
+    href: LINKS.LANDING,
+  },
+  {
+    label: 'Documentation',
+    href: LINKS.DOCUMENTATION,
+  },
+  {
+    label: 'Arbiscan',
+    href: LINKS.ARBISCAN,
+  },
+]
+
+const SOCIAL_LINKS: Array<LinkAsset> = [
+  {
+    label: 'Discord',
+    href: LINKS.DISCORD,
+  },
+  {
+    label: 'Telegram',
+    href: LINKS.TELEGRAM,
+  },
+  {
+    label: 'Twitter',
+    href: LINKS.TWITTER,
+  },
+  {
+    label: 'Mirror',
+    href: LINKS.MIRROR,
+  },
+  {
+    label: 'Commonwealth',
+    href: LINKS.GOVERNANCE,
+  },
+]
+
+const LinkSection = ({title, links}: {title: string; links: Array<LinkAsset>}) => {
+  return (
+    <LinkColumn>
+      <TEXT.BoldSmallBody color={colors(true).dark.white} lineHeight={'160%'} mb={16}>
+        {title}
+      </TEXT.BoldSmallBody>
+      {links.map(link => (
+        <StyledLink key={link.label} target="_blank" href={link.href} underline="none">
+          <TEXT.SmallBody lineHeight={'160%'}>{link.label}</TEXT.SmallBody>
+        </StyledLink>
+      ))}
+    </LinkColumn>
+  )
+}
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear()
+
   return (
     <StyledFooter>
-      <LogoContainer>
-        {/* Overlay */}
-        <StyledIconButton href={LINKS.LANDING} target="_blank">
-          <Image src={OverlayLogoDark} alt="Overlay Logo" height={'auto'} width={138} />
-        </StyledIconButton>
-      </LogoContainer>
+      <FooterContainer>
+        <BrandContainer>
+          {/* Overlay */}
+          <LogoContainer>
+            <StyledIconButton href={LINKS.LANDING} target="_blank">
+              <Image src={OverlayLogoDark} alt="Overlay Logo" height={'auto'} width={138} />
+            </StyledIconButton>
+          </LogoContainer>
 
-      <IconContainer>
-        {/* Discord */}
-        <StyledIconButton href={LINKS.DISCORD} target="_blank" marginRight={32}>
-          <Image src={DiscordIcon} alt="Discord Icon" height={24} width={24} />
-        </StyledIconButton>
+          {/* Copyright text */}
+          <CopyrightText lineHeight={'160%'}>Copyright {currentYear} © Overlay Foundation, All Rights Reserved</CopyrightText>
+        </BrandContainer>
 
-        {/* Twitter */}
-        <StyledIconButton href={LINKS.TWITTER} target="_blank" marginRight={32}>
-          <Image src={TwitterIcon} alt="Twitter Icon" height={24} width={24} />
-        </StyledIconButton>
+        <LinksContainer>
+          {/* About */}
+          <AboutContainer>
+            <LinkSection title="About" links={ABOUT_LINKS} />
+          </AboutContainer>
 
-        {/* Telegram */}
-        <StyledIconButton href={LINKS.TELEGRAM} target="_blank" marginRight={32}>
-          <Image src={TelegramIcon} alt="Telegram Icon" height={24} width={24} />
-        </StyledIconButton>
-
-        {/* Mirror */}
-        <StyledIconButton href={LINKS.MIRROR} target="_blank" marginRight={32}>
-          <Image src={MirrorIcon} alt="Mirror Icon" height={24} width={24} />
-        </StyledIconButton>
-
-        {/* Arbiscan */}
-        <StyledIconButton href={LINKS.ARBISCAN} target="_blank">
-          <Image src={ArbiscanIcon} alt="Arbiscan Icon" height={24} width={24} />
-        </StyledIconButton>
-      </IconContainer>
+          {/* Socials */}
+          <SocialsContainer>
+            <LinkSection title="Socials" links={SOCIAL_LINKS} />
+          </SocialsContainer>
+        </LinksContainer>
+      </FooterContainer>
     </StyledFooter>
   )
 }

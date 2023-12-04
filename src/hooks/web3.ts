@@ -19,10 +19,10 @@ export function useEagerConnect() {
   const {activate, active} = useWeb3ReactCore()
   const [tried, setTried] = useState(false)
 
-  const storedValue = localStorage.getItem('disconnected');
+  const storedValue = localStorage.getItem('disconnected')
 
   useEffect(() => {
-    if (storedValue === 'true') {
+    if (storedValue === 'true' && !isMobile) {
       setTried(true)
     } else {
       injected.isAuthorized().then(isAuthorized => {

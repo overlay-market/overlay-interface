@@ -46,8 +46,8 @@ import {toScientificNumber} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
 import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
-import { AdditionalMarketData, useMarketDetails } from '../../hooks/useMarketDetails'
-import { MarketStateResults, useCurrentMarketState } from '../../hooks/useCurrentMarketState'
+import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
+import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -98,8 +98,8 @@ const BuildContainer = styled.div`
   flex-direction: row;
   flex-direction: row-reverse;
   @media (max-width: 1400px) {
-      flex-direction: column;
-    }
+    flex-direction: column;
+  }
 `
 
 const PositionsButtonContainer = styled.div`
@@ -155,7 +155,7 @@ const PositionsTableContainer = styled.div`
 
 const LeftColumn = styled.div`
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   width: 70%;
   @media (max-width: 1400px) {
     width: 100%;
@@ -169,14 +169,9 @@ const RightColumn = styled.div`
   @media (max-width: 1400px) {
     width: 100%;
     padding-left: 0px;
+    margin-bottom: 16px;
   }
 `
-const ChartContainer = styled.div`
-  @media (max-width: 1400px) {
-    display: none;
-  }
-`
-
 
 export const MINIMUM_SLIPPAGE_VALUE = 0.05
 
@@ -608,11 +603,9 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       <BuildHeader marketId={marketId} />
       <BuildContainer>
         <LeftColumn>
-          <ChartContainer>
-            <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
-              <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
-            </BuildChartColumn>
-          </ChartContainer>
+          <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
+            <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
+          </BuildChartColumn>
           <PositionsTableContainer>
             <PositionsTableForBuildPage
               title="Positions"
@@ -739,7 +732,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             />
           </MarketCard>
         </RightColumn>
-        
+
         <ConfirmTxnModal
           marketName={marketName}
           isOpen={showConfirm}

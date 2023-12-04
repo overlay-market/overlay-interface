@@ -115,10 +115,10 @@ const Markets = () => {
           <StyledTable smWidth="100%">
             <TableHead>
               <MarketsStyledTableHeaderRow>
-                <StyledHeaderCell width={1} smWidth={2} id="marketIndex">
+                <StyledHeaderCell width={1} smWidth={6} id="marketIndex">
                   <TEXT.Supplemental>#</TEXT.Supplemental>
                 </StyledHeaderCell>
-                <StyledHeaderCell width={25} smWidth={50} id="marketName">
+                <StyledHeaderCell width={25} smWidth={60} id="marketName">
                   <TEXT.Supplemental>Market</TEXT.Supplemental>
                 </StyledHeaderCell>
                 <StyledHeaderCell>

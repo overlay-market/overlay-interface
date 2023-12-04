@@ -9,8 +9,8 @@ const TVChartContainer = styled.div`
   height: 450px;
   width: 100%;
   padding-right: 16px;
-  @media (max-width: 600px) {
-    height: 60vh;
+  @media (max-width: 1400px) {
+    height: 100%;
   }
 `
 export interface ChartContainerProps {

@@ -359,8 +359,8 @@ const Stake = ({poolData}: PoolProps) => {
   const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolData.poolAddress.toLowerCase(), ovl)
 
   const showApprovalFlow = useMemo(() => {
-    return approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
-  }, [approval])
+    return poolType === 'stake' && approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
+  }, [approval, poolType])
 
   const handleApprove = useCallback(async () => {
     if (!inputAmount) {

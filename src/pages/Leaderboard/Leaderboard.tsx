@@ -119,7 +119,7 @@ const Leaderboard = () => {
     walletAddress: '',
   })
 
-  const [{data: rawData, loading: rawDataLoading}] = useAxios({
+  const [{data: rawData}] = useAxios({
     baseURL: LEADERBOARRDS_API,
     url: `sessions/currentSession`,
     method: 'GET',
@@ -129,7 +129,7 @@ const Leaderboard = () => {
     },
   })
 
-  const [{data: seasonDataRaw, loading: seasonDataRawLoading}, getSeasonDataRaw] = useAxios(
+  const [{data: seasonDataRaw}, getSeasonDataRaw] = useAxios(
     {
       baseURL: LEADERBOARRDS_API,
       method: 'GET',
@@ -152,12 +152,6 @@ const Leaderboard = () => {
       return seasonDataRaw?.session
     }
     return rawData?.session
-  }, [rawData, seasonDataRaw])
-  const seasonNumber = useMemo<number>(() => {
-    if (seasonDataRaw) {
-      return seasonDataRaw?.sessionNumber
-    }
-    return rawData?.sessionNumber
   }, [rawData, seasonDataRaw])
 
   const leaderboardPointsData = useMemo<ILeaderboardRank[]>(() => {
@@ -235,12 +229,7 @@ const Leaderboard = () => {
 
   return (
     <PageContainer>
-      <LeaderboardOverview
-        isLoading={rawDataLoading || seasonDataRawLoading || isLoading}
-        setSeasonId={setSeasonId}
-        userData={userData}
-        seasonData={{...leaderboardsData, sessionNumber: seasonNumber}}
-      />
+      <LeaderboardOverview />
       {isLoading ? (
         <LoadingContainer>
           <Loader size="24px" />

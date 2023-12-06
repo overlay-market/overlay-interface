@@ -8,32 +8,35 @@ import styled from 'styled-components'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {shortenAddress} from '../../utils/web3'
 import useAxios from 'axios-hooks'
-import {LEADERBOARRDS_API} from '../../constants/applications'
+import {LEADERBOARRDS_API, LEADERBOARRD_POINTS_API} from '../../constants/applications'
 import {useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
 import {floorToTwoDecimals} from '../../utils/floorToTwoDecimals'
 
 const LeaderboardsTable = styled(StyledTable)`
-  .total-volume,
-  .ovl-earned,
-  .pnl {
+  .points-prev-week,
+  .total-point {
     display: none;
   }
 
   ${({theme}) => theme.mediaWidth.minSmall`
-  .total-volume,
-  .ovl-earned,
-  .pnl {
+  .points-prev-week,
+  .total-point {
     display: table-cell;
   }
   `}
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    min-width: 100% !important;
+  `}
 `
 
-const HeaderCell = styled(StyledHeaderCell)<{noborder?: string; textalign?: string}>`
+const HeaderCell = styled(StyledHeaderCell)<{noborder?: string; textalign?: string; widthCell?: string}>`
   text-align: ${({textalign}) => (textalign ? textalign : 'end')} !important;
   border-bottom: 1px solid ${({theme}) => theme.dark.grey4} !important;
   border-bottom: ${({noborder}) => (noborder === 'true' ? '0px !important' : '')};
   padding: 16px !important;
+  width: ${({widthCell}) => widthCell} !important;
 `
 
 const TableDataCell = styled(StyledTableCell)<{noborder?: string; textalign?: string}>`
@@ -42,31 +45,6 @@ const TableDataCell = styled(StyledTableCell)<{noborder?: string; textalign?: st
   border-bottom: ${({noborder}) => (noborder === 'true' ? '0px !important' : '')};
   padding: 16px !important;
 `
-
-const UserRankingRow = styled(StyledTableRow)`
-  td {
-    background: ${({theme}) => theme.dark.grey4};
-  }
-
-  td:first-child {
-    border-radius: 8px 0 0 8px;
-  }
-
-  td:last-child {
-    border-radius: 0 8px 8px 0;
-  }
-
-  td.rank {
-    border-radius: 0 8px 8px 0;
-  }
-
-  ${({theme}) => theme.mediaWidth.minSmall`
-    td.rank {
-      border-radius: 0;
-    }
-  `}
-`
-
 const UsernameContainer = styled.div`
   display: flex;
   align-items: center;
@@ -76,7 +54,7 @@ const UsernameContainer = styled.div`
 `
 
 const UsernameIcon = styled.img<{display?: string}>`
-  background: grey;
+  background: ${({theme}) => theme.dark.grey4};
   min-height: 32px;
   min-width: 32px;
   border-radius: 50%;
@@ -112,10 +90,29 @@ export interface ILeaderboardsData {
   sessionNumber?: number
 }
 
+export interface IPrevWeekDetails {
+  sessionId: string
+  sessionStart: string
+  sessionEnd: string
+}
+export interface ILeaderboardRank {
+  _id: string
+  totalPoints: number
+  previousWeekPoints: number
+}
+export interface ILeaderboardPointsData {
+  previousWeekDetails: IPrevWeekDetails
+  leaderBoard: [ILeaderboardRank]
+}
+export interface ILeaderboardUserRank extends ILeaderboardRank {
+  username?: string
+  avatar?: string
+}
+
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
   const [seasonId, setSeasonId] = useState()
-  const [traders, setTraders] = useState<[ITrader]>()
+  const [ranks, setRanks] = useState<[ILeaderboardUserRank]>()
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState<IUserRank>({
     volumeTraded: 0,
@@ -144,6 +141,11 @@ const Leaderboard = () => {
     {manual: true},
   )
 
+  const [{data: pointsData}] = useAxios({
+    baseURL: LEADERBOARRD_POINTS_API,
+    method: 'GET',
+  })
+
   const userRank = useMemo<IUserRank>(() => seasonDataRaw?.userRank ?? rawData?.userRank, [rawData, seasonDataRaw])
   const leaderboardsData = useMemo<ILeaderboardsData>(() => {
     if (seasonDataRaw) {
@@ -158,40 +160,17 @@ const Leaderboard = () => {
     return rawData?.sessionNumber
   }, [rawData, seasonDataRaw])
 
+  const leaderboardPointsData = useMemo<ILeaderboardRank[]>(() => {
+    if (pointsData) {
+      return pointsData.leaderBoard
+    }
+  }, [pointsData])
+
   useEffect(() => {
     getSeasonDataRaw({
       url: `sessions/getSessionById/${seasonId}`,
     })
   }, [seasonId, getSeasonDataRaw])
-
-  useEffect(() => {
-    setIsLoading(true)
-    const getTraders = async () => {
-      const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-      const processedTraders = await Promise.all(
-        leaderboardsData?.traders?.map(async data => {
-          const username = await providerEth.lookupAddress(data.walletAddress)
-          const earnings = leaderboardsData.totalRewards * (data?.volumeTraded / leaderboardsData?.totalVolumeTraded)
-          const volume = data?.volumeTraded / 10 ** 18
-
-          return {
-            ...data,
-            username,
-            totalVolume: volume.toFixed(2) || 0,
-            earnings: floorToTwoDecimals(earnings) || 0,
-            pnl: ((earnings / volume) * 100).toFixed(2),
-          }
-        }),
-      )
-
-      setTraders(processedTraders as unknown as [ITrader])
-      setIsLoading(false)
-    }
-
-    if (leaderboardsData?.traders) {
-      getTraders()
-    }
-  }, [leaderboardsData])
 
   useEffect(() => {
     const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
@@ -226,6 +205,34 @@ const Leaderboard = () => {
     }
   }, [userRank, leaderboardsData, account])
 
+  useEffect(() => {
+    setIsLoading(true)
+    const getRanks = async () => {
+      const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
+      const processedRanks = await Promise.all(
+        leaderboardPointsData.map(async data => {
+          const username = await providerEth.lookupAddress(data._id)
+          const avatar = username && (await providerEth.getAvatar(username))
+
+          return {
+            ...data,
+            username: username ?? undefined,
+            avatar: avatar ?? undefined,
+            totalPoints: Number.isInteger(data.totalPoints) ? data.totalPoints : parseInt(data.totalPoints.toString()),
+            previousWeekPoints: Number.isInteger(data.previousWeekPoints) ? data.previousWeekPoints : parseInt(data.previousWeekPoints.toString()),
+          }
+        }),
+      )
+
+      setRanks(processedRanks as unknown as [ILeaderboardUserRank])
+      setIsLoading(false)
+    }
+
+    if (leaderboardPointsData?.length > 0) {
+      getRanks()
+    }
+  }, [leaderboardPointsData])
+
   return (
     <PageContainer>
       <LeaderboardOverview
@@ -234,7 +241,7 @@ const Leaderboard = () => {
         userData={userData}
         seasonData={{...leaderboardsData, sessionNumber: seasonNumber}}
       />
-      {rawDataLoading || seasonDataRawLoading || isLoading ? (
+      {isLoading ? (
         <LoadingContainer>
           <Loader size="24px" />
         </LoadingContainer>
@@ -242,78 +249,45 @@ const Leaderboard = () => {
         <LeaderboardsTable smWidth="100%">
           <TableHead>
             <StyledTableHeaderRow>
-              <HeaderCell smWidth={80} noborder={account ? 'true' : ''} textalign="start">
-                <TEXT.SmallBody fontWeight={600}>Leaderboard Rankings</TEXT.SmallBody>
+              <HeaderCell smWidth={80} textalign="start">
+                <TEXT.SmallBody fontWeight={600} color={colors(true).dark.white}>
+                  Leaderboard Rankings
+                </TEXT.SmallBody>
               </HeaderCell>
-              <HeaderCell smWidth={20} className="rank" noborder={account ? 'true' : ''}>
-                <TEXT.Supplemental>Rank</TEXT.Supplemental>
+              <HeaderCell smWidth={20} className="rank">
+                <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
               </HeaderCell>
-              <HeaderCell className="total-volume" noborder={account ? 'true' : ''}>
-                <TEXT.Supplemental>Total Volume</TEXT.Supplemental>
+              <HeaderCell className="points-prev-week" widthCell={'240px'}>
+                <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
               </HeaderCell>
-              <HeaderCell className="ovl-earned" noborder={account ? 'true' : ''}>
-                <TEXT.Supplemental>Est. OVL Earned</TEXT.Supplemental>
-              </HeaderCell>
-              <HeaderCell className="pnl" noborder={account ? 'true' : ''}>
-                <TEXT.Supplemental>PnL</TEXT.Supplemental>
+              <HeaderCell className="total-point" widthCell={'140px'}>
+                <TEXT.SmallBody color={colors(true).dark.white}>Total Point</TEXT.SmallBody>
               </HeaderCell>
             </StyledTableHeaderRow>
           </TableHead>
 
-          {account && (
-            <TableBody>
-              <UserRankingRow notclickable="true">
-                <TableDataCell noborder="true">
-                  <UsernameContainer>
-                    <TEXT.BoldSmallBody>Your current rank</TEXT.BoldSmallBody>
-                    <TEXT.Supplemental color={colors(false).dark.grey1}>
-                      {userData?.username ?? shortenAddress(userData.walletAddress || account)}
-                    </TEXT.Supplemental>
-                  </UsernameContainer>
-                </TableDataCell>
-                <TableDataCell className="rank" noborder="true">
-                  <TEXT.SmallBody>{userData?.rank ?? 'N/A'}</TEXT.SmallBody>
-                </TableDataCell>
-                <TableDataCell className="total-volume" noborder="true">
-                  <TEXT.Number>{userData?.totalVolume ? `${userData?.totalVolume ?? 0} OVL` : 'N/A'}</TEXT.Number>
-                </TableDataCell>
-                <TableDataCell className="ovl-earned" noborder="true">
-                  <TEXT.Number>{userData?.earnings ? `${userData?.earnings < 0.01 ? '< 0.01' : userData?.earnings} OVL` : 'N/A'}</TEXT.Number>
-                </TableDataCell>
-                <TableDataCell className="pnl" noborder="true" align="center">
-                  <TEXT.SmallBody color={userData.pnl && userData?.pnl > 0 ? colors(false).dark.green : ''}>
-                    {userData?.pnl ? `${userData?.pnl ?? 0}%` : 'N/A'}
-                  </TEXT.SmallBody>
-                </TableDataCell>
-              </UserRankingRow>
-            </TableBody>
-          )}
-
           <TableBody>
-            {traders?.map((data: ITrader, index) => (
-              <StyledTableRow notclickable="true" key={data?.walletAddress}>
+            {ranks?.map((data: ILeaderboardUserRank, index) => (
+              <StyledTableRow notclickable="true" key={data._id}>
                 <TableDataCell>
                   <UsernameContainer>
                     <UsernameIcon
-                      src={`https://source.boringavatars.com/marble?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data?.walletAddress}`}
-                      alt={'Overlay Logo Light'}
+                      src={data.avatar ?? `https://source.boringavatars.com/marble?colors=${({theme}) => theme.dark.grey4}`}
+                      alt={'Overlay user avatar'}
                       height={'32px'}
                       width={'32px'}
                     />
-                    <TEXT.BoldSmallBody>{data?.username ?? shortenAddress(data?.walletAddress)}</TEXT.BoldSmallBody>
+                    <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
                 </TableDataCell>
                 <TableDataCell className="rank">
-                  <TEXT.SmallBody>{index + 1}</TEXT.SmallBody>
+                  <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell className="total-volume">
-                  <TEXT.Number>{`${data?.totalVolume} OVL`}</TEXT.Number>
+                <TableDataCell className="points-prev-week">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell className="ovl-earned">
-                  <TEXT.Number>{`${data?.earnings} OVL`}</TEXT.Number>
-                </TableDataCell>
-                <TableDataCell className="pnl" align="center">
-                  <TEXT.SmallBody color={data.pnl && data?.pnl > 0 ? colors(false).dark.green : ''}>{`${data?.pnl}%`}</TEXT.SmallBody>
+                <TableDataCell className="total-point">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
                 </TableDataCell>
               </StyledTableRow>
             ))}

@@ -237,9 +237,9 @@ export default function Header() {
       {HIDE_EARN_DROPDOWN_FLAG ? (
         <>
           <StyledLink to={'/leaderboard'}>
-            <Trans>
-              <TEXT.Menu>Leaderboard</TEXT.Menu>
-            </Trans>
+            {/* <Trans> */}
+            <TEXT.Menu>Leaderboard</TEXT.Menu>
+            {/* </Trans> */}
           </StyledLink>
         </>
       ) : (

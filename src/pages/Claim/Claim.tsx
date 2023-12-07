@@ -15,6 +15,7 @@ import {useClaimMerkletreeCallBack} from '../../hooks/useClaimMerkleTreeCallback
 import {useClaimMerkleTreeContract} from '../../hooks/useContract'
 import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useHasClaimedMerkletree} from '../../hooks/useHasClaimedMerkletree'
+import axios, {Method} from 'axios'
 // import {fetchDataFromAPI, fetchDataFromMongoDB} from './ClaimData'
 
 const BridgeContainer = styled.div`
@@ -40,16 +41,14 @@ const Claim = ({
     params: {claimId},
   },
 }: RouteComponentProps<{claimId: string}>) => {
-  const {chainId} = useActiveWeb3React()
-  const account = '0x85f66DBe1ed470A091d338CFC7429AA871720283'
+  const {account, chainId} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   // const claimMerkletreeContract = useClaimMerkleTreeContract('0x9d16fbec655bd33bf19db09621dfbe1a00e3787f')
-  const hasClaimed = useHasClaimedMerkletree(claimId, account)
-  const userHasAvailableClaim = useUserHasAvailableClaim(account, claimId)
+  const userHasAvailableClaim = useHasClaimedMerkletree(claimId, account)
   const userClaimData = useUserClaimData(account, claimId)
   // const hasClaimed = useSingleCallResult(claimMerkletreeContract, 'hasClaimed', [account])
   // console.log('claimMerkletreeContract', claimMerkletreeContract, account)
-  console.log({hasClaimed})
+  console.log({userHasAvailableClaim})
 
   const [isFullyClaimed, setIsFullyClaimed] = useState<boolean>(false)
 
@@ -57,21 +56,42 @@ const Claim = ({
     setIsFullyClaimed(false)
   }, [claimId])
 
-  // async function fetchData() {
-  //   try {
-  //     const apiData = await fetchDataFromAPI()
-  //     // Use the fetched API data here as needed
-  //     console.log('Fetched data from API:', apiData)
+  let data = JSON.stringify({
+    dataSource: 'Cluster0',
+    database: 'merkle',
+    collection: 'User',
+    filter: {
+      wallet: account,
+    },
+  })
 
-  //     const dbData = await fetchDataFromMongoDB()
-  //     // Use the fetched MongoDB data here as needed
-  //     console.log('Fetched data from MongoDB:', dbData)
-  //   } catch (error) {
-  //     console.error('Error:', error)
-  //   }
-  // }
+  useEffect(() => {
+    let config = {
+      method: 'POST' as Method,
+      maxBodyLength: Infinity,
+      url: 'https://sa-east-1.aws.data.mongodb-api.com/app/data-foyef/endpoint/data/v1/action/findOne',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Request-Headers': '*',
+        'api-key': 'vMqEutRn2JtTfZYLcgEqetGYkKeqynHfhvW1u6ftrU9y5lpuQzigmzhawMmbgGz5',
+        Accept: 'application/json',
+      },
+      data: data,
+    }
 
-  // fetchData()
+    const fetchAxios = () => {
+      account &&
+        axios
+          .request(config)
+          .then(response => {
+            console.log(JSON.stringify(response.data))
+          })
+          .catch(error => {
+            console.log(error)
+          })
+    }
+    fetchAxios()
+  }, [data, account])
 
   const userClaimAmount = userClaimData?.amount && formatWeiToParsedNumber(userClaimData.amount, 18, 0)
 

@@ -8,14 +8,9 @@ export function useHasClaimedMerkletree(claimAddress: any, userAddress: any) {
   const claimContract = useClaimMerkleTreeContract(claimAddress)
   const blockNumber = useBlockNumber()
   const {chainId} = useActiveWeb3React()
-  const callResult = useSingleCallResult(claimContract, 'merkleRoot')
+  const callResult = useSingleCallResult(claimContract, 'hasClaimed', [userAddress])
 
   return useMemo(() => {
-    console.log({chainId})
-    console.log({callResult})
-    console.log({claimAddress})
-    console.log({userAddress})
-
     if (!chainId || !blockNumber || !callResult) return null
     return callResult?.result && callResult.result[0]
   }, [callResult, blockNumber, chainId])

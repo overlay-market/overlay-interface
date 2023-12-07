@@ -7,10 +7,15 @@ import {shortenAddress} from '../../utils/web3'
 import {ExternalLink} from '../../components/ExternalLink/ExternalLink'
 import {TriggerActionButton} from '../../components/Button/Button'
 import {useWalletModalToggle} from '../../state/application/hooks'
-import {useUserClaimData, useClaimCallback, useUserHasAvailableClaim} from '../../state/claim/hooks'
+import {useUserClaimData, useUserHasAvailableClaim} from '../../state/claim/hooks'
 import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {RouteComponentProps} from 'react-router-dom'
 import {SupportedChainId} from '../../constants/chains'
+import {useClaimMerkletreeCallBack} from '../../hooks/useClaimMerkleTreeCallback'
+import {useClaimMerkleTreeContract} from '../../hooks/useContract'
+import {useSingleCallResult} from '../../state/multicall/hooks'
+import {useHasClaimedMerkletree} from '../../hooks/useHasClaimedMerkletree'
+// import {fetchDataFromAPI, fetchDataFromMongoDB} from './ClaimData'
 
 const BridgeContainer = styled.div`
   display: flex;
@@ -35,11 +40,16 @@ const Claim = ({
     params: {claimId},
   },
 }: RouteComponentProps<{claimId: string}>) => {
-  const {account, chainId} = useActiveWeb3React()
+  const {chainId} = useActiveWeb3React()
+  const account = '0x85f66DBe1ed470A091d338CFC7429AA871720283'
   const toggleWalletModal = useWalletModalToggle()
-
+  // const claimMerkletreeContract = useClaimMerkleTreeContract('0x9d16fbec655bd33bf19db09621dfbe1a00e3787f')
+  const hasClaimed = useHasClaimedMerkletree(claimId, account)
   const userHasAvailableClaim = useUserHasAvailableClaim(account, claimId)
   const userClaimData = useUserClaimData(account, claimId)
+  // const hasClaimed = useSingleCallResult(claimMerkletreeContract, 'hasClaimed', [account])
+  // console.log('claimMerkletreeContract', claimMerkletreeContract, account)
+  console.log({hasClaimed})
 
   const [isFullyClaimed, setIsFullyClaimed] = useState<boolean>(false)
 
@@ -47,17 +57,37 @@ const Claim = ({
     setIsFullyClaimed(false)
   }, [claimId])
 
+  // async function fetchData() {
+  //   try {
+  //     const apiData = await fetchDataFromAPI()
+  //     // Use the fetched API data here as needed
+  //     console.log('Fetched data from API:', apiData)
+
+  //     const dbData = await fetchDataFromMongoDB()
+  //     // Use the fetched MongoDB data here as needed
+  //     console.log('Fetched data from MongoDB:', dbData)
+  //   } catch (error) {
+  //     console.error('Error:', error)
+  //   }
+  // }
+
+  // fetchData()
+
   const userClaimAmount = userClaimData?.amount && formatWeiToParsedNumber(userClaimData.amount, 18, 0)
 
   // monitor the status of the claim from contracts and txns
-  const {claimCallback} = useClaimCallback(account, claimId)
-
+  const {
+    state: useClaimCallbackState,
+    callback: claimCallback,
+    error: useClaimCallbackError,
+  } = useClaimMerkletreeCallBack(claimId, account, 2535, ['0xb70f72ad2568014b7e8950767cb2c100335d9d1832e35ee6e69c32bfc76ab94f'], undefined)
+  console.log({claimId})
   // used for UI loading states
   const [, setAttempting] = useState<boolean>(false)
 
   // wrap in useMemo hook to account for changes in claimId
   const handleClaim = useCallback(() => {
-    if (!claimId) return
+    if (!claimId || !claimCallback || useClaimCallbackError || !useClaimCallbackState) return
     setAttempting(true)
     claimCallback()
       // reset modal and log error
@@ -86,7 +116,7 @@ const Claim = ({
 
   const isWrongNetwork = useMemo(() => {
     if (!chainId) return true
-    return chainId !== Number(SupportedChainId.ARBITRUM)
+    return chainId !== Number(SupportedChainId.ARBITRUM_SEPOLIA)
   }, [chainId])
 
   return useMemo(() => {
@@ -124,7 +154,7 @@ const Claim = ({
             </ClaimModalContainer>
           )}
 
-          {account && !userClaimData && account && userHasAvailableClaim === undefined && (
+          {account && !userClaimData && userHasAvailableClaim === undefined && (
             <ClaimModalContainer>
               <FlexColumn padding="16px">
                 <TEXT.SmallBody marginRight="auto" marginBottom="18px">
@@ -140,7 +170,7 @@ const Claim = ({
             </ClaimModalContainer>
           )}
 
-          {account && userClaimAmount && userHasAvailableClaim && userHasAvailableClaim !== undefined && !isWrongNetwork && (
+          {account && userClaimAmount && (
             <ClaimModalContainer>
               <FlexColumn padding="16px" borderBottom="1px solid #71CEFF">
                 <FlexRow marginBottom="8px">

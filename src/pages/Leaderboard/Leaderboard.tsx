@@ -8,10 +8,9 @@ import styled from 'styled-components'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {shortenAddress} from '../../utils/web3'
 import useAxios from 'axios-hooks'
-import {LEADERBOARRDS_API, LEADERBOARRD_POINTS_API} from '../../constants/applications'
+import {LEADERBOARRD_POINTS_API} from '../../constants/applications'
 import {useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
-import {floorToTwoDecimals} from '../../utils/floorToTwoDecimals'
 
 const LeaderboardsTable = styled(StyledTable)`
   .points-prev-week,
@@ -45,6 +44,31 @@ const TableDataCell = styled(StyledTableCell)<{noborder?: string; textalign?: st
   border-bottom: ${({noborder}) => (noborder === 'true' ? '0px !important' : '')};
   padding: 16px !important;
 `
+
+const UserRankingRow = styled(StyledTableRow)`
+  td {
+    background: ${({theme}) => theme.dark.grey4};
+  }
+
+  td:first-child {
+    border-radius: 45px 0 0 45px;
+  }
+
+  td:last-child {
+    border-radius: 0 45px 45px 0;
+  }
+
+  td:first-child + td {
+    border-radius: 0 45px 45px 0;
+  }
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    td:first-child + td {
+      border-radius: 0;
+    }
+  `}
+`
+
 const UsernameContainer = styled.div`
   display: flex;
   align-items: center;
@@ -69,27 +93,6 @@ const LoadingContainer = styled.div`
   padding: 16px;
 `
 
-interface ITrader {
-  walletAddress: string
-  volumeTraded: number
-  username?: string
-  totalVolume?: number
-  earnings?: number
-  pnl?: number
-}
-export interface IUserRank extends ITrader {
-  rank?: number
-}
-export interface ILeaderboardsData {
-  sessionEnd: string
-  sessionStart: string
-  totalRewards: number
-  totalVolumeTraded: number
-  traders: [ITrader]
-  userRank: IUserRank
-  sessionNumber?: number
-}
-
 export interface IPrevWeekDetails {
   sessionId: string
   sessionStart: string
@@ -100,104 +103,79 @@ export interface ILeaderboardRank {
   totalPoints: number
   previousWeekPoints: number
 }
-export interface ILeaderboardPointsData {
-  previousWeekDetails: IPrevWeekDetails
-  leaderBoard: [ILeaderboardRank]
-}
 export interface ILeaderboardUserRank extends ILeaderboardRank {
   username?: string
   avatar?: string
 }
 
+export interface IUserRank extends ILeaderboardUserRank {
+  rank?: number
+}
+
+export interface ILeaderboardPointsData {
+  previousWeekDetails: IPrevWeekDetails
+  leaderboardTable: [ILeaderboardRank]
+  user?: IUserRank
+}
+
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
-  const [seasonId, setSeasonId] = useState()
   const [ranks, setRanks] = useState<[ILeaderboardUserRank]>()
   const [isLoading, setIsLoading] = useState(false)
-  const [userData, setUserData] = useState<IUserRank>({
-    volumeTraded: 0,
-    walletAddress: '',
-  })
+  const [userData, setUserData] = useState<IUserRank>()
+  const numberOfRows = 10
 
-  const [{data: rawData}] = useAxios({
-    baseURL: LEADERBOARRDS_API,
-    url: `sessions/currentSession`,
+  const [{data: pointsData}] = useAxios({
+    baseURL: LEADERBOARRD_POINTS_API,
+    url: `${numberOfRows}${account ? `/${account}` : ''}`,
     method: 'GET',
-    params: {
-      numberOfTraders: 10,
-      userAddress: account,
-    },
   })
 
-  const [{data: seasonDataRaw}, getSeasonDataRaw] = useAxios(
+  const leaderboardPointsData = useMemo<ILeaderboardRank[]>(() => {
+    if (pointsData) {
+      return pointsData.leaderboardTable
+    }
+  }, [pointsData])
+
+  const curUserData = useMemo<IUserRank>(() => {
+    if (pointsData) {
+      return pointsData?.user
+    }
+  }, [pointsData])
+
+  const [{data: userPointsData}, getUserPointsData] = useAxios(
     {
-      baseURL: LEADERBOARRDS_API,
+      baseURL: LEADERBOARRD_POINTS_API,
       method: 'GET',
-      params: {
-        numberOfTraders: 10,
-        userAddress: account,
-      },
     },
     {manual: true},
   )
 
-  const [{data: pointsData}] = useAxios({
-    baseURL: LEADERBOARRD_POINTS_API,
-    method: 'GET',
-  })
-
-  const userRank = useMemo<IUserRank>(() => seasonDataRaw?.userRank ?? rawData?.userRank, [rawData, seasonDataRaw])
-  const leaderboardsData = useMemo<ILeaderboardsData>(() => {
-    if (seasonDataRaw) {
-      return seasonDataRaw?.session
-    }
-    return rawData?.session
-  }, [rawData, seasonDataRaw])
-
-  const leaderboardPointsData = useMemo<ILeaderboardRank[]>(() => {
-    if (pointsData) {
-      return pointsData.leaderBoard
-    }
-  }, [pointsData])
-
   useEffect(() => {
-    getSeasonDataRaw({
-      url: `sessions/getSessionById/${seasonId}`,
-    })
-  }, [seasonId, getSeasonDataRaw])
+    if (account && pointsData && curUserData === undefined) {
+      getUserPointsData({
+        url: `0/${account}`,
+      })
+    }
+  }, [account])
 
   useEffect(() => {
     const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-    const getAccountENS = async () => {
-      const username = account ? await providerEth.lookupAddress(account) : undefined
-      setUserData({
-        walletAddress: account || '',
-        volumeTraded: 0,
-        username: username ?? undefined,
-      })
-    }
 
     const getUserData = async () => {
-      const username = await providerEth.lookupAddress(userRank.walletAddress)
-      const earnings = leaderboardsData.totalRewards * (userRank?.volumeTraded / leaderboardsData?.totalVolumeTraded)
-      const volume = userRank?.volumeTraded / 10 ** 18
+      const username = account && (await providerEth.lookupAddress(account))
       const userRankData = {
-        ...userRank,
+        ...(curUserData ?? userPointsData),
         username,
-        totalVolume: volume.toFixed(2),
-        earnings: floorToTwoDecimals(earnings) || 0,
-        pnl: ((earnings / volume) * 100).toFixed(2),
       }
 
       setUserData(userRankData as unknown as IUserRank)
     }
 
-    if (userRank) {
+    if (account) {
       getUserData()
-    } else {
-      getAccountENS()
     }
-  }, [userRank, leaderboardsData, account])
+  }, [account])
 
   useEffect(() => {
     setIsLoading(true)
@@ -229,7 +207,7 @@ const Leaderboard = () => {
 
   return (
     <PageContainer>
-      <LeaderboardOverview />
+      <LeaderboardOverview userPoints={userData?.totalPoints} />
       {isLoading ? (
         <LoadingContainer>
           <Loader size="24px" />
@@ -238,14 +216,15 @@ const Leaderboard = () => {
         <LeaderboardsTable smWidth="100%">
           <TableHead>
             <StyledTableHeaderRow>
+              <HeaderCell widthCell={'40px'} smWidth={20} className="rank" textalign="center">
+                <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
+              </HeaderCell>
               <HeaderCell smWidth={80} textalign="start">
                 <TEXT.SmallBody fontWeight={600} color={colors(true).dark.white}>
                   Leaderboard Rankings
                 </TEXT.SmallBody>
               </HeaderCell>
-              <HeaderCell smWidth={20} className="rank">
-                <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
-              </HeaderCell>
+
               <HeaderCell className="points-prev-week" widthCell={'240px'}>
                 <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
               </HeaderCell>
@@ -255,9 +234,37 @@ const Leaderboard = () => {
             </StyledTableHeaderRow>
           </TableHead>
 
+          {account && (
+            <TableBody>
+              <UserRankingRow notclickable="true">
+                <TableDataCell className="rank" noborder="true" textalign="center">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{userData?.rank ?? 'N/A'}</TEXT.SmallBody>
+                </TableDataCell>
+                <TableDataCell noborder="true">
+                  <UsernameContainer>
+                    <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
+                      Your current rank
+                    </TEXT.BoldSmallBody>
+                    <TEXT.Supplemental color={colors(false).dark.grey1}>{userData?.username ?? shortenAddress(account)}</TEXT.Supplemental>
+                  </UsernameContainer>
+                </TableDataCell>
+
+                <TableDataCell className="points-prev-week" noborder="true">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{userData?.previousWeekPoints ?? 'N/A'}</TEXT.SmallBody>
+                </TableDataCell>
+                <TableDataCell className="total-point" noborder="true">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{userData?.totalPoints ?? 'N/A'}</TEXT.SmallBody>
+                </TableDataCell>
+              </UserRankingRow>
+            </TableBody>
+          )}
+
           <TableBody>
             {ranks?.map((data: ILeaderboardUserRank, index) => (
               <StyledTableRow notclickable="true" key={data._id}>
+                <TableDataCell className="rank" textalign="center">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
+                </TableDataCell>
                 <TableDataCell>
                   <UsernameContainer>
                     <UsernameIcon
@@ -269,9 +276,7 @@ const Leaderboard = () => {
                     <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
                 </TableDataCell>
-                <TableDataCell className="rank">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
-                </TableDataCell>
+
                 <TableDataCell className="points-prev-week">
                   <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
                 </TableDataCell>

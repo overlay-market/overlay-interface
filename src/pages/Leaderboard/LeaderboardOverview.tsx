@@ -56,9 +56,9 @@ const SeasonContainer = styled.div`
   flex-direction: row;
   align-items: center;
 `
-const LeaderboardOverview = () => {
+const LeaderboardOverview = ({userPoints}: {userPoints?: number}) => {
   const {account} = useActiveWeb3React()
-  const yourPoints: string = `${'0'} points`
+  const yourPoints: string = `${userPoints ?? 'N/A'} points`
   const toggleWalletModal = useWalletModalToggle()
 
   return (

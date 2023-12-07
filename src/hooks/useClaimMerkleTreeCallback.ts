@@ -49,9 +49,10 @@ function useClaimMerkletreeCallArguments(
   const {account, chainId} = useActiveWeb3React()
   const claimMerkleTreeContract = useClaimMerkleTreeContract(claimAddress)
 
-  if (!formattedAddress || inputError || !claimMerkleTreeContract || !numTokens || proof.length == 0) calldata = undefined
+  if (!formattedAddress || inputError || !claimMerkleTreeContract || !numTokens || proof.length === 0) calldata = undefined
   else {
-    calldata = claimMerkleTreeContract.interface.encodeFunctionData('claim', [formattedAddress, numTokens, proof])
+    const resultArray = proof.map(str => '0x' + str)
+    calldata = claimMerkleTreeContract.interface.encodeFunctionData('claim', [formattedAddress, numTokens, resultArray])
   }
 
   return useMemo(() => {
@@ -92,7 +93,7 @@ export function useClaimMerkletreeCallBack(
   const claimCalls = useClaimMerkletreeCallArguments(claimAddress, formattedAddress, numTokens, proof, inputError)
 
   return useMemo(() => {
-    if (!claimAddress || !library || !account || !chainId || !formattedAddress || !numTokens || !proof || inputError) {
+    if (!claimAddress || !library || !account || !chainId || !formattedAddress || !numTokens || proof.length === 0 || inputError) {
       return {
         state: ClaimCallbackState.INVALID,
         callback: null,

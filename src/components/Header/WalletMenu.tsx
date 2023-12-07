@@ -91,7 +91,7 @@ export const MenuLink = ({background, link, onClick, children}: {background?: st
 export const NETWORK_ICONS: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.MAINNET]: EthereumLogo,
   [SupportedChainId.ARBITRUM]: ArbitrumLogo,
-  [SupportedChainId.ARBITRUM_GÖRLI]: ArbitrumTestnetLogo,
+  [SupportedChainId.ARBITRUM_SEPOLIA]: ArbitrumTestnetLogo,
 }
 
 export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Element} = {
@@ -100,6 +100,12 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
   [SupportedChainId.ARBITRUM_GÖRLI]: (
     <FlexRow>
       <TEXT.SmallBody>Arbitrum Goerli -</TEXT.SmallBody>
+      <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
+    </FlexRow>
+  ),
+  [SupportedChainId.ARBITRUM_SEPOLIA]: (
+    <FlexRow>
+      <TEXT.SmallBody>Arbitrum Sepolia -</TEXT.SmallBody>
       <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
     </FlexRow>
   ),

@@ -4,4 +4,5 @@ export enum SupportedChainId {
   GÖRLI = 5, //pre-launch only
   ARBITRUM = 42161,
   ARBITRUM_GÖRLI = 421613,
+  ARBITRUM_SEPOLIA = 421614,
 }

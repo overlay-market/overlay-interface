@@ -268,7 +268,7 @@ const Leaderboard = () => {
                 <TableDataCell>
                   <UsernameContainer>
                     <UsernameIcon
-                      src={data.avatar ?? `https://source.boringavatars.com/marble?colors=${({theme}) => theme.dark.grey4}`}
+                      src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
                       alt={'Overlay user avatar'}
                       height={'32px'}
                       width={'32px'}

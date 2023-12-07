@@ -1275,6 +1275,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@cookie3/analytics@^0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@cookie3/analytics/-/analytics-0.4.8.tgz#f67626d26764f868f14e305e34947ba50c4f57ec"
+  integrity sha512-P48oOyc8ZJfAVdXwMUKMFUdqSlcrs+HsVewDWOaF/HXkPXpPv5xh/PNtlyFZ3uC8GRmvSzl8xmQlBPF73EiPGw==
+
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz#00629c35a688e05a88b1cda684fb9d5e73f000a1"

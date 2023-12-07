@@ -52,6 +52,20 @@ export function getExplorerLink(chainId: number, data: string, type: ExplorerDat
     }
   }
 
+  if (chainId === SupportedChainId.ARBITRUM_SEPOLIA) {
+    switch (type) {
+      case ExplorerDataType.TRANSACTION:
+        return `https://sepolia.arbiscan.io/tx/${data}`
+      case ExplorerDataType.ADDRESS:
+      case ExplorerDataType.TOKEN:
+        return `https://sepolia.arbiscan.io/address/${data}`
+      case ExplorerDataType.BLOCK:
+        return `https://sepolia.arbiscan.io/block/${data}`
+      default:
+        return `https://sepolia.arbiscan.io/`
+    }
+  }
+
   const prefix = `https://${ETHERSCAN_PREFIXES[chainId] ?? ''}etherscan.io`
 
   switch (type) {

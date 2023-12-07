@@ -198,6 +198,7 @@ const Footer = () => {
             <LinkSection title="About" links={ABOUT_LINKS} />
             <Button
               onClick={handleStakeWithdraw}
+              disabled={!account}
               style={{
                 color: '#71CEFF',
                 textDecoration: 'underline',
@@ -205,6 +206,8 @@ const Footer = () => {
                 padding: '0px 0px',
                 textTransform: 'capitalize',
                 justifyContent: 'start',
+                opacity: !account ? 0.5 : 1,
+                cursor: !account ? 'not-allowed' : 'pointer',
               }}
             >
               Unstake

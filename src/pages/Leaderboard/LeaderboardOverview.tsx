@@ -58,7 +58,7 @@ const SeasonContainer = styled.div`
 `
 const LeaderboardOverview = ({userPoints}: {userPoints?: number}) => {
   const {account} = useActiveWeb3React()
-  const yourPoints: string = `${userPoints ?? 'N/A'} points`
+  const yourPoints: string = `${userPoints ?? '0'} points`
   const toggleWalletModal = useWalletModalToggle()
 
   return (

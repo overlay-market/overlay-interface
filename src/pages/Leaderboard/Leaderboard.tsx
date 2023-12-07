@@ -121,7 +121,6 @@ export interface ILeaderboardPointsData {
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
   const [ranks, setRanks] = useState<[ILeaderboardUserRank]>()
-  const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState<IUserRank>()
   const numberOfRows = 10
 
@@ -136,6 +135,20 @@ const Leaderboard = () => {
       return pointsData.leaderboardTable
     }
   }, [pointsData])
+
+  useEffect(() => {
+    const processedRanks =
+      leaderboardPointsData &&
+      leaderboardPointsData.map(data => {
+        return {
+          ...data,
+          username: undefined,
+          avatar: undefined,
+        }
+      })
+
+    setRanks(processedRanks as unknown as [ILeaderboardUserRank])
+  }, [leaderboardPointsData])
 
   const curUserData = useMemo<IUserRank>(() => {
     if (pointsData) {
@@ -157,7 +170,7 @@ const Leaderboard = () => {
         url: `0/${account}`,
       })
     }
-  }, [account])
+  }, [account, pointsData, curUserData, getUserPointsData])
 
   useEffect(() => {
     const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
@@ -175,10 +188,9 @@ const Leaderboard = () => {
     if (account) {
       getUserData()
     }
-  }, [account])
+  }, [account, curUserData, userPointsData])
 
   useEffect(() => {
-    setIsLoading(true)
     const getRanks = async () => {
       const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
       const processedRanks = await Promise.all(
@@ -197,7 +209,6 @@ const Leaderboard = () => {
       )
 
       setRanks(processedRanks as unknown as [ILeaderboardUserRank])
-      setIsLoading(false)
     }
 
     if (leaderboardPointsData?.length > 0) {
@@ -208,86 +219,79 @@ const Leaderboard = () => {
   return (
     <PageContainer>
       <LeaderboardOverview userPoints={userData?.totalPoints} />
-      {isLoading ? (
-        <LoadingContainer>
-          <Loader size="24px" />
-        </LoadingContainer>
-      ) : (
-        <LeaderboardsTable smWidth="100%">
-          <TableHead>
-            <StyledTableHeaderRow>
-              <HeaderCell widthCell={'40px'} smWidth={20} className="rank" textalign="center">
-                <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell smWidth={80} textalign="start">
-                <TEXT.SmallBody fontWeight={600} color={colors(true).dark.white}>
-                  Leaderboard Rankings
-                </TEXT.SmallBody>
-              </HeaderCell>
 
-              <HeaderCell className="points-prev-week" widthCell={'240px'}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell className="total-point" widthCell={'140px'}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Total Point</TEXT.SmallBody>
-              </HeaderCell>
-            </StyledTableHeaderRow>
-          </TableHead>
+      <LeaderboardsTable smWidth="100%">
+        <TableHead>
+          <StyledTableHeaderRow>
+            <HeaderCell widthCell={'40px'} smWidth={20} className="rank" textalign="center" noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell smWidth={80} textalign="start" noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody fontWeight={600} color={colors(true).dark.white}>
+                Leaderboard Rankings
+              </TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell className="points-prev-week" widthCell={'240px'} noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell className="total-point" widthCell={'140px'} noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Total Point</TEXT.SmallBody>
+            </HeaderCell>
+          </StyledTableHeaderRow>
+        </TableHead>
 
-          {account && (
-            <TableBody>
-              <UserRankingRow notclickable="true">
-                <TableDataCell className="rank" noborder="true" textalign="center">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{userData?.rank ?? 'N/A'}</TEXT.SmallBody>
-                </TableDataCell>
-                <TableDataCell noborder="true">
-                  <UsernameContainer>
-                    <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
-                      Your current rank
-                    </TEXT.BoldSmallBody>
-                    <TEXT.Supplemental color={colors(false).dark.grey1}>{userData?.username ?? shortenAddress(account)}</TEXT.Supplemental>
-                  </UsernameContainer>
-                </TableDataCell>
-
-                <TableDataCell className="points-prev-week" noborder="true">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{userData?.previousWeekPoints ?? 'N/A'}</TEXT.SmallBody>
-                </TableDataCell>
-                <TableDataCell className="total-point" noborder="true">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{userData?.totalPoints ?? 'N/A'}</TEXT.SmallBody>
-                </TableDataCell>
-              </UserRankingRow>
-            </TableBody>
-          )}
-
+        {account && (
           <TableBody>
-            {ranks?.map((data: ILeaderboardUserRank, index) => (
-              <StyledTableRow notclickable="true" key={data._id}>
-                <TableDataCell className="rank" textalign="center">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
-                </TableDataCell>
-                <TableDataCell>
-                  <UsernameContainer>
-                    <UsernameIcon
-                      src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
-                      alt={'Overlay user avatar'}
-                      height={'32px'}
-                      width={'32px'}
-                    />
-                    <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
-                  </UsernameContainer>
-                </TableDataCell>
+            <UserRankingRow notclickable="true">
+              <TableDataCell className="rank" noborder="true" textalign="center">
+                <TEXT.SmallBody color={colors(true).dark.white}>{userData?.rank ?? 'N/A'}</TEXT.SmallBody>
+              </TableDataCell>
+              <TableDataCell noborder="true">
+                <UsernameContainer>
+                  <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
+                    Your current rank
+                  </TEXT.BoldSmallBody>
+                  <TEXT.Supplemental color={colors(false).dark.grey1}>{userData?.username ?? shortenAddress(account)}</TEXT.Supplemental>
+                </UsernameContainer>
+              </TableDataCell>
 
-                <TableDataCell className="points-prev-week">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
-                </TableDataCell>
-                <TableDataCell className="total-point">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
-                </TableDataCell>
-              </StyledTableRow>
-            ))}
+              <TableDataCell className="points-prev-week" noborder="true">
+                <TEXT.SmallBody color={colors(true).dark.white}>{userData?.previousWeekPoints ?? '0'}</TEXT.SmallBody>
+              </TableDataCell>
+              <TableDataCell className="total-point" noborder="true">
+                <TEXT.SmallBody color={colors(true).dark.white}>{userData?.totalPoints ?? '0'}</TEXT.SmallBody>
+              </TableDataCell>
+            </UserRankingRow>
           </TableBody>
-        </LeaderboardsTable>
-      )}
+        )}
+
+        <TableBody>
+          {ranks?.map((data: ILeaderboardUserRank, index) => (
+            <StyledTableRow notclickable="true" key={data._id}>
+              <TableDataCell className="rank" textalign="center">
+                <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
+              </TableDataCell>
+              <TableDataCell>
+                <UsernameContainer>
+                  <UsernameIcon
+                    src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
+                    alt={'Overlay user avatar'}
+                    height={'32px'}
+                    width={'32px'}
+                  />
+                  <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
+                </UsernameContainer>
+              </TableDataCell>
+              <TableDataCell className="points-prev-week">
+                <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
+              </TableDataCell>
+              <TableDataCell className="total-point">
+                <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
+              </TableDataCell>
+            </StyledTableRow>
+          ))}
+        </TableBody>
+      </LeaderboardsTable>
     </PageContainer>
   )
 }

@@ -106,7 +106,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
             <TEXT.SmallBody>24h</TEXT.SmallBody> */}
             </MarketPriceContainer>
 
-            <FlexRow style={{gap: '28px'}}>
+            <FlexRow style={{gap: '28px', width: 'auto'}}>
               <FlexRow style={{gap: '16px', justifyContent: 'flex-end', alignItems: 'center'}}>
                 <TEXT.SmallBody>Funding</TEXT.SmallBody>
                 <TEXT.BoldNumber color={isFundingRatePositive ? colors(false).dark.red : colors(false).dark.green}>

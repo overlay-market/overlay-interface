@@ -10,16 +10,16 @@ import {shortenAddress} from '../../utils/web3'
 import useAxios from 'axios-hooks'
 import {LEADERBOARRD_POINTS_API} from '../../constants/applications'
 import {useEffect, useMemo, useState} from 'react'
-import Loader from '../../components/Loaders/Loaders'
 
 const LeaderboardsTable = styled(StyledTable)`
   .points-prev-week,
-  .total-point {
+  .username {
     display: none;
   }
 
   ${({theme}) => theme.mediaWidth.minSmall`
   .points-prev-week,
+  .username,
   .total-point {
     display: table-cell;
   }
@@ -57,16 +57,6 @@ const UserRankingRow = styled(StyledTableRow)`
   td:last-child {
     border-radius: 0 45px 45px 0;
   }
-
-  td:first-child + td {
-    border-radius: 0 45px 45px 0;
-  }
-
-  ${({theme}) => theme.mediaWidth.minSmall`
-    td:first-child + td {
-      border-radius: 0;
-    }
-  `}
 `
 
 const UsernameContainer = styled.div`
@@ -86,11 +76,6 @@ const UsernameIcon = styled.img<{display?: string}>`
   align-items: center;
   justify-content: center;
   color: black;
-`
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 16px;
 `
 
 export interface IPrevWeekDetails {
@@ -129,6 +114,12 @@ const Leaderboard = () => {
     url: `${numberOfRows}${account ? `/${account}` : ''}`,
     method: 'GET',
   })
+
+  const prevWeekDetails = useMemo<IPrevWeekDetails>(() => {
+    if (pointsData) {
+      return pointsData.previousWeekDetails
+    }
+  }, [pointsData])
 
   const leaderboardPointsData = useMemo<ILeaderboardRank[]>(() => {
     if (pointsData) {
@@ -218,7 +209,7 @@ const Leaderboard = () => {
 
   return (
     <PageContainer>
-      <LeaderboardOverview userPoints={userData?.totalPoints} />
+      <LeaderboardOverview userPoints={userData?.totalPoints} pointsUpdatedAt={prevWeekDetails?.sessionEnd} />
 
       <LeaderboardsTable smWidth="100%">
         <TableHead>
@@ -235,7 +226,7 @@ const Leaderboard = () => {
               <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
             </HeaderCell>
             <HeaderCell className="total-point" widthCell={'140px'} noborder={`${account && 'true'}`}>
-              <TEXT.SmallBody color={colors(true).dark.white}>Total Point</TEXT.SmallBody>
+              <TEXT.SmallBody color={colors(true).dark.white}>Total Points</TEXT.SmallBody>
             </HeaderCell>
           </StyledTableHeaderRow>
         </TableHead>
@@ -251,7 +242,9 @@ const Leaderboard = () => {
                   <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
                     Your current rank
                   </TEXT.BoldSmallBody>
-                  <TEXT.Supplemental color={colors(false).dark.grey1}>{userData?.username ?? shortenAddress(account)}</TEXT.Supplemental>
+                  <TEXT.Supplemental color={colors(false).dark.grey1} className="username">
+                    {userData?.username ?? shortenAddress(account)}
+                  </TEXT.Supplemental>
                 </UsernameContainer>
               </TableDataCell>
 

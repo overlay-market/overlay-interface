@@ -2,12 +2,18 @@ import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
+import {Clock} from 'react-feather'
+import moment from 'moment'
 
 const OverviewContainer = styled.div`
   display: flex;
-  padding: 24px 0 34px;
-  flex-direction: column;
+  padding: 24px 0 8px;
+  flex-direction: column-reverse;
   gap: 16px;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    padding: 24px 0 0;
+  `}
 
   ${({theme}) => theme.mediaWidth.minMedium`
     background: red;
@@ -36,6 +42,16 @@ const OverviewLeftContainer = styled.div`
   gap: 20px;
 `
 
+const OverviewRightContainer = styled.div`
+  display: flex;
+  gap: 24px;
+  justify-content: flex-start;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    justify-content: flex-end;
+  `}
+`
+
 const LearnMoreLink = styled.a`
   font-size: 12px;
   font-family: Inter;
@@ -51,12 +67,41 @@ const ResponsiveFlexRow = styled(FlexRowTextContainer)`
   `}
 `
 
+const StyledCard = styled.div`
+  width: 260px;
+  height: 112px;
+  box-sizing: border-box;
+  padding: 16px;
+  border-radius: 8px;
+  border: 0.5px solid rgba(113, 206, 255, 0.5);
+  background-color: #1b2131;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+`
+
+const CardIcon = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: ${({theme}) => theme.dark.grey4};
+`
+
+const CardInfoBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`
+
 const SeasonContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
 `
-const LeaderboardOverview = ({userPoints}: {userPoints?: number}) => {
+const LeaderboardOverview = ({userPoints, pointsUpdatedAt}: {userPoints?: number; pointsUpdatedAt: string}) => {
   const {account} = useActiveWeb3React()
   const yourPoints: string = `${userPoints ?? '0'} points`
   const toggleWalletModal = useWalletModalToggle()
@@ -85,13 +130,27 @@ const LeaderboardOverview = ({userPoints}: {userPoints?: number}) => {
             </FlexRowTextContainer>
           )}
 
-          <ResponsiveFlexRow>
+          <FlexRowTextContainer>
             <TEXT.Supplemental color={colors(false).dark.grey2}>Points are calculated on Thursdays.</TEXT.Supplemental>
             <LearnMoreLink target="_blank" href="https://docs.google.com/document/d/1IAtRTuijLdG8ytlXElVLjYbIPI0BqnN5BK__RY2aZ9A/edit?usp=sharing">
               Learn more ➞
             </LearnMoreLink>
-          </ResponsiveFlexRow>
+          </FlexRowTextContainer>
         </OverviewLeftContainer>
+
+        <OverviewRightContainer>
+          <StyledCard>
+            <CardIcon>
+              <Clock color={colors(false).dark.tan2} />
+            </CardIcon>
+            <CardInfoBox>
+              <TEXT.SmallBody color={'#C4C4C4'}>Points Updated At</TEXT.SmallBody>
+              <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
+                {moment.utc(pointsUpdatedAt).format('DD MMM HH:mm')} UTC
+              </TEXT.BoldNumber>
+            </CardInfoBox>
+          </StyledCard>
+        </OverviewRightContainer>
       </OverviewContainer>
     </>
   )

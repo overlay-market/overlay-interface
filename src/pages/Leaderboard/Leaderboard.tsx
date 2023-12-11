@@ -8,8 +8,9 @@ import styled from 'styled-components'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {shortenAddress} from '../../utils/web3'
 import useAxios from 'axios-hooks'
-import {LEADERBOARRD_POINTS_API} from '../../constants/applications'
+import {LEADERBOARD_POINTS_API} from '../../constants/applications'
 import {useEffect, useMemo, useState} from 'react'
+import Loader from '../../components/Loaders/Loaders'
 
 const LeaderboardsTable = styled(StyledTable)`
   .points-prev-week,
@@ -87,30 +88,27 @@ export interface ILeaderboardRank {
   _id: string
   totalPoints: number
   previousWeekPoints: number
+  rank?: number
 }
 export interface ILeaderboardUserRank extends ILeaderboardRank {
   username?: string
   avatar?: string
 }
 
-export interface IUserRank extends ILeaderboardUserRank {
-  rank?: number
-}
-
 export interface ILeaderboardPointsData {
   previousWeekDetails: IPrevWeekDetails
   leaderboardTable: [ILeaderboardRank]
-  user?: IUserRank
+  user?: ILeaderboardRank
 }
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
   const [ranks, setRanks] = useState<[ILeaderboardUserRank]>()
-  const [userData, setUserData] = useState<IUserRank>()
+  const [userData, setUserData] = useState<ILeaderboardUserRank>()
   const numberOfRows = 10
 
-  const [{data: pointsData}] = useAxios({
-    baseURL: LEADERBOARRD_POINTS_API,
+  const [{data: pointsData, loading: dataLoading}] = useAxios({
+    baseURL: LEADERBOARD_POINTS_API,
     url: `${numberOfRows}${account ? `/${account}` : ''}`,
     method: 'GET',
   })
@@ -141,15 +139,15 @@ const Leaderboard = () => {
     setRanks(processedRanks as unknown as [ILeaderboardUserRank])
   }, [leaderboardPointsData])
 
-  const curUserData = useMemo<IUserRank>(() => {
+  const curUserData = useMemo<ILeaderboardRank>(() => {
     if (pointsData) {
       return pointsData?.user
     }
   }, [pointsData])
 
-  const [{data: userPointsData}, getUserPointsData] = useAxios(
+  const [{data: userPointsData, loading: userDataLoading}, getUserPointsData] = useAxios(
     {
-      baseURL: LEADERBOARRD_POINTS_API,
+      baseURL: LEADERBOARD_POINTS_API,
       method: 'GET',
     },
     {manual: true},
@@ -164,22 +162,31 @@ const Leaderboard = () => {
   }, [account, pointsData, curUserData, getUserPointsData])
 
   useEffect(() => {
+    const userRankData = {
+      ...(curUserData ?? userPointsData),
+      username: undefined,
+    }
+
+    setUserData(userRankData as unknown as ILeaderboardUserRank)
+  }, [curUserData, userPointsData])
+
+  useEffect(() => {
     const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
 
     const getUserData = async () => {
       const username = account && (await providerEth.lookupAddress(account))
       const userRankData = {
-        ...(curUserData ?? userPointsData),
+        ...userData,
         username,
       }
 
-      setUserData(userRankData as unknown as IUserRank)
+      setUserData(userRankData as unknown as ILeaderboardUserRank)
     }
 
-    if (account) {
+    if (account && userData?._id && !userData.username) {
       getUserData()
     }
-  }, [account, curUserData, userPointsData])
+  }, [account, curUserData, userPointsData, userData, setUserData])
 
   useEffect(() => {
     const getRanks = async () => {
@@ -209,7 +216,11 @@ const Leaderboard = () => {
 
   return (
     <PageContainer>
-      <LeaderboardOverview userPoints={userData?.totalPoints} pointsUpdatedAt={prevWeekDetails?.sessionEnd} />
+      <LeaderboardOverview
+        userPoints={userData?.totalPoints}
+        pointsUpdatedAt={prevWeekDetails?.sessionEnd}
+        isLoading={dataLoading || userDataLoading}
+      />
 
       <LeaderboardsTable smWidth="100%">
         <TableHead>
@@ -235,7 +246,9 @@ const Leaderboard = () => {
           <TableBody>
             <UserRankingRow notclickable="true">
               <TableDataCell className="rank" noborder="true" textalign="center">
-                <TEXT.SmallBody color={colors(true).dark.white}>{userData?.rank ?? 'N/A'}</TEXT.SmallBody>
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.rank ?? 'N/A'}
+                </TEXT.SmallBody>
               </TableDataCell>
               <TableDataCell noborder="true">
                 <UsernameContainer>
@@ -249,10 +262,14 @@ const Leaderboard = () => {
               </TableDataCell>
 
               <TableDataCell className="points-prev-week" noborder="true">
-                <TEXT.SmallBody color={colors(true).dark.white}>{userData?.previousWeekPoints ?? '0'}</TEXT.SmallBody>
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.previousWeekPoints ?? '0'}
+                </TEXT.SmallBody>
               </TableDataCell>
               <TableDataCell className="total-point" noborder="true">
-                <TEXT.SmallBody color={colors(true).dark.white}>{userData?.totalPoints ?? '0'}</TEXT.SmallBody>
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.totalPoints ?? '0'}
+                </TEXT.SmallBody>
               </TableDataCell>
             </UserRankingRow>
           </TableBody>

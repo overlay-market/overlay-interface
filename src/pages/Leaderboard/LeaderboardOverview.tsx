@@ -3,6 +3,7 @@ import {TEXT, colors} from '../../theme/theme'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {Clock} from 'react-feather'
+import Loader from '../../components/Loaders/Loaders'
 import moment from 'moment'
 
 const OverviewContainer = styled.div`
@@ -101,9 +102,8 @@ const SeasonContainer = styled.div`
   flex-direction: row;
   align-items: center;
 `
-const LeaderboardOverview = ({userPoints, pointsUpdatedAt}: {userPoints?: number; pointsUpdatedAt: string}) => {
+const LeaderboardOverview = ({userPoints, pointsUpdatedAt, isLoading}: {userPoints?: number; pointsUpdatedAt: string; isLoading: boolean}) => {
   const {account} = useActiveWeb3React()
-  const yourPoints: string = `${userPoints ?? '0'} points`
   const toggleWalletModal = useWalletModalToggle()
 
   return (
@@ -116,7 +116,7 @@ const LeaderboardOverview = ({userPoints, pointsUpdatedAt}: {userPoints?: number
           {account ? (
             <ResponsiveFlexRow>
               <TEXT.BoldHeader1 fontSize={24} color={colors(true).dark.white}>
-                You have {yourPoints}
+                You have {isLoading ? <Loader size="16px" /> : `${userPoints ?? '0'} points`}
               </TEXT.BoldHeader1>
             </ResponsiveFlexRow>
           ) : (
@@ -146,7 +146,7 @@ const LeaderboardOverview = ({userPoints, pointsUpdatedAt}: {userPoints?: number
             <CardInfoBox>
               <TEXT.SmallBody color={'#C4C4C4'}>Points Updated At</TEXT.SmallBody>
               <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
-                {moment.utc(pointsUpdatedAt).format('DD MMM HH:mm')} UTC
+                {!pointsUpdatedAt ? <Loader size="16px" /> : `${moment.utc(pointsUpdatedAt).format('DD MMM HH:mm')} UTC`}
               </TEXT.BoldNumber>
             </CardInfoBox>
           </StyledCard>

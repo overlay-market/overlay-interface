@@ -14,6 +14,7 @@ import Loader from '../../components/Loaders/Loaders'
 
 const LeaderboardsTable = styled(StyledTable)`
   .points-prev-week,
+  .rankings-header,
   .username {
     display: none;
   }
@@ -21,6 +22,7 @@ const LeaderboardsTable = styled(StyledTable)`
   ${({theme}) => theme.mediaWidth.minSmall`
   .points-prev-week,
   .username,
+  .rankings-header,
   .total-point {
     display: table-cell;
   }
@@ -229,7 +231,7 @@ const Leaderboard = () => {
               <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
             </HeaderCell>
             <HeaderCell smWidth={80} textalign="start" noborder={`${account && 'true'}`}>
-              <TEXT.SmallBody fontWeight={600} color={colors(true).dark.white}>
+              <TEXT.SmallBody className="rankings-header" fontWeight={600} color={colors(true).dark.white}>
                 Leaderboard Rankings
               </TEXT.SmallBody>
             </HeaderCell>

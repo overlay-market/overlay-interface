@@ -12,6 +12,7 @@ export enum ClaimId {
   ARBITRUM_AMA = 'arbitrum-ama',
   TESTING_A = 'testing-a',
   TESTING_B = 'testing-b',
+  LB4 = 'lb4',
 }
 
 export type ClaimMap = {[claimId: string]: string}
@@ -30,6 +31,7 @@ export const MERKLE_DISTIBUTOR_ADDRESSES: ClaimMap = {
   [ClaimId.ARBITRUM]: '',
   [ClaimId.TESTING_A]: '0xB5Fd24fB1C311b78626032F6734911c13Ab86E30',
   [ClaimId.TESTING_B]: '0xDC33c6E189cA5EB0aa684A85770582d49B60df60',
+  [ClaimId.LB4]: '0x9d16fBEc655bd33bf19DB09621dFBE1A00e3787F',
 }
 
 export const MERKLE_PROOFS: ClaimMap = {

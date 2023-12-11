@@ -15,6 +15,7 @@ import {useClaimMerkleTreeContract} from '../../hooks/useContract'
 import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useHasClaimedMerkletree} from '../../hooks/useHasClaimedMerkletree'
 import axios, {Method} from 'axios'
+import {ClaimId, MERKLE_DISTIBUTOR_ADDRESSES} from '../../constants/claims'
 // import {fetchDataFromAPI, fetchDataFromMongoDB} from './ClaimData'
 
 const BridgeContainer = styled.div`
@@ -42,8 +43,8 @@ const Claim = ({
 }: RouteComponentProps<{claimId: string}>) => {
   const {account, chainId} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
-  // const claimMerkletreeContract = useClaimMerkleTreeContract('0x9d16fbec655bd33bf19db09621dfbe1a00e3787f')
-  const userHasClaimed = useHasClaimedMerkletree(claimId, account)
+  const merkleTreeContractAddress = MERKLE_DISTIBUTOR_ADDRESSES[claimId]
+  const userHasClaimed = useHasClaimedMerkletree(merkleTreeContractAddress, account)
   const [userClaimData, setUserClaimData] = useState<any>()
   // const hasClaimed = useSingleCallResult(claimMerkletreeContract, 'hasClaimed', [account])
   // console.log('claimMerkletreeContract', claimMerkletreeContract, account)
@@ -80,14 +81,14 @@ const Claim = ({
     state: useClaimCallbackState,
     callback: claimCallback,
     error: useClaimCallbackError,
-  } = useClaimMerkletreeCallBack(claimId, account, userClaimData?.tokenAmount, userClaimData?.proof, undefined)
+  } = useClaimMerkletreeCallBack(merkleTreeContractAddress, account, userClaimData?.tokenAmount, userClaimData?.proof, undefined)
 
   // used for UI loading states
   const [, setAttempting] = useState<boolean>(false)
 
   // wrap in useMemo hook to account for changes in claimId
   const handleClaim = useCallback(() => {
-    if (!claimId || !claimCallback || useClaimCallbackError || !useClaimCallbackState) return
+    if (!merkleTreeContractAddress || !claimCallback || useClaimCallbackError || !useClaimCallbackState) return
     setAttempting(true)
     claimCallback()
       // reset modal and log error
@@ -100,7 +101,7 @@ const Claim = ({
           setIsFullyClaimed(true)
         }
       })
-  }, [claimCallback, claimId, useClaimCallbackError, useClaimCallbackState])
+  }, [claimCallback, merkleTreeContractAddress, useClaimCallbackError, useClaimCallbackState])
 
   const ClaimButton = useMemo(() => {
     return isFullyClaimed ? (

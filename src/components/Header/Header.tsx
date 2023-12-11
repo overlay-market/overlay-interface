@@ -225,7 +225,7 @@ export default function Header() {
         <TEXT.Menu>Bridge</TEXT.Menu>
       </StyledLink>
 
-      <StyledLink to={`/claim/${ClaimId.BEACON_HOLDERS}`}>
+      <StyledLink to={`/claim/${ClaimId.LB4}`}>
         <TEXT.Menu>Claim</TEXT.Menu>
       </StyledLink>
 

@@ -16,6 +16,7 @@ import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useHasClaimedMerkletree} from '../../hooks/useHasClaimedMerkletree'
 import axios, {Method} from 'axios'
 import {ClaimId, MERKLE_DISTIBUTOR_ADDRESSES} from '../../constants/claims'
+import {useCookies} from 'react-cookie'
 // import {fetchDataFromAPI, fetchDataFromMongoDB} from './ClaimData'
 
 const BridgeContainer = styled.div`
@@ -46,6 +47,7 @@ const Claim = ({
   const merkleTreeContractAddress = MERKLE_DISTIBUTOR_ADDRESSES[claimId]
   const userHasClaimed = useHasClaimedMerkletree(merkleTreeContractAddress, account)
   const [userClaimData, setUserClaimData] = useState<any>()
+  const [cookies, setCookie] = useCookies()
   // const hasClaimed = useSingleCallResult(claimMerkletreeContract, 'hasClaimed', [account])
   // console.log('claimMerkletreeContract', claimMerkletreeContract, account)
 
@@ -55,9 +57,23 @@ const Claim = ({
   useEffect(() => {
     const fetchData = async () => {
       setFetchingData(true)
-      if (!account) return
+      if (!account || !merkleTreeContractAddress) return
+
+      // Check if there's a matching cookie for the account
+      const cookieKey = `userClaimData_${account}_${merkleTreeContractAddress.toLowerCase()}`
+      const existingCookie = cookies[cookieKey]
+
+      if (existingCookie) {
+        // Use the existing data from the cookie
+        setUserClaimData(existingCookie)
+        setFetchingData(false)
+        return
+      }
+
       try {
-        const response = await fetch(`https://sa-east-1.aws.data.mongodb-api.com/app/data-foyef/endpoint/getUser?wallet=${account}`)
+        const response = await fetch(
+          `https://sa-east-1.aws.data.mongodb-api.com/app/data-foyef/endpoint/getUser?wallet=${account}&contract=${merkleTreeContractAddress.toLowerCase()}`,
+        )
 
         if (!response.ok) {
           throw new Error('Network response was not ok')
@@ -65,6 +81,8 @@ const Claim = ({
 
         const data = await response.json()
         setUserClaimData(data.result)
+        // Save data to cookie
+        setCookie(cookieKey, JSON.stringify(data.result), {path: '/', maxAge: 1800})
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -72,7 +90,7 @@ const Claim = ({
     }
 
     fetchData()
-  }, [account])
+  }, [account, merkleTreeContractAddress, setCookie, cookies])
 
   const userClaimAmount = userClaimData?.tokenAmount && formatWeiToParsedNumber(userClaimData.tokenAmount, 18, 0)
 

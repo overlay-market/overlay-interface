@@ -6,6 +6,7 @@ export interface PoolsData {
   poolType: string
   chainId: number
   isStake: boolean
+  disabled?: boolean
 }
 
 export const allPoolsData: PoolsData[] = [
@@ -15,6 +16,7 @@ export const allPoolsData: PoolsData[] = [
     poolType: 'thirdwebStaking',
     chainId: SupportedChainId.ARBITRUM,
     isStake: true,
+    disabled: true,
   },
   {
     poolName: 'Stake OVL for NIP',

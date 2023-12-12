@@ -22,6 +22,9 @@ const BridgeContainer = styled.div`
   max-width: 400px;
   margin-top: 64px;
   color: white;
+  @media (max-width: 450px) {
+    padding: 0px 16px !important;
+  }
 `
 
 const ClaimModalContainer = styled.div`

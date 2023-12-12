@@ -1,3 +1,5 @@
+import {SupportedChainId} from './chains'
+
 export enum ClaimId {
   BEACON_HOLDERS = 'beacon-holders',
   OVERLAY = 'overlay',
@@ -16,6 +18,11 @@ export enum ClaimId {
 }
 
 export type ClaimMap = {[claimId: string]: string}
+export type ClaimChainMap = {[claimId: string]: number}
+
+export const MERKLE_DISTRIBUTOR_CHAINID: ClaimChainMap = {
+  [ClaimId.LB4]: SupportedChainId.ARBITRUM_SEPOLIA,
+}
 
 export const MERKLE_DISTIBUTOR_ADDRESSES: ClaimMap = {
   [ClaimId.BEACON_HOLDERS]: '0xe00a6444686988C809bEa59bC8a18EA298a6A0a1',

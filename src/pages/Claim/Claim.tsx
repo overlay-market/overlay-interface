@@ -11,11 +11,11 @@ import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {RouteComponentProps} from 'react-router-dom'
 import {SupportedChainId} from '../../constants/chains'
 import {useClaimMerkletreeCallBack} from '../../hooks/useClaimMerkleTreeCallback'
-import {useClaimMerkleTreeContract} from '../../hooks/useContract'
-import {useSingleCallResult} from '../../state/multicall/hooks'
+// import {useClaimMerkleTreeContract} from '../../hooks/useContract'
+// import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useHasClaimedMerkletree} from '../../hooks/useHasClaimedMerkletree'
-import axios, {Method} from 'axios'
-import {ClaimId, MERKLE_DISTIBUTOR_ADDRESSES} from '../../constants/claims'
+// import axios, {Method} from 'axios'
+import {MERKLE_DISTIBUTOR_ADDRESSES, MERKLE_DISTRIBUTOR_CHAINID} from '../../constants/claims'
 import {useCookies} from 'react-cookie'
 // import {fetchDataFromAPI, fetchDataFromMongoDB} from './ClaimData'
 
@@ -42,22 +42,21 @@ const Claim = ({
     params: {claimId},
   },
 }: RouteComponentProps<{claimId: string}>) => {
-  const {account, chainId} = useActiveWeb3React()
+  const {account, active, chainId} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const merkleTreeContractAddress = MERKLE_DISTIBUTOR_ADDRESSES[claimId]
   const userHasClaimed = useHasClaimedMerkletree(merkleTreeContractAddress, account)
   const [userClaimData, setUserClaimData] = useState<any>()
   const [cookies, setCookie] = useCookies()
-  // const hasClaimed = useSingleCallResult(claimMerkletreeContract, 'hasClaimed', [account])
-  // console.log('claimMerkletreeContract', claimMerkletreeContract, account)
 
   const [isFullyClaimed, setIsFullyClaimed] = useState<boolean>(false)
   const [fetchingData, setFetchingData] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchData = async () => {
-      setFetchingData(true)
       if (!account || !merkleTreeContractAddress) return
+
+      setFetchingData(true)
 
       // Check if there's a matching cookie for the account
       const cookieKey = `userClaimData_${account}_${merkleTreeContractAddress.toLowerCase()}`
@@ -83,10 +82,10 @@ const Claim = ({
         setUserClaimData(data.result)
         // Save data to cookie
         setCookie(cookieKey, JSON.stringify(data.result), {path: '/', maxAge: 1800})
+        setFetchingData(false)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
-      setFetchingData(false)
     }
 
     fetchData()
@@ -134,33 +133,16 @@ const Claim = ({
   }, [isFullyClaimed, handleClaim])
 
   const isWrongNetwork = useMemo(() => {
-    if (!chainId) return true
-    return chainId !== Number(SupportedChainId.ARBITRUM_SEPOLIA)
-  }, [chainId])
+    if (!chainId) return false
+    return chainId !== Number(MERKLE_DISTRIBUTOR_CHAINID[claimId])
+  }, [chainId, claimId])
 
   return useMemo(() => {
-    if (isWrongNetwork) {
-      return (
-        <BridgeContainer>
-          <ClaimModalContainer>
-            <FlexColumn padding="16px">
-              <FlexRow marginBottom="8px">
-                <TEXT.SmallBody marginRight="16px">Claim OVL</TEXT.SmallBody>
-                <TEXT.SmallBody>{account ? shortenAddress(account) : 'Not connected'}</TEXT.SmallBody>
-              </FlexRow>
-            </FlexColumn>
-            <FlexColumn padding="16px 16px 32px">
-              <TEXT.SmallBody marginRight="auto">Wrong network, switch to Arbitrum-One</TEXT.SmallBody>
-            </FlexColumn>
-          </ClaimModalContainer>
-        </BridgeContainer>
-      )
-    }
     return (
       !fetchingData && (
         <BridgeContainer>
           <>
-            {!account && (
+            {!account && active && (
               <ClaimModalContainer>
                 <FlexColumn padding="16px">
                   <TEXT.SmallBody marginRight="auto" marginBottom="16px">
@@ -174,7 +156,26 @@ const Claim = ({
               </ClaimModalContainer>
             )}
 
-            {account && !userClaimData && userHasClaimed === undefined && (
+            {isWrongNetwork && account && (
+              <BridgeContainer>
+                <ClaimModalContainer>
+                  <FlexColumn padding="16px">
+                    <FlexRow marginBottom="8px">
+                      <TEXT.SmallBody marginRight="16px">Claim OVL</TEXT.SmallBody>
+                      <TEXT.SmallBody>{account ? shortenAddress(account) : 'Not connected'}</TEXT.SmallBody>
+                    </FlexRow>
+                  </FlexColumn>
+                  <FlexColumn padding="16px 16px 32px">
+                    <TEXT.SmallBody marginRight="auto">
+                      Wrong network, switch to{' '}
+                      {MERKLE_DISTRIBUTOR_CHAINID[claimId] === SupportedChainId.ARBITRUM_SEPOLIA ? 'Arbitrum-Sepolia' : 'Arbitrum-One'}
+                    </TEXT.SmallBody>
+                  </FlexColumn>
+                </ClaimModalContainer>
+              </BridgeContainer>
+            )}
+
+            {!isWrongNetwork && account && (!userClaimData || userClaimData === 'null') && userHasClaimed === false && (
               <ClaimModalContainer>
                 <FlexColumn padding="16px">
                   <TEXT.SmallBody marginRight="auto" marginBottom="18px">
@@ -190,7 +191,7 @@ const Claim = ({
               </ClaimModalContainer>
             )}
 
-            {account && userClaimData && userHasClaimed === true && (
+            {!isWrongNetwork && account && userClaimData && userHasClaimed === true && (
               <ClaimModalContainer>
                 <FlexColumn padding="16px">
                   <TEXT.SmallBody marginRight="auto" marginBottom="18px">
@@ -206,7 +207,7 @@ const Claim = ({
               </ClaimModalContainer>
             )}
 
-            {account && userClaimAmount && !userHasClaimed && userHasClaimed !== undefined && (
+            {!isWrongNetwork && account && userClaimAmount && userHasClaimed === false && (
               <ClaimModalContainer>
                 <FlexColumn padding="16px" borderBottom="1px solid #71CEFF">
                   <FlexRow marginBottom="8px">
@@ -214,7 +215,7 @@ const Claim = ({
                     <TEXT.SmallBody>{account ? shortenAddress(account) : 'Not connected'}</TEXT.SmallBody>
                   </FlexRow>
                   <TEXT.AdjustableSize fontSize="34px" marginRight="auto">
-                    Already Claimed
+                    {userClaimAmount} OVL
                   </TEXT.AdjustableSize>
                 </FlexColumn>
                 <FlexColumn padding="16px">
@@ -233,7 +234,7 @@ const Claim = ({
                   >
                     Read more about OVL
                   </ExternalLink>
-                  <TriggerActionButton isDisabled={true}>Claim OVL</TriggerActionButton>
+                  {ClaimButton}
                 </FlexColumn>
               </ClaimModalContainer>
             )}
@@ -241,7 +242,7 @@ const Claim = ({
         </BridgeContainer>
       )
     )
-  }, [account, isWrongNetwork, userClaimAmount, userClaimData, userHasClaimed, ClaimButton, toggleWalletModal])
+  }, [account, isWrongNetwork, userClaimAmount, userClaimData, userHasClaimed, toggleWalletModal, fetchingData, ClaimButton, active, isWrongNetwork])
 }
 
 export default Claim

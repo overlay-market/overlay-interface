@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro'
-import {Button, IconButton, Link, capitalize} from '@material-ui/core'
+import {Button, IconButton, Link} from '@material-ui/core'
 import {Image} from 'rebass'
 import OverlayLogoDark from '../../assets/images/overlay-logo-dark.png'
 import {LINKS} from '../../constants/links'

@@ -152,7 +152,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
           </StyledInternalLink>
           <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.BEACON_HOLDERS}`}>
-            <StyledMenuLink displayText={'Clime'} linkDestination={'/claimpage'} currentLocation={location} />
+            <StyledMenuLink displayText={'Claim'} linkDestination={'/claimpage'} currentLocation={location} />
           </StyledInternalLink>
           <Separator />
           <ExternalLinks mobile isSubMenuOpen={isSubMenuOpen} setIsSubMenuOpen={setIsSubMenuOpen} />

@@ -11,13 +11,9 @@ import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {RouteComponentProps} from 'react-router-dom'
 import {SupportedChainId} from '../../constants/chains'
 import {useClaimMerkletreeCallBack} from '../../hooks/useClaimMerkleTreeCallback'
-// import {useClaimMerkleTreeContract} from '../../hooks/useContract'
-// import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useHasClaimedMerkletree} from '../../hooks/useHasClaimedMerkletree'
-// import axios, {Method} from 'axios'
 import {MERKLE_DISTIBUTOR_ADDRESSES, MERKLE_DISTRIBUTOR_CHAINID} from '../../constants/claims'
 import {useCookies} from 'react-cookie'
-// import {fetchDataFromAPI, fetchDataFromMongoDB} from './ClaimData'
 
 const BridgeContainer = styled.div`
   display: flex;

@@ -65,7 +65,6 @@ function useClaimMerkletreeCallArguments(
 
     return [
       {
-        // address: txn.address,
         address: txn.address,
         calldata: calldata,
         value: txn.value,

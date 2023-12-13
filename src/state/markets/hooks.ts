@@ -12,7 +12,7 @@ export function useMarketDataFromSubgraph(marketAddress: string | undefined | nu
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   return useMarketQuery(marketId ? {market: marketId} : skipToken, {
-    pollingInterval: chainId === 42161 ? 10000 : 1000,
+    pollingInterval: chainId === 42161 ? 10000 : 5000,
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -72,7 +72,7 @@ export function useTotalMarketsDataFromSubgraph() {
   return useTotalMarketsQuery(
     {},
     {
-      pollingInterval: chainId === 42161 ? 10000 : 1000,
+      pollingInterval: chainId === 42161 ? 10000 : 5000,
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
       skip: false,
@@ -108,7 +108,7 @@ export function useActiveMarketsDataFromSubgraph() {
   return useActiveMarketsQuery(
     {},
     {
-      pollingInterval: chainId === 42161 ? 10000 : 1000,
+      pollingInterval: chainId === 42161 ? 10000 : 5000,
       refetchOnMountOrArgChange: true,
       refetchOnReconnect: true,
       skip: false,

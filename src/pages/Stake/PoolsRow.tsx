@@ -27,7 +27,7 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
   const classes = useStyles()
   const history = useHistory()
   const {account} = useActiveWeb3React()
-  const {poolName, poolAddress} = pool
+  const {poolName, poolAddress, disabled} = pool
 
   let tvl: string | number = 0
   let poolRewards: string = '-'
@@ -78,12 +78,12 @@ const PoolsRow = ({index, pool, addToTotalStaked}: PoolsRowProps) => {
 
       {/* TVL */}
       <StyledTableCellThin id="tvl" align="right" className={classes.tableCell}>
-        <TEXT.Number>{tvl} OVL</TEXT.Number>
+        <TEXT.Number>{disabled ? 'Deprecated - Click to Withdraw' : `${tvl} OVL`}</TEXT.Number>
       </StyledTableCellThin>
 
       {/* Rewards */}
       <StyledTableCellThin id="volume24h" align="right" className={classes.tableCell}>
-        <TEXT.Number>{poolRewards}</TEXT.Number>
+        <TEXT.Number>{disabled ? '' : poolRewards}</TEXT.Number>
       </StyledTableCellThin>
 
       {/* Balance */}

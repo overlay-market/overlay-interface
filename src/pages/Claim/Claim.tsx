@@ -215,8 +215,8 @@ const Claim = ({
                       Congrats and welcome (or welcome back)!{' '}
                     </TEXT.BoldStandardBody>
                     <TEXT.StandardBody marginBottom="32px" textAlign={'center'}>
-                      OVL is a powerful tool for interacting with the Overlay Protocol, voting on governance, and special privileges within the
-                      community Discord. We have so much planned, and are excited for you to be a part of it.
+                      OVL is a powerful tool for interacting with the Overlay Protocol, voting on governance, and gives special privileges within the
+                      community Discord. We have so much planned, and are excited for you to be a part of it!
                     </TEXT.StandardBody>
                     {StartTradingButton}
                   </FlexColumn>

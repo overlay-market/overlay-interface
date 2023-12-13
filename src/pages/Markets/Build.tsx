@@ -49,6 +49,13 @@ import {PositionStatus, PositionsTableForBuildPage} from '../Positions/Positions
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 
+const MEDIA_WIDTH = {
+  extraSmall: '375px',
+  small: '767px',
+  medium: '1023px',
+  large: '1439px',
+}
+
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
   padding: 12px;
@@ -94,11 +101,21 @@ const ControlInterfaceHeadContainer = styled(FlexColumn)`
 
 const BuildContainer = styled.div`
   display: flex;
-  max-width: 1200px;
+  max-width: 1232px;
   flex-direction: row;
   flex-direction: row-reverse;
-  @media (max-width: 1400px) {
+  @media (max-width: ${MEDIA_WIDTH.medium}) {
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+    margin-bottom: -32px;
+    flex-wrap: wrap;
+    max-width: 720px;
+    justify-content: space-between;
+  }
+  @media (max-width: ${MEDIA_WIDTH.small}) {
     flex-direction: column;
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+    padding-top: 8px;
+    margin-bottom: -120px;
   }
 `
 
@@ -147,29 +164,61 @@ export const NumericalInputBottomText = styled(TEXT.Supplemental)`
 `
 
 const PositionsTableContainer = styled.div`
-  max-width: 800px;
-  @media (max-width: 600px) {
-    max-width: 350px;
+  max-width: 813px;
+  @media (max-width: ${MEDIA_WIDTH.large}) {
+    max-width: 565px;
+  }
+  @media (max-width: ${MEDIA_WIDTH.medium}) {
+    display: none;
+  }
+  @media (max-width: ${MEDIA_WIDTH.small}) {
+    max-width: 359px;
+    display: flex;
+  }
+`
+
+const PositionsTableContainerSmallSize = styled.div`
+  display: none;
+  @media (max-width: ${MEDIA_WIDTH.medium}) {
+    width: 720px;
+    position: relative;
+    top: 77px;
+    display: flex;
+  }
+  @media (max-width: ${MEDIA_WIDTH.small}) {
+    display: none;
   }
 `
 
 const LeftColumn = styled.div`
   display: flex;
   flex-direction: column;
-  width: 70%;
-  @media (max-width: 1400px) {
+  @media (max-width: ${MEDIA_WIDTH.large}) {
     width: 100%;
     margin-bottom: 16px;
+    @media (max-width: ${MEDIA_WIDTH.medium}) {
+      width: auto;
+    }
   }
 `
 
 const RightColumn = styled.div`
-  padding-left: 20px;
+  padding-left: 40px;
   order: -1;
-  @media (max-width: 1400px) {
+  @media (max-width: ${MEDIA_WIDTH.large}) {
     width: 100%;
-    padding-left: 0px;
+    padding-left: 16px;
     margin-bottom: 16px;
+    @media (max-width: ${MEDIA_WIDTH.medium}) {
+      padding-left: 8px;
+      position: relative;
+      top: 77px;
+      width: auto;
+      @media (max-width: ${MEDIA_WIDTH.small}) {
+        top: 0;
+        padding-left: 0;
+      }
+    }
   }
 `
 
@@ -609,7 +658,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           <PositionsTableContainer>
             <PositionsTableForBuildPage
               title="Positions"
-              marginTop="64px"
+              marginTop="40px"
               positionStatus={PositionStatus.Build}
               rowsCount={0}
               marketsData={marketsData}
@@ -732,7 +781,15 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             />
           </MarketCard>
         </RightColumn>
-
+        <PositionsTableContainerSmallSize>
+          <PositionsTableForBuildPage
+            title="Positions"
+            marginTop="40px"
+            positionStatus={PositionStatus.Build}
+            rowsCount={0}
+            marketsData={marketsData}
+          />
+        </PositionsTableContainerSmallSize>
         <ConfirmTxnModal
           marketName={marketName}
           isOpen={showConfirm}

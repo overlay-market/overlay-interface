@@ -139,7 +139,13 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
-  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(account, rowsPerPage, (page - 1) * rowsPerPage, positionStatus, undefined)
+  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(
+    account,
+    rowsPerPage,
+    (page - 1) * rowsPerPage,
+    positionStatus,
+    undefined,
+  )
   const [showLoader, setShowLoader] = useState(false)
 
   // Show loader only on page change
@@ -198,35 +204,35 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
               />
             )
           } else if (positionStatus === PositionStatus.Closed) {
-              return (
-                <UnwindsTransactions
-                  key={row.id}
-                  transaction={{
-                    ...row,
-                    position: {
-                      ...marketState,
-                      ...row.position,
-                    },
-                  }}
-                  columns={positionColumns[PositionStatus.Closed]}
-                />
-              )
-            } else {
-              return (
-                <LiquidatesTransactions
-                  key={row.id}
-                  transaction={{
-                    ...row,
-                    position: {
-                      ...marketState,
-                      ...row.position,
-                    },
-                  }}
-                  columns={positionColumns[PositionStatus.Liquidated]}
-                />
-              )
-            }
-          })}
+            return (
+              <UnwindsTransactions
+                key={row.id}
+                transaction={{
+                  ...row,
+                  position: {
+                    ...marketState,
+                    ...row.position,
+                  },
+                }}
+                columns={positionColumns[PositionStatus.Closed]}
+              />
+            )
+          } else {
+            return (
+              <LiquidatesTransactions
+                key={row.id}
+                transaction={{
+                  ...row,
+                  position: {
+                    ...marketState,
+                    ...row.position,
+                  },
+                }}
+                columns={positionColumns[PositionStatus.Liquidated]}
+              />
+            )
+          }
+        })}
       </>
     ) : null
   }, [positionStatus, marketsData, positionsTableData])
@@ -241,7 +247,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
       </TEXT.BoldStandardBody>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <TableContainer>
-          <StyledTable minWidth={(PositionStatus.Build && !PositionStatus.Open) ? 'unset' : (PositionStatus.Open ? '100%' : '')}>
+          <StyledTable minWidth={PositionStatus.Build && !PositionStatus.Open ? 'unset' : PositionStatus.Open ? '100%' : ''}>
             <TableHead>
               <StyledTableHeaderRow>
                 {positionColumns[positionStatus].map((column: string) => {
@@ -266,7 +272,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
             </TableBody>
           </StyledTable>
         </TableContainer>
-        {paginatedRows &&(
+        {paginatedRows && (
           <Box display="flex" justifyContent="flex-start" alignItems="center" paddingTop={'28px'} paddingBottom={'8px'}>
             <Pagination count={pageCount} page={page} onChange={handlePageChange} />
             <Box display="flex" alignItems="center" ml="28px">
@@ -316,7 +322,13 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const params = useParams<{marketId: string}>()
-  const {positionsTableData, isUninitialized, isLoading, numberOfPositions} = usePositionsTableData(account, 1000, 0, positionStatus, params?.marketId)
+  const {positionsTableData, isUninitialized, isLoading, numberOfPositions} = usePositionsTableData(
+    account,
+    1000,
+    0,
+    positionStatus,
+    params?.marketId,
+  )
   const [showLoader, setShowLoader] = useState(false)
 
   // Show loader only on page change
@@ -341,7 +353,6 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     setPage(1)
   }
 
-
   const pageCount = useMemo(() => {
     const positionsAmount = positionsTableData && positionsTableData.account ? positionsTableData.account.positions : []
     return Math.ceil(positionsAmount.length / rowsPerPage)
@@ -350,9 +361,8 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   const paginatedRows = useMemo(() => {
     if (!positionsTableData) return null
 
-    const rows = positionStatus === PositionStatus.Build
-        ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage)
-        : []
+    const rows =
+      positionStatus === PositionStatus.Build ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage) : []
 
     setShowLoader(false)
 
@@ -360,9 +370,8 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
       <>
         {rows
           .map((row: any) => {
-            const marketAddress =
-              positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id;
-            const marketState = marketsData.find((market: any) => market.marketAddress === marketAddress);
+            const marketAddress = positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
+            const marketState = marketsData.find((market: any) => market.marketAddress === marketAddress)
 
             if (positionStatus === PositionStatus.Build) {
               if (marketAddress === params?.marketId) {
@@ -375,11 +384,11 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
                     }}
                     columns={positionColumns[PositionStatus.Build]}
                   />
-                );
+                )
               }
             }
 
-            return null;
+            return null
           })
           .filter((position: any) => position !== null)}
       </>
@@ -396,7 +405,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
       </TEXT.BoldStandardBody>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <TableContainer>
-          <StyledTable minWidth={(PositionStatus.Build && !PositionStatus.Open) ? 'unset' : (PositionStatus.Open ? '100%' : '')}>
+          <StyledTable minWidth={PositionStatus.Build && !PositionStatus.Open ? 'unset' : PositionStatus.Open ? '100%' : ''}>
             <TableHead>
               <StyledTableHeaderRow>
                 {positionColumns[positionStatus].map((column: string) => {
@@ -421,7 +430,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
             </TableBody>
           </StyledTable>
         </TableContainer>
-        {paginatedRows && numberOfPositions > 10 &&(
+        {paginatedRows && numberOfPositions > 10 && (
           <Box display="flex" justifyContent="flex-start" alignItems="center" paddingTop={'28px'} paddingBottom={'8px'}>
             <Pagination count={pageCount} page={page} onChange={handlePageChange} />
             <Box display="flex" alignItems="center" ml="28px">

@@ -9,25 +9,43 @@ import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentM
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
 
+const MEDIA_WIDTH = {
+  extraSmall: '375px',
+  small: '767px',
+  medium: '1023px',
+  large: '1439px',
+}
+
 const Container = styled.div`
-  padding-right: 16px;
-  // max-height: 420px;
-  width: 800px;
-  @media (max-width: 1400px) {
-    max-width: 350px;
-    height: 600px;
-    padding-bottom: 64px;
-    padding-right: 0px;
+  width: 813px;
+  @media (max-width: ${MEDIA_WIDTH.large}) {
+    max-width: 565px;
+    @media (max-width: ${MEDIA_WIDTH.medium}) {
+      max-width: 355px;
+    }
+    @media (max-width: ${MEDIA_WIDTH.small}) {
+      max-width: 359px;
+    }
   }
 `
 
 const MarketDetailsContainer = styled.div`
   border-top: 1px solid ${({theme}) => theme.dark.grey2};
-  padding: 16px 16px;
+  padding: 16px 0px 16px 16px;
   display: flex;
   justify-content: space-between;
-  @media (max-width: 1400px) {
-    padding: 32px 0px;
+  @media (max-width: ${MEDIA_WIDTH.large}) {
+    padding: 4px 16px 20px;
+    flex-direction: column;
+    align-items: start;
+    gap: 8px;
+    @media (max-width: ${MEDIA_WIDTH.medium}) {
+      border-top: none;
+      padding: 4px 0px 20px 16px;
+      @media (max-width: ${MEDIA_WIDTH.small}) {
+        padding: 24px 0px 20px;
+      }
+    }
   }
 `
 
@@ -35,9 +53,6 @@ const MarketPriceContainer = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
-  @media (max-width: 1400px) {
-    display: none;
-  }
 `
 
 const MarketOIContainer = styled.div`
@@ -103,7 +118,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
             <MarketPriceContainer>
               <TEXT.BoldNumber>{`${marketData?.priceCurrency}${toScientificNumber(marketData?.headerPrice)}`}</TEXT.BoldNumber>
               {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
-            <TEXT.SmallBody>24h</TEXT.SmallBody> */}
+              <TEXT.SmallBody>24h</TEXT.SmallBody> */}
             </MarketPriceContainer>
 
             <FlexRow style={{gap: '28px', width: 'auto'}}>

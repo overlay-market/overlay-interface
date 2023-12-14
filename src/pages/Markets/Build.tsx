@@ -49,13 +49,6 @@ import {PositionStatus, PositionsTableForBuildPage} from '../Positions/Positions
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 
-const MEDIA_WIDTH = {
-  extraSmall: '375px',
-  small: '767px',
-  medium: '1023px',
-  large: '1439px',
-}
-
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
   padding: 12px;
@@ -101,22 +94,33 @@ const ControlInterfaceHeadContainer = styled(FlexColumn)`
 
 const BuildContainer = styled.div`
   display: flex;
-  max-width: 1232px;
-  flex-direction: row;
-  flex-direction: row-reverse;
-  @media (max-width: ${MEDIA_WIDTH.medium}) {
+  flex-direction: column;
+  border-top: 1px solid ${({theme}) => theme.dark.grey2};
+  padding-top: 8px;
+  margin-bottom: -120px;
+  ${({theme}) => theme.mediaWidth.minSmall`
     border-top: 1px solid ${({theme}) => theme.dark.grey2};
-    margin-bottom: -32px;
+    margin: 0 8px -32px;
+    flex-direction: row-reverse;
     flex-wrap: wrap;
-    max-width: 720px;
+    width: auto;
+    padding-left: 8px;
+    gap: 8px;
     justify-content: space-between;
-  }
-  @media (max-width: ${MEDIA_WIDTH.small}) {
-    flex-direction: column;
-    border-top: 1px solid ${({theme}) => theme.dark.grey2};
-    padding-top: 8px;
-    margin-bottom: -120px;
-  }
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    border-top: none;
+    gap: 16px;
+    width: 96vw;
+    max-width: 1232px;
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    border-top: none;
+    margin: 0 0 -32px;
+    padding: 0;
+    gap: 40px;
+    width: 1232px;
+  `}
 `
 
 const PositionsButtonContainer = styled.div`
@@ -164,62 +168,67 @@ export const NumericalInputBottomText = styled(TEXT.Supplemental)`
 `
 
 const PositionsTableContainer = styled.div`
-  max-width: 813px;
-  @media (max-width: ${MEDIA_WIDTH.large}) {
-    max-width: 565px;
-  }
-  @media (max-width: ${MEDIA_WIDTH.medium}) {
+  width: 359px;
+  display: flex;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
     display: none;
-  }
-  @media (max-width: ${MEDIA_WIDTH.small}) {
-    max-width: 359px;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
     display: flex;
-  }
+    width: 100%;
+  `}
 `
 
 const PositionsTableContainerSmallSize = styled.div`
   display: none;
-  @media (max-width: ${MEDIA_WIDTH.medium}) {
-    width: 720px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    width: 100%;
     position: relative;
     top: 77px;
     display: flex;
-  }
-  @media (max-width: ${MEDIA_WIDTH.small}) {
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
     display: none;
-  }
+  `}
 `
 
 const LeftColumn = styled.div`
   display: flex;
   flex-direction: column;
-  @media (max-width: ${MEDIA_WIDTH.large}) {
-    width: 100%;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    width: auto;
+    flex: 1;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    width: auto;
+    flex: 1;
     margin-bottom: 16px;
-    @media (max-width: ${MEDIA_WIDTH.medium}) {
-      width: auto;
-    }
-  }
+  `}
 `
 
 const RightColumn = styled.div`
-  padding-left: 40px;
+  top: 0;
+  padding-left: 0;
   order: -1;
-  @media (max-width: ${MEDIA_WIDTH.large}) {
-    width: 100%;
-    padding-left: 16px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    padding-left: 8px;
+    position: relative;
+    top: 77px;
+    width: auto;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    top: 0;
+    width: auto;
+    padding-left: 0;
     margin-bottom: 16px;
-    @media (max-width: ${MEDIA_WIDTH.medium}) {
-      padding-left: 8px;
-      position: relative;
-      top: 77px;
-      width: auto;
-      @media (max-width: ${MEDIA_WIDTH.small}) {
-        top: 0;
-        padding-left: 0;
-      }
-    }
-  }
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    padding-left: 0;
+    top: 0;
+    width: auto;
+    order: -1;
+  `}
 `
 
 export const MINIMUM_SLIPPAGE_VALUE = 0.05

@@ -9,44 +9,29 @@ import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentM
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
 
-const MEDIA_WIDTH = {
-  extraSmall: '375px',
-  small: '767px',
-  medium: '1023px',
-  large: '1439px',
-}
-
 const Container = styled.div`
-  width: 813px;
-  @media (max-width: ${MEDIA_WIDTH.large}) {
-    max-width: 565px;
-    @media (max-width: ${MEDIA_WIDTH.medium}) {
-      max-width: 355px;
-    }
-    @media (max-width: ${MEDIA_WIDTH.small}) {
-      max-width: 359px;
-    }
-  }
+  width: 100%;
 `
 
 const MarketDetailsContainer = styled.div`
-  border-top: 1px solid ${({theme}) => theme.dark.grey2};
-  padding: 16px 0px 16px 16px;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  @media (max-width: ${MEDIA_WIDTH.large}) {
+  align-items: start;
+  padding: 24px 0px 20px;
+  gap: 8px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    padding: 4px 0px 20px 16px;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
     padding: 4px 16px 20px;
-    flex-direction: column;
-    align-items: start;
-    gap: 8px;
-    @media (max-width: ${MEDIA_WIDTH.medium}) {
-      border-top: none;
-      padding: 4px 0px 20px 16px;
-      @media (max-width: ${MEDIA_WIDTH.small}) {
-        padding: 24px 0px 20px;
-      }
-    }
-  }
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+    padding: 16px 0px 16px 16px;
+    flex-direction: row;
+  `}
 `
 
 const MarketPriceContainer = styled.div`

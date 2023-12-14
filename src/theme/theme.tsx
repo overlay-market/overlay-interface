@@ -25,10 +25,10 @@ export const muiTheme = createTheme({
 })
 
 export const MEDIA_WIDTHS = {
-  minExtraSmall: 576,
+  minExtraSmall: 375,
   minSmall: 768,
-  minMedium: 992,
-  minLarge: 1400,
+  minMedium: 1024,
+  minLarge: 1440,
 }
 
 const mediaWidthTemplates: {[width in keyof typeof MEDIA_WIDTHS]: typeof css} = Object.keys(MEDIA_WIDTHS).reduce((accumulator, size) => {

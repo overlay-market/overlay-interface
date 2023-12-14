@@ -169,3 +169,47 @@ export const MarketChartMap: {[name: string]: MarketChartData} = {
     schemaName: 'ethereum-mainnet-arbitrum-1',
   },
 }
+
+export type MarketDetailsData = {
+  marketName: string
+  logo: string
+  currency?: string
+}
+
+export const MarketDetails: {[address: string]: MarketDetailsData} = {
+  '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
+    marketName: 'BAYC / WETH',
+    logo: BitcoinLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+  },
+  '0x35e1d28ad9d8a80cff5bbf163a735c54eb6c1342': {
+    marketName: 'AZUKI / WETH',
+    logo: AzukiLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+  },
+  '0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e': {
+    marketName: 'PUNKS / WETH',
+    logo: PunkLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+  },
+  '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b': {
+    marketName: 'PUNKS / WETH',
+    logo: MaycLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+  },
+  '0xccd645835ca0033f0c1106e7b24f288e59e867e8': {
+    marketName: 'MILADY / WETH',
+    logo: MiladyLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+  },
+  '0x8c7dc90243fc7984583339da8df0a5d57ec491db': {
+    marketName: 'PUDGIES / WETH',
+    logo: PudgyLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+  },
+  '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9': {
+    marketName: 'CSGO Sepolia / USD',
+    logo: csgoLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+  },
+}

@@ -208,8 +208,8 @@ const LeftColumn = styled.div`
 `
 
 const RightColumn = styled.div`
-  top: 0;
   padding-left: 0;
+  top: 0;
   order: -1;
   ${({theme}) => theme.mediaWidth.minSmall`
     padding-left: 8px;

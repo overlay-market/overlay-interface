@@ -77,8 +77,8 @@ export const marketNameFromDescription = (description: string | undefined, addre
   }
 }
 
-export type MarketLogoMap = {[marketBaseToken: string]: string}
-export const MARKET_LOGO_FROM_BASE: MarketLogoMap = {
+type MarketLogoMap = {[marketBaseToken: string]: string}
+const MARKET_LOGO_FROM_BASE: MarketLogoMap = {
   WBTC: BitcoinLogo,
   BTC: BitcoinLogo,
   WETH: EthereumLogo,
@@ -102,8 +102,8 @@ export const MARKET_LOGO_FROM_BASE: MarketLogoMap = {
   CSGO: csgoLogo,
 }
 
-export type CurrencyMap = {[marketQuoteToken: string]: string}
-export const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
+type CurrencyMap = {[marketQuoteToken: string]: string}
+const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
   USD: '$',
   USDC: '$',
   DAI: '$',

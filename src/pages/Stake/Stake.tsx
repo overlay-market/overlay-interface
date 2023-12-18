@@ -363,7 +363,7 @@ const Stake = ({poolData}: PoolProps) => {
     if (poolData.disabled) {
       setPoolType('withdraw')
       setIsDisabledPool(true)
-      handleUserInput(formatBigNumber(stakedAmount, 18, 6)?.toString() ?? '0')
+      handleUserInput(utils.formatUnits(stakedAmount, 18) ?? '0')
     }
   }, [poolData.disabled, stakedAmount])
 

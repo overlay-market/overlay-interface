@@ -38,7 +38,7 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {useFractionOfCapOi} from '../../hooks/useFractionOfCapOi'
 import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
-import {PRICE_CURRENCY_FROM_QUOTE, marketNameFromDescription} from '../../constants/markets'
+import {MarketDetails} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
@@ -216,22 +216,11 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const ovl = chainId ? OVL[chainId] : undefined
 
   // @TO-DO: pull market name from feed
-  const {decimals, description, baseToken, quoteToken, baseTokenAddress, quoteTokenAddress} = useMarketName(market?.feedAddress)
+  const {decimals, baseTokenAddress, quoteTokenAddress} = useMarketName(market?.feedAddress)
 
-  const marketName = useMemo(() => {
-    if (description) return marketNameFromDescription(description, market?.id)
-    if (baseToken === 'loading' && quoteToken === 'loading') return <Loader stroke="white" size="12px" />
+  const marketName = MarketDetails[marketId]?.marketName
 
-    return `${baseToken}/${quoteToken}`
-  }, [description, baseToken, quoteToken, market])
-
-  const priceCurrency = useMemo(() => {
-    const marketNameArray = marketName.toString().split('/')
-    if (Array.isArray(marketNameArray) && marketNameArray.length > 1) {
-      return PRICE_CURRENCY_FROM_QUOTE[marketNameArray[marketNameArray.length - 1].trim()]
-    }
-    return ''
-  }, [marketName])
+  const priceCurrency = MarketDetails[marketId]?.currency ?? ''
 
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)

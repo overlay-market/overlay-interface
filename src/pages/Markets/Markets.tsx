@@ -12,7 +12,7 @@ import {useCurrentMarketState, MarketStateResults, ParsedMarketStateDetails} fro
 import {TEXT} from '../../theme/theme'
 import MarketsRow from './MarketsRow'
 import ReactTooltip from 'react-tooltip'
-import {MarketChartMap, availableMarkets} from '../../constants/markets'
+import {MarketChartMap, MarketDetails} from '../../constants/markets'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
@@ -158,7 +158,7 @@ const Markets = () => {
             <TableBody>
               {marketsData.length > 0 &&
                 marketsData
-                  ?.filter(market => availableMarkets.includes(market.marketAddress.toLowerCase()))
+                  ?.filter(market => Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()))
                   .sort(customSort)
                   .map((market: ParsedMarketStateDetails, index: number) => {
                     return (

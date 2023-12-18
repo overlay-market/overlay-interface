@@ -8,7 +8,7 @@ import {useMarketData, useActiveMarketsData} from '../../state/markets/hooks'
 import {useMemo} from 'react'
 import {useMarketName} from '../../hooks/useMarketName'
 import {getCharactersBeforeSlash} from '../../utils/getCharactersBeforeSlash'
-import {MARKET_LOGO_FROM_BASE} from '../../constants/markets'
+import {MarketDetails} from '../../constants/markets'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Dropdown from '../../components/Dropdown/Dropdown'
 import {useHistory} from 'react-router-dom'
@@ -34,15 +34,16 @@ const DropdownContainer = styled.div`
 
 const BuildHeader = ({marketId}: {marketId: string}) => {
   const {market, isLoading, refetch} = useMarketData(marketId)
-  const {description: marketName} = useMarketName(market?.feedAddress)
+  const marketName = MarketDetails[marketId]?.marketName
   const baseToken = useMemo(() => getCharactersBeforeSlash(marketName || ''), [marketName])
-  const marketLogo = useMemo(() => MARKET_LOGO_FROM_BASE[baseToken], [baseToken])
+  // const marketLogo = useMemo(() => MARKET_LOGO_FROM_BASE[baseToken], [baseToken])
+  const marketLogo = MarketDetails[marketId]?.logo
 
   const {markets} = useActiveMarketsData()
-  const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
+  const marketDetail: AdditionalMarketData[] = useMarketDetails(markets)
   const history = useHistory()
 
-  const marketOptions = marketDetails
+  const marketOptions = marketDetail
     .filter(market => market?.id !== marketId)
     .map(market => ({
       value: market?.id,
@@ -59,7 +60,7 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
       <MarketNameContainer>
         <Icon size={20}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
         <TEXT.BoldSmallBody>{marketName}</TEXT.BoldSmallBody>
-        {isLoading || !marketDetails.length || !baseToken || !marketName ? (
+        {isLoading || !marketDetail.length || !baseToken || !marketName ? (
           <Loader size="12px" />
         ) : (
           <DropdownContainer>
@@ -68,7 +69,7 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
                 value: market?.id,
                 label: baseToken,
               }}
-              isLoading={isLoading || !marketDetails.length || !baseToken || !marketName}
+              isLoading={isLoading || !marketDetail.length || !baseToken || !marketName}
               options={marketOptions}
             />
           </DropdownContainer>

@@ -26,7 +26,6 @@ const BridgeContainer = styled.div`
   margin-top: 64px;
   color: white;
   padding-bottom: 280px;
-  padding-top: 50px;
   @media (max-width: 450px) {
     padding: 0px 16px !important;
   }
@@ -152,7 +151,7 @@ const Claim = ({
   return useMemo(() => {
     return (
       <>
-        <TEXT.StandardBody marginTop="64px" textAlign={'center'} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <TEXT.StandardBody marginTop="100px" textAlign={'center'} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <Image src={OverlayLogoDark} alt="Overlay Logo" height={'auto'} width={138} />
           &nbsp;&nbsp;💜️
         </TEXT.StandardBody>

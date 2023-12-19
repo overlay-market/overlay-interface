@@ -227,9 +227,9 @@ export default function Header() {
         <TEXT.Menu>Bridge</TEXT.Menu>
       </StyledLink>
 
-      <StyledLink to={`/claim/${ClaimId.LB4}`}>
+      {/* <StyledLink to={`/claim/${ClaimId.LB4}`}>
         <TEXT.Menu>Claim</TEXT.Menu>
-      </StyledLink>
+      </StyledLink> */}
 
       {HIDE_POWER_CARDS ? null : (
         <PowerCardLink to={'/powercards'}>
@@ -265,18 +265,6 @@ export default function Header() {
           </DropdownList>
         </Dropdown>
       )}
-
-      {/* <StyledLink to={'/bridge'}>
-        <Trans>
-          <TEXT.Menu>Earn</TEXT.Menu>
-        </Trans>
-      </StyledLink> */}
-
-      {/* <StyledLink to={'/claimpage'}>
-        <Trans>
-          <TEXT.Menu>Claim</TEXT.Menu>
-        </Trans>
-      </StyledLink> */}
       <AccountContainer>
         {HIDE_BUY_OVL ? null : (
           <UnstyledLink to={'/'}>

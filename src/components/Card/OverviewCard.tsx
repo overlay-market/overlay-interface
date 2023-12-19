@@ -62,14 +62,14 @@ const OverviewCard = (props: DataProps) => {
           {value}
         </BoldHeader1>
       )}
-  	  <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center">
         {!valueType ? (
-          <Box mt={"18px"}>
-          </Box>
+          <Box mt={'18px'}></Box>
         ) : (
-        <TEXT.SmallBody fontSize={14} color="#c4c4c4">
-          {valueType}
-        </TEXT.SmallBody>)}
+          <TEXT.SmallBody fontSize={14} color="#c4c4c4">
+            {valueType}
+          </TEXT.SmallBody>
+        )}
         <Box display="flex" alignItems="center" marginLeft="auto">
           {value && !!percentageChange && (
             <PercentageChangeBox positive={percentageChange > 0}>

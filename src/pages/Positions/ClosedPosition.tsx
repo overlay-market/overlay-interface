@@ -13,7 +13,7 @@ import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {useToken} from '../../hooks/useToken'
 import {useMarketName} from '../../hooks/useMarketName'
-import {marketNameFromDescription} from '../../constants/markets'
+import {MarketDetails} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {toScientificNumber} from '../../utils/toScientificNumber'
 
@@ -76,7 +76,7 @@ export function ClosedPosition({
   const {baseToken, quoteToken, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
 
   const marketName = useMemo(() => {
-    if (description) return marketNameFromDescription(description, unwindId.substring(0, 42))
+    if (description) return MarketDetails[unwindId.substring(0, 42)]?.marketName
     if (baseToken === 'loading' && quoteToken === 'loading') return <Loader stroke="white" size="12px" />
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, quoteToken, unwindId])

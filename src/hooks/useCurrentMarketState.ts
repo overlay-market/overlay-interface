@@ -7,7 +7,7 @@ import {AdditionalMarketData} from './useMarketDetails'
 import {FeedType} from '../constants/oracles'
 import {formatBigNumber} from '../utils/formatBigNumber'
 import {formatFundingRateToAnnual, formatFundingRateToDaily} from '../utils/formatWei'
-import {MARKET_LOGO_FROM_BASE, PRICE_CURRENCY_FROM_QUOTE, marketNameFromDescription} from '../constants/markets'
+import {MarketDetails} from '../constants/markets'
 import {getCharactersBeforeSlash, getCharactersAfterSlash} from '../utils/getCharactersBeforeSlash'
 
 export interface MarketStateDetails {
@@ -80,8 +80,7 @@ export function useCurrentMarketState(marketsData: AdditionalMarketData[] | unde
         let priceCurrency: string | undefined = undefined
 
         if ((decimals && market.type === FeedType.CHAINLINK) || market.type === FeedType.NFTPERP) {
-          const convertedMarketName = marketNameFromDescription(description, marketId)
-          marketName = convertedMarketName ?? 'Parsing error'
+          marketName = MarketDetails[marketId]?.marketName ?? 'Parsing error'
           parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, 5)
           parsedAsk = decimals && formatBigNumber(result.state_.ask, decimals, 5)
           parsedMid = decimals && formatBigNumber(result.state_.mid, decimals, 5)
@@ -92,8 +91,8 @@ export function useCurrentMarketState(marketsData: AdditionalMarketData[] | unde
           parsedAnnualFundingRate = decimals && formatFundingRateToAnnual(result.state_.fundingRate, 18, 2)
           marketBaseToken = marketName ? getCharactersBeforeSlash(marketName) : ''
           marketQuoteToken = marketName ? getCharactersAfterSlash(marketName) : ''
-          marketLogo = MARKET_LOGO_FROM_BASE[marketBaseToken]
-          priceCurrency = PRICE_CURRENCY_FROM_QUOTE[marketQuoteToken] ?? ''
+          marketLogo = MarketDetails[marketId]?.logo
+          priceCurrency = MarketDetails[marketId]?.currency ?? ''
         } else if (decimals && uniswapDecimalsDifference && market.type === FeedType.UNISWAP) {
           marketName = description
           parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, sigFigs)
@@ -106,8 +105,8 @@ export function useCurrentMarketState(marketsData: AdditionalMarketData[] | unde
           parsedAnnualFundingRate = decimals && formatFundingRateToAnnual(result.state_.fundingRate, 18, 2)
           marketBaseToken = marketName ? getCharactersBeforeSlash(marketName) : ''
           marketQuoteToken = marketName ? getCharactersAfterSlash(marketName) : ''
-          marketLogo = MARKET_LOGO_FROM_BASE[marketBaseToken]
-          priceCurrency = PRICE_CURRENCY_FROM_QUOTE[marketQuoteToken] ?? ''
+          marketLogo = MarketDetails[marketId]?.logo
+          priceCurrency = MarketDetails[marketId]?.currency ?? ''
         }
 
         return {

@@ -7,7 +7,7 @@ import {Link} from 'react-router-dom'
 import {ArrowRight} from 'react-feather'
 import {makeStyles} from '@material-ui/core/styles'
 import {Button, Card, CardContent, CardMedia, CircularProgress, Grid} from '@material-ui/core'
-import {Fragment, useCallback, useMemo, useState} from 'react'
+import {Fragment, useCallback, useEffect, useMemo, useState} from 'react'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import {darken} from '@material-ui/core/styles'
 import {useActiveWeb3React} from '../../hooks/web3'
@@ -334,6 +334,7 @@ const Stake = ({poolData}: PoolProps) => {
   })
   const chainId = useAppSelector((state: AppState) => state.application.chainId)
   const ovl = chainId ? OVL[chainId] : undefined
+  const [isDisabledPool, setIsDisabledPool] = useState<boolean>(false)
 
   const {callback: stakeCallback} = useStakeCallback(inputAmount, poolData.poolAddress)
   const {callback: withdrawCallback} = useWithdrawCallback(inputAmount, poolData.poolAddress)
@@ -357,6 +358,14 @@ const Stake = ({poolData}: PoolProps) => {
   }`
 
   const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolData.poolAddress.toLowerCase(), ovl)
+
+  useEffect(() => {
+    if (poolData.disabled) {
+      setPoolType('withdraw')
+      setIsDisabledPool(true)
+      handleUserInput(utils.formatUnits(stakedAmount, 18) ?? '0')
+    }
+  }, [poolData.disabled, stakedAmount])
 
   const showApprovalFlow = useMemo(() => {
     return poolType === 'stake' && approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
@@ -518,7 +527,7 @@ const Stake = ({poolData}: PoolProps) => {
           <FlexColumn className={classes.poolCardContainer}>
             {/* Toggle buttons */}
             <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
-              <ToggleButton className={classes.toggleButton} value="stake" disableRipple>
+              <ToggleButton disabled={isDisabledPool} className={classes.toggleButton} value="stake" disableRipple>
                 Stake
               </ToggleButton>
               <ToggleButton className={classes.toggleButton} value="withdraw" disableRipple>
@@ -658,68 +667,72 @@ const Stake = ({poolData}: PoolProps) => {
         </div>
       </FlexRow>
       {/* Coming Soon banner */}
-      <div style={{textAlign: 'center', paddingBottom: '20px'}}>
-        <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
-          Coming Soon: NIP-powered NFTs!
-        </TEXT.BoldHeader1>
-        <TEXT.StandardBody fontSize={20} lineHeight={'160%'} mb={0.5}>
-          Note: Shown NFTs are EXAMPLES only. Stay tuned for updates!
-        </TEXT.StandardBody>
-      </div>
-      <Grid container spacing={8}>
-        {powerCards.map((card, idx) => (
-          <Grid item xs={12} md={4} justifyContent="center">
-            <Card className={classes.powerCard}>
-              {/* NIP cost */}
-              <TEXT.BoldHeader1>{card.nipCost}</TEXT.BoldHeader1>
+      {!isDisabledPool && (
+        <>
+          <div style={{textAlign: 'center', paddingBottom: '20px'}}>
+            <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
+              Coming Soon: NIP-powered NFTs!
+            </TEXT.BoldHeader1>
+            <TEXT.StandardBody fontSize={20} lineHeight={'160%'} mb={0.5}>
+              Note: Shown NFTs are EXAMPLES only. Stay tuned for updates!
+            </TEXT.StandardBody>
+          </div>
+          <Grid container spacing={8}>
+            {powerCards.map((card, idx) => (
+              <Grid item xs={12} md={4} justifyContent="center">
+                <Card className={classes.powerCard}>
+                  {/* NIP cost */}
+                  <TEXT.BoldHeader1>{card.nipCost}</TEXT.BoldHeader1>
 
-              {/* Image */}
-              <Card className={classes.powerCardImageCard}>
-                <CardMedia component="img" height="245" image={card.image} title={card.name} className={classes.powerCardImage} />
-                <CardContent className={classes.powerCardImageContent}>
-                  <TEXT.StandardBody mb={12} fontSize="14px">
-                    {card.powerName}
-                  </TEXT.StandardBody>
-                  <FlexRow className={classes.keyValueDisplay}>
-                    <TEXT.StandardBody fontSize="14px">1/1000</TEXT.StandardBody>
+                  {/* Image */}
+                  <Card className={classes.powerCardImageCard}>
+                    <CardMedia component="img" height="245" image={card.image} title={card.name} className={classes.powerCardImage} />
+                    <CardContent className={classes.powerCardImageContent}>
+                      <TEXT.StandardBody mb={12} fontSize="14px">
+                        {card.powerName}
+                      </TEXT.StandardBody>
+                      <FlexRow className={classes.keyValueDisplay}>
+                        <TEXT.StandardBody fontSize="14px">1/1000</TEXT.StandardBody>
 
-                    <TEXT.StandardBody fontSize="14px">
-                      {card.nipCost} / {card.regularCost}
+                        <TEXT.StandardBody fontSize="14px">
+                          {card.nipCost} / {card.regularCost}
+                        </TEXT.StandardBody>
+                      </FlexRow>
+                    </CardContent>
+                  </Card>
+
+                  {/* Info */}
+                  <FlexRow mt={32} className={classes.keyValueDisplay}>
+                    <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
+                      {card.powerName}
+                    </TEXT.StandardBody>
+
+                    <TEXT.StandardBody fontSize="14px" fontWeight={700} color={colors(true).dark.tan2}>
+                      {card.powerValue}
                     </TEXT.StandardBody>
                   </FlexRow>
-                </CardContent>
-              </Card>
 
-              {/* Info */}
-              <FlexRow mt={32} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
-                  {card.powerName}
-                </TEXT.StandardBody>
+                  <FlexRow mt={16} className={classes.keyValueDisplay}>
+                    <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
+                      Regular cost
+                    </TEXT.StandardBody>
 
-                <TEXT.StandardBody fontSize="14px" fontWeight={700} color={colors(true).dark.tan2}>
-                  {card.powerValue}
-                </TEXT.StandardBody>
-              </FlexRow>
+                    <TEXT.StandardBody fontSize="14px">{card.regularCost}</TEXT.StandardBody>
+                  </FlexRow>
 
-              <FlexRow mt={16} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
-                  Regular cost
-                </TEXT.StandardBody>
+                  <FlexRow mt={16} className={classes.keyValueDisplay}>
+                    <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
+                      Required Stake
+                    </TEXT.StandardBody>
 
-                <TEXT.StandardBody fontSize="14px">{card.regularCost}</TEXT.StandardBody>
-              </FlexRow>
-
-              <FlexRow mt={16} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
-                  Required Stake
-                </TEXT.StandardBody>
-
-                <TEXT.StandardBody fontSize="14px">{card.requiredStake}</TEXT.StandardBody>
-              </FlexRow>
-            </Card>
+                    <TEXT.StandardBody fontSize="14px">{card.requiredStake}</TEXT.StandardBody>
+                  </FlexRow>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </>
+      )}
     </Fragment>
   )
 }

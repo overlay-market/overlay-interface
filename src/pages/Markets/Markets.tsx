@@ -158,7 +158,11 @@ const Markets = () => {
             <TableBody>
               {marketsData.length > 0 &&
                 marketsData
-                  ?.filter(market => Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()))
+                  ?.filter(
+                    market =>
+                      Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) &&
+                      !MarketDetails[market.marketAddress.toLowerCase()].disabled,
+                  )
                   .sort(customSort)
                   .map((market: ParsedMarketStateDetails, index: number) => {
                     return (

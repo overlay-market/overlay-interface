@@ -87,6 +87,7 @@ export type MarketDetailsData = {
   marketName: string
   logo: string
   currency?: string
+  disabled?: boolean
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
@@ -108,5 +109,83 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x553de578e68a4faa55d4522665cb2d2d53390d22': {
     marketName: 'BTC Dominance',
     logo: BitcoinLogo,
+  },
+  '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
+    marketName: 'BAYC / WETH',
+    logo: BitcoinLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x35e1d28ad9d8a80cff5bbf163a735c54eb6c1342': {
+    marketName: 'AZUKI / WETH',
+    logo: AzukiLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e': {
+    marketName: 'PUNKS / WETH',
+    logo: PunkLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b': {
+    marketName: 'PUNKS / WETH',
+    logo: MaycLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0xccd645835ca0033f0c1106e7b24f288e59e867e8': {
+    marketName: 'MILADY / WETH',
+    logo: MiladyLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x8c7dc90243fc7984583339da8df0a5d57ec491db': {
+    marketName: 'PUDGIES / WETH',
+    logo: PudgyLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x02e5938904014901c96f534b063ec732ea3b48d5': {
+    marketName: 'LINK / USD',
+    logo: LinkLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x1067b7df86552a53d816ce3fed50d6d01310b48f': {
+    marketName: 'SOL / USD',
+    logo: SolanaLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x33659282d39e62b62060c3f9fb2230e97db15f1e': {
+    marketName: 'APE / USD',
+    logo: ApeLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x5114215415ee91ab5d973ba62fa9153ece1f6c5a': {
+    marketName: 'NFT Blue Chip Index / USD',
+    logo: BlueChipLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x833ba1a942dc6d33bc3e6959637ae00e0cdcb20b': {
+    marketName: 'AVAX / USD',
+    logo: AvaxLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0xa811698d855153cc7472d1fb356149a94bd618e7': {
+    marketName: 'MATIC / USD',
+    logo: MaticLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0xc28350047d006ed387b0f210d4ea3218137a8a38': {
+    marketName: 'WBTC / USD',
+    logo: BitcoinLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
   },
 }

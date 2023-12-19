@@ -64,14 +64,14 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
           <Loader size="12px" />
         ) : (
           <DropdownContainer>
-            <Dropdown
+            {/* <Dropdown
               value={{
                 value: market?.id,
                 label: baseToken,
               }}
               isLoading={isLoading || !marketDetail.length || !baseToken || !marketName}
               options={marketOptions}
-            />
+            /> */}
           </DropdownContainer>
         )}
       </MarketNameContainer>

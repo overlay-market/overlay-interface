@@ -30,8 +30,25 @@ const useStyles = makeStyles(theme => ({
   mainRow: {
     alignItems: 'start',
     marginBottom: '80px',
-    [theme.breakpoints.down('xs')]: {
+    gap: '16px',
+    [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
+    },
+  },
+  cardsRow: {
+    display: 'flex',
+    width: 'fit-content',
+    justifyContent: 'space-between',
+    gap: '5px',
+    '@media (max-width: 600px)': {
+      width: '100%',
+      flexDirection: 'column',
+      gap: '40px',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
     },
   },
   stakeRewardsCard: {
@@ -76,6 +93,7 @@ const useStyles = makeStyles(theme => ({
   },
   poolInfoCol: {
     flex: '1 1 0',
+    maxWidth: '500px',
   },
   poolInfoContainer: {},
   keyValueDisplay: {
@@ -87,9 +105,9 @@ const useStyles = makeStyles(theme => ({
   poolCardContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    [theme.breakpoints.up('sm')]: {
-      maxWidth: '345px',
-    },
+    width: '345px',
+    maxWidth: '345px',
+    minWidth: '245px',
     [theme.breakpoints.down('xs')]: {
       marginTop: theme.spacing(2),
     },
@@ -444,118 +462,120 @@ const LiquidityPool = ({poolData}: PoolProps) => {
           </FlexColumn>
         </div>
 
-        {/* Pool card */}
-        <div className={classes.poolCardCol}>
-          <FlexColumn className={classes.poolCardContainer}>
-            {/* Toggle buttons */}
-            <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
-              <ToggleButton className={classes.toggleButton} value="add" disableRipple>
-                Add Liquidity
-              </ToggleButton>
-              <ToggleButton className={classes.toggleButton} value="remove" disableRipple>
-                Remove Liquidity
-              </ToggleButton>
-            </ToggleButtonGroup>
+        <div className={classes.cardsRow}>
+          {/* Pool card */}
+          <div className={classes.poolCardCol}>
+            <FlexColumn className={classes.poolCardContainer}>
+              {/* Toggle buttons */}
+              <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
+                <ToggleButton className={classes.toggleButton} value="add" disableRipple>
+                  Add Liquidity
+                </ToggleButton>
+                <ToggleButton className={classes.toggleButton} value="remove" disableRipple>
+                  Remove Liquidity
+                </ToggleButton>
+              </ToggleButtonGroup>
 
-            {/* Card */}
-            <div className={classes.poolCard}>
-              <TEXT.Supplemental color={colors(true).dark.grey2}>Choose Amount</TEXT.Supplemental>
+              {/* Card */}
+              <div className={classes.poolCard}>
+                <TEXT.Supplemental color={colors(true).dark.grey2}>Choose Amount</TEXT.Supplemental>
 
-              <div className={classes.inputContainer}>
-                <FlexRow justify="space-between" mb="25px">
-                  <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
-                  <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
-                    Max: {poolType === 'add' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
-                  </TEXT.Supplemental>
-                </FlexRow>
-                <FlexRow justify="space-between">
-                  <NumericalInput
-                    color={colors(true).dark.blue1}
-                    align="left"
-                    padding="0px"
-                    fontWeight="700"
-                    value={inputAmount}
-                    onUserInput={handleUserInput}
-                  />
-                  <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
+                <div className={classes.inputContainer}>
+                  <FlexRow justify="space-between" mb="25px">
+                    <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
+                    <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
+                      Max: {poolType === 'add' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
+                    </TEXT.Supplemental>
+                  </FlexRow>
+                  <FlexRow justify="space-between">
+                    <NumericalInput
+                      color={colors(true).dark.blue1}
+                      align="left"
+                      padding="0px"
+                      fontWeight="700"
+                      value={inputAmount}
+                      onUserInput={handleUserInput}
+                    />
+                    <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
+                  </FlexRow>
+                </div>
+
+                <div className={classes.inputContainer} style={{marginTop: '14px'}}>
+                  <FlexRow justify="space-between" mb="25px">
+                    <TEXT.Supplemental color={colors(true).dark.grey2}>USDC Amount</TEXT.Supplemental>
+                    <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
+                      Max: {poolType === 'add' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} USDC
+                    </TEXT.Supplemental>
+                  </FlexRow>
+                  <FlexRow justify="space-between">
+                    <NumericalInput
+                      color={colors(true).dark.blue1}
+                      align="left"
+                      padding="0px"
+                      fontWeight="700"
+                      value={inputAmount}
+                      onUserInput={handleUserInput}
+                    />
+                    <TEXT.BoldStandardBody color={colors(true).dark.blue1}>USDC</TEXT.BoldStandardBody>
+                  </FlexRow>
+                </div>
+
+                {/* TODO */}
+                <FlexRow justify="space-between" mt="22px">
+                  <TEXT.SmallBody color={colors(true).dark.grey2}>Est. Received APY</TEXT.SmallBody>
+                  <TEXT.SmallBody color={colors(true).dark.blue1}>~40%</TEXT.SmallBody>
                 </FlexRow>
               </div>
 
-              <div className={classes.inputContainer} style={{marginTop: '14px'}}>
-                <FlexRow justify="space-between" mb="25px">
-                  <TEXT.Supplemental color={colors(true).dark.grey2}>USDC Amount</TEXT.Supplemental>
-                  <TEXT.Supplemental color={colors(true).dark.grey2} style={{textDecoration: 'underline'}}>
-                    Max: {poolType === 'add' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} USDC
-                  </TEXT.Supplemental>
-                </FlexRow>
-                <FlexRow justify="space-between">
-                  <NumericalInput
-                    color={colors(true).dark.blue1}
-                    align="left"
-                    padding="0px"
-                    fontWeight="700"
-                    value={inputAmount}
-                    onUserInput={handleUserInput}
-                  />
-                  <TEXT.BoldStandardBody color={colors(true).dark.blue1}>USDC</TEXT.BoldStandardBody>
-                </FlexRow>
-              </div>
-
-              {/* TODO */}
-              <FlexRow justify="space-between" mt="22px">
-                <TEXT.SmallBody color={colors(true).dark.grey2}>Est. Received APY</TEXT.SmallBody>
-                <TEXT.SmallBody color={colors(true).dark.blue1}>~40%</TEXT.SmallBody>
-              </FlexRow>
-            </div>
-
-            {account ? (
-              showApprovalFlow ? (
-                <Button
-                  variant="contained"
-                  className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                  disabled={Number(inputAmount) === 0 || attemptingTransaction}
-                  onClick={handleApprove}
-                >
-                  {attemptingTransaction ? (
-                    <span>
-                      Waiting Confirmation <CircularProgress size={16} className={classes.circularProgress} />
-                    </span>
-                  ) : Number(inputAmount) === 0 ? (
-                    'Enter an amount'
-                  ) : (
-                    'Approve OVL'
-                  )}
-                </Button>
+              {account ? (
+                showApprovalFlow ? (
+                  <Button
+                    variant="contained"
+                    className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
+                    disabled={Number(inputAmount) === 0 || attemptingTransaction}
+                    onClick={handleApprove}
+                  >
+                    {attemptingTransaction ? (
+                      <span>
+                        Waiting Confirmation <CircularProgress size={16} className={classes.circularProgress} />
+                      </span>
+                    ) : Number(inputAmount) === 0 ? (
+                      'Enter an amount'
+                    ) : (
+                      'Approve OVL'
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
+                    disabled={isConfirmButtonDisabled}
+                    onClick={handleConfirm}
+                  >
+                    {attemptingTransaction ? (
+                      <span>
+                        Transaction Pending <CircularProgress size={16} className={classes.circularProgress} />
+                      </span>
+                    ) : Number(inputAmount) === 0 ? (
+                      'Enter an amount'
+                    ) : poolType === 'add' ? (
+                      'Add Liquidity'
+                    ) : (
+                      'Remove Liquidity'
+                    )}
+                  </Button>
+                )
               ) : (
-                <Button
-                  variant="contained"
-                  className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                  disabled={isConfirmButtonDisabled}
-                  onClick={handleConfirm}
-                >
-                  {attemptingTransaction ? (
-                    <span>
-                      Transaction Pending <CircularProgress size={16} className={classes.circularProgress} />
-                    </span>
-                  ) : Number(inputAmount) === 0 ? (
-                    'Enter an amount'
-                  ) : poolType === 'add' ? (
-                    'Add Liquidity'
-                  ) : (
-                    'Remove Liquidity'
-                  )}
+                <Button variant="contained" className={classes.button} onClick={toggleWalletModal}>
+                  Connect Wallet
                 </Button>
-              )
-            ) : (
-              <Button variant="contained" className={classes.button} onClick={toggleWalletModal}>
-                Connect Wallet
-              </Button>
-            )}
-          </FlexColumn>
-        </div>
+              )}
+            </FlexColumn>
+          </div>
 
-        {/* Empty div */}
-        <div style={{flex: '1 1 0'}}></div>
+          {/* Empty div */}
+          <div style={{flex: '1 1 0'}}></div>
+        </div>
       </FlexRow>
     </Fragment>
   )

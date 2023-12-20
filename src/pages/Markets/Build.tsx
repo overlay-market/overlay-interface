@@ -94,12 +94,33 @@ const ControlInterfaceHeadContainer = styled(FlexColumn)`
 
 const BuildContainer = styled.div`
   display: flex;
-  max-width: 1200px;
-  flex-direction: row;
-  flex-direction: row-reverse;
-  @media (max-width: 1400px) {
-    flex-direction: column;
-  }
+  flex-direction: column;
+  border-top: 1px solid ${({theme}) => theme.dark.grey2};
+  padding-top: 8px;
+  margin-bottom: -120px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+    margin: 0 8px -32px;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    width: auto;
+    padding-left: 8px;
+    gap: 8px;
+    justify-content: space-between;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    border-top: none;
+    gap: 16px;
+    width: 96vw;
+    max-width: 1232px;
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    border-top: none;
+    margin: 0 0 -32px;
+    padding: 0;
+    gap: 40px;
+    width: 1232px;
+  `}
 `
 
 const PositionsButtonContainer = styled.div`
@@ -147,30 +168,67 @@ export const NumericalInputBottomText = styled(TEXT.Supplemental)`
 `
 
 const PositionsTableContainer = styled.div`
-  max-width: 800px;
-  @media (max-width: 600px) {
-    max-width: 350px;
-  }
+  width: 359px;
+  display: flex;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    display: none;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: flex;
+    width: 100%;
+  `}
+`
+
+const PositionsTableContainerSmallSize = styled.div`
+  display: none;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    width: 100%;
+    position: relative;
+    top: 77px;
+    display: flex;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: none;
+  `}
 `
 
 const LeftColumn = styled.div`
   display: flex;
   flex-direction: column;
-  width: 70%;
-  @media (max-width: 1400px) {
-    width: 100%;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    width: auto;
+    flex: 1;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    width: auto;
+    flex: 1;
     margin-bottom: 16px;
-  }
+  `}
 `
 
 const RightColumn = styled.div`
-  padding-left: 20px;
+  padding-left: 0;
+  top: 0;
   order: -1;
-  @media (max-width: 1400px) {
-    width: 100%;
-    padding-left: 0px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    padding-left: 8px;
+    position: relative;
+    top: 77px;
+    width: auto;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    top: 0;
+    width: auto;
+    padding-left: 0;
     margin-bottom: 16px;
-  }
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    padding-left: 0;
+    top: 0;
+    width: auto;
+    order: -1;
+  `}
 `
 
 export const MINIMUM_SLIPPAGE_VALUE = 0.05
@@ -598,7 +656,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           <PositionsTableContainer>
             <PositionsTableForBuildPage
               title="Positions"
-              marginTop="64px"
+              marginTop="40px"
               positionStatus={PositionStatus.Build}
               rowsCount={0}
               marketsData={marketsData}
@@ -721,7 +779,15 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             />
           </MarketCard>
         </RightColumn>
-
+        <PositionsTableContainerSmallSize>
+          <PositionsTableForBuildPage
+            title="Positions"
+            marginTop="40px"
+            positionStatus={PositionStatus.Build}
+            rowsCount={0}
+            marketsData={marketsData}
+          />
+        </PositionsTableContainerSmallSize>
         <ConfirmTxnModal
           marketName={marketName}
           isOpen={showConfirm}

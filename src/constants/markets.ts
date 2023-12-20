@@ -14,6 +14,8 @@ import MaycLogo from '../assets/images/tokens/mayc-logo.png'
 import BlueChipLogo from '../assets/images/tokens/Blue-Chip-NFT-logo.png'
 import CVIXLogo from '../assets/images/tokens/Crypto-VIX-logo.png'
 import csgoLogo from '../assets/images/tokens/csgo-logo.png'
+import BtcdLogo from '../assets/images/tokens/bitcoin-dominance-logo.png'
+import OVSupplyLogo from '../assets/images/tokens/ov-supply-logo.png'
 
 type CurrencyMap = {[marketQuoteToken: string]: string}
 const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
@@ -196,16 +198,23 @@ type ComingSoonMarketsData = MarketDetailsData & {
 
 export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
   '111': {
-    marketName: 'PUDGIES 1',
-    logo: PudgyLogo,
-    currency: 'Ethereum', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    marketName: 'CS:GO Skin Index',
+    logo: csgoLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
     disabled: false,
     isComingSoon: true,
   },
   '222': {
-    marketName: 'PUDGIES 2',
-    logo: PudgyLogo,
-    currency: 'Ethereum', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    marketName: 'BTC Dominance',
+    logo: BtcdLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '333': {
+    marketName: 'OV Supply',
+    logo: OVSupplyLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,
   },

@@ -151,9 +151,9 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
           {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
             <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />
           </StyledInternalLink> */}
-          <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
+          {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
-          </StyledInternalLink>
+          </StyledInternalLink> */}
           {/* <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.LB4}`}>
             <StyledMenuLink displayText={'Claim'} linkDestination={'/claimpage'} currentLocation={location} />
           </StyledInternalLink> */}
@@ -168,9 +168,9 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
           <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
             <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
           </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
+          {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
-          </StyledInternalLink>
+          </StyledInternalLink> */}
           <Separator />
 
           <StyledExternalLink href="https://overlay.market">Risks</StyledExternalLink>

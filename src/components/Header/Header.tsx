@@ -223,9 +223,9 @@ export default function Header() {
       {/* <StyledLink to={'/stake'}>
         <TEXT.Menu>Stake</TEXT.Menu>
       </StyledLink> */}
-      <StyledLink to={'/bridge'}>
+      {/* <StyledLink to={'/bridge'}>
         <TEXT.Menu>Bridge</TEXT.Menu>
-      </StyledLink>
+      </StyledLink> */}
 
       {/* <StyledLink to={`/claim/${ClaimId.LB4}`}>
         <TEXT.Menu>Claim</TEXT.Menu>

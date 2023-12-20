@@ -189,3 +189,24 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     disabled: true,
   },
 }
+
+type ComingSoonMarketsData = MarketDetailsData & {
+  isComingSoon?: boolean
+}
+
+export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
+  '111': {
+    marketName: 'PUDGIES 1',
+    logo: PudgyLogo,
+    currency: 'Ethereum', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '222': {
+    marketName: 'PUDGIES 2',
+    logo: PudgyLogo,
+    currency: 'Ethereum', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+}

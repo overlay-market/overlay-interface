@@ -11,8 +11,9 @@ import {useMarketDetails, AdditionalMarketData} from '../../hooks/useMarketDetai
 import {useCurrentMarketState, MarketStateResults, ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 import {TEXT} from '../../theme/theme'
 import MarketsRow from './MarketsRow'
+import ComingSoonMarketsRow from './ComingSoonMarketsRow'
 import ReactTooltip from 'react-tooltip'
-import {MarketChartMap, MarketDetails} from '../../constants/markets'
+import {MarketChartMap, MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
@@ -108,6 +109,10 @@ const Markets = () => {
     return 0
   }
 
+  const marketsAmount: number = marketsData?.filter(
+    market => Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) && !MarketDetails[market.marketAddress.toLowerCase()].disabled,
+  ).length
+
   return (
     <PageContainer>
       <TableContainer component={Paper}>
@@ -182,6 +187,20 @@ const Markets = () => {
                         priceCurrency={market.priceCurrency}
                         marketChartData={MarketChartMap[market.marketName ?? '']}
                         hide7dChart={hide7dChart}
+                      />
+                    )
+                  })}
+              {ComingSoonMarkets &&
+                Object.keys(ComingSoonMarkets)
+                  .filter(address => !ComingSoonMarkets[address].disabled)
+                  .map((address: string, index: number) => {
+                    return (
+                      <ComingSoonMarketsRow
+                        key={address}
+                        index={marketsAmount + index + 1} //start count at (marketsAmount + 1)
+                        marketId={address}
+                        marketName={ComingSoonMarkets[address].marketName}
+                        marketLogo={ComingSoonMarkets[address].logo}
                       />
                     )
                   })}

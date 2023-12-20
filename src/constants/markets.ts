@@ -13,97 +13,10 @@ import MiladyLogo from '../assets/images/tokens/milady-logo.avif'
 import MaycLogo from '../assets/images/tokens/mayc-logo.png'
 import BlueChipLogo from '../assets/images/tokens/Blue-Chip-NFT-logo.png'
 import CVIXLogo from '../assets/images/tokens/Crypto-VIX-logo.png'
-import MemecoinLogo from '../assets/images/tokens/memecoin-logo.png'
-import Mcap1000Logo from '../assets/images/tokens/mcap1000-logo.png'
 import csgoLogo from '../assets/images/tokens/csgo-logo.png'
 
-export type DescriptionNameMap = {[description: string]: string}
-export const MARKET_NAME_FROM_DESCRIPTION: DescriptionNameMap = {
-  'Azuki Floor Price': 'Azuki/ WETH',
-  'BAYC Floor Price': 'BAYC / WETH',
-  'LINK / USD': 'LINK / USD',
-  'WBTC / USD': 'WBTC / USD',
-  'APE / USD': 'APE / USD',
-  'SOL / USD': 'SOL / USD',
-  'AVAX / USD': 'AVAX / USD',
-  'MATIC / USD': 'MATIC / USD',
-  'MCap1000 Feed': 'Memecoins Index',
-  'CV Index': 'Crypto Volatility Index',
-  'NFT Blue Chip Total Market Cap-USD': 'NFT Blue Chip Index / USD',
-  'Total Marketcap USD': 'Total Crypto Market Cap / USD',
-  price: 'BAYC / WETH',
-}
-
-export const availableMarkets = [
-  '0x02e5938904014901c96f534b063ec732ea3b48d5',
-  '0x1067b7df86552a53d816ce3fed50d6d01310b48f',
-  '0x33659282d39e62b62060c3f9fb2230e97db15f1e',
-  // '0x35e1d28ad9d8a80cff5bbf163a735c54eb6c1342', // 'AZUKI / WETH'
-  '0x5114215415ee91ab5d973ba62fa9153ece1f6c5a',
-  '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b',
-  '0x833ba1a942dc6d33bc3e6959637ae00e0cdcb20b',
-  // '0x8c7dc90243fc7984583339da8df0a5d57ec491db', // 'PUDGIES / WETH'
-  // '0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e', // 'PUNKS / WETH'
-  '0xa811698d855153cc7472d1fb356149a94bd618e7',
-  // '0xb31d222c23104cbc2c04df77941f1f2c478133dd', // 'BAYC / WETH'
-  '0xc28350047d006ed387b0f210d4ea3218137a8a38',
-  // '0xccd645835ca0033f0c1106e7b24f288e59e867e8', // 'MILADY / WETH'
-  // '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b', // 'MAYC / WETH'
-  // '0xF30C5cB6205f115799b275430Ea0874359476304'.toLowerCase(), // Total Crypto Market Cap
-  // '0x8440E56C2675d9b8E04183dA3a3a744a4a16ED33'.toLowerCase(), // memecoins
-  '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9',
-]
-
-export const marketNameFromDescription = (description: string | undefined, address: string = '') => {
-  if (!description) {
-    description = address
-  }
-  if (address === '0xb31d222c23104cbc2c04df77941f1f2c478133dd') {
-    return 'BAYC / WETH'
-  } else if (address === '0x35e1d28ad9d8a80cff5bbf163a735c54eb6c1342') {
-    return 'AZUKI / WETH'
-  } else if (address === '0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e') {
-    return 'PUNKS / WETH'
-  } else if (address === '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b') {
-    return 'MAYC / WETH'
-  } else if (address === '0xccd645835ca0033f0c1106e7b24f288e59e867e8') {
-    return 'MILADY / WETH'
-  } else if (address === '0x8c7dc90243fc7984583339da8df0a5d57ec491db') {
-    return 'PUDGIES / WETH'
-  } else if (address === '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9') {
-    return 'CSGO Sepolia / USD'
-  } else {
-    return MARKET_NAME_FROM_DESCRIPTION[description]
-  }
-}
-
-export type MarketLogoMap = {[marketBaseToken: string]: string}
-export const MARKET_LOGO_FROM_BASE: MarketLogoMap = {
-  WBTC: BitcoinLogo,
-  BTC: BitcoinLogo,
-  WETH: EthereumLogo,
-  ETH: EthereumLogo,
-  LINK: LinkLogo,
-  AVAX: AvaxLogo,
-  SOL: SolanaLogo,
-  APE: ApeLogo,
-  BAYC: BaycLogo,
-  MATIC: MaticLogo,
-  AZUKI: AzukiLogo,
-  PUDGIES: PudgyLogo,
-  PUNKS: PunkLogo,
-  MILADY: MiladyLogo,
-  MAYC: MaycLogo,
-  NFT: BlueChipLogo,
-  Crypto: CVIXLogo,
-  CV: CVIXLogo,
-  Memecoins: MemecoinLogo,
-  Total: Mcap1000Logo,
-  CSGO: csgoLogo,
-}
-
-export type CurrencyMap = {[marketQuoteToken: string]: string}
-export const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
+type CurrencyMap = {[marketQuoteToken: string]: string}
+const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
   USD: '$',
   USDC: '$',
   DAI: '$',
@@ -167,5 +80,112 @@ export const MarketChartMap: {[name: string]: MarketChartData} = {
     contractAddress: '0xbac350Bde7b410866845A4b06EF93aa2312cb97f'.toLowerCase(),
     isNft: false,
     schemaName: 'ethereum-mainnet-arbitrum-1',
+  },
+}
+
+export type MarketDetailsData = {
+  marketName: string
+  logo: string
+  currency?: string
+  disabled?: boolean
+}
+
+export const MarketDetails: {[address: string]: MarketDetailsData} = {
+  '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9': {
+    marketName: 'CSGO Sepolia / USD',
+    logo: csgoLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+  },
+  '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b': {
+    marketName: 'Crypto Volatility Index',
+    logo: CVIXLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+  },
+  '0xf2ddf700fc481be8ce1f228da5c913f1a25a2d2d': {
+    marketName: 'ETH Burn Rate',
+    logo: BitcoinLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+  },
+  '0x553de578e68a4faa55d4522665cb2d2d53390d22': {
+    marketName: 'BTC Dominance',
+    logo: BitcoinLogo,
+  },
+  '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
+    marketName: 'BAYC / WETH',
+    logo: BitcoinLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x35e1d28ad9d8a80cff5bbf163a735c54eb6c1342': {
+    marketName: 'AZUKI / WETH',
+    logo: AzukiLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e': {
+    marketName: 'PUNKS / WETH',
+    logo: PunkLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0xce45c64911bd0a088daabd73ee1bc09ae98cd84b': {
+    marketName: 'PUNKS / WETH',
+    logo: MaycLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0xccd645835ca0033f0c1106e7b24f288e59e867e8': {
+    marketName: 'MILADY / WETH',
+    logo: MiladyLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x8c7dc90243fc7984583339da8df0a5d57ec491db': {
+    marketName: 'PUDGIES / WETH',
+    logo: PudgyLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['WETH'],
+    disabled: true,
+  },
+  '0x02e5938904014901c96f534b063ec732ea3b48d5': {
+    marketName: 'LINK / USD',
+    logo: LinkLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x1067b7df86552a53d816ce3fed50d6d01310b48f': {
+    marketName: 'SOL / USD',
+    logo: SolanaLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x33659282d39e62b62060c3f9fb2230e97db15f1e': {
+    marketName: 'APE / USD',
+    logo: ApeLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x5114215415ee91ab5d973ba62fa9153ece1f6c5a': {
+    marketName: 'NFT Blue Chip Index / USD',
+    logo: BlueChipLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0x833ba1a942dc6d33bc3e6959637ae00e0cdcb20b': {
+    marketName: 'AVAX / USD',
+    logo: AvaxLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0xa811698d855153cc7472d1fb356149a94bd618e7': {
+    marketName: 'MATIC / USD',
+    logo: MaticLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
+  },
+  '0xc28350047d006ed387b0f210d4ea3218137a8a38': {
+    marketName: 'WBTC / USD',
+    logo: BitcoinLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: true,
   },
 }

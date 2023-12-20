@@ -12,6 +12,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import ExternalLinks from '../Header/ExternalLinks'
 import {useState} from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
+import {ClaimId} from '../../constants/claims'
 
 const NEW_MOBILE_MENU_FLAG = true
 
@@ -147,12 +148,15 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
           <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
             <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
           </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
+          {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
             <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />
-          </StyledInternalLink>
+          </StyledInternalLink> */}
           <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
           </StyledInternalLink>
+          {/* <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.LB4}`}>
+            <StyledMenuLink displayText={'Claim'} linkDestination={'/claimpage'} currentLocation={location} />
+          </StyledInternalLink> */}
           <Separator />
           <ExternalLinks mobile isSubMenuOpen={isSubMenuOpen} setIsSubMenuOpen={setIsSubMenuOpen} />
         </Content>

@@ -99,7 +99,6 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b': {
     marketName: 'Crypto Volatility Index',
     logo: CVIXLogo,
-    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
   },
   '0xf2ddf700fc481be8ce1f228da5c913f1a25a2d2d': {
     marketName: 'ETH Burn Rate',

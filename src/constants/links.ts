@@ -1,6 +1,6 @@
 export const LINKS = {
   ARBISCAN: 'https://arbiscan.io/token/0x4305c4bc521b052f17d389c2fe9d37cabeb70d54',
-  DISCORD: 'http://discord.gg/ovl',
+  DISCORD: 'https://overlay.market/discord',
   DOCUMENTATION: 'https://docs.overlay.market/',
   GOVERNANCE: 'https://commonwealth.im/overlay',
   LANDING: 'https://overlay.market',

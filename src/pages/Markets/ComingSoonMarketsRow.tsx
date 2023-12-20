@@ -75,4 +75,5 @@ const ComingSoonMarketsRow = ({index, marketId, marketName, marketLogo}: Markets
   )
 }
 
+
 export default ComingSoonMarketsRow

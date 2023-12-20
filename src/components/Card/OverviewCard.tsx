@@ -62,7 +62,7 @@ const OverviewCard = (props: DataProps) => {
           {value}
         </BoldHeader1>
       )}
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center"> 
         {!valueType ? (
           <Box mt={'18px'}></Box>
         ) : (

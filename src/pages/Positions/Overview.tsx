@@ -25,37 +25,6 @@ const Container = styled.div<{mt?: string}>`
   `}
 `
 
-const BackgroundWrapper = styled.div`
-  position: absolute;
-  top: -16px;
-  left: 16px;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-
-  background: radial-gradient(
-    50% 35% at 80% 40%,
-    rgba(113, 206, 255, 0.65),
-    rgba(113, 206, 255, 0.15) 60%,
-    rgba(113, 206, 255, 0.05) 80%,
-    rgba(113, 206, 255, 0) 100%
-  );
-
-  ${({theme}) => theme.mediaWidth.minSmall`
-    background: radial-gradient(
-      30% 30% at 80% 25%,
-      rgba(113, 206, 255, 0.65),
-      rgba(113, 206, 255, 0.15) 60%,
-      rgba(113, 206, 255, 0.05) 80%,
-      rgba(113, 206, 255, 0) 100%
-    );
-  `}
-
-  ${({theme}) => theme.mediaWidth.minMedium`
-    display: none;
-  `}
-`
-
 const StyledGrid = styled(Grid)<{order?: number}>`
   display: flex;
   padding: 4px !important;
@@ -130,7 +99,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
 
     let percentageChangeRealizedPnl = 0
     if (pnl24HoursChange !== 0) {
-      percentageChangeRealizedPnl = parseFloat(((( pnl24HoursChange) / Math.abs(Number(realizedPnl))) * 100).toFixed(2))
+      percentageChangeRealizedPnl = parseFloat(((pnl24HoursChange / Math.abs(Number(realizedPnl))) * 100).toFixed(2))
     }
 
     return percentageChangeRealizedPnl
@@ -190,24 +159,23 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
 
   return (
     <Container mt={marginTop}>
-      <BackgroundWrapper />
       <TEXT.BoldHeader1 mb="32px">{`${title}`}</TEXT.BoldHeader1>
       <Box>
         {account ? (
           <Grid container spacing={3}>
             {/* Locked Sum + uPnL */}
-            <StyledGrid order={0} item key={'mainOverviewCard'} xs={12} md={4}>
+            <StyledGrid order={0} item key={'mainOverviewCard'} xs={12} lg={4}>
               <MainOverviewCard title={'Locked Sum + uPnL'} value={mainOverviewValue} percentageChange={null} period={'24h'} valueType={''} />
             </StyledGrid>
 
             {/* Chart */}
-            <StyledGrid order={-1} item key={'chart'} xs={12} md={8}>
+            <StyledGrid order={-1} item key={'chart'} xs={12} lg={8}>
               <OverviewChart />
             </StyledGrid>
 
             {cardsData.map(card => {
               return (
-                <StyledGrid item key={card.title} xs={6} sm={4} lg={3}>
+                <StyledGrid item key={card.title} xs={12} sm={6} md={4} lg={3}>
                   <OverviewCard
                     title={card.title}
                     value={card.value}

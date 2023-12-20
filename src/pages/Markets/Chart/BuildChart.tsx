@@ -8,12 +8,12 @@ import {useActiveWeb3React} from '../../../hooks/web3'
 import {SupportedChainId} from '../../../constants/chains'
 
 const TVChartContainer = styled.div`
-  height: 450px;
-  width: 100%;
-  padding-right: 16px;
-  @media (max-width: 1400px) {
-    height: 100%;
-  }
+  height: 592px;
+  ${({theme}) => theme.mediaWidth.minMedium`
+    height: 450px;
+    width: 100%;
+    padding-right: 16px;
+  `}
 `
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol']

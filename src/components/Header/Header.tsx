@@ -220,9 +220,9 @@ export default function Header() {
       <StyledLink to={'/positions'}>
         <TEXT.Menu>Positions</TEXT.Menu>
       </StyledLink>
-      <StyledLink to={'/stake'}>
+      {/* <StyledLink to={'/stake'}>
         <TEXT.Menu>Stake</TEXT.Menu>
-      </StyledLink>
+      </StyledLink> */}
       <StyledLink to={'/bridge'}>
         <TEXT.Menu>Bridge</TEXT.Menu>
       </StyledLink>

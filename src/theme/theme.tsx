@@ -15,20 +15,25 @@ export const muiTheme = createTheme({
   },
   breakpoints: {
     values: {
+      // xs: 0,
+      // sm: 576,
+      // md: 992,
+      // lg: 1200,
+      // xl: 1400,
       xs: 0,
-      sm: 576,
-      md: 992,
-      lg: 1200,
-      xl: 1400,
+      sm: 375,
+      md: 768,
+      lg: 1024,
+      xl: 1440,
     },
   },
 })
 
 export const MEDIA_WIDTHS = {
-  minExtraSmall: 576,
+  minExtraSmall: 375,
   minSmall: 768,
-  minMedium: 992,
-  minLarge: 1400,
+  minMedium: 1024,
+  minLarge: 1440,
 }
 
 const mediaWidthTemplates: {[width in keyof typeof MEDIA_WIDTHS]: typeof css} = Object.keys(MEDIA_WIDTHS).reduce((accumulator, size) => {

@@ -15,7 +15,7 @@ import {PoolsData, allPoolsData} from '../../constants/stake'
 const useStyles = makeStyles(theme => ({
   flexRow: {
     alignItems: 'start',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
     },
   },
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     padding: '24px',
     alignItems: 'center',
     minWidth: '200px',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(2),
     },
   },

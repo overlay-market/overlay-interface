@@ -19,10 +19,10 @@ export function subscribeOnStream(symbolInfo, resolution, onRealtimeCallback, su
   const query = Object.keys(urlParameters)
     .map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
     .join('&')
-  
+
   const endpoint = isSepolia(symbolInfo)
     ? `https://api.overlay.market/sepolia-charts/v1/charts/sse?${query}`
-    : `https://api.overlay.market/charts/v1/charts/sse?${query}`,
+    : `https://api.overlay.market/charts/v1/charts/sse?${query}`
 
   const eventSource = new EventSource(endpoint)
 

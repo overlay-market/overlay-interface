@@ -65,13 +65,16 @@ function updateLastDailyBar(lastBar, subscriberUID) {
         low: lastBar.low,
         close: latestPrice,
       }
-    } else {
+    } else if (latestTime == lastBarCached.time) {
       bar = {
         ...lastBarCached,
         high: Math.max(lastBarCached.high, latestPrice),
         low: Math.min(lastBarCached.low, latestPrice),
         close: latestPrice,
       }
+    } else {
+      // If the latest bar is older than the previous one, we ignore it.
+      return
     }
 
     subscriptionItem.lastBarCached = bar

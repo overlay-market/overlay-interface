@@ -1,4 +1,4 @@
-import {getBinSizeAndUnit} from './helpers'
+import {getBinSizeAndUnit, isSepolia} from './helpers'
 
 // Reference: https://www.tradingview.com/charting-library-docs/latest/tutorials/implement_datafeed_tutorial/Streaming-Implementation
 
@@ -19,8 +19,12 @@ export function subscribeOnStream(symbolInfo, resolution, onRealtimeCallback, su
   const query = Object.keys(urlParameters)
     .map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
     .join('&')
+  
+  const endpoint = isSepolia(symbolInfo)
+    ? `https://api.overlay.market/sepolia-charts/v1/charts/sse?${query}`
+    : `https://api.overlay.market/charts/v1/charts/sse?${query}`,
 
-  const eventSource = new EventSource(`http://localhost:8000/v1/charts/sse?${query}`)
+  const eventSource = new EventSource(endpoint)
 
   eventSource.onmessage = event => {
     const lastBar = JSON.parse(event.data)[0]

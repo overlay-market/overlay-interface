@@ -1,6 +1,6 @@
 import {useMarketData} from '../../../state/markets/hooks'
 import {LibrarySymbolInfo} from '../../../charting_library/charting_library'
-import {getBinSizeAndUnit} from './helpers'
+import {getBinSizeAndUnit, isSepolia} from './helpers'
 import {subscribeOnStream, unsubscribeFromStream} from './streaming'
 
 // Reference: https://www.tradingview.com/charting-library-docs/latest/tutorials/implement_datafeed_tutorial/Widget-Setup
@@ -70,16 +70,13 @@ export default {
       .map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
       .join('&')
 
-    const isSepolia =
-      String(symbolInfo?.marketAddress).toLowerCase() === '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9' ||
-      String(symbolInfo?.marketAddress).toLowerCase() === '0xf2ddf700fc481be8ce1f228da5c913f1a25a2d2d' ||
-      String(symbolInfo?.marketAddress).toLowerCase() === '0x553de578e68a4faa55d4522665cb2d2d53390d22'
-
     try {
       let bars = []
 
       let res = await fetch(
-        isSepolia ? `https://api.overlay.market/sepolia-charts/v1/charts?${query}` : `https://api.overlay.market/charts/v1/charts?${query}`,
+        isSepolia(symbolInfo)
+          ? `https://api.overlay.market/sepolia-charts/v1/charts?${query}`
+          : `https://api.overlay.market/charts/v1/charts?${query}`,
       )
       res = await res.json()
 

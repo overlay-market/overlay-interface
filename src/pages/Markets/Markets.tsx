@@ -191,6 +191,7 @@ const Markets = () => {
                     )
                   })}
               {ComingSoonMarkets &&
+                marketsData.length > 0 &&
                 Object.keys(ComingSoonMarkets)
                   .filter(address => !ComingSoonMarkets[address].disabled)
                   .map((address: string, index: number) => {

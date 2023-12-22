@@ -98,6 +98,11 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     logo: csgoLogo,
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
   },
+  '0x6bd76270a8e8e0c3c030f050134389777a3a7d7e': {
+    marketName: 'Counter-Strike 2 Skins',
+    logo: csgoLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+  },
   '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b': {
     marketName: 'Crypto Volatility Index',
     logo: CVIXLogo,
@@ -196,13 +201,6 @@ type ComingSoonMarketsData = MarketDetailsData & {
 }
 
 export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
-  '111': {
-    marketName: 'Counter-Strike 2 Skins',
-    logo: csgoLogo,
-    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
-    disabled: false,
-    isComingSoon: true,
-  },
   '222': {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,

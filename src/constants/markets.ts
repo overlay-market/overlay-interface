@@ -16,6 +16,7 @@ import CVIXLogo from '../assets/images/tokens/Crypto-VIX-logo.png'
 import csgoLogo from '../assets/images/tokens/csgo-logo.svg'
 import BtcdLogo from '../assets/images/tokens/bitcoin-dominance-logo.png'
 import OVSupplyLogo from '../assets/images/tokens/ov-supply-logo.png'
+import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 
 type CurrencyMap = {[marketQuoteToken: string]: string}
 const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
@@ -217,5 +218,32 @@ export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,
+  },
+}
+
+export type MarketDescriptionData = {
+  IndexesConstruction: Array<string>
+  FullLogo: string
+  ProposedBy: string
+  Approved: string
+  Contract: string
+  Sources: Array<string>
+  AdditionalInfo: string
+}
+
+export const MarketDescription: {[address: string]: MarketDescriptionData} = {
+  '111': {
+    IndexesConstruction: ['Nike Blahs', 'AirJordan 6', 'ASICS Retro', 'Puma Attack', 'Hoka Speedgoat'],
+    FullLogo: BtcdFull,
+    ProposedBy: '@unthoughtfulwizard',
+    Approved: '11.5.24 - OGP 28',
+    Contract: '0xbb12...12J9',
+    Sources: [
+      'University of Washington Earth Sciences Labratory',
+      'KEXP Radio Tower Su22',
+      'Seattle Municipal Station # 12',
+      'Seattle Municipal Station # 6',
+    ],
+    AdditionalInfo: 'doc.overlay.market',
   },
 }

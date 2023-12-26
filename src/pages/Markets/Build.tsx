@@ -274,7 +274,7 @@ const ImageComponent = styled.img`
 
 const FirstColumn = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 25px;
   flex-direction: column;
 `
 
@@ -303,7 +303,6 @@ const RightDetailColumn = styled.div`
 const TextBesideLogo = styled.div`
   display: flex;
   align-items: center;
-  padding-bottom: 25px;
 `
 
 const TextAboveLogo = styled.p`

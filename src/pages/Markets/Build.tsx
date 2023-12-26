@@ -38,7 +38,7 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {useFractionOfCapOi} from '../../hooks/useFractionOfCapOi'
 import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
-import {MarketDetails} from '../../constants/markets'
+import {MarketDetails, ComingSoonMarkets, MarketDescription} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
@@ -48,6 +48,8 @@ import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
+import {Icon} from '../../components/Icon/Icon'
+import {AlertCircle} from 'react-feather'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -231,6 +233,117 @@ const RightColumn = styled.div`
   `}
 `
 
+const AboutMarketTitle = styled.h2`
+  padding-top: 32px;
+  @media (max-width: 1400px) {
+    padding-top: 150px;
+  }
+`
+
+const AboutMarketSection = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 38px;
+  max-width: 1230px;
+  margin-bottom: 20px;
+  @media (max-width: 1400px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+`
+
+const AboutMarket = styled.div`
+  width: 100%;
+  margin-bottom: 10px;
+`
+
+const ImageContainer = styled.div`
+  width: 100%;
+  grid-column: span 2;
+
+  @media (max-width: 1400px) {
+    max-width: 100%;
+    grid-column: span 1;
+  }
+`
+
+const ImageComponent = styled.img`
+  width: 100%;
+  height: auto;
+`
+
+const FirstColumn = styled.div`
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+`
+
+const SecondColumn = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margintop: 15px;
+  padding-bottom: 21px;
+`
+
+const LeftDetailColumn = styled.div`
+  color: var(--v-2-dark-grey-2, #a8a6a6);
+`
+
+const RightDetailColumn = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  align-content: flex-start;
+  @media (max-width: 1400px) {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+`
+
+const TextBesideLogo = styled.div`
+  display: flex;
+  align-items: center;
+  padding-bottom: 25px;
+`
+
+const TextAboveLogo = styled.p`
+  padding-left: 22px;
+  font-weight: bold;
+  color: var(--v-2-dark-grey-2, #a8a6a6);
+`
+
+const TextBelowLogo = styled.p`
+  margin-top: 5px;
+  font-style: italic;
+`
+
+const LiList = styled.li`
+  list-style: none;
+  margin: 0px;
+  display: flex;
+  justify-items: end;
+  justify-content: flex-end;
+  text-align: end;
+`
+
+const UlList = styled.ul`
+  margin: 0px;
+  display: grid;
+`
+
+const SeeMoreButton = styled.button`
+  display: flex;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  color: white;
+  justify-items: end;
+  justify-content: end;
+`
+
 export const MINIMUM_SLIPPAGE_VALUE = 0.05
 
 // @TO-DO: Break down BuildInterface into sub-components
@@ -260,8 +373,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
 
-  console.log({markets})
-
   // force refetch when refreshing page
   useEffect(() => {
     refetch()
@@ -277,11 +388,25 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const {decimals, baseTokenAddress, quoteTokenAddress} = useMarketName(market?.feedAddress)
 
   const marketName = MarketDetails[marketId]?.marketName
-
+  const marketLogo = MarketDetails[marketId]?.logo
   const priceCurrency = MarketDetails[marketId]?.currency ?? ''
+
+  const CS2Logo = ComingSoonMarkets['111']?.logo
+
+  const marketIndex = MarketDescription[111].IndexesConstruction
+  const sources = MarketDescription[111].Sources
+  const fullMarketLogo = MarketDescription[111].FullLogo
 
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
+
+  const [showAll, setShowAll] = useState(false)
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll)
+  }
+
+  const visibleIndexes = showAll ? marketIndex : marketIndex.slice(0, 4)
 
   const baseTokenDecimals = useMemo(() => {
     if (!baseTokenInfo) return undefined
@@ -590,7 +715,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   const {buildData, inputError} = useDerivedBuildInfo()
   const estPrice = isLong ? estimatedAsk : estimatedBid
-  const {callback: buildCallback, minPrice} = useBuildCallback(buildData, market?.id, estPrice, minCollateral, inputError) //change here
+  const {callback: buildCallback, minPrice} = useBuildCallback(buildData, market?.id, estPrice, minCollateral, inputError)
   const disableBuildButton: boolean = useMemo(() => {
     if (!typedValue || !maxInputIncludingFees || !minCollateral || isLong === undefined || !estPrice) {
       return true
@@ -807,6 +932,68 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
         />
       </BuildContainer>
+      <AboutMarketTitle>About Market</AboutMarketTitle>
+      <AboutMarketSection>
+        <AboutMarket>
+          <FirstColumn>
+            <TextBesideLogo>
+              <Icon size={40}>{CS2Logo ? <img src={CS2Logo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
+              <TextAboveLogo>{ComingSoonMarkets['111'].marketName}</TextAboveLogo>
+            </TextBesideLogo>
+            <TextBelowLogo>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident
+              tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur
+              adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus,
+              praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam
+              dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur.
+            </TextBelowLogo>
+          </FirstColumn>
+        </AboutMarket>
+        <AboutMarket>
+          <SecondColumn>
+            <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
+            <RightDetailColumn style={{height: '126px'}}>
+              <UlList>
+                {visibleIndexes.map((element, index) => (
+                  <LiList key={index}>{element}</LiList>
+                ))}
+              </UlList>
+              {marketIndex.length > 4 && <SeeMoreButton onClick={toggleShowAll}>{showAll ? 'Show less' : 'See more'}</SeeMoreButton>}
+            </RightDetailColumn>
+          </SecondColumn>
+          <SecondColumn>
+            <LeftDetailColumn>Proposed by</LeftDetailColumn>
+            <RightDetailColumn>{MarketDescription[111]?.ProposedBy}</RightDetailColumn>
+          </SecondColumn>
+          <SecondColumn>
+            <LeftDetailColumn>Approved</LeftDetailColumn>
+            <RightDetailColumn>{MarketDescription[111]?.Approved}</RightDetailColumn>
+          </SecondColumn>
+          <SecondColumn>
+            <LeftDetailColumn>Contract</LeftDetailColumn>
+            <RightDetailColumn>{MarketDescription[111]?.Contract}</RightDetailColumn>
+          </SecondColumn>
+        </AboutMarket>
+        <AboutMarket>
+          <SecondColumn>
+            <LeftDetailColumn>Sources</LeftDetailColumn>
+            <RightDetailColumn>
+              <UlList style={{gap: '16px'}}>
+                {sources.map((element, index) => (
+                  <LiList key={index}>{element}</LiList>
+                ))}
+              </UlList>
+            </RightDetailColumn>
+          </SecondColumn>
+          <SecondColumn>
+            <LeftDetailColumn>Additional Information</LeftDetailColumn>
+            <RightDetailColumn>{MarketDescription[111]?.AdditionalInfo}</RightDetailColumn>
+          </SecondColumn>
+        </AboutMarket>
+        <ImageContainer>
+          <ImageComponent src={fullMarketLogo} alt="Image description" />
+        </ImageContainer>
+      </AboutMarketSection>
     </div>
   )
 }

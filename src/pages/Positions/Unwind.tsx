@@ -87,8 +87,12 @@ export function Unwind({
   const history = useHistory()
   const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
-  const {account} = useActiveWeb3React()
-  const {positions} = useCurrentWalletPositionsV2(account)
+  const {account, chainId} = useActiveWeb3React()
+  const {positions, refetch} = useCurrentWalletPositionsV2(account)
+
+  useEffect(() => {
+    positions && refetch()
+  }, [chainId])
 
   const {typedValue, setSlippageValue, txnDeadline} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onSetSlippage, onSetTxnDeadline, onResetUnwindState} = useUnwindActionHandlers()

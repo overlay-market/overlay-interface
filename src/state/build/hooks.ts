@@ -204,10 +204,8 @@ export function useWalletPositionsFromSubgraph(address: string | undefined | nul
 
 export function useWalletPositionsFromSubgraphV2(address: string | undefined | null) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
-  return useAccountV2Query(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
+  return useAccountV2Query(accountAddress ? { account: accountAddress } : skipToken, { 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,

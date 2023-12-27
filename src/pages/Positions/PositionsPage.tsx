@@ -484,13 +484,14 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
 
 const Positions = () => {
   const {account, chainId} = useActiveWeb3React()
-  const {positionsTableDetails} = usePositionsTableDetails(account)
-  const {markets, refetch} = useTotalMarketsData()
+  const {positionsTableDetails, refetch: refetchPositionsTableDetails} = usePositionsTableDetails(account)
+  const {markets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData} = useCurrentMarketState(marketDetails)
 
   useEffect(() => {
-    markets && refetch()
+    positionsTableDetails && refetchPositionsTableDetails()
+    markets && refetchMarkets()
   }, [chainId])
 
   return (

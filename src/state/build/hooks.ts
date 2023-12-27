@@ -391,10 +391,8 @@ export function usePositionsTableDetails(
 
 export function useNumberOfPositionsFromSubgraph(address: string | undefined | null) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useNumberOfPositionsQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 10000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -537,10 +535,8 @@ export function useOpenPositionsOverview(
 
 export function useOpenPositionsOverviewFromSubgraph(address: string | undefined | null) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   return useOpenPositionsOverviewQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 10000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,

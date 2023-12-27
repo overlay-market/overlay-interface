@@ -371,7 +371,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
         {rows
           .map((row: any) => {
             const marketAddress = positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
-            const marketState = marketsData.find((market: any) => market.marketAddress === marketAddress)
+            const marketState = marketsData[0]
 
             if (positionStatus === PositionStatus.Build) {
               if (marketAddress === params?.marketId) {

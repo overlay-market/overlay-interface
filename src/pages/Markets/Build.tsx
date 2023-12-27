@@ -256,11 +256,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   const {market, isLoading, refetch} = useMarketData(marketId)
 
-  const {markets} = useTotalMarketsData()
-  const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
+  const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
 
-  console.log({markets})
+  console.log({market})
 
   // force refetch when refreshing page
   useEffect(() => {

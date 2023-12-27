@@ -477,10 +477,8 @@ export function useOpenPositionsFromSubgraph(address: string | undefined | null,
 
 export function useMarketOpenPositionsFromSubgraph(address: string | undefined | null, first: number, skip: number, marketId: string | undefined) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useMarketOpenPositionsQuery(accountAddress ? { account: accountAddress, first, skip, marketId } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,

@@ -25,7 +25,7 @@ import {useEstimatedBuild} from '../../hooks/useEstimatedBuild'
 import {useBuildCallback} from '../../hooks/useBuildCallback'
 import {AdditionalDetails} from './AdditionalBuildDetails'
 import ConfirmTxnModal from '../../components/ConfirmTxnModal/ConfirmTxnModal'
-import {useMarketData, useTotalMarketsData} from '../../state/markets/hooks'
+import {useMarketData} from '../../state/markets/hooks'
 import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useToken} from '../../hooks/useToken'
 import {useV1PeripheryContract} from '../../hooks/useContract'
@@ -254,6 +254,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     transactionHash: undefined,
   })
 
+  const {chainId} = useActiveWeb3React()
   const {market, isLoading, refetch} = useMarketData(marketId)
 
   const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
@@ -264,10 +265,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   // force refetch when refreshing page
   useEffect(() => {
     refetch()
-  }, [marketId, isLoading, refetch])
+  }, [chainId, marketId, isLoading, refetch])
 
   // const market = marketData?.market
-  const {chainId} = useActiveWeb3React()
+
   const ovlBalance = useOvlBalance()
   const parsedOvlBalance = ovlBalance && ovlBalance.toFixed(8)
   const ovl = chainId ? OVL[chainId] : undefined

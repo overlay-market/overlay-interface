@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
@@ -90,13 +90,17 @@ const infoTipDescriptions = {
 }
 
 const Markets = () => {
-  const {markets} = useActiveMarketsData()
+  const {markets, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   // toggle to hide 7d chart if data unavailable
   const hide7dChart = true
+
+  useEffect(() => {
+    refetch()
+  }, [chainId])
 
   // list of hidden markets from Markets page
 

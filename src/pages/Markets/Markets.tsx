@@ -99,7 +99,7 @@ const Markets = () => {
   const hide7dChart = true
 
   useEffect(() => {
-    refetch()
+    markets && refetch()
   }, [chainId])
 
   // list of hidden markets from Markets page

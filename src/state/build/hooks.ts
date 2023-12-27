@@ -464,10 +464,8 @@ export function usePositionsTableData(
 
 export function useOpenPositionsFromSubgraph(address: string | undefined | null, first: number, skip: number) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   return useOpenPositionsQuery(accountAddress ? { account: accountAddress, first, skip } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -488,10 +486,8 @@ export function useMarketOpenPositionsFromSubgraph(address: string | undefined |
 
 export function useUnwindsFromSubgraph(address: string | undefined | null, first: number, skip: number) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useUnwindsQuery(accountAddress ? { account: accountAddress, first, skip } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -501,10 +497,8 @@ export function useUnwindsFromSubgraph(address: string | undefined | null, first
 
 export function useLiquidatedPositionsFromSubgraph(address: string | undefined | null, first: number, skip: number) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useLiquidatedPositionsQuery(accountAddress ? { account: accountAddress, first, skip } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,

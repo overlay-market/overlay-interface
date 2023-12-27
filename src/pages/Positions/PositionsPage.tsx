@@ -149,7 +149,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [showLoader, setShowLoader] = useState(false)
 
   useEffect(() => {
-    refetch()
+    positionsTableData && refetch()
   }, [chainId])
 
   // Show loader only on page change
@@ -336,7 +336,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   const [showLoader, setShowLoader] = useState(false)
 
   useEffect(() => {
-    refetch()
+    positionsTableData && refetch()
   }, [chainId])
 
   // Show loader only on page change
@@ -490,7 +490,7 @@ const Positions = () => {
   const {markets: marketsData} = useCurrentMarketState(marketDetails)
 
   useEffect(() => {
-    refetch()
+    markets && refetch()
   }, [chainId])
 
   return (

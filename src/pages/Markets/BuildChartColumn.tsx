@@ -74,7 +74,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const marketDataDetails = React.useMemo(() => marketsData.find(market => market.id === marketData?.marketId), [marketsData, marketData])
 
   React.useEffect(() => {
-    refetch()
+    markets && refetch()
   }, [chainId])
 
   React.useEffect(() => {

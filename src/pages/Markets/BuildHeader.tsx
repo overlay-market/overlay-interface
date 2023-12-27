@@ -46,7 +46,7 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
   const history = useHistory()
 
   useEffect(() => {
-    refetchActiveMarkets()
+    markets && refetchActiveMarkets()
   }, [chainId])
 
   const marketOptions = marketDetail

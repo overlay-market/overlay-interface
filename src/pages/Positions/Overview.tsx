@@ -6,12 +6,13 @@ import {useTotalValueLocked} from '../../hooks/useTotalValueLocked'
 import {useTotalCost} from '../../hooks/useTotalCost'
 import {useTotalFees} from '../../hooks/useTotalFees'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {useMemo} from 'react'
+import {useEffect, useMemo} from 'react'
 import {colors} from '../../theme/theme'
 import MainOverviewCard from '../../components/Card/MainOverviewCard'
 import OverviewChart from '../../components/Chart/OverviewChart'
 import {usePositionsTableData} from '../../state/build/hooks'
 import {PositionStatus} from './PositionsPage'
+import {useActiveWeb3React} from '../../hooks/web3'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -49,10 +50,21 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const totalValueLocked = useTotalValueLocked(account)
   const totalCost = useTotalCost(account)
   const totalFees = useTotalFees(account)
+  const {chainId} = useActiveWeb3React()
 
   // TODO: separate hooks
-  const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
-  const {positionsTableData: liquidatedPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
+  const {positionsTableData: unwinds, refetch: refetchUnwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
+  const {positionsTableData: liquidatedPositions, refetch: refetchLiquidatedPositions} = usePositionsTableData(
+    account,
+    Infinity,
+    0,
+    PositionStatus.Liquidated,
+  )
+
+  useEffect(() => {
+    unwinds && refetchUnwinds()
+    liquidatedPositions && refetchLiquidatedPositions()
+  }, [chainId])
 
   const upnl = useMemo(() => {
     let formatValue = 0

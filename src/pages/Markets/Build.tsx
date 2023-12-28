@@ -38,7 +38,7 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {useFractionOfCapOi} from '../../hooks/useFractionOfCapOi'
 import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
-import {MarketDetails, ComingSoonMarkets, MarketDescription} from '../../constants/markets'
+import {MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
@@ -386,15 +386,19 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   // @TO-DO: pull market name from feed
   const {decimals, baseTokenAddress, quoteTokenAddress} = useMarketName(market?.feedAddress)
 
-  const marketName = MarketDetails[marketId]?.marketName
-  const marketLogo = MarketDetails[marketId]?.logo
-  const priceCurrency = MarketDetails[marketId]?.currency ?? ''
-
-  const CS2Logo = ComingSoonMarkets['111']?.logo
-
-  const marketIndex = MarketDescription[111].IndexesConstruction
-  const sources = MarketDescription[111].Sources
-  const fullMarketLogo = MarketDescription[111].FullLogo
+  const {
+    marketName,
+    logo: marketLogo,
+    currency: priceCurrency,
+    IndexesConstruction: marketIndex,
+    FullLogo: fullMarketLogo,
+    ProposedBy,
+    Approved,
+    Contract,
+    Sources: sources,
+    AdditionalInfo,
+    DescriptionText,
+  } = MarketDetails[marketId]
 
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
@@ -936,16 +940,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
         <AboutMarket>
           <FirstColumn>
             <TextBesideLogo>
-              <Icon size={40}>{CS2Logo ? <img src={CS2Logo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
-              <TextAboveLogo>{ComingSoonMarkets['111'].marketName}</TextAboveLogo>
+              <Icon size={40}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
+              <TextAboveLogo>{marketName}</TextAboveLogo>
             </TextBesideLogo>
-            <TextBelowLogo>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident
-              tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur
-              adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus,
-              praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam
-              dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur.
-            </TextBelowLogo>
+            <TextBelowLogo>{DescriptionText}</TextBelowLogo>
           </FirstColumn>
         </AboutMarket>
         <AboutMarket>
@@ -962,15 +960,15 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </SecondColumn>
           <SecondColumn>
             <LeftDetailColumn>Proposed by</LeftDetailColumn>
-            <RightDetailColumn>{MarketDescription[111]?.ProposedBy}</RightDetailColumn>
+            <RightDetailColumn>{ProposedBy}</RightDetailColumn>
           </SecondColumn>
           <SecondColumn>
             <LeftDetailColumn>Approved</LeftDetailColumn>
-            <RightDetailColumn>{MarketDescription[111]?.Approved}</RightDetailColumn>
+            <RightDetailColumn>{Approved}</RightDetailColumn>
           </SecondColumn>
           <SecondColumn>
             <LeftDetailColumn>Contract</LeftDetailColumn>
-            <RightDetailColumn>{MarketDescription[111]?.Contract}</RightDetailColumn>
+            <RightDetailColumn>{Contract}</RightDetailColumn>
           </SecondColumn>
         </AboutMarket>
         <AboutMarket>
@@ -986,7 +984,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </SecondColumn>
           <SecondColumn>
             <LeftDetailColumn>Additional Information</LeftDetailColumn>
-            <RightDetailColumn>{MarketDescription[111]?.AdditionalInfo}</RightDetailColumn>
+            <RightDetailColumn>{AdditionalInfo}</RightDetailColumn>
           </SecondColumn>
         </AboutMarket>
         <ImageContainer>

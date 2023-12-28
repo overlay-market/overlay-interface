@@ -255,7 +255,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   })
 
   const {chainId} = useActiveWeb3React()
-  const {market, isLoading, refetch} = useMarketData(marketId)
+  const {market, isLoading, isUninitialized, refetch} = useMarketData(marketId)
 
   const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
@@ -264,8 +264,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   // force refetch when refreshing page
   useEffect(() => {
-    market && refetch()
-  }, [chainId, marketId, isLoading, refetch])
+    market && !isUninitialized && refetch()
+  }, [chainId, marketId, isLoading, market, isUninitialized, refetch])
 
   // const market = marketData?.market
 

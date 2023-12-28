@@ -67,15 +67,15 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const [total, setTotal] = React.useState<number>(0)
 
   const {chainId} = useActiveWeb3React()
-  const {markets, refetch} = useTotalMarketsData()
+  const {markets, isUninitialized, refetch} = useTotalMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
 
   const marketDataDetails = React.useMemo(() => marketsData.find(market => market.id === marketData?.marketId), [marketsData, marketData])
 
   React.useEffect(() => {
-    markets && refetch()
-  }, [chainId])
+    markets && !isUninitialized && refetch()
+  }, [chainId, markets, isUninitialized, refetch])
 
   React.useEffect(() => {
     if (marketDataDetails?.parsedOiLong !== undefined) setLong(Number(marketDataDetails?.parsedOiLong))

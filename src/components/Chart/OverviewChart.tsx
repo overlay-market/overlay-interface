@@ -146,13 +146,24 @@ const OverviewChart = () => {
   const {account, chainId} = useActiveWeb3React()
 
   // TODO: separate hook
-  const {positionsTableData: unwinds, refetch: refetchUnwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
-  const {positionsTableData: liquidates, refetch: refetchLiquidatedPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
+  const {
+    positionsTableData: unwinds,
+    isUninitialized: isUninitializedUnwinds,
+    refetch: refetchUnwinds,
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
+  const {
+    positionsTableData: liquidates,
+    isUninitialized: isUninitializedLiquidates,
+    refetch: refetchLiquidatedPositions,
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
 
   useEffect(() => {
-    unwinds && refetchUnwinds()
-    liquidates && refetchLiquidatedPositions()
-  }, [chainId])
+    unwinds && !isUninitializedUnwinds && refetchUnwinds()
+  }, [chainId, unwinds, isUninitializedUnwinds, refetchUnwinds])
+
+  useEffect(() => {
+    liquidates && !isUninitializedLiquidates && refetchLiquidatedPositions()
+  }, [chainId, liquidates, isUninitializedLiquidates, refetchLiquidatedPositions])
 
   const chartData = useMemo(() => {
     const unwindRows = unwinds?.account?.unwinds ?? []

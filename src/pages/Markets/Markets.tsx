@@ -90,7 +90,7 @@ const infoTipDescriptions = {
 }
 
 const Markets = () => {
-  const {markets, refetch} = useActiveMarketsData()
+  const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
@@ -99,8 +99,8 @@ const Markets = () => {
   const hide7dChart = true
 
   useEffect(() => {
-    markets && refetch()
-  }, [chainId])
+    markets && !isUninitialized && refetch()
+  }, [chainId, markets, isUninitialized, refetch])
 
   // list of hidden markets from Markets page
 

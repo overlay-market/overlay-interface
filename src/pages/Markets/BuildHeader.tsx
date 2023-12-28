@@ -41,13 +41,13 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
   const marketLogo = MarketDetails[marketId]?.logo
   const {chainId} = useActiveWeb3React()
 
-  const {markets, refetch: refetchActiveMarkets} = useActiveMarketsData()
+  const {markets, isUninitialized, refetch: refetchActiveMarkets} = useActiveMarketsData()
   const marketDetail: AdditionalMarketData[] = useMarketDetails(markets)
   const history = useHistory()
 
   useEffect(() => {
-    markets && refetchActiveMarkets()
-  }, [chainId])
+    markets && !isUninitialized && refetchActiveMarkets()
+  }, [chainId, markets, isUninitialized, refetchActiveMarkets])
 
   const marketOptions = marketDetail
     .filter(market => market?.id !== marketId)

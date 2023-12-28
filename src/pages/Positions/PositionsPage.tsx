@@ -149,8 +149,8 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [showLoader, setShowLoader] = useState(false)
 
   useEffect(() => {
-    positionsTableData && refetch()
-  }, [chainId])
+    positionsTableData && !isUninitialized && refetch()
+  }, [chainId, positionsTableData, isUninitialized, refetch])
 
   // Show loader only on page change
   useEffect(() => {
@@ -336,8 +336,8 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   const [showLoader, setShowLoader] = useState(false)
 
   useEffect(() => {
-    positionsTableData && refetch()
-  }, [chainId])
+    positionsTableData && !isUninitialized && refetch()
+  }, [chainId, positionsTableData, isUninitialized, refetch])
 
   // Show loader only on page change
   useEffect(() => {
@@ -484,15 +484,22 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
 
 const Positions = () => {
   const {account, chainId} = useActiveWeb3React()
-  const {positionsTableDetails, refetch: refetchPositionsTableDetails} = usePositionsTableDetails(account)
-  const {markets, refetch: refetchMarkets} = useTotalMarketsData()
+  const {
+    positionsTableDetails,
+    isUninitialized: isUninitializedPosTableDetails,
+    refetch: refetchPositionsTableDetails,
+  } = usePositionsTableDetails(account)
+  const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData} = useCurrentMarketState(marketDetails)
 
   useEffect(() => {
-    positionsTableDetails && refetchPositionsTableDetails()
-    markets && refetchMarkets()
-  }, [chainId])
+    positionsTableDetails && !isUninitializedPosTableDetails && refetchPositionsTableDetails()
+  }, [chainId, positionsTableDetails, isUninitializedPosTableDetails, refetchPositionsTableDetails])
+
+  useEffect(() => {
+    markets && !isUninitializedMarkets && refetchMarkets()
+  }, [chainId, markets, isUninitializedMarkets, refetchMarkets])
 
   return (
     <PageContainer>

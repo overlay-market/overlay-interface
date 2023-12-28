@@ -53,18 +53,24 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const {chainId} = useActiveWeb3React()
 
   // TODO: separate hooks
-  const {positionsTableData: unwinds, refetch: refetchUnwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
-  const {positionsTableData: liquidatedPositions, refetch: refetchLiquidatedPositions} = usePositionsTableData(
-    account,
-    Infinity,
-    0,
-    PositionStatus.Liquidated,
-  )
+  const {
+    positionsTableData: unwinds,
+    isUninitialized: isUninitializedUnwinds,
+    refetch: refetchUnwinds,
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
+  const {
+    positionsTableData: liquidatedPositions,
+    isUninitialized: isUninitializedLiqPos,
+    refetch: refetchLiquidatedPositions,
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
 
   useEffect(() => {
-    unwinds && refetchUnwinds()
-    liquidatedPositions && refetchLiquidatedPositions()
-  }, [chainId])
+    unwinds && !isUninitializedUnwinds && refetchUnwinds()
+  }, [chainId, unwinds, isUninitializedUnwinds, refetchUnwinds])
+
+  useEffect(() => {
+    liquidatedPositions && !isUninitializedLiqPos && refetchLiquidatedPositions()
+  }, [chainId, liquidatedPositions, isUninitializedLiqPos, refetchLiquidatedPositions])
 
   const upnl = useMemo(() => {
     let formatValue = 0

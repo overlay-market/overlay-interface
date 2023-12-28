@@ -194,7 +194,6 @@ export function useWalletPositionsFromSubgraph(address: string | undefined | nul
   const accountAddress = address ? address.toLowerCase() : undefined;
 
   return useAccountQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,

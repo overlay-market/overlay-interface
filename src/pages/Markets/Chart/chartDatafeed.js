@@ -1,5 +1,9 @@
 import {useMarketData} from '../../../state/markets/hooks'
 import {LibrarySymbolInfo} from '../../../charting_library/charting_library'
+import {getBinSizeAndUnit, isSepolia} from './helpers'
+import {subscribeOnStream, unsubscribeFromStream} from './streaming'
+
+// Reference: https://www.tradingview.com/charting-library-docs/latest/tutorials/implement_datafeed_tutorial/Widget-Setup
 
 // DatafeedConfiguration implementation
 const configurationData = {
@@ -7,61 +11,8 @@ const configurationData = {
   supported_resolutions: ['5', '15', '30', '60', '240', '720', '1D', '3D', '1W', '1M'],
 }
 
-function getBinSizeAndUnit(input: string): {binSize: number, binUnit: 'minute' | 'day' | 'week' | 'month'} | null {
-  const numValue = Number(input)
-
-  if (!isNaN(numValue) && isFinite(numValue)) {
-    return {
-      binSize: numValue,
-      binUnit: 'minute',
-    }
-  }
-
-  const dayRegex = /^(\d+)D$/
-  const weekRegex = /^(\d+)W$/
-  const monthRegex = /^(\d+)M$/
-
-  if (dayRegex.test(input)) {
-    const match = dayRegex.exec(input)
-    if (match) {
-      const numValueD = Number(match[1])
-      if (!isNaN(numValueD) && isFinite(numValueD)) {
-        return {
-          binSize: numValueD,
-          binUnit: 'day',
-        }
-      }
-    }
-  }
-
-  if (weekRegex.test(input)) {
-    const match = weekRegex.exec(input)
-    if (match) {
-      const numValueW = Number(match[1])
-      if (!isNaN(numValueW) && isFinite(numValueW)) {
-        return {
-          binSize: numValueW,
-          binUnit: 'week',
-        }
-      }
-    }
-  }
-
-  if (monthRegex.test(input)) {
-    const match = monthRegex.exec(input)
-    if (match) {
-      const numValueM = Number(match[1])
-      if (!isNaN(numValueM) && isFinite(numValueM)) {
-        return {
-          binSize: numValueM,
-          binUnit: 'month',
-        }
-      }
-    }
-  }
-
-  return null
-}
+// Keep a record of the most recent bar on the chart, for use in the realtime update callback
+const lastBarsCache = new Map()
 
 export default {
   onReady: callback => {
@@ -119,15 +70,13 @@ export default {
       .map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
       .join('&')
 
-    const isSepolia =
-      String(symbolInfo?.marketAddress).toLowerCase() === '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9' ||
-      String(symbolInfo?.marketAddress).toLowerCase() === '0xf2ddf700fc481be8ce1f228da5c913f1a25a2d2d' ||
-      String(symbolInfo?.marketAddress).toLowerCase() === '0x553de578e68a4faa55d4522665cb2d2d53390d22'
     try {
       let bars = []
 
       let res = await fetch(
-        isSepolia ? `https://api.overlay.market/sepolia-charts/v1/charts?${query}` : `https://api.overlay.market/charts/v1/charts?${query}`,
+        isSepolia(symbolInfo)
+          ? `https://api.overlay.market/sepolia-charts/v1/charts?${query}`
+          : `https://api.overlay.market/charts/v1/charts?${query}`,
       )
       res = await res.json()
 
@@ -150,6 +99,11 @@ export default {
         ]
       })
 
+      if (firstDataRequest) {
+        console.log('[getBars]: Setting last bar cache', {...bars[bars.length - 1]})
+        lastBarsCache.set(symbolInfo.full_name, {...bars[bars.length - 1]})
+      }
+
       console.log(`[getBars]: returned ${bars.length} bars`)
       onHistoryCallback(bars, {noData: false})
     } catch (error) {
@@ -159,9 +113,12 @@ export default {
   },
 
   subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
-    // console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID)
+    console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID)
+    subscribeOnStream(symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback, lastBarsCache.get(symbolInfo.full_name))
   },
+
   unsubscribeBars: subscriberUID => {
-    // console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID)
+    console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID)
+    unsubscribeFromStream(subscriberUID)
   },
 }

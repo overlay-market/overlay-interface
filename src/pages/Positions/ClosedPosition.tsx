@@ -58,8 +58,8 @@ export function ClosedPosition({
   const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
 
   useEffect(() => {
-    positions && !isUninitialized && refetch()
-  }, [chainId, positions, isUninitialized, refetch])
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   const {onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
 

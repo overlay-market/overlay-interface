@@ -91,8 +91,8 @@ export function Unwind({
   const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
 
   useEffect(() => {
-    positions && !isUninitialized && refetch()
-  }, [chainId, positions, isUninitialized, refetch])
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   const {typedValue, setSlippageValue, txnDeadline} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onSetSlippage, onSetTxnDeadline, onResetUnwindState} = useUnwindActionHandlers()

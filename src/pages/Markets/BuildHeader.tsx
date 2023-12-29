@@ -46,8 +46,8 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
   const history = useHistory()
 
   useEffect(() => {
-    markets && !isUninitialized && refetchActiveMarkets()
-  }, [chainId, markets, isUninitialized, refetchActiveMarkets])
+    !isUninitialized && refetchActiveMarkets()
+  }, [chainId, isUninitialized, refetchActiveMarkets])
 
   const marketOptions = marketDetail
     .filter(market => market?.id !== marketId)

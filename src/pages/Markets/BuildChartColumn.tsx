@@ -74,8 +74,8 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const marketDataDetails = React.useMemo(() => marketsData.find(market => market.id === marketData?.marketId), [marketsData, marketData])
 
   React.useEffect(() => {
-    markets && !isUninitialized && refetch()
-  }, [chainId, markets, isUninitialized, refetch])
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   React.useEffect(() => {
     if (marketDataDetails?.parsedOiLong !== undefined) setLong(Number(marketDataDetails?.parsedOiLong))

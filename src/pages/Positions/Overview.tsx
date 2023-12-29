@@ -65,12 +65,12 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   } = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
 
   useEffect(() => {
-    unwinds && !isUninitializedUnwinds && refetchUnwinds()
-  }, [chainId, unwinds, isUninitializedUnwinds, refetchUnwinds])
+    !isUninitializedUnwinds && refetchUnwinds()
+  }, [chainId, isUninitializedUnwinds, refetchUnwinds])
 
   useEffect(() => {
-    liquidatedPositions && !isUninitializedLiqPos && refetchLiquidatedPositions()
-  }, [chainId, liquidatedPositions, isUninitializedLiqPos, refetchLiquidatedPositions])
+    !isUninitializedLiqPos && refetchLiquidatedPositions()
+  }, [chainId, isUninitializedLiqPos, refetchLiquidatedPositions])
 
   const upnl = useMemo(() => {
     let formatValue = 0

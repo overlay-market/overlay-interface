@@ -99,8 +99,8 @@ const Markets = () => {
   const hide7dChart = true
 
   useEffect(() => {
-    markets && !isUninitialized && refetch()
-  }, [chainId, markets, isUninitialized, refetch])
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   // list of hidden markets from Markets page
 

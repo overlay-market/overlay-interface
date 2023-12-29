@@ -158,12 +158,12 @@ const OverviewChart = () => {
   } = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
 
   useEffect(() => {
-    unwinds && !isUninitializedUnwinds && refetchUnwinds()
-  }, [chainId, unwinds, isUninitializedUnwinds, refetchUnwinds])
+    !isUninitializedUnwinds && refetchUnwinds()
+  }, [chainId, isUninitializedUnwinds, refetchUnwinds])
 
   useEffect(() => {
-    liquidates && !isUninitializedLiquidates && refetchLiquidatedPositions()
-  }, [chainId, liquidates, isUninitializedLiquidates, refetchLiquidatedPositions])
+    !isUninitializedLiquidates && refetchLiquidatedPositions()
+  }, [chainId, isUninitializedLiquidates, refetchLiquidatedPositions])
 
   const chartData = useMemo(() => {
     const unwindRows = unwinds?.account?.unwinds ?? []

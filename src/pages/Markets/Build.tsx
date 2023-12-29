@@ -264,8 +264,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   // force refetch when refreshing page
   useEffect(() => {
-    market && !isUninitialized && refetch()
-  }, [chainId, marketId, isLoading, market, isUninitialized, refetch])
+    !isUninitialized && refetch()
+  }, [chainId, marketId, isLoading, isUninitialized, refetch])
 
   // const market = marketData?.market
 

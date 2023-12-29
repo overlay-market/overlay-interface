@@ -443,8 +443,6 @@ export function usePositionsTableData(
   ? positionsTableData.account.positions.length
   : null!;
 
-  console.log({positionsTableData})
-
   return {
     isLoading: res?.isLoading,
     isFetching: res?.isFetching,

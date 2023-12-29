@@ -402,7 +402,7 @@ export function usePositionsTableData(
   first: number,
   skip: number,
   status: PositionStatus,
-  marketId: string | undefined,
+  marketId?: string | undefined,
 ): {
   isLoading: boolean
   isFetching: boolean

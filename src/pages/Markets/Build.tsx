@@ -260,8 +260,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
 
-  console.log({market})
-
   // force refetch when refreshing page
   useEffect(() => {
     !isUninitialized && refetch()

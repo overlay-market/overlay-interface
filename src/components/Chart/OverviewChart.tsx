@@ -244,8 +244,6 @@ const OverviewChart = () => {
     const startDate = getFilterStartDate(selectedInterval)
     data = data.filter(item => moment(item.date).isSameOrAfter(startDate))
 
-    console.log(data)
-
     return data
   }, [unwinds, liquidates, selectedInterval])
 

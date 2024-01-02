@@ -236,7 +236,14 @@ const RightColumn = styled.div`
 const AboutMarketTitle = styled.h2`
   padding-top: 32px;
   @media (max-width: 1400px) {
+    margin: 0px 24px;
+    padding-bottom: 24px;
+  }
+  @media (max-width: 1025px) {
     padding-top: 150px;
+  }
+  @media (max-width: 760px) {
+    margin: 0px;
   }
 `
 
@@ -247,8 +254,25 @@ const AboutMarketSection = styled.div`
   max-width: 1230px;
   margin-bottom: 20px;
   @media (max-width: 1400px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
+    margin: 0px 24px;
+  }
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+    margin: 0px;
+  }
+`
+const AboutMarketText = styled.div`
+  width: 100%;
+  margin-bottom: 10px;
+  @media (max-width: 1400px) {
+    grid-column: span 2;
+    max-width: 60%;
+  }
+  @media (max-width: 760px) {
+    grid-column: 1;
+    max-width: 100%;
   }
 `
 
@@ -937,7 +961,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       </BuildContainer>
       <AboutMarketTitle>About Market</AboutMarketTitle>
       <AboutMarketSection>
-        <AboutMarket>
+        <AboutMarketText>
           <FirstColumn>
             <TextBesideLogo>
               <Icon size={40}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
@@ -945,7 +969,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             </TextBesideLogo>
             <TextBelowLogo>{DescriptionText}</TextBelowLogo>
           </FirstColumn>
-        </AboutMarket>
+        </AboutMarketText>
         <AboutMarket>
           <SecondColumn>
             <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
@@ -958,10 +982,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               {marketIndex.length > 4 && <SeeMoreButton onClick={toggleShowAll}>{showAll ? 'Show less' : 'See more'}</SeeMoreButton>}
             </RightDetailColumn>
           </SecondColumn>
-          <SecondColumn>
-            <LeftDetailColumn>Proposed by</LeftDetailColumn>
-            <RightDetailColumn>{ProposedBy}</RightDetailColumn>
-          </SecondColumn>
+            <SecondColumn>
+              <LeftDetailColumn>Proposed by</LeftDetailColumn>
+              <RightDetailColumn>{ProposedBy}</RightDetailColumn>
+            </SecondColumn>
           <SecondColumn>
             <LeftDetailColumn>Approved</LeftDetailColumn>
             <RightDetailColumn>{Approved}</RightDetailColumn>
@@ -972,20 +996,20 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </SecondColumn>
         </AboutMarket>
         <AboutMarket>
-          <SecondColumn>
-            <LeftDetailColumn>Sources</LeftDetailColumn>
-            <RightDetailColumn>
-              <UlList style={{gap: '16px'}}>
-                {sources.map((element, index) => (
-                  <LiList key={index}>{element}</LiList>
-                ))}
-              </UlList>
-            </RightDetailColumn>
-          </SecondColumn>
-          <SecondColumn>
-            <LeftDetailColumn>Additional Information</LeftDetailColumn>
-            <RightDetailColumn>{AdditionalInfo}</RightDetailColumn>
-          </SecondColumn>
+            <SecondColumn>
+              <LeftDetailColumn>Sources</LeftDetailColumn>
+              <RightDetailColumn>
+                <UlList style={{gap: '16px'}}>
+                  {sources.map((element, index) => (
+                    <LiList key={index}>{element}</LiList>
+                  ))}
+                </UlList>
+              </RightDetailColumn>
+            </SecondColumn>
+            <SecondColumn>
+              <LeftDetailColumn>Additional Information</LeftDetailColumn>
+              <RightDetailColumn>{AdditionalInfo}</RightDetailColumn>
+            </SecondColumn>
         </AboutMarket>
         <ImageContainer>
           <ImageComponent src={fullMarketLogo} alt="Image description" />

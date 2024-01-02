@@ -91,14 +91,14 @@ export type MarketDetailsData = {
   logo: string
   currency: string
   disabled?: boolean
-  DescriptionText: string
-  IndexesConstruction: Array<string>
+  DescriptionText?: string
+  IndexesConstruction?: Array<string>
   FullLogo: string
-  ProposedBy: string
-  Approved: string
-  Contract: string
-  Sources: Array<string>
-  AdditionalInfo: string
+  ProposedBy?: string
+  Approved?: string
+  Contract?: string
+  Sources?: Array<string>
+  AdditionalInfo?: string
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {

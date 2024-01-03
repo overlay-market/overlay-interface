@@ -433,7 +433,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     setShowAll(!showAll)
   }
 
-  const visibleIndexes = showAll ? marketIndex : marketIndex.slice(0, 4)
+  const visibleIndexes = showAll ? marketIndex : marketIndex?.slice(0, 4)
 
   const baseTokenDecimals = useMemo(() => {
     if (!baseTokenInfo) return undefined
@@ -971,31 +971,40 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           </FirstColumn>
         </AboutMarketText>
         <AboutMarket>
-          <SecondColumn>
-            <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
-            <RightDetailColumn style={{height: '126px'}}>
-              <UlList>
-                {visibleIndexes.map((element, index) => (
-                  <LiList key={index}>{element}</LiList>
-                ))}
-              </UlList>
-              {marketIndex.length > 4 && <SeeMoreButton onClick={toggleShowAll}>{showAll ? 'Show less' : 'See more'}</SeeMoreButton>}
-            </RightDetailColumn>
-          </SecondColumn>
+          {marketIndex && (
+            <SecondColumn>
+              <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
+              <RightDetailColumn style={{height: '126px'}}>
+                <UlList>
+                  {visibleIndexes?.map((element, index) => (
+                    <LiList key={index}>{element}</LiList>
+                  ))}
+                </UlList>
+                {marketIndex && marketIndex.length > 4 && <SeeMoreButton onClick={toggleShowAll}>{showAll ? 'Show less' : 'See more'}</SeeMoreButton>}
+              </RightDetailColumn>
+            </SecondColumn>
+          )}
+          {ProposedBy && (
             <SecondColumn>
               <LeftDetailColumn>Proposed by</LeftDetailColumn>
               <RightDetailColumn>{ProposedBy}</RightDetailColumn>
             </SecondColumn>
-          <SecondColumn>
-            <LeftDetailColumn>Approved</LeftDetailColumn>
-            <RightDetailColumn>{Approved}</RightDetailColumn>
-          </SecondColumn>
-          <SecondColumn>
-            <LeftDetailColumn>Contract</LeftDetailColumn>
-            <RightDetailColumn>{Contract}</RightDetailColumn>
-          </SecondColumn>
+          )}
+          {Approved && (
+            <SecondColumn>
+              <LeftDetailColumn>Approved</LeftDetailColumn>
+              <RightDetailColumn>{Approved}</RightDetailColumn>
+            </SecondColumn>
+          )}
+          {Contract && (
+            <SecondColumn>
+              <LeftDetailColumn>Contract</LeftDetailColumn>
+              <RightDetailColumn>{Contract}</RightDetailColumn>
+            </SecondColumn>
+          )}
         </AboutMarket>
         <AboutMarket>
+          {sources && (
             <SecondColumn>
               <LeftDetailColumn>Sources</LeftDetailColumn>
               <RightDetailColumn>
@@ -1006,10 +1015,13 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 </UlList>
               </RightDetailColumn>
             </SecondColumn>
+          )}
+          {AdditionalInfo && (
             <SecondColumn>
               <LeftDetailColumn>Additional Information</LeftDetailColumn>
               <RightDetailColumn>{AdditionalInfo}</RightDetailColumn>
             </SecondColumn>
+          )}
         </AboutMarket>
         <ImageContainer>
           <ImageComponent src={fullMarketLogo} alt="Image description" />

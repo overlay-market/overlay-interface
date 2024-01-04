@@ -36,7 +36,7 @@ export const HeaderContainer = styled.div`
   `};
   ${({theme}) => theme.mediaWidth.minMedium`
     width: auto;
-    padding: 24px 40px;
+    padding: 24px 32px;
   `};
 `
 

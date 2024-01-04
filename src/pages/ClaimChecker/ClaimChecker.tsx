@@ -2,6 +2,7 @@ import AddressCheckSection from './AddressCheckSection'
 import EligibilitySection from './EligibilitySection'
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
+import {useState} from 'react'
 
 const PageWrapper = styled.div`
   max-width: 1232px;
@@ -31,8 +32,6 @@ const TitleSection = styled.div`
   `}
   ${({theme}) => theme.mediaWidth.minMedium`
     gap: 16px;  
-  `}
-  ${({theme}) => theme.mediaWidth.minLarge`  
     margin: 0;
     width: auto;
     align-items: flex-start;
@@ -49,6 +48,12 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
 `
 
 const ClaimChecker = () => {
+  const [addresses, setAddresses] = useState<string>('')
+  console.log(addresses, '------')
+  const addressList = addresses && addresses.split('\n')
+
+  console.log(addressList, addressList.length)
+
   return (
     <PageWrapper>
       <TitleSection>
@@ -56,7 +61,7 @@ const ClaimChecker = () => {
         <TEXT.SmallBody color={colors(true).dark.blue1}>Check eligibility for different airdrops</TEXT.SmallBody>
       </TitleSection>
 
-      <AddressCheckSection />
+      <AddressCheckSection addresses={addresses} setAddresses={setAddresses} />
 
       <EligibilitySection />
     </PageWrapper>

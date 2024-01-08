@@ -56,3 +56,33 @@ export const MERKLE_PROOFS: ClaimMap = {
   [ClaimId.TESTING_A]: 'https://raw.githubusercontent.com/overlay-market/MerkleDistributor/ovl-test/src/treeInfo.json',
   [ClaimId.TESTING_B]: 'https://raw.githubusercontent.com/overlay-market/MerkleDistributor/ovl-test/src/treeInfo.json',
 }
+
+export type AirdropMap = {
+  [claimId: string]: {
+    title: string
+    expectedDate: string
+    summary: string
+    isTBA: boolean
+  }
+}
+
+export const Airdrops: AirdropMap = {
+  [ClaimId.BEACON_HOLDERS]: {
+    title: ClaimId.BEACON_HOLDERS,
+    expectedDate: '22.12.2023',
+    summary: 'This airdrop is for Overlay OG’s who joined before 2022',
+    isTBA: false,
+  },
+  [ClaimId.OVERLAY]: {
+    title: ClaimId.OVERLAY,
+    expectedDate: '20.12.2023',
+    summary: 'This airdrop is for Overlay OG’s who joined before 2022',
+    isTBA: false,
+  },
+  [ClaimId.ARBITRUM]: {
+    title: ClaimId.ARBITRUM,
+    expectedDate: '23.12.2023',
+    summary: 'This airdrop is for Overlay OG’s who joined before 2022',
+    isTBA: true,
+  },
+}

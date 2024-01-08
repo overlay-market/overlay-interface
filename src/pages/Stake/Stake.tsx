@@ -7,7 +7,7 @@ import {Link} from 'react-router-dom'
 import {ArrowRight} from 'react-feather'
 import {makeStyles} from '@material-ui/core/styles'
 import {Button, Card, CardContent, CardMedia, CircularProgress, Grid} from '@material-ui/core'
-import {Fragment, useCallback, useMemo, useState} from 'react'
+import {Fragment, useCallback, useEffect, useMemo, useState} from 'react'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import {darken} from '@material-ui/core/styles'
 import {useActiveWeb3React} from '../../hooks/web3'
@@ -34,8 +34,25 @@ const useStyles = makeStyles(theme => ({
   mainRow: {
     alignItems: 'start',
     marginBottom: '80px',
-    [theme.breakpoints.down('xs')]: {
+    gap: '24px',
+    [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
+    },
+  },
+  cardsRow: {
+    display: 'flex',
+    width: 'fit-content',
+    justifyContent: 'space-between',
+    gap: '5px',
+    '@media (max-width: 540px)': {
+      width: '100%',
+      flexDirection: 'column',
+      gap: '40px',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
     },
   },
   stakeRewardsCard: {
@@ -79,7 +96,7 @@ const useStyles = makeStyles(theme => ({
     fontFamily: 'Roboto Mono',
   },
   poolInfoCol: {
-    flex: '1 1 0',
+    flex: '1 1 35%',
   },
   poolInfoContainer: {},
   keyValueDisplay: {
@@ -93,6 +110,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     [theme.breakpoints.up('sm')]: {
       maxWidth: '345px',
+      minWidth: '245px',
     },
     [theme.breakpoints.down('xs')]: {
       marginTop: theme.spacing(2),
@@ -222,6 +240,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
     maxWidth: '340px',
+    margin: '0 auto',
   },
   powerCardImageCard: {
     background: '#1B2131',
@@ -247,18 +266,13 @@ const useStyles = makeStyles(theme => ({
     flex: '1 1 0',
     display: 'flex',
     justifyContent: 'center',
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-    },
+    width: 'fit-content',
   },
   stakeRewardsCol: {
     flex: '1 1 0',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-    },
   },
 }))
 
@@ -334,6 +348,7 @@ const Stake = ({poolData}: PoolProps) => {
   })
   const chainId = useAppSelector((state: AppState) => state.application.chainId)
   const ovl = chainId ? OVL[chainId] : undefined
+  const [isDisabledPool, setIsDisabledPool] = useState<boolean>(false)
 
   const {callback: stakeCallback} = useStakeCallback(inputAmount, poolData.poolAddress)
   const {callback: withdrawCallback} = useWithdrawCallback(inputAmount, poolData.poolAddress)
@@ -358,9 +373,17 @@ const Stake = ({poolData}: PoolProps) => {
 
   const [approval, approveCallback] = useApproveCallback(utils.parseUnits(inputAmount ? inputAmount : '0'), poolData.poolAddress.toLowerCase(), ovl)
 
+  useEffect(() => {
+    if (poolData.disabled) {
+      setPoolType('withdraw')
+      setIsDisabledPool(true)
+      handleUserInput(utils.formatUnits(stakedAmount, 18) ?? '0')
+    }
+  }, [poolData.disabled, stakedAmount])
+
   const showApprovalFlow = useMemo(() => {
-    return approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
-  }, [approval])
+    return poolType === 'stake' && approval !== ApprovalState.APPROVED && approval !== ApprovalState.UNKNOWN
+  }, [approval, poolType])
 
   const handleApprove = useCallback(async () => {
     if (!inputAmount) {
@@ -513,213 +536,219 @@ const Stake = ({poolData}: PoolProps) => {
           </FlexColumn>
         </div>
 
-        {/* Pool card */}
-        <div className={classes.poolCardCol}>
-          <FlexColumn className={classes.poolCardContainer}>
-            {/* Toggle buttons */}
-            <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
-              <ToggleButton className={classes.toggleButton} value="stake" disableRipple>
-                Stake
-              </ToggleButton>
-              <ToggleButton className={classes.toggleButton} value="withdraw" disableRipple>
-                Withdraw
-              </ToggleButton>
-            </ToggleButtonGroup>
+        <div className={classes.cardsRow}>
+          {/* Pool card */}
+          <div className={classes.poolCardCol}>
+            <FlexColumn className={classes.poolCardContainer}>
+              {/* Toggle buttons */}
+              <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
+                <ToggleButton disabled={isDisabledPool} className={classes.toggleButton} value="stake" disableRipple>
+                  Stake
+                </ToggleButton>
+                <ToggleButton className={classes.toggleButton} value="withdraw" disableRipple>
+                  Withdraw
+                </ToggleButton>
+              </ToggleButtonGroup>
 
-            {/* Card */}
-            <div className={classes.poolCard}>
-              <TEXT.Supplemental color={colors(true).dark.grey2}>
-                {poolType === 'stake' ? 'Choose Staking Amount' : 'Withdraw Staked Amount'}
-              </TEXT.Supplemental>
+              {/* Card */}
+              <div className={classes.poolCard}>
+                <TEXT.Supplemental color={colors(true).dark.grey2}>
+                  {poolType === 'stake' ? 'Choose Staking Amount' : 'Withdraw Staked Amount'}
+                </TEXT.Supplemental>
 
-              <div className={classes.inputContainer}>
-                <FlexRow justify="space-between" mb="25px">
-                  <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
-                  <TEXT.Supplemental
-                    color={colors(true).dark.grey2}
-                    style={{textDecoration: 'underline', cursor: 'pointer'}}
-                    onClick={() =>
-                      handleUserInput(poolType === 'stake' ? ovlBalance?.toExact() ?? '0' : formatBigNumber(stakedAmount, 18, 6)?.toString() ?? '0')
-                    }
+                <div className={classes.inputContainer}>
+                  <FlexRow justify="space-between" mb="25px">
+                    <TEXT.Supplemental color={colors(true).dark.grey2}>OVL Amount</TEXT.Supplemental>
+                    <TEXT.Supplemental
+                      color={colors(true).dark.grey2}
+                      style={{textDecoration: 'underline', cursor: 'pointer'}}
+                      onClick={() =>
+                        handleUserInput(poolType === 'stake' ? ovlBalance?.toExact() ?? '0' : formatBigNumber(stakedAmount, 18, 6)?.toString() ?? '0')
+                      }
+                    >
+                      Max: {poolType === 'stake' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
+                    </TEXT.Supplemental>
+                  </FlexRow>
+                  <FlexRow justify="space-between">
+                    <NumericalInput
+                      color={colors(true).dark.blue1}
+                      align="left"
+                      padding="0px"
+                      fontWeight="700"
+                      value={inputAmount}
+                      onUserInput={handleUserInput}
+                    />
+                    <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
+                  </FlexRow>
+                </div>
+
+                {/* TODO */}
+                {/* <FlexRow justify="space-between" mt="16px">
+                  <TEXT.SmallBody color={colors(true).dark.grey2}>Est. Received APY</TEXT.SmallBody>
+                  <TEXT.SmallBody color={colors(true).dark.blue1}>~40%</TEXT.SmallBody>
+                </FlexRow> */}
+              </div>
+
+              {account ? (
+                showApprovalFlow ? (
+                  <Button
+                    variant="contained"
+                    className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
+                    disabled={Number(inputAmount) === 0 || attemptingTransaction}
+                    onClick={handleApprove}
                   >
-                    Max: {poolType === 'stake' ? ovlBalance?.toFixed(2) : stakedAmountFormatted} OVL
-                  </TEXT.Supplemental>
-                </FlexRow>
-                <FlexRow justify="space-between">
-                  <NumericalInput
-                    color={colors(true).dark.blue1}
-                    align="left"
-                    padding="0px"
-                    fontWeight="700"
-                    value={inputAmount}
-                    onUserInput={handleUserInput}
-                  />
-                  <TEXT.BoldStandardBody color={colors(true).dark.blue1}>OVL</TEXT.BoldStandardBody>
-                </FlexRow>
-              </div>
-
-              {/* TODO */}
-              {/* <FlexRow justify="space-between" mt="16px">
-                <TEXT.SmallBody color={colors(true).dark.grey2}>Est. Received APY</TEXT.SmallBody>
-                <TEXT.SmallBody color={colors(true).dark.blue1}>~40%</TEXT.SmallBody>
-              </FlexRow> */}
-            </div>
-
-            {account ? (
-              showApprovalFlow ? (
-                <Button
-                  variant="contained"
-                  className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                  disabled={Number(inputAmount) === 0 || attemptingTransaction}
-                  onClick={handleApprove}
-                >
-                  {attemptingTransaction ? (
-                    <span>
-                      Waiting Confirmation <CircularProgress size={16} className={classes.circularProgress} />
-                    </span>
-                  ) : Number(inputAmount) === 0 ? (
-                    'Enter an amount'
-                  ) : (
-                    'Approve OVL'
-                  )}
-                </Button>
+                    {attemptingTransaction ? (
+                      <span>
+                        Waiting Confirmation <CircularProgress size={16} className={classes.circularProgress} />
+                      </span>
+                    ) : Number(inputAmount) === 0 ? (
+                      'Enter an amount'
+                    ) : (
+                      'Approve OVL'
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
+                    disabled={isConfirmButtonDisabled}
+                    onClick={handleConfirm}
+                  >
+                    {attemptingTransaction ? (
+                      <span>
+                        Transaction Pending <CircularProgress size={16} className={classes.circularProgress} />
+                      </span>
+                    ) : Number(inputAmount) === 0 ? (
+                      'Enter an amount'
+                    ) : poolType === 'stake' ? (
+                      'Stake'
+                    ) : (
+                      'Withdraw'
+                    )}
+                  </Button>
+                )
               ) : (
-                <Button
-                  variant="contained"
-                  className={clsx(classes.button, {[classes.loadingButton]: attemptingTransaction})}
-                  disabled={isConfirmButtonDisabled}
-                  onClick={handleConfirm}
-                >
-                  {attemptingTransaction ? (
-                    <span>
-                      Transaction Pending <CircularProgress size={16} className={classes.circularProgress} />
-                    </span>
-                  ) : Number(inputAmount) === 0 ? (
-                    'Enter an amount'
-                  ) : poolType === 'stake' ? (
-                    'Stake'
-                  ) : (
-                    'Withdraw'
-                  )}
+                <Button variant="contained" className={classes.button} onClick={toggleWalletModal}>
+                  Connect Wallet
                 </Button>
-              )
-            ) : (
-              <Button variant="contained" className={classes.button} onClick={toggleWalletModal}>
-                Connect Wallet
+              )}
+            </FlexColumn>
+          </div>
+
+          {/* My stake & NIP rewards */}
+          <div className={classes.stakeRewardsCol}>
+            <div className={classes.stakeRewardsCard}>
+              {/* My stake */}
+              <FlexRow>
+                <div className={classes.iconBackground}>
+                  <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
+                </div>
+
+                <div>
+                  <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
+                    My stake
+                  </TEXT.SmallBody>
+                  <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
+                    {stakedAmountFormatted} OVL
+                  </TEXT.BoldNumber>
+                </div>
+              </FlexRow>
+
+              {/* My NIP rewards */}
+              <FlexRow mt={16}>
+                {/* Icon */}
+                <div className={classes.iconBackground}>
+                  <Image src={NipIcon} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
+                </div>
+
+                {/* Value */}
+                <div>
+                  <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
+                    My NIP Rewards
+                  </TEXT.SmallBody>
+                  <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
+                    {rewardAmountFormatted} NIP
+                  </TEXT.BoldNumber>
+                </div>
+              </FlexRow>
+              <Button
+                className={classes.claimRewardsButton}
+                disabled={rewardAmount.isZero() || attemptingClaimTransaction}
+                onClick={handleClaimRewards}
+              >
+                Claim
               </Button>
-            )}
-          </FlexColumn>
-        </div>
-
-        {/* My stake & NIP rewards */}
-        <div className={classes.stakeRewardsCol}>
-          <div className={classes.stakeRewardsCard}>
-            {/* My stake */}
-            <FlexRow>
-              <div className={classes.iconBackground}>
-                <Image src={OverlayLogoOnlyDark} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
-              </div>
-
-              <div>
-                <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
-                  My stake
-                </TEXT.SmallBody>
-                <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
-                  {stakedAmountFormatted} OVL
-                </TEXT.BoldNumber>
-              </div>
-            </FlexRow>
-
-            {/* My NIP rewards */}
-            <FlexRow mt={16}>
-              {/* Icon */}
-              <div className={classes.iconBackground}>
-                <Image src={NipIcon} alt={'Overlay Logo'} height={'32px'} width={'32px'} />
-              </div>
-
-              {/* Value */}
-              <div>
-                <TEXT.SmallBody color={'#C4C4C4'} mb={1}>
-                  My NIP Rewards
-                </TEXT.SmallBody>
-                <TEXT.BoldNumber className={classes.totalStakedValue} fontSize={18} color={colors(true).dark.blue1} lineHeight={'24px'}>
-                  {rewardAmountFormatted} NIP
-                </TEXT.BoldNumber>
-              </div>
-            </FlexRow>
-            <Button
-              className={classes.claimRewardsButton}
-              disabled={rewardAmount.isZero() || attemptingClaimTransaction}
-              onClick={handleClaimRewards}
-            >
-              Claim
-            </Button>
+            </div>
           </div>
         </div>
       </FlexRow>
       {/* Coming Soon banner */}
-      <div style={{textAlign: 'center', paddingBottom: '20px'}}>
-        <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
-          Coming Soon: NIP-powered NFTs!
-        </TEXT.BoldHeader1>
-        <TEXT.StandardBody fontSize={20} lineHeight={'160%'} mb={0.5}>
-          Note: Shown NFTs are EXAMPLES only. Stay tuned for updates!
-        </TEXT.StandardBody>
-      </div>
-      <Grid container spacing={8}>
-        {powerCards.map((card, idx) => (
-          <Grid item xs={12} md={4} justifyContent="center">
-            <Card className={classes.powerCard}>
-              {/* NIP cost */}
-              <TEXT.BoldHeader1>{card.nipCost}</TEXT.BoldHeader1>
+      {!isDisabledPool && (
+        <>
+          <div style={{textAlign: 'center', paddingBottom: '20px'}}>
+            <TEXT.BoldHeader1 fontSize={24} lineHeight={'160%'} mb={0.5}>
+              Coming Soon: NIP-powered NFTs!
+            </TEXT.BoldHeader1>
+            <TEXT.StandardBody fontSize={20} lineHeight={'160%'} mb={0.5}>
+              Note: Shown NFTs are EXAMPLES only. Stay tuned for updates!
+            </TEXT.StandardBody>
+          </div>
+          <Grid container spacing={8}>
+            {powerCards.map((card, idx) => (
+              <Grid item xs={12} md={6} lg={4} justifyContent="center">
+                <Card className={classes.powerCard}>
+                  {/* NIP cost */}
+                  <TEXT.BoldHeader1>{card.nipCost}</TEXT.BoldHeader1>
 
-              {/* Image */}
-              <Card className={classes.powerCardImageCard}>
-                <CardMedia component="img" height="245" image={card.image} title={card.name} className={classes.powerCardImage} />
-                <CardContent className={classes.powerCardImageContent}>
-                  <TEXT.StandardBody mb={12} fontSize="14px">
-                    {card.powerName}
-                  </TEXT.StandardBody>
-                  <FlexRow className={classes.keyValueDisplay}>
-                    <TEXT.StandardBody fontSize="14px">1/1000</TEXT.StandardBody>
+                  {/* Image */}
+                  <Card className={classes.powerCardImageCard}>
+                    <CardMedia component="img" height="245" image={card.image} title={card.name} className={classes.powerCardImage} />
+                    <CardContent className={classes.powerCardImageContent}>
+                      <TEXT.StandardBody mb={12} fontSize="14px">
+                        {card.powerName}
+                      </TEXT.StandardBody>
+                      <FlexRow className={classes.keyValueDisplay}>
+                        <TEXT.StandardBody fontSize="14px">1/1000</TEXT.StandardBody>
 
-                    <TEXT.StandardBody fontSize="14px">
-                      {card.nipCost} / {card.regularCost}
+                        <TEXT.StandardBody fontSize="14px">
+                          {card.nipCost} / {card.regularCost}
+                        </TEXT.StandardBody>
+                      </FlexRow>
+                    </CardContent>
+                  </Card>
+
+                  {/* Info */}
+                  <FlexRow mt={32} className={classes.keyValueDisplay}>
+                    <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
+                      {card.powerName}
+                    </TEXT.StandardBody>
+
+                    <TEXT.StandardBody fontSize="14px" fontWeight={700} color={colors(true).dark.tan2}>
+                      {card.powerValue}
                     </TEXT.StandardBody>
                   </FlexRow>
-                </CardContent>
-              </Card>
 
-              {/* Info */}
-              <FlexRow mt={32} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
-                  {card.powerName}
-                </TEXT.StandardBody>
+                  <FlexRow mt={16} className={classes.keyValueDisplay}>
+                    <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
+                      Regular cost
+                    </TEXT.StandardBody>
 
-                <TEXT.StandardBody fontSize="14px" fontWeight={700} color={colors(true).dark.tan2}>
-                  {card.powerValue}
-                </TEXT.StandardBody>
-              </FlexRow>
+                    <TEXT.StandardBody fontSize="14px">{card.regularCost}</TEXT.StandardBody>
+                  </FlexRow>
 
-              <FlexRow mt={16} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
-                  Regular cost
-                </TEXT.StandardBody>
+                  <FlexRow mt={16} className={classes.keyValueDisplay}>
+                    <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
+                      Required Stake
+                    </TEXT.StandardBody>
 
-                <TEXT.StandardBody fontSize="14px">{card.regularCost}</TEXT.StandardBody>
-              </FlexRow>
-
-              <FlexRow mt={16} className={classes.keyValueDisplay}>
-                <TEXT.StandardBody fontSize="14px" color={colors(true).dark.grey2}>
-                  Required Stake
-                </TEXT.StandardBody>
-
-                <TEXT.StandardBody fontSize="14px">{card.requiredStake}</TEXT.StandardBody>
-              </FlexRow>
-            </Card>
+                    <TEXT.StandardBody fontSize="14px">{card.requiredStake}</TEXT.StandardBody>
+                  </FlexRow>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </>
+      )}
     </Fragment>
   )
 }

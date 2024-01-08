@@ -4,14 +4,16 @@ import * as React from 'react'
 import styled from 'styled-components'
 import Datafeed from './chartDatafeed'
 import {useMarketName} from '../../../hooks/useMarketName'
+import {useActiveWeb3React} from '../../../hooks/web3'
+import {SupportedChainId} from '../../../constants/chains'
 
 const TVChartContainer = styled.div`
-  height: 450px;
-  width: 100%;
-  padding-right: 16px;
-  @media (max-width: 600px) {
-    height: 60vh;
-  }
+  height: 592px;
+  ${({theme}) => theme.mediaWidth.minMedium`
+    height: 450px;
+    width: 100%;
+    padding-right: 16px;
+  `}
 `
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions['symbol']
@@ -38,6 +40,7 @@ type BuildChartProps = {
 export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>
   const {description} = useMarketName(feedAddress)
+  const {chainId} = useActiveWeb3React()
 
   useEffect(() => {
     if (marketId && description) {
@@ -45,7 +48,10 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
         symbol: JSON.stringify({marketId, description}),
         interval: '60' as ResolutionString,
         userId: 'public_user_id_paul',
-        datafeedUrl: 'https://api.overlay.market/charts/v1/charts',
+        datafeedUrl:
+          chainId === Number(SupportedChainId.ARBITRUM_SEPOLIA)
+            ? 'https://api.overlay.market/sepolia-charts/v1/charts'
+            : 'https://api.overlay.market/charts/v1/charts',
         libraryPath: '/charting_library/',
         chartsStorageUrl: 'https://saveload.tradingview.com',
         chartsStorageApiVersion: '1.1',
@@ -88,7 +94,7 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
         tvWidget.remove()
       }
     }
-  }, [marketId, description])
+  }, [marketId, description, chainId])
 
   return <TVChartContainer ref={chartContainerRef} />
 }

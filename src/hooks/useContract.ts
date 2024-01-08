@@ -15,6 +15,7 @@ import CHAINLINK_FEED_ABI from '../constants/abis/OverlayV1ChainlinkFeed.json'
 import LAYER_ZERO_ABI from '../constants/abis/LzApp.json'
 import LAYER_ZERO_ENDPOINT_ABI from '../constants/abis/LayerZeroEndpoint.json'
 import THIRDWEB_STAKING_ABI from '../constants/abis/ThirdwebStaking.json'
+import CLAIM_MERKLETREE_ABI from '../constants/abis/ClaimMerkleTree.json'
 
 // returns null on errors
 export function useContract<T extends Contract = Contract>(
@@ -94,4 +95,8 @@ export function useBytes32TokenContract(tokenAddress?: string, withSignerIfPossi
 
 export function useThirdWebStakingContract(stakingAddress?: string): Contract | null {
   return useContract(stakingAddress, THIRDWEB_STAKING_ABI)
+}
+
+export function useClaimMerkleTreeContract(address: string | undefined): Contract | null {
+  return useContract(address, CLAIM_MERKLETREE_ABI, false)
 }

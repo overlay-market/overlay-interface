@@ -158,6 +158,7 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: string} = 
   [SupportedChainId.RINKEBY]: 'Rinkeby Testnet',
   [SupportedChainId.ARBITRUM]: 'Arbitrum One',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'Arbitrum Goerli Testnet',
+  [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia Testnet',
 }
 
 const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)

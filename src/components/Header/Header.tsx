@@ -16,6 +16,7 @@ import {ChevronDown} from 'react-feather'
 import WalletMenu from './WalletMenu'
 import MobileWalletMenu from './WalletMenuMobile'
 import SetSlippageModal from '../SetSlippageModal.tsx/SetSlippageModal'
+import {ClaimId} from '../../constants/claims'
 
 export const HeaderContainer = styled.div`
   color: ${({theme}) => theme.dark.white};
@@ -219,14 +220,16 @@ export default function Header() {
       <StyledLink to={'/positions'}>
         <TEXT.Menu>Positions</TEXT.Menu>
       </StyledLink>
-
-      <StyledLink to={'/stake'}>
+      {/* <StyledLink to={'/stake'}>
         <TEXT.Menu>Stake</TEXT.Menu>
-      </StyledLink>
-
-      <StyledLink to={'/bridge'}>
+      </StyledLink> */}
+      {/* <StyledLink to={'/bridge'}>
         <TEXT.Menu>Bridge</TEXT.Menu>
-      </StyledLink>
+      </StyledLink> */}
+
+      {/* <StyledLink to={`/claim/${ClaimId.LB4}`}>
+        <TEXT.Menu>Claim</TEXT.Menu>
+      </StyledLink> */}
 
       {HIDE_POWER_CARDS ? null : (
         <PowerCardLink to={'/powercards'}>
@@ -262,18 +265,6 @@ export default function Header() {
           </DropdownList>
         </Dropdown>
       )}
-
-      {/* <StyledLink to={'/bridge'}>
-        <Trans>
-          <TEXT.Menu>Earn</TEXT.Menu>
-        </Trans>
-      </StyledLink> */}
-
-      {/* <StyledLink to={'/claimpage'}>
-        <Trans>
-          <TEXT.Menu>Claim</TEXT.Menu>
-        </Trans>
-      </StyledLink> */}
       <AccountContainer>
         {HIDE_BUY_OVL ? null : (
           <UnstyledLink to={'/'}>

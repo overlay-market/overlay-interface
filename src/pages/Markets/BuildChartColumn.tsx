@@ -10,22 +10,28 @@ import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetai
 import Loader from '../../components/Loaders/Loaders'
 
 const Container = styled.div`
-  padding-right: 16px;
-  // max-height: 420px;
-  width: 800px;
-  @media (max-width: 600px) {
-    max-width: 350px;
-    height: 600px;
-    padding-bottom: 32px;
-    padding-right: 0px;
-  }
+  width: 100%;
 `
 
 const MarketDetailsContainer = styled.div`
-  border-top: 1px solid ${({theme}) => theme.dark.grey2};
-  padding: 16px 16px;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
+  align-items: start;
+  padding: 24px 0px 20px;
+  gap: 8px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    padding: 4px 0px 20px 16px;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    padding: 4px 16px 20px;
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+    padding: 16px 0px 16px 16px;
+    flex-direction: row;
+  `}
 `
 
 const MarketPriceContainer = styled.div`
@@ -97,10 +103,10 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
             <MarketPriceContainer>
               <TEXT.BoldNumber>{`${marketData?.priceCurrency}${toScientificNumber(marketData?.headerPrice)}`}</TEXT.BoldNumber>
               {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
-            <TEXT.SmallBody>24h</TEXT.SmallBody> */}
+              <TEXT.SmallBody>24h</TEXT.SmallBody> */}
             </MarketPriceContainer>
 
-            <FlexRow style={{gap: '28px'}}>
+            <FlexRow style={{gap: '28px', width: 'auto'}}>
               <FlexRow style={{gap: '16px', justifyContent: 'flex-end', alignItems: 'center'}}>
                 <TEXT.SmallBody>Funding</TEXT.SmallBody>
                 <TEXT.BoldNumber color={isFundingRatePositive ? colors(false).dark.red : colors(false).dark.green}>
@@ -110,7 +116,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
 
               <MarketOIContainer>
                 <TEXT.SmallBody style={{whiteSpace: 'nowrap'}}>OI Balance</TEXT.SmallBody>
-                <FlexColumn width="150px">
+                <FlexColumn width="135px">
                   <FlexRow justify="space-between">
                     <TEXT.BoldNumber color="#FF648A">{`${shortPercentageOfTotalOi}%`}</TEXT.BoldNumber>
                     <TEXT.BoldNumber color="#5FD0AB">{`${longPercentageOfTotalOi}%`}</TEXT.BoldNumber>

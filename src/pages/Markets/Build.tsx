@@ -38,7 +38,7 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {useFractionOfCapOi} from '../../hooks/useFractionOfCapOi'
 import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
-import {PRICE_CURRENCY_FROM_QUOTE, marketNameFromDescription} from '../../constants/markets'
+import {MarketDetails} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
@@ -46,8 +46,8 @@ import {toScientificNumber} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
 import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
-import { AdditionalMarketData, useMarketDetails } from '../../hooks/useMarketDetails'
-import { MarketStateResults, useCurrentMarketState } from '../../hooks/useCurrentMarketState'
+import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
+import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -94,12 +94,33 @@ const ControlInterfaceHeadContainer = styled(FlexColumn)`
 
 const BuildContainer = styled.div`
   display: flex;
-  max-width: 1200px;
-  flex-direction: row;
-  flex-direction: row-reverse;
-  @media (max-width: 1400px) {
-      flex-direction: column;
-    }
+  flex-direction: column;
+  border-top: 1px solid ${({theme}) => theme.dark.grey2};
+  padding-top: 8px;
+  margin-bottom: -120px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    border-top: 1px solid ${({theme}) => theme.dark.grey2};
+    margin: 0 8px -32px;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    width: auto;
+    padding-left: 8px;
+    gap: 8px;
+    justify-content: space-between;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    border-top: none;
+    gap: 16px;
+    width: 96vw;
+    max-width: 1232px;
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    border-top: none;
+    margin: 0 0 -32px;
+    padding: 0;
+    gap: 40px;
+    width: 1232px;
+  `}
 `
 
 const PositionsButtonContainer = styled.div`
@@ -147,36 +168,68 @@ export const NumericalInputBottomText = styled(TEXT.Supplemental)`
 `
 
 const PositionsTableContainer = styled.div`
-  max-width: 800px;
-  @media (max-width: 600px) {
-    max-width: 350px;
-  }
+  width: 359px;
+  display: flex;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    display: none;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: flex;
+    width: 100%;
+  `}
+`
+
+const PositionsTableContainerSmallSize = styled.div`
+  display: none;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    width: 100%;
+    position: relative;
+    top: 77px;
+    display: flex;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: none;
+  `}
 `
 
 const LeftColumn = styled.div`
   display: flex;
-  flex-direction: column; 
-  width: 70%;
-  @media (max-width: 1400px) {
-    width: 100%;
+  flex-direction: column;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    width: auto;
+    flex: 1;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    width: auto;
+    flex: 1;
     margin-bottom: 16px;
-  }
+  `}
 `
 
 const RightColumn = styled.div`
-  padding-left: 20px;
+  padding-left: 0;
+  top: 0;
   order: -1;
-  @media (max-width: 1400px) {
-    width: 100%;
-    padding-left: 0px;
-  }
+  ${({theme}) => theme.mediaWidth.minSmall`
+    padding-left: 8px;
+    position: relative;
+    top: 77px;
+    width: auto;
+  `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    top: 0;
+    width: auto;
+    padding-left: 0;
+    margin-bottom: 16px;
+  `}
+  ${({theme}) => theme.mediaWidth.minLarge`
+    padding-left: 0;
+    top: 0;
+    width: auto;
+    order: -1;
+  `}
 `
-const ChartContainer = styled.div`
-  @media (max-width: 1400px) {
-    display: none;
-  }
-`
-
 
 export const MINIMUM_SLIPPAGE_VALUE = 0.05
 
@@ -221,22 +274,11 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const ovl = chainId ? OVL[chainId] : undefined
 
   // @TO-DO: pull market name from feed
-  const {decimals, description, baseToken, quoteToken, baseTokenAddress, quoteTokenAddress} = useMarketName(market?.feedAddress)
+  const {decimals, baseTokenAddress, quoteTokenAddress} = useMarketName(market?.feedAddress)
 
-  const marketName = useMemo(() => {
-    if (description) return marketNameFromDescription(description, market?.id)
-    if (baseToken === 'loading' && quoteToken === 'loading') return <Loader stroke="white" size="12px" />
+  const marketName = MarketDetails[marketId]?.marketName
 
-    return `${baseToken}/${quoteToken}`
-  }, [description, baseToken, quoteToken, market])
-
-  const priceCurrency = useMemo(() => {
-    const marketNameArray = marketName.toString().split('/')
-    if (Array.isArray(marketNameArray) && marketNameArray.length > 1) {
-      return PRICE_CURRENCY_FROM_QUOTE[marketNameArray[marketNameArray.length - 1].trim()]
-    }
-    return ''
-  }, [marketName])
+  const priceCurrency = MarketDetails[marketId]?.currency ?? ''
 
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
@@ -608,15 +650,13 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       <BuildHeader marketId={marketId} />
       <BuildContainer>
         <LeftColumn>
-          <ChartContainer>
-            <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
-              <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
-            </BuildChartColumn>
-          </ChartContainer>
+          <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
+            <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
+          </BuildChartColumn>
           <PositionsTableContainer>
             <PositionsTableForBuildPage
               title="Positions"
-              marginTop="64px"
+              marginTop="40px"
               positionStatus={PositionStatus.Build}
               rowsCount={0}
               marketsData={marketsData}
@@ -739,7 +779,15 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
             />
           </MarketCard>
         </RightColumn>
-        
+        <PositionsTableContainerSmallSize>
+          <PositionsTableForBuildPage
+            title="Positions"
+            marginTop="40px"
+            positionStatus={PositionStatus.Build}
+            rowsCount={0}
+            marketsData={marketsData}
+          />
+        </PositionsTableContainerSmallSize>
         <ConfirmTxnModal
           marketName={marketName}
           isOpen={showConfirm}

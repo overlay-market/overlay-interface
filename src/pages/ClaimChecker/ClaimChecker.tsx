@@ -2,7 +2,9 @@ import AddressCheckSection from './AddressCheckSection'
 import EligibilitySection from './EligibilitySection'
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
+import useAxios from 'axios-hooks'
+import {AIRDROP_CHECKER_API, AirdropMap, Airdrops, AirdropType} from '../../constants/claims'
 
 const PageWrapper = styled.div`
   max-width: 1232px;
@@ -54,6 +56,24 @@ const ClaimChecker = () => {
 
   console.log(addressList, addressList.length)
 
+  function getAirdrops(active: boolean) {
+    const mapToObject = (map: Map<string, AirdropType>) => Object.fromEntries(map.entries())
+
+    const newOb = new Map<string, AirdropType>()
+
+    Object.keys(Airdrops)
+      .filter(airdropId => Airdrops[airdropId].isTBA === !active)
+      .map(adr => {
+        return newOb.set(adr, Airdrops[adr])
+      })
+
+    return mapToObject(newOb)
+  }
+
+  const activeAirdrops: AirdropMap = getAirdrops(true)
+  const TBAairdrops: AirdropMap = getAirdrops(false)
+  const allAirdrops: AirdropMap = {...activeAirdrops, ...TBAairdrops}
+
   return (
     <PageWrapper>
       <TitleSection>
@@ -63,7 +83,7 @@ const ClaimChecker = () => {
 
       <AddressCheckSection addresses={addresses} setAddresses={setAddresses} />
 
-      <EligibilitySection />
+      <EligibilitySection airdrops={allAirdrops} />
     </PageWrapper>
   )
 }

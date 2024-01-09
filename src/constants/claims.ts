@@ -57,13 +57,17 @@ export const MERKLE_PROOFS: ClaimMap = {
   [ClaimId.TESTING_B]: 'https://raw.githubusercontent.com/overlay-market/MerkleDistributor/ovl-test/src/treeInfo.json',
 }
 
+export const AIRDROP_CHECKER_API = 'https://api.overlay.market/airdrop-checker/'
+
+export type AirdropType = {
+  title: string
+  expectedDate: string
+  summary: string
+  isTBA: boolean
+}
+
 export type AirdropMap = {
-  [claimId: string]: {
-    title: string
-    expectedDate: string
-    summary: string
-    isTBA: boolean
-  }
+  [key: string]: AirdropType
 }
 
 export const Airdrops: AirdropMap = {

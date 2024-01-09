@@ -4,6 +4,7 @@ import {Tooltip, withStyles, makeStyles} from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import styled from 'styled-components'
 import {useWindowDimensions} from '../../hooks/useWindowDimensions'
+import {AirdropType} from '../../constants/claims'
 
 const useStyles = makeStyles(() => ({
   customPosition: {
@@ -48,13 +49,10 @@ const InfoCircleIcon: FC = () => (
 )
 
 interface Props {
-  title: string
-  expectedDate: string
-  summary: string
-  isTBA: boolean
+  airdrop: AirdropType
 }
 
-const AirdropIdWithTooltip = (airdropId: Props) => {
+const AirdropIdWithTooltip = ({airdrop}: Props) => {
   const classes = useStyles()
   const {width: widthScreen} = useWindowDimensions()
 
@@ -78,10 +76,10 @@ const AirdropIdWithTooltip = (airdropId: Props) => {
     return (
       <>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px'}}>
-          <div style={{fontWeight: '700'}}>Expected airdrop date: {airdropId.expectedDate}</div>
+          <div style={{fontWeight: '700'}}>Expected airdrop date: {airdrop.expectedDate}</div>
           {!isDesktop && <CloseIcon fontSize="small" onClick={handleClose} />}
         </div>
-        <div>{airdropId.summary}</div>
+        <div>{airdrop.summary}</div>
       </>
     )
   }
@@ -97,7 +95,7 @@ const AirdropIdWithTooltip = (airdropId: Props) => {
       title={tooltipContent()}
     >
       <TableHeaderContent>
-        {airdropId.title}
+        {airdrop.title}
         <InfoCircleIcon />
       </TableHeaderContent>
     </StyledTooltip>

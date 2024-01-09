@@ -1,7 +1,7 @@
 import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
 import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell} from '@material-ui/core'
-import {Airdrops} from '../../constants/claims'
+import {AirdropMap} from '../../constants/claims'
 import AirdropIdWithTooltip from './AirdropIdWithTooltip'
 
 const useStyles = makeStyles(() => ({
@@ -49,7 +49,11 @@ const ScrollBox = styled.div`
   }
 `
 
-function EligibilitySection() {
+interface Props {
+  airdrops: AirdropMap
+}
+
+function EligibilitySection({airdrops}: Props) {
   const classes = useStyles()
 
   return (
@@ -67,11 +71,11 @@ function EligibilitySection() {
                 <StyledTableCell id="address">
                   <TEXT.Supplemental>Address</TEXT.Supplemental>
                 </StyledTableCell>
-                {Airdrops &&
-                  Object.keys(Airdrops).map((airdropId: string) => {
+                {airdrops &&
+                  Object.keys(airdrops).map((airdropId: string) => {
                     return (
                       <StyledTableCell key={airdropId}>
-                        <AirdropIdWithTooltip {...Airdrops[airdropId]} />
+                        <AirdropIdWithTooltip airdrop={airdrops[airdropId]} />
                       </StyledTableCell>
                     )
                   })}

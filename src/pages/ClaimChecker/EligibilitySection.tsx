@@ -51,9 +51,10 @@ const ScrollBox = styled.div`
 
 interface Props {
   airdrops: AirdropMap
+  totalAmountValues: string[]
 }
 
-function EligibilitySection({airdrops}: Props) {
+function EligibilitySection({airdrops, totalAmountValues}: Props) {
   const classes = useStyles()
 
   return (
@@ -81,7 +82,18 @@ function EligibilitySection({airdrops}: Props) {
                   })}
               </StyledTableRow>
             </TableHead>
-            <TableBody></TableBody>
+            <TableBody>
+              <StyledTableRow>
+                <StyledTableCell id="totalamount">
+                  <TEXT.Supplemental>{totalAmountValues && totalAmountValues[0]}</TEXT.Supplemental>
+                </StyledTableCell>
+
+                {totalAmountValues &&
+                  totalAmountValues.slice(1).map((value: string | number, ind) => {
+                    return <StyledTableCell key={ind}>{value}</StyledTableCell>
+                  })}
+              </StyledTableRow>
+            </TableBody>
           </Table>
         </ScrollBox>
       </TableContainer>

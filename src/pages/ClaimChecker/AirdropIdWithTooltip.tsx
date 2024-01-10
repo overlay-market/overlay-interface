@@ -9,7 +9,7 @@ import {AirdropType} from '../../constants/claims'
 const useStyles = makeStyles(() => ({
   customPosition: {
     position: 'relative',
-    bottom: '16px',
+    bottom: '10px',
   },
 }))
 
@@ -30,10 +30,9 @@ const StyledTooltip = withStyles({
 const TableHeaderContent = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  width: fit-content;
+  justify-content: end;
   gap: 4px;
-  color: #a8a6a6;
+  color: ${colors(true).dark.grey2};
   font-family: Inter;
   :hover {
     color: ${colors(true).dark.blue1};

@@ -6,7 +6,7 @@ import AirdropIdWithTooltip from './AirdropIdWithTooltip'
 
 const useStyles = makeStyles(() => ({
   table: {
-    width: '100%',
+    width: 'auto',
   },
 }))
 
@@ -18,12 +18,28 @@ const TitleContainer = styled.div`
 `
 
 const StyledTableRow = styled(TableRow)`
-  height: 55px;
+  height: 55px !important;
 `
 
 const StyledTableCell = styled(TableCell)`
   font-size: 12px !important;
   border-bottom: 1px solid #2e3343 !important;
+  text-align: right !important;
+  min-width: 180px !important;
+  padding: 0 !important;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    min-width: 212px !important;
+  `}
+
+  &:first-child {
+    text-align: left !important;
+    min-width: 140px !important;
+    padding-left: 16px !important;
+  }
+  &:last-child {
+    padding-right: 16px !important;
+  }
 `
 
 const ScrollBox = styled.div`
@@ -70,7 +86,7 @@ function EligibilitySection({airdrops, totalAmountValues}: Props) {
             <TableHead>
               <StyledTableRow>
                 <StyledTableCell id="address">
-                  <TEXT.Supplemental>Address</TEXT.Supplemental>
+                  <TEXT.Supplemental color={colors(true).dark.grey2}>Address</TEXT.Supplemental>
                 </StyledTableCell>
                 {airdrops &&
                   Object.keys(airdrops).map((airdropId: string) => {
@@ -83,16 +99,20 @@ function EligibilitySection({airdrops, totalAmountValues}: Props) {
               </StyledTableRow>
             </TableHead>
             <TableBody>
-              <StyledTableRow>
-                <StyledTableCell id="totalamount">
-                  <TEXT.Supplemental>{totalAmountValues && totalAmountValues[0]}</TEXT.Supplemental>
-                </StyledTableCell>
-
-                {totalAmountValues &&
-                  totalAmountValues.slice(1).map((value: string | number, ind) => {
-                    return <StyledTableCell key={ind}>{value}</StyledTableCell>
+              {totalAmountValues && (
+                <StyledTableRow>
+                  <StyledTableCell id="totalamount">
+                    <TEXT.Supplemental color={colors(true).dark.grey2}>{totalAmountValues[0]}</TEXT.Supplemental>
+                  </StyledTableCell>
+                  {totalAmountValues.slice(1).map((value: string | number, ind) => {
+                    return (
+                      <StyledTableCell key={ind}>
+                        <TEXT.Supplemental color={colors(false).dark.white}>{value}</TEXT.Supplemental>
+                      </StyledTableCell>
+                    )
                   })}
-              </StyledTableRow>
+                </StyledTableRow>
+              )}
             </TableBody>
           </Table>
         </ScrollBox>

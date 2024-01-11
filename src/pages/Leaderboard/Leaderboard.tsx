@@ -9,8 +9,9 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {shortenAddress} from '../../utils/web3'
 import useAxios from 'axios-hooks'
 import {LEADERBOARD_POINTS_API} from '../../constants/applications'
-import {useEffect, useMemo, useState} from 'react'
+import {FC, useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
+import {LoadMoreButton} from '../../components/Button/Button'
 
 const LeaderboardsTable = styled(StyledTable)`
   .points-prev-week,
@@ -81,6 +82,21 @@ const UsernameIcon = styled.img<{display?: string}>`
   color: black;
 `
 
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+`
+
+const ChevronDownIcon: FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+    <path
+      fillRule="evenodd"
+      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+    />
+  </svg>
+)
+
 export interface IPrevWeekDetails {
   sessionId: string
   sessionStart: string
@@ -99,21 +115,42 @@ export interface ILeaderboardUserRank extends ILeaderboardRank {
 
 export interface ILeaderboardPointsData {
   previousWeekDetails: IPrevWeekDetails
+  totalUsers: number
   leaderboardTable: [ILeaderboardRank]
   user?: ILeaderboardRank
 }
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
-  const [ranks, setRanks] = useState<[ILeaderboardUserRank]>()
-  const [userData, setUserData] = useState<ILeaderboardUserRank>()
-  const numberOfRows = 10
+  const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
+  const [ranks, setRanks] = useState<ILeaderboardUserRank[] | null>(null)
+  const [userData, setUserData] = useState<ILeaderboardUserRank | null>(null)
+  const initialNumberOfRows = 10
+  const [loadedNumberOfRows, setLoadedNumberOfRows] = useState(initialNumberOfRows)
+  const [isDisabledLoadMoreBtn, setIsDisabledLoadMoreBtn] = useState(false)
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
 
-  const [{data: pointsData, loading: dataLoading}] = useAxios({
-    baseURL: LEADERBOARD_POINTS_API,
-    url: `${numberOfRows}${account ? `/${account}` : ''}`,
-    method: 'GET',
-  })
+  const [{data: pointsData, loading: dataLoading}, getPointsData] = useAxios(
+    {
+      baseURL: LEADERBOARD_POINTS_API,
+      method: 'GET',
+    },
+    {manual: true},
+  )
+
+  const initialDataHandle = async () => {
+    try {
+      await getPointsData({
+        url: `${initialNumberOfRows}${account ? `/${account}` : ''}`,
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    initialDataHandle()
+  }, [])
 
   const prevWeekDetails = useMemo<IPrevWeekDetails>(() => {
     if (pointsData) {
@@ -127,21 +164,54 @@ const Leaderboard = () => {
     }
   }, [pointsData])
 
+  const totalUsers = useMemo<number>(() => {
+    if (pointsData) {
+      return pointsData.totalUsers
+    }
+  }, [pointsData])
+
+  const [{data: pointsMoreData, loading: moreLoading}, getMoreData] = useAxios(
+    {
+      baseURL: LEADERBOARD_POINTS_API,
+      method: 'GET',
+    },
+    {manual: true},
+  )
+
+  const leaderboardPointsMoreData = useMemo<ILeaderboardRank[]>(() => {
+    if (pointsMoreData) {
+      const newRowStarts = loadedNumberOfRows === initialNumberOfRows ? initialNumberOfRows : loadedNumberOfRows
+      return pointsMoreData.leaderboardTable.slice(newRowStarts)
+    }
+  }, [pointsMoreData])
+
+  // get initial ranks without usernames and avatars
+  const getProcessedRanks = (passedData: ILeaderboardRank[]) => {
+    return passedData.map(data => {
+      return {
+        ...data,
+        username: undefined,
+        avatar: undefined,
+      }
+    })
+  }
+
   useEffect(() => {
-    const processedRanks =
-      leaderboardPointsData &&
-      leaderboardPointsData.map(data => {
-        return {
-          ...data,
-          username: undefined,
-          avatar: undefined,
-        }
-      })
+    const processedRanks = leaderboardPointsData && getProcessedRanks(leaderboardPointsData)
 
     setRanks(processedRanks as unknown as [ILeaderboardUserRank])
   }, [leaderboardPointsData])
 
-  const curUserData = useMemo<ILeaderboardRank>(() => {
+  useEffect(() => {
+    const processedRanks = leaderboardPointsMoreData && getProcessedRanks(leaderboardPointsMoreData)
+
+    if (ranks && processedRanks) {
+      const tempRanks = [...ranks, ...processedRanks]
+      setRanks(tempRanks)
+    }
+  }, [leaderboardPointsMoreData])
+
+  const initialUserData = useMemo<ILeaderboardRank>(() => {
     if (pointsData) {
       return pointsData?.user
     }
@@ -155,26 +225,30 @@ const Leaderboard = () => {
     {manual: true},
   )
 
+  const curUserData = useMemo<ILeaderboardRank>(() => {
+    if (userPointsData) {
+      return userPointsData?.user
+    }
+  }, [userPointsData])
+
   useEffect(() => {
-    if (account && pointsData && curUserData === undefined) {
+    if (account && pointsData && initialUserData === undefined) {
       getUserPointsData({
         url: `0/${account}`,
       })
     }
-  }, [account, pointsData, curUserData, getUserPointsData])
+  }, [account, pointsData, initialUserData, getUserPointsData])
 
   useEffect(() => {
     const userRankData = {
-      ...(curUserData ?? userPointsData),
+      ...(initialUserData ?? curUserData),
       username: undefined,
     }
 
     setUserData(userRankData as unknown as ILeaderboardUserRank)
-  }, [curUserData, userPointsData])
+  }, [initialUserData, curUserData])
 
   useEffect(() => {
-    const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-
     const getUserData = async () => {
       const username = account && (await providerEth.lookupAddress(account))
       const userRankData = {
@@ -188,33 +262,58 @@ const Leaderboard = () => {
     if (account && userData?._id && !userData.username) {
       getUserData()
     }
-  }, [account, curUserData, userPointsData, userData, setUserData])
+  }, [account, initialUserData, curUserData, userData, setUserData])
+
+  // get final ranks with usernames and avatars
+  const getFinalRanks = async (passedData: ILeaderboardRank[]) => {
+    setIsLoadingProfiles(true)
+    const processedRanks = await Promise.all(
+      passedData.map(async data => {
+        const username = await providerEth.lookupAddress(data._id)
+        const avatar = username && (await providerEth.getAvatar(username))
+
+        return {
+          ...data,
+          username: username ?? undefined,
+          avatar: avatar ?? undefined,
+          totalPoints: Number.isInteger(data.totalPoints) ? data.totalPoints : parseInt(data.totalPoints.toString()),
+          previousWeekPoints: Number.isInteger(data.previousWeekPoints) ? data.previousWeekPoints : parseInt(data.previousWeekPoints.toString()),
+        }
+      }),
+    )
+    if (ranks && processedRanks) {
+      const tempRanks = [...ranks, ...(processedRanks as unknown as [ILeaderboardUserRank])]
+      setRanks(tempRanks)
+      setIsLoadingProfiles(false)
+    }
+  }
 
   useEffect(() => {
-    const getRanks = async () => {
-      const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-      const processedRanks = await Promise.all(
-        leaderboardPointsData.map(async data => {
-          const username = await providerEth.lookupAddress(data._id)
-          const avatar = username && (await providerEth.getAvatar(username))
-
-          return {
-            ...data,
-            username: username ?? undefined,
-            avatar: avatar ?? undefined,
-            totalPoints: Number.isInteger(data.totalPoints) ? data.totalPoints : parseInt(data.totalPoints.toString()),
-            previousWeekPoints: Number.isInteger(data.previousWeekPoints) ? data.previousWeekPoints : parseInt(data.previousWeekPoints.toString()),
-          }
-        }),
-      )
-
-      setRanks(processedRanks as unknown as [ILeaderboardUserRank])
-    }
-
     if (leaderboardPointsData?.length > 0) {
-      getRanks()
+      getFinalRanks(leaderboardPointsData)
     }
   }, [leaderboardPointsData])
+
+  useEffect(() => {
+    if (leaderboardPointsMoreData?.length > 0) {
+      getFinalRanks(leaderboardPointsMoreData)
+    }
+  }, [leaderboardPointsMoreData])
+
+  useEffect(() => {
+    setIsDisabledLoadMoreBtn(loadedNumberOfRows >= totalUsers)
+  }, [loadedNumberOfRows, totalUsers])
+
+  const loadMoreHandle = async () => {
+    try {
+      await getMoreData({
+        url: `${loadedNumberOfRows + 20}`,
+      })
+      setLoadedNumberOfRows(loadedNumberOfRows + 20)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <PageContainer>
@@ -278,32 +377,46 @@ const Leaderboard = () => {
         )}
 
         <TableBody>
-          {ranks?.map((data: ILeaderboardUserRank, index) => (
-            <StyledTableRow notclickable="true" key={data._id}>
-              <TableDataCell className="rank" textalign="center">
-                <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
-              </TableDataCell>
-              <TableDataCell>
-                <UsernameContainer>
-                  <UsernameIcon
-                    src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
-                    alt={'Overlay user avatar'}
-                    height={'32px'}
-                    width={'32px'}
-                  />
-                  <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
-                </UsernameContainer>
-              </TableDataCell>
-              <TableDataCell className="points-prev-week">
-                <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
-              </TableDataCell>
-              <TableDataCell className="total-point">
-                <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
-              </TableDataCell>
-            </StyledTableRow>
-          ))}
+          {ranks &&
+            ranks.map((data: ILeaderboardUserRank, index) => (
+              <StyledTableRow notclickable="true" key={data._id}>
+                <TableDataCell className="rank" textalign="center">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
+                </TableDataCell>
+                <TableDataCell>
+                  <UsernameContainer>
+                    <UsernameIcon
+                      src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
+                      alt={'Overlay user avatar'}
+                      height={'32px'}
+                      width={'32px'}
+                    />
+                    <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
+                  </UsernameContainer>
+                </TableDataCell>
+                <TableDataCell className="points-prev-week">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
+                </TableDataCell>
+                <TableDataCell className="total-point">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
+                </TableDataCell>
+              </StyledTableRow>
+            ))}
         </TableBody>
       </LeaderboardsTable>
+
+      {ranks && (
+        <ButtonWrapper>
+          <LoadMoreButton
+            isDisabled={isDisabledLoadMoreBtn || isLoadingProfiles}
+            onClick={loadMoreHandle}
+            disabled={isDisabledLoadMoreBtn || isLoadingProfiles}
+          >
+            <div>Load more</div>
+            {moreLoading ? <Loader size="16px" stroke={colors(true).dark.blue2} /> : <ChevronDownIcon />}
+          </LoadMoreButton>
+        </ButtonWrapper>
+      )}
     </PageContainer>
   )
 }

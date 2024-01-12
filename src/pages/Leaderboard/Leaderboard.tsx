@@ -122,7 +122,7 @@ export interface ILeaderboardPointsData {
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
-  const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
+  // const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
   const [ranks, setRanks] = useState<ILeaderboardUserRank[] | null>(null)
   const [userData, setUserData] = useState<ILeaderboardUserRank | null>(null)
   const initialNumberOfRows = 10
@@ -248,27 +248,29 @@ const Leaderboard = () => {
     setUserData(userRankData as unknown as ILeaderboardUserRank)
   }, [initialUserData, curUserData])
 
-  useEffect(() => {
-    const getUserData = async () => {
-      const username = account && (await providerEth.lookupAddress(account))
-      const userRankData = {
-        ...userData,
-        username,
-      }
+  // useEffect(() => {
+  //   const getUserData = async () => {
+  //     const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
+  //     const username = account && (await providerEth.lookupAddress(account))
+  //     const userRankData = {
+  //       ...userData,
+  //       username,
+  //     }
 
-      setUserData(userRankData as unknown as ILeaderboardUserRank)
-    }
+  //     setUserData(userRankData as unknown as ILeaderboardUserRank)
+  //   }
 
-    if (account && userData?._id && !userData.username) {
-      getUserData()
-    }
-  }, [account, initialUserData, curUserData, userData, setUserData])
+  //   if (account && userData?._id && !userData.username) {
+  //     getUserData()
+  //   }
+  // }, [account, initialUserData, curUserData, userData, setUserData])
 
   // get final ranks with usernames and avatars
   const getFinalRanks = async (passedData: ILeaderboardRank[]) => {
     setIsLoadingProfiles(true)
     const processedRanks = await Promise.all(
       passedData.map(async data => {
+        const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
         const username = await providerEth.lookupAddress(data._id)
         const avatar = username && (await providerEth.getAvatar(username))
 
@@ -288,11 +290,11 @@ const Leaderboard = () => {
     }
   }
 
-  useEffect(() => {
-    if (leaderboardPointsData?.length > 0) {
-      getFinalRanks(leaderboardPointsData)
-    }
-  }, [leaderboardPointsData])
+  // useEffect(() => {
+  //   if (leaderboardPointsData?.length > 0) {
+  //     getFinalRanks(leaderboardPointsData)
+  //   }
+  // }, [leaderboardPointsData])
 
   useEffect(() => {
     if (leaderboardPointsMoreData?.length > 0) {

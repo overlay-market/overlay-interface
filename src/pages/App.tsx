@@ -19,8 +19,9 @@ import Pools from './Stake/StakePage'
 import Pool from './Stake/PoolWrapper'
 import Popups from '../components/Popup/Popups'
 import {ClosedPosition} from './Positions/ClosedPosition'
-import { cookie3Analytics } from "@cookie3/analytics";
-import { useEffect } from 'react'
+import {cookie3Analytics} from '@cookie3/analytics'
+import {useEffect} from 'react'
+import {ReferralPage} from './Referral/ReferralPage'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -36,15 +37,13 @@ export const ContentWrapper = styled.div`
 `
 
 const App = () => {
-
   useEffect(() => {
     var gaProperty: string = 'G-QJR084KXFT'
     var disableStr: string = 'ga-disable-' + gaProperty
 
-    const analytics = cookie3Analytics({"siteId":260,
-    disabled: document.cookie.indexOf(disableStr + '=true') > -1,});
-  
-    analytics.trackPageView();
+    const analytics = cookie3Analytics({siteId: 260, disabled: document.cookie.indexOf(disableStr + '=true') > -1})
+
+    analytics.trackPageView()
   }, [])
 
   return (
@@ -68,6 +67,7 @@ const App = () => {
                 <Route exact strict path="/stake/:poolAddress" component={Pool} />
                 <Route exact strict path="/liquidate" component={Liquidate} />
                 <Route exact strict path="/bridge" component={Bridge} />
+                <Route exact strict path="/referral" component={ReferralPage} />
               </Switch>
             </ContentWrapper>
           </Web3ReactManager>

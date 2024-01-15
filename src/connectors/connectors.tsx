@@ -1,7 +1,7 @@
 import {Web3Provider} from '@ethersproject/providers'
 import {InjectedConnector} from '@web3-react/injected-connector'
 import {SupportedChainId} from '../constants/chains'
-import {WalletConnectConnector} from '@web3-react/walletconnect-connector'
+import {WalletConnectV2Connector} from '../utils/walletconnectV2Connector'
 import {NetworkConnector} from './NetworkConnector'
 import getLibrary from '../utils/getLibrary'
 
@@ -49,8 +49,9 @@ export function getNetworkLibrary(): Web3Provider {
   return (networkLibrary = networkLibrary ?? getLibrary(network.provider))
 }
 
-export const walletconnect = new WalletConnectConnector({
-  supportedChainIds: SUPPORTED_CHAIN_IDS,
-  rpc: NETWORK_URLS,
-  qrcode: true,
+export const walletconnect = new WalletConnectV2Connector({
+  projectId: process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '',
+  showQrModal: true,
+  chains: [SupportedChainId.ARBITRUM, SupportedChainId.ARBITRUM_SEPOLIA],
+  rpcMap: NETWORK_URLS,
 })

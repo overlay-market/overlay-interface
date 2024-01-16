@@ -28,16 +28,8 @@ const TitleSection = styled.div`
   flex-direction: column;
   gap: 8px;
   padding-bottom: 32px;
-  ${({theme}) => theme.mediaWidth.minSmall`
-    margin: 0 auto;
-    width: fit-content;
-    align-items: center;
-  `}
   ${({theme}) => theme.mediaWidth.minMedium`
     gap: 16px;  
-    margin: 0;
-    width: auto;
-    align-items: flex-start;
   `}
 `
 

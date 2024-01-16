@@ -56,11 +56,10 @@ const ScrollBox = styled.div`
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(46, 51, 67, 0.2);
-    border: 1px solid ${colors(true).dark.grey5};
+    background: rgba(46, 51, 67, 0.6);
     border-radius: 20px;
     &:hover {
-      background: ${colors(true).dark.grey5};
+      background: rgba(46, 51, 67, 0.8);
     }
   }
 `

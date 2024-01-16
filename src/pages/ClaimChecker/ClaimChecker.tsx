@@ -2,9 +2,10 @@ import AddressCheckSection from './AddressCheckSection'
 import EligibilitySection from './EligibilitySection'
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import useAxios from 'axios-hooks'
-import {AIRDROP_CHECKER_API, AirdropMap, Airdrops, AirdropType} from '../../constants/claims'
+import {AIRDROP_CHECKER_API, AirdropMap, AIRDROPS, AirdropType} from '../../constants/claims'
+import {AddressResults} from './type'
 import Big from 'big.js'
 
 const PageWrapper = styled.div`
@@ -45,20 +46,15 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
 const ClaimChecker = () => {
   const [addresses, setAddresses] = useState<string>('')
 
-  console.log(addresses, '------')
-  const addressList = addresses && addresses.split('\n')
-
-  console.log(addressList, addressList.length)
-
   function getAirdrops(active: boolean) {
     const mapToObject = (map: Map<string, AirdropType>) => Object.fromEntries(map.entries())
 
     const newOb = new Map<string, AirdropType>()
 
-    Object.keys(Airdrops)
-      .filter(airdropId => Airdrops[airdropId].isTBA === !active)
+    Object.keys(AIRDROPS)
+      .filter(airdropId => AIRDROPS[airdropId].isTBA === !active)
       .map(adr => {
-        return newOb.set(adr, Airdrops[adr])
+        return newOb.set(adr, AIRDROPS[adr])
       })
 
     return mapToObject(newOb)
@@ -68,48 +64,39 @@ const ClaimChecker = () => {
   const TBAairdrops: AirdropMap = getAirdrops(false)
   const allAirdrops: AirdropMap = {...activeAirdrops, ...TBAairdrops}
 
-  const res: any = {
-    '0xee5ce06accce11bc77c5a93723c8032d9108f22d': [
-      {
-        airdropID: 'BEACON_HOLDERS',
-        amount: '10000000000000000000',
+  let requestData = useMemo(() => {
+    return {
+      users: addresses && addresses.split('\n'),
+      airdrops: Object.keys(activeAirdrops).map(airdrop => airdrop.toUpperCase().replace(/-/g, '_')),
+    }
+  }, [addresses, activeAirdrops])
+
+  const [{data: responseData, loading}, getResponseData] = useAxios(
+    {
+      url: AIRDROP_CHECKER_API,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
-        airdropID: 'OVERLAY',
-        amount: null,
-      },
-    ],
-    '0xc8d46eb7881975f9ae15216feeba2ff58e55803c': [
-      {
-        airdropID: 'BEACON_HOLDERS',
-        amount: '10000000000000000000',
-      },
-      {
-        airdropID: 'OVERLAY',
-        amount: null,
-      },
-    ],
-    '0x5B9950C198Aa3e2Ef0A8d0C1c640b6B13c3eF216': [
-      {
-        airdropID: 'BEACON_HOLDERS',
-        amount: null,
-      },
-      {
-        airdropID: 'OVERLAY',
-        amount: '10000000000000000000',
-      },
-    ],
-    '0x8C3a198929E8796a09f017d11B56f684679A4721': [
-      {
-        airdropID: 'BEACON_HOLDERS',
-        amount: null,
-      },
-      {
-        airdropID: 'OVERLAY',
-        amount: null,
-      },
-    ],
+    },
+    {manual: true},
+  )
+
+  const checkAddressesHandle = async () => {
+    try {
+      await getResponseData({
+        data: JSON.stringify(requestData),
+      })
+    } catch (error: unknown) {
+      console.log(error)
+    }
   }
+
+  const addressResults = useMemo<AddressResults>(() => {
+    if (responseData) {
+      return responseData.addressResults
+    }
+  }, [responseData])
 
   function getTotalAmountValues() {
     let totalAmountsRow: string[] = ['Total amount']
@@ -120,10 +107,10 @@ const ClaimChecker = () => {
       return tempMap
     })
 
-    Object.keys(res).map((adr: string) => {
+    Object.keys(addressResults).map((adr: string) => {
       let amountsArr: (string | null)[] = []
 
-      res[adr].map((ob: any) => amountsArr.push(ob['amount']))
+      addressResults[adr].map((ob: any) => amountsArr.push(ob['amount']))
 
       arrOfAirdropMaps.map((airdropMap, idx) => {
         const key = airdropMap.keys().next().value
@@ -161,7 +148,9 @@ const ClaimChecker = () => {
     return totalAmountsRow
   }
 
-  const totalAmountValues = getTotalAmountValues()
+  const totalAmountValues = useMemo<string[]>(() => {
+    return addressResults && getTotalAmountValues()
+  }, [addressResults])
 
   return (
     <PageWrapper>
@@ -169,7 +158,7 @@ const ClaimChecker = () => {
         <BoldHeader1>Airdrop Checker</BoldHeader1>
         <TEXT.SmallBody color={colors(true).dark.blue1}>Check eligibility for different airdrops</TEXT.SmallBody>
       </TitleSection>
-      <AddressCheckSection addresses={addresses} setAddresses={setAddresses} />
+      <AddressCheckSection addresses={addresses} setAddresses={setAddresses} checkAddressesHandle={checkAddressesHandle} loading={loading} />
 
       <EligibilitySection airdrops={allAirdrops} totalAmountValues={totalAmountValues} />
     </PageWrapper>

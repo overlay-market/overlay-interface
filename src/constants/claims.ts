@@ -70,7 +70,7 @@ export type AirdropMap = {
   [key: string]: AirdropType
 }
 
-export const Airdrops: AirdropMap = {
+export const AIRDROPS: AirdropMap = {
   [ClaimId.BEACON_HOLDERS]: {
     title: ClaimId.BEACON_HOLDERS,
     expectedDate: '22.12.2023',

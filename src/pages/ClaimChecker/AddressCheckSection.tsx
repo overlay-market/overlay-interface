@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import {TEXT, colors, MEDIA_WIDTHS} from '../../theme/theme'
 import {SelectActionButton} from '../../components/Button/Button'
 import Loader from '../../components/Loaders/Loaders'
-import {useState} from 'react'
 
 const TitleContainer = styled.div`
   display: flex;
@@ -131,11 +130,11 @@ const CheckingButtonContent = styled.div`
 interface Props {
   addresses: string
   setAddresses: Function
+  checkAddressesHandle: Function
+  loading: boolean
 }
 
-function AddressCheckSection({addresses, setAddresses}: Props) {
-  const [isPending, setIsPending] = useState(false)
-
+function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, loading}: Props) {
   return (
     <>
       <TitleContainer>
@@ -157,15 +156,21 @@ function AddressCheckSection({addresses, setAddresses}: Props) {
       )}
 
       <ButtonsContainer>
-        {isPending ? (
-          <CheckingButton onClick={() => setIsPending(!isPending)}>
+        {loading ? (
+          <CheckingButton>
             <CheckingButtonContent>
               <span>Checking addresses</span>
               <Loader />
             </CheckingButtonContent>
           </CheckingButton>
         ) : (
-          <CheckAddressesButton onClick={() => setIsPending(!isPending)}>Check addresses</CheckAddressesButton>
+          <CheckAddressesButton
+            onClick={() => {
+              addresses && checkAddressesHandle()
+            }}
+          >
+            Check addresses
+          </CheckAddressesButton>
         )}
       </ButtonsContainer>
     </>

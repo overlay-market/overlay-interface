@@ -1,7 +1,7 @@
 import {useEffect, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {BigNumber} from 'ethers'
-import {RouteComponentProps} from 'react-router'
+import {RouteComponentProps} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'

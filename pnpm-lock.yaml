@@ -89,6 +89,9 @@ dependencies:
   '@types/node':
     specifier: ^15.12.3
     version: 15.14.9
+  '@types/prop-types':
+    specifier: ^15.7.11
+    version: 15.7.11
   '@types/qs':
     specifier: ^6.9.7
     version: 6.9.11
@@ -123,6 +126,9 @@ dependencies:
     specifier: ^6.1.9
     version: 6.1.9(react@17.0.2)
   '@web3-react/injected-connector':
+    specifier: ^6.0.7
+    version: 6.0.7
+  '@web3-react/types':
     specifier: ^6.0.7
     version: 6.0.7
   '@web3-react/walletconnect-connector':

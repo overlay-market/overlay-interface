@@ -322,7 +322,7 @@ export function Unwind({
   return !isMarketShutDown ? (
     <InterfaceWrapper>
       <>
-        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <Back arrowSize={16} fontSize={16} />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
@@ -463,7 +463,7 @@ export function Unwind({
   ) : (
     <InterfaceWrapper>
       <>
-        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <Back arrowSize={16} fontSize={16} />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>

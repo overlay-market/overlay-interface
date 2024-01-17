@@ -94,7 +94,7 @@ const AirdropIdWithTooltip = ({airdrop}: Props) => {
       title={tooltipContent()}
     >
       <TableHeaderContent>
-        {airdrop.title}
+        {airdrop.title} (OVL)
         <InfoCircleIcon />
       </TableHeaderContent>
     </StyledTooltip>

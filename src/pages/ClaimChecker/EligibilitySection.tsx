@@ -2,7 +2,9 @@ import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
 import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell} from '@material-ui/core'
 import {AirdropMap} from '../../constants/claims'
+import {AddressRowsType} from './type'
 import AirdropIdWithTooltip from './AirdropIdWithTooltip'
+import {isAddress, shortenAddressStartEnd} from '../../utils/web3'
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -66,10 +68,11 @@ const ScrollBox = styled.div`
 
 interface Props {
   airdrops: AirdropMap
+  addressRows: AddressRowsType
   totalAmountValues: string[]
 }
 
-function EligibilitySection({airdrops, totalAmountValues}: Props) {
+function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
   const classes = useStyles()
 
   return (
@@ -98,6 +101,25 @@ function EligibilitySection({airdrops, totalAmountValues}: Props) {
               </StyledTableRow>
             </TableHead>
             <TableBody>
+              {addressRows &&
+                Object.keys(addressRows).map(address => {
+                  return (
+                    <StyledTableRow key={address}>
+                      <StyledTableCell id="account">
+                        <TEXT.Supplemental color={colors(true).dark.white}>
+                          {isAddress(address) ? shortenAddressStartEnd(address) : address}
+                        </TEXT.Supplemental>
+                      </StyledTableCell>
+                      {addressRows[address].map((value: string, ind) => {
+                        return (
+                          <StyledTableCell key={ind}>
+                            <TEXT.Supplemental color={colors(false).dark.white}>{value}</TEXT.Supplemental>
+                          </StyledTableCell>
+                        )
+                      })}
+                    </StyledTableRow>
+                  )
+                })}
               {totalAmountValues && (
                 <StyledTableRow>
                   <StyledTableCell id="totalamount">
@@ -117,9 +139,11 @@ function EligibilitySection({airdrops, totalAmountValues}: Props) {
         </ScrollBox>
       </TableContainer>
 
-      <TEXT.SmallBody color={colors(false).dark.blue1} sx={{padding: '16px'}}>
-        No addresses yet
-      </TEXT.SmallBody>
+      {!addressRows && (
+        <TEXT.SmallBody color={colors(false).dark.blue1} sx={{padding: '16px'}}>
+          No addresses yet
+        </TEXT.SmallBody>
+      )}
     </>
   )
 }

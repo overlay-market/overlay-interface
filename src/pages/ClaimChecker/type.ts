@@ -11,3 +11,7 @@ export type ResponseDataType = {
   addressResults: AddressResults
   invalidAddresses: string[]
 }
+
+export type AddressRowsType = {
+  [address: string]: string[]
+}

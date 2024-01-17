@@ -2,10 +2,10 @@ import AddressCheckSection from './AddressCheckSection'
 import EligibilitySection from './EligibilitySection'
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import useAxios from 'axios-hooks'
 import {AIRDROP_CHECKER_API, AirdropMap, AIRDROPS, AirdropType} from '../../constants/claims'
-import {AddressResults} from './type'
+import {AddressResults, AddressRowsType, AirdropAmount} from './type'
 import Big from 'big.js'
 
 const PageWrapper = styled.div`
@@ -63,13 +63,20 @@ const ClaimChecker = () => {
   const activeAirdrops: AirdropMap = getAirdrops(true)
   const TBAairdrops: AirdropMap = getAirdrops(false)
   const allAirdrops: AirdropMap = {...activeAirdrops, ...TBAairdrops}
+  const activeAirdropsEnum = Object.keys(activeAirdrops).map(airdrop => airdrop.toUpperCase().replace(/-/g, '_'))
 
   let requestData = useMemo(() => {
+    const processedAddresses = addresses
+      .split('\n')
+      .filter(el => el.trim())
+      .map(el => el.trim()) // get rid of empty lines and spaces
+    const finalAddresses = Array.from(new Set(processedAddresses)) // get rid of duplicates
+
     return {
-      users: addresses && addresses.split('\n'),
-      airdrops: Object.keys(activeAirdrops).map(airdrop => airdrop.toUpperCase().replace(/-/g, '_')),
+      users: finalAddresses,
+      airdrops: activeAirdropsEnum,
     }
-  }, [addresses, activeAirdrops])
+  }, [addresses, activeAirdropsEnum])
 
   const [{data: responseData, loading}, getResponseData] = useAxios(
     {
@@ -83,12 +90,14 @@ const ClaimChecker = () => {
   )
 
   const checkAddressesHandle = async () => {
-    try {
-      await getResponseData({
-        data: JSON.stringify(requestData),
-      })
-    } catch (error: unknown) {
-      console.log(error)
+    if (requestData.users.length > 0) {
+      try {
+        await getResponseData({
+          data: JSON.stringify(requestData),
+        })
+      } catch (error: unknown) {
+        console.log(error)
+      }
     }
   }
 
@@ -98,7 +107,27 @@ const ClaimChecker = () => {
     }
   }, [responseData])
 
-  function getTotalAmountValues() {
+  const getAddressRows = useCallback(() => {
+    let addressRows: AddressRowsType = {}
+
+    Object.keys(addressResults).forEach(address => {
+      addressRows = {
+        ...addressRows,
+        [address]: [],
+      }
+
+      activeAirdropsEnum.forEach(airdropId => {
+        const airdropIdAmount = addressResults[address].find(item => item.airdropID === airdropId)!
+        addressRows[address].push(airdropIdAmount['amount'] ?? 'N/A')
+      })
+
+      Object.keys(TBAairdrops).forEach(() => addressRows[address].push('TBA'))
+    })
+
+    return addressRows
+  }, [addressResults, activeAirdropsEnum, TBAairdrops])
+
+  const getTotalAmountValues = useCallback(() => {
     let totalAmountsRow: string[] = ['Total amount']
 
     let arrOfAirdropMaps = Object.keys(activeAirdrops).map(airdrop => {
@@ -107,18 +136,18 @@ const ClaimChecker = () => {
       return tempMap
     })
 
-    Object.keys(addressResults).map((adr: string) => {
+    Object.keys(addressResults).forEach((adr: string) => {
       let amountsArr: (string | null)[] = []
 
-      addressResults[adr].map((ob: any) => amountsArr.push(ob['amount']))
+      addressResults[adr].map((ob: AirdropAmount) => amountsArr.push(ob['amount']))
 
-      arrOfAirdropMaps.map((airdropMap, idx) => {
+      arrOfAirdropMaps.forEach((airdropMap, idx) => {
         const key = airdropMap.keys().next().value
         airdropMap.set(key, [...airdropMap.get(key), amountsArr[idx]])
       })
     })
 
-    arrOfAirdropMaps.map(airdropMap => {
+    arrOfAirdropMaps.forEach(airdropMap => {
       const key = airdropMap.keys().next().value
       const valuesArr = airdropMap.get(key)
       let totalValue
@@ -138,7 +167,7 @@ const ClaimChecker = () => {
       airdropMap.set(key, totalValue)
     })
 
-    arrOfAirdropMaps.map(airdropMap => {
+    arrOfAirdropMaps.forEach(airdropMap => {
       const key = airdropMap.keys().next().value
       totalAmountsRow.push(airdropMap.get(key))
     })
@@ -146,11 +175,15 @@ const ClaimChecker = () => {
     Object.keys(TBAairdrops).map(() => totalAmountsRow.push('TBA'))
 
     return totalAmountsRow
-  }
+  }, [addressResults, activeAirdrops, TBAairdrops])
+
+  const addressRows = useMemo<AddressRowsType>(() => {
+    return addressResults && getAddressRows()
+  }, [addressResults, getAddressRows])
 
   const totalAmountValues = useMemo<string[]>(() => {
     return addressResults && getTotalAmountValues()
-  }, [addressResults])
+  }, [addressResults, getTotalAmountValues])
 
   return (
     <PageWrapper>
@@ -160,7 +193,7 @@ const ClaimChecker = () => {
       </TitleSection>
       <AddressCheckSection addresses={addresses} setAddresses={setAddresses} checkAddressesHandle={checkAddressesHandle} loading={loading} />
 
-      <EligibilitySection airdrops={allAirdrops} totalAmountValues={totalAmountValues} />
+      <EligibilitySection airdrops={allAirdrops} addressRows={addressRows} totalAmountValues={totalAmountValues} />
     </PageWrapper>
   )
 }

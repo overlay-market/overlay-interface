@@ -85,7 +85,6 @@ export default function Dropdown({connectedNetwork, colorStatus, walletAddress}:
   const disconnectWallet = () => {
     deactivate()
     localStorage.setItem('disconnected', 'true')
-    window.location.reload()
   }
 
   const classes = useStyles()

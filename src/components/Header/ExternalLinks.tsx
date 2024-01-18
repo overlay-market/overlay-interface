@@ -109,7 +109,6 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
   const disconnectWallet = () => {
     deactivate()
     localStorage.setItem('disconnected', 'true')
-    window.location.reload()
   }
 
   const addTokenToMM = async () => {

@@ -1,10 +1,11 @@
 import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
-import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell} from '@material-ui/core'
+import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell, Box} from '@material-ui/core'
 import {AirdropMap} from '../../constants/claims'
 import {AddressRowsType} from './type'
 import AirdropIdWithTooltip from './AirdropIdWithTooltip'
 import {isAddress, shortenAddressStartEnd} from '../../utils/web3'
+import {FC, useEffect, useState} from 'react'
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -43,6 +44,39 @@ const StyledTableCell = styled(TableCell)`
     padding-right: 16px !important;
   }
 `
+const FlexBox = styled(Box)`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+  color: ${colors(true).light.blue};
+  :hover {
+    color: ${colors(true).dark.blue2};
+  }
+`
+
+const CopiedBox = styled(Box)`
+  position: absolute;
+  left: 120px;
+  bottom: 1px;
+  z-index: 100;
+  padding: 4px;
+  border-radius: 4px;
+  color: ${colors(true).dark.black};
+  background-color: ${colors(true).dark.tan1};
+`
+
+const CopyToClipboardIcon: FC = () => (
+  <svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">
+    <g transform="rotate(-0.98776 6 6)">
+      <path
+        d="m9.81,8.6l-5.08,0c-0.7,0 -1.27,-0.58 -1.27,-1.3l0,-5.19c0,-0.72 0.57,-1.3 1.27,-1.3l5.08,0c0.7,0 1.27,0.58 1.27,1.3l0,5.19c0,0.72 -0.57,1.3 -1.27,1.3zm0.63,-6.49c0,-0.36 -0.28,-0.65 -0.63,-0.65l-5.08,0c-0.35,0 -0.63,0.29 -0.63,0.65l0,5.19c0,0.36 0.28,0.65 0.63,0.65l5.08,0c0.35,0 0.63,-0.29 0.63,-0.65l0,-5.19l0,0zm-8.89,2.6l0,5.19c0,0.36 0.28,0.65 0.64,0.65l5.08,0c0.35,0 0.64,-0.29 0.64,-0.65l0,-0.65l0.63,0l0,0.65c0,0.72 -0.57,1.3 -1.27,1.3l-5.08,0c-0.7,0 -1.27,-0.58 -1.27,-1.3l0,-5.19c0,-0.72 0.57,-1.3 1.27,-1.3l0.63,0l0,0.65l-0.63,0c-0.35,0 -0.63,0.29 -0.63,0.65z"
+        fill="currentColor"
+        id="svg_3"
+      />
+    </g>
+  </svg>
+)
 
 const ScrollBox = styled.div`
   flex: 1;
@@ -74,6 +108,21 @@ interface Props {
 
 function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
   const classes = useStyles()
+  const [copiedStatus, setCopiedStatus] = useState<'Copied' | 'Could not copy' | false>(false)
+  const [copiedAddress, setCopiedAddress] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => setCopiedStatus(false), 1000)
+    return () => clearTimeout(timer)
+  }, [copiedStatus, setCopiedStatus])
+
+  const copyToClipboardHandle = (text: string) => {
+    setCopiedAddress(text)
+    navigator.clipboard.writeText(text).then(
+      () => setCopiedStatus('Copied'),
+      () => setCopiedStatus('Could not copy'),
+    )
+  }
 
   return (
     <>
@@ -106,9 +155,13 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   return (
                     <StyledTableRow key={address}>
                       <StyledTableCell id="account">
-                        <TEXT.Supplemental color={colors(true).dark.white}>
-                          {isAddress(address) ? shortenAddressStartEnd(address) : address}
-                        </TEXT.Supplemental>
+                        <FlexBox onClick={() => copyToClipboardHandle(address)}>
+                          <TEXT.Supplemental color={colors(true).dark.white}>
+                            {isAddress(address) ? shortenAddressStartEnd(address) : address}
+                          </TEXT.Supplemental>
+                          <CopyToClipboardIcon />
+                          {copiedStatus && copiedAddress === address && <CopiedBox>{copiedStatus}</CopiedBox>}
+                        </FlexBox>
                       </StyledTableCell>
                       {addressRows[address].map((value: string, ind) => {
                         return (

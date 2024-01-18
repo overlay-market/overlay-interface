@@ -51,7 +51,7 @@ export class WalletConnectV2Connector extends AbstractConnector {
     provider.on('accountsChanged', this.handleAccountsChanged)
     provider.on('chainChanged', this.handleChainChanged)
     provider.on('disconnect', this.handleDisconnect)
-    localStorage.setItem('connectionMeta', 'walletconnect')
+    accounts && localStorage.setItem('connectionMeta', 'walletconnect')
 
     this.provider = provider
 

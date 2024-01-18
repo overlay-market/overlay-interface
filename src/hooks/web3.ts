@@ -23,7 +23,12 @@ export function useEagerConnect() {
   const storedConnection = localStorage.getItem('connectionMeta')
 
   useEffect(() => {
-    if (storedDisconnected === 'true' && !isMobile) {
+    if (storedDisconnected === 'true') {
+      if (isMobile && window.ethereum) {
+        activate(injected, undefined, true).catch(() => {
+          setTried(true)
+        })
+      }
       setTried(true)
     } else {
       injected.isAuthorized().then(isAuthorized => {
@@ -32,18 +37,12 @@ export function useEagerConnect() {
             setTried(true)
           })
         } else {
-          if (isMobile && window.ethereum) {
-            activate(injected, undefined, true).catch(() => {
+          if (storedConnection === 'walletconnect') {
+            activate(walletconnect, undefined, true).catch(() => {
               setTried(true)
             })
           } else {
-            if (storedConnection === 'walletconnect') {
-              activate(walletconnect, undefined, true).catch(() => {
-                setTried(true)
-              })
-            } else {
-              setTried(true)
-            }
+            setTried(true)
           }
         }
       })

@@ -83,8 +83,8 @@ export default function Dropdown({connectedNetwork, colorStatus, walletAddress}:
   const toggleWalletModal = useWalletModalToggle()
 
   const disconnectWallet = () => {
-    deactivate()
     localStorage.setItem('disconnected', 'true')
+    deactivate()
   }
 
   const classes = useStyles()

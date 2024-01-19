@@ -1,89 +1,111 @@
-import React, {Component, useState} from 'react'
-import {PageContainer} from '../../components/Container/Container'
-import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
-import {TEXT} from '../../theme/theme'
-import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
-import {darken, makeStyles} from '@material-ui/core/styles'
+import {TEXT, colors} from '../../theme/theme'
+import {useActiveWeb3React} from '../../hooks/web3'
+import Grid from '@material-ui/core/Grid'
+import styled from 'styled-components'
+import MainOverviewCard from '../../components/Card/MainOverviewCard'
+import OverviewCard from '../../components/Card/OverviewCard'
+import {PageContainer} from '../../components/Container/Container'
 
-const useStyles = makeStyles(theme => ({
-  toggleButton: {
-    width: '100%',
-    borderRadius: '8px',
-    border: 'none',
-    textTransform: 'none',
-    padding: theme.spacing(2, 0),
-    background: '#474747',
-    '& .MuiToggleButton-label': {
-      color: '#F0F0F0',
-      fontFamily: 'Inter',
-      fontWeight: 700,
-      fontSize: '14px',
-      lineHeight: '17px',
-    },
-    '&:hover': {
-      background: darken('#474747', 0.1),
-    },
-    '&.Mui-selected': {
-      zIndex: 1,
-      background: '#71CEFF',
-      '& .MuiToggleButton-label': {
-        color: '#202431',
-      },
-      '&:hover': {
-        background: darken('#71CEFF', 0.1),
-      },
-    },
-  },
-  toggleButtonGroup: {
-    width: '100%',
-    '& .MuiToggleButtonGroup-groupedHorizontal:not(:first-child)': {
-      marginLeft: '-8px',
-      '&.Mui-selected': {
-        borderTopLeftRadius: '8px',
-        borderBottomLeftRadius: '8px',
-      },
-    },
-    '& .MuiToggleButtonGroup-groupedHorizontal:not(:last-child)': {
-      '&.Mui-selected': {
-        borderTopRightRadius: '8px',
-        borderBottomRightRadius: '8px',
-      },
-    },
-  },
-}))
+const Container = styled.div<{mt?: string}>`
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
+
+  ${({theme, mt}) => theme.mediaWidth.minMedium`
+    margin-top: ${mt ? `${mt}` : ''};
+  `}
+`
+
+const StyledGrid = styled(Grid)<{order?: number}>`
+  display: flex;
+  padding: 4px !important;
+
+  ${({theme, order}) => theme.mediaWidth.minMedium`
+  order: ${order ? `${order}` : 0};
+  padding: 12px !important;
+  `}
+`
 
 export const ReferralPage = () => {
-  const classes = useStyles()
-  const [poolType, setPoolType] = useState<string>('stake')
+  const {account} = useActiveWeb3React()
 
-  const handlePoolTypeChange = (event: React.MouseEvent<HTMLElement>, newPoolType: string) => {
-    if (newPoolType === null) return
-    setPoolType(newPoolType)
-  }
+  const cardsData = [
+    {
+      title: 'Create a referral code',
+      value: '500,000 $OV volume left',
+      valueType: 'Create codem ->',
+      percentageChange: null,
+      period: 'Claim ->',
+    },
+    {
+      title: 'Locked Sum',
+      value: '10',
+      valueType: 'OVL',
+      percentageChange: null,
+      period: '24h',
+    },
+    {
+      title: 'Unrealized',
+      value: '10',
+      valueType: 'OVL',
+      percentageChange: null,
+      period: '24h',
+    },
+    {
+      title: 'Open Positions',
+      value: '10',
+      valueType: null,
+      percentageChange: null,
+      period: '24h',
+    },
+  ]
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 20,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Box sx={{marginTop: 20}}>
-          <TEXT.BoldHeader1 mb="32px">Referral</TEXT.BoldHeader1>
+    <PageContainer>
+      <Container mt={'50px'}>
+        <TEXT.BoldHeader1 mb="16px">Referral</TEXT.BoldHeader1>
+        <TEXT.SmallBody mb="32px">
+          Refer users to earn rewards. Ambassadors earn greater rewards.{' '}
+          <a href="/" style={{color: colors(false).dark.blue2}}>
+            How does it work
+          </a>
+        </TEXT.SmallBody>
+        <Box>
+          {account ? (
+            <Grid container spacing={3}>
+              {/* Chart */}
+              {/* <StyledGrid order={-1} item key={'chart'} xs={12} lg={8}>
+              <OverviewChart />
+            </StyledGrid> */}
+
+              {cardsData.map(card => {
+                return (
+                  <StyledGrid item key={card.title} xs={12} sm={6} md={4} lg={3}>
+                    <OverviewCard
+                      title={card.title}
+                      value={card.value}
+                      valueType={card.valueType}
+                      percentageChange={card.percentageChange}
+                      period={card.period}
+                    />
+                  </StyledGrid>
+                )
+              })}
+            </Grid>
+          ) : (
+            <TEXT.SupplementalHeader fontSize={14}>
+              Nothing here yet. Open a position on the{' '}
+              <a href="/" style={{color: colors(false).dark.blue2}}>
+                Markets
+              </a>{' '}
+              page to begin.
+            </TEXT.SupplementalHeader>
+          )}
         </Box>
-        <ToggleButtonGroup className={classes.toggleButtonGroup} value={poolType} onChange={handlePoolTypeChange} exclusive>
-          <ToggleButton className={classes.toggleButton} value="stake" disableRipple>
-            Traders
-          </ToggleButton>
-          <ToggleButton className={classes.toggleButton} value="withdraw" disableRipple>
-            Affiliates
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-    </Container>
+      </Container>
+    </PageContainer>
   )
 }

@@ -58,7 +58,6 @@ export const ReferralPage = () => {
       title: 'Open Positions',
       value: '10',
       valueType: null,
-      percentageChange: null,
       period: '24h',
     },
   ]

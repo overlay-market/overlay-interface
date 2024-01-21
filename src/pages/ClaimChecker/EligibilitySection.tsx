@@ -1,15 +1,26 @@
 import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
 import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell, Box} from '@material-ui/core'
-import {AirdropMap} from '../../constants/claims'
+import {AirdropMap, MERKLE_DISTIBUTOR_ADDRESSES, AIRDROPS} from '../../constants/claims'
 import {AddressRowsType} from './type'
 import AirdropIdWithTooltip from './AirdropIdWithTooltip'
 import {isAddress, shortenAddressStartEnd} from '../../utils/web3'
 import {FC, useEffect, useState} from 'react'
+import {Link} from 'react-router-dom'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 
 const useStyles = makeStyles(() => ({
   table: {
     width: 'auto',
+  },
+  styledLink: {
+    display: 'flex',
+    justifyContent: 'end',
+    alignItems: 'center',
+    gap: '4px',
+  },
+  underlineRow: {
+    borderBottom: '1px solid #2e3343 !important',
   },
 }))
 
@@ -22,11 +33,15 @@ const TitleContainer = styled.div`
 
 const StyledTableRow = styled(TableRow)`
   height: 55px !important;
+  border-bottom: 1px solid #2e3343;
+  &:last-child {
+    border-bottom: none;
+  }
 `
 
 const StyledTableCell = styled(TableCell)`
   font-size: 12px !important;
-  border-bottom: 1px solid #2e3343 !important;
+  border-bottom: none !important;
   text-align: right !important;
   min-width: 180px !important;
   padding: 0 !important;
@@ -83,7 +98,6 @@ const ScrollBox = styled.div`
   overflow-x: auto;
   cursor: pointer;
   background-color: transparent;
-  padding-bottom: 16px;
 
   &::-webkit-scrollbar {
     height: 12px;
@@ -135,7 +149,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
         <ScrollBox>
           <Table className={classes.table}>
             <TableHead>
-              <StyledTableRow>
+              <StyledTableRow className={classes.underlineRow}>
                 <StyledTableCell id="address">
                   <TEXT.Supplemental color={colors(true).dark.grey2}>Address</TEXT.Supplemental>
                 </StyledTableCell>
@@ -187,16 +201,40 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   })}
                 </StyledTableRow>
               )}
+              {addressRows && (
+                <StyledTableRow>
+                  <StyledTableCell id="claim">
+                    <TEXT.Supplemental color={colors(true).dark.grey2}>Claim OVL</TEXT.Supplemental>
+                  </StyledTableCell>
+                  {Object.keys(AIRDROPS).map(airdropId => {
+                    return (
+                      <StyledTableCell key={airdropId}>
+                        <Link
+                          to={`/claim/${MERKLE_DISTIBUTOR_ADDRESSES[airdropId]}`}
+                          target="_blank"
+                          className={classes.styledLink}
+                          style={{color: AIRDROPS[airdropId].isTBA ? colors(true).dark.grey1 : colors(false).dark.blue2}}
+                        >
+                          Claim
+                          <OpenInNewIcon fontSize="inherit" />
+                        </Link>
+                      </StyledTableCell>
+                    )
+                  })}
+                </StyledTableRow>
+              )}
             </TableBody>
+
+            {!addressRows && (
+              <StyledTableRow>
+                <TEXT.SmallBody color={colors(false).dark.blue1} sx={{padding: '16px'}}>
+                  No addresses yet
+                </TEXT.SmallBody>
+              </StyledTableRow>
+            )}
           </Table>
         </ScrollBox>
       </TableContainer>
-
-      {!addressRows && (
-        <TEXT.SmallBody color={colors(false).dark.blue1} sx={{padding: '16px'}}>
-          No addresses yet
-        </TEXT.SmallBody>
-      )}
     </>
   )
 }

@@ -959,74 +959,82 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
         />
       </BuildContainer>
-      <AboutMarketTitle>About Market</AboutMarketTitle>
-      <AboutMarketSection>
-        <AboutMarketText>
-          <FirstColumn>
-            <TextBesideLogo>
-              <Icon size={40}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
-              <TextAboveLogo>{marketName}</TextAboveLogo>
-            </TextBesideLogo>
-            <TextBelowLogo>{DescriptionText}</TextBelowLogo>
-          </FirstColumn>
-        </AboutMarketText>
-        <AboutMarket>
-          {marketIndex && (
-            <SecondColumn>
-              <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
-              <RightDetailColumn style={{height: '126px'}}>
-                <UlList>
-                  {visibleIndexes?.map((element, index) => (
-                    <LiList key={index}>{element}</LiList>
-                  ))}
-                </UlList>
-                {marketIndex && marketIndex.length > 4 && <SeeMoreButton onClick={toggleShowAll}>{showAll ? 'Show less' : 'See more'}</SeeMoreButton>}
-              </RightDetailColumn>
-            </SecondColumn>
-          )}
-          {ProposedBy && (
-            <SecondColumn>
-              <LeftDetailColumn>Proposed by</LeftDetailColumn>
-              <RightDetailColumn>{ProposedBy}</RightDetailColumn>
-            </SecondColumn>
-          )}
-          {Approved && (
-            <SecondColumn>
-              <LeftDetailColumn>Approved</LeftDetailColumn>
-              <RightDetailColumn>{Approved}</RightDetailColumn>
-            </SecondColumn>
-          )}
-          {Contract && (
-            <SecondColumn>
-              <LeftDetailColumn>Contract</LeftDetailColumn>
-              <RightDetailColumn>{Contract}</RightDetailColumn>
-            </SecondColumn>
-          )}
-        </AboutMarket>
-        <AboutMarket>
-          {sources && (
-            <SecondColumn>
-              <LeftDetailColumn>Sources</LeftDetailColumn>
-              <RightDetailColumn>
-                <UlList style={{gap: '16px'}}>
-                  {sources.map((element, index) => (
-                    <LiList key={index}>{element}</LiList>
-                  ))}
-                </UlList>
-              </RightDetailColumn>
-            </SecondColumn>
-          )}
-          {AdditionalInfo && (
-            <SecondColumn>
-              <LeftDetailColumn>Additional Information</LeftDetailColumn>
-              <RightDetailColumn>{AdditionalInfo}</RightDetailColumn>
-            </SecondColumn>
-          )}
-        </AboutMarket>
-        <ImageContainer>
-          <ImageComponent src={fullMarketLogo} alt="Image description" />
-        </ImageContainer>
-      </AboutMarketSection>
+      {DescriptionText && (
+        <>
+          <AboutMarketTitle>About Market</AboutMarketTitle>
+          <AboutMarketSection>
+            <AboutMarketText>
+              <FirstColumn>
+                <TextBesideLogo>
+                  <Icon size={40}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
+                  <TextAboveLogo>{marketName}</TextAboveLogo>
+                </TextBesideLogo>
+                <TextBelowLogo>{DescriptionText}</TextBelowLogo>
+              </FirstColumn>
+            </AboutMarketText>
+            <AboutMarket>
+              {marketIndex && marketIndex.length > 0 && (
+                <SecondColumn>
+                  <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
+                  <RightDetailColumn style={{height: '126px'}}>
+                    <UlList>
+                      {visibleIndexes?.map((element, index) => (
+                        <LiList key={index}>{element}</LiList>
+                      ))}
+                    </UlList>
+                    {marketIndex && marketIndex.length > 4 && (
+                      <SeeMoreButton onClick={toggleShowAll}>{showAll ? 'Show less' : 'See more'}</SeeMoreButton>
+                    )}
+                  </RightDetailColumn>
+                </SecondColumn>
+              )}
+              {ProposedBy && (
+                <SecondColumn>
+                  <LeftDetailColumn>Proposed by</LeftDetailColumn>
+                  <RightDetailColumn>{ProposedBy}</RightDetailColumn>
+                </SecondColumn>
+              )}
+              {Approved && (
+                <SecondColumn>
+                  <LeftDetailColumn>Approved</LeftDetailColumn>
+                  <RightDetailColumn>{Approved}</RightDetailColumn>
+                </SecondColumn>
+              )}
+              {Contract && (
+                <SecondColumn>
+                  <LeftDetailColumn>Contract</LeftDetailColumn>
+                  <RightDetailColumn>{Contract}</RightDetailColumn>
+                </SecondColumn>
+              )}
+            </AboutMarket>
+            <AboutMarket>
+              {sources && sources.length > 0 && (
+                <SecondColumn>
+                  <LeftDetailColumn>Sources</LeftDetailColumn>
+                  <RightDetailColumn>
+                    <UlList style={{gap: '16px'}}>
+                      {sources.map((element, index) => (
+                        <LiList key={index}>{element}</LiList>
+                      ))}
+                    </UlList>
+                  </RightDetailColumn>
+                </SecondColumn>
+              )}
+              {AdditionalInfo && (
+                <SecondColumn>
+                  <LeftDetailColumn>Additional Information</LeftDetailColumn>
+                  <RightDetailColumn>{AdditionalInfo}</RightDetailColumn>
+                </SecondColumn>
+              )}
+            </AboutMarket>
+            {fullMarketLogo && (
+              <ImageContainer>
+                <ImageComponent src={fullMarketLogo} alt="Image description" />
+              </ImageContainer>
+            )}
+          </AboutMarketSection>
+        </>
+      )}
     </div>
   )
 }

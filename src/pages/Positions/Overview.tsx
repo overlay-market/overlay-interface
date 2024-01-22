@@ -148,6 +148,8 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
     // },
   ]
 
+  const cardsAmount = cardsData.length
+
   const mainOverviewValue = useMemo(() => {
     const lockedSum = numberOfOpenPositions > 0 ? (tvl ? tvl : 0) : 0
     const unrealized = numberOfOpenPositions > 0 ? (upnl ? upnl : 0) : 0
@@ -175,7 +177,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
 
             {cardsData.map(card => {
               return (
-                <StyledGrid item key={card.title} xs={12} sm={6} md={4} lg={3}>
+                <StyledGrid item key={card.title} xs={12} sm={6} md={cardsAmount === 4 ? 3 : 4} lg={cardsAmount === 4 ? 3 : 2}>
                   <OverviewCard
                     title={card.title}
                     value={card.value}

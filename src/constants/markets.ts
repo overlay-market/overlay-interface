@@ -177,6 +177,15 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',
     logo: BitcoinLogo,
+    currency: '',
+    IndexesConstruction: [],
+    FullLogo: BtcdFull,
+    ProposedBy: '',
+    Approved: '',
+    Contract: '',
+    Sources: [],
+    AdditionalInfo: '',
+    DescriptionText: '',
   },
   '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
     marketName: 'BAYC / WETH',

@@ -410,12 +410,12 @@ const Leaderboard = () => {
       {ranks && (
         <ButtonWrapper>
           <LoadMoreButton
-            isDisabled={isDisabledLoadMoreBtn || isLoadingProfiles}
+            isDisabled={isDisabledLoadMoreBtn}
             onClick={loadMoreHandle}
-            disabled={isDisabledLoadMoreBtn || isLoadingProfiles}
+            disabled={moreLoading || isDisabledLoadMoreBtn || isLoadingProfiles}
           >
             <div>Load more</div>
-            {moreLoading ? <Loader size="16px" stroke={colors(true).dark.blue2} /> : <ChevronDownIcon />}
+            {moreLoading || isLoadingProfiles ? <Loader size="16px" stroke={colors(true).dark.blue2} /> : <ChevronDownIcon />}
           </LoadMoreButton>
         </ButtonWrapper>
       )}

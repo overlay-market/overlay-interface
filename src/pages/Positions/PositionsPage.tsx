@@ -186,7 +186,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
         ? positionsTableData.account?.liquidates
         : []
 
-    return rows && rows.length > 0 ? (
+    return account && rows && rows.length > 0 ? (
       <>
         {rows.map((row: any) => {
           const marketAddress = positionStatus === PositionStatus.Open ? row.market.id : row.position.market.id
@@ -235,7 +235,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
         })}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData])
+  }, [positionStatus, marketsData, positionsTableData, account])
 
   return (
     <Container>
@@ -366,7 +366,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
 
     setShowLoader(false)
 
-    return rows && rows.length > 0 ? (
+    return account && rows && rows.length > 0 ? (
       <>
         {rows
           .map((row: any) => {
@@ -393,7 +393,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
           .filter((position: any) => position !== null)}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData, params, page, rowsPerPage])
+  }, [positionStatus, marketsData, positionsTableData, params, page, rowsPerPage, account])
 
   return (
     <Container>

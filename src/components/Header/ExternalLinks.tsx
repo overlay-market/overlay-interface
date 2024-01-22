@@ -107,9 +107,8 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
   const toggleSetSlippageModal = useSetSlippageModalToggle()
 
   const disconnectWallet = () => {
-    deactivate()
     localStorage.setItem('disconnected', 'true')
-    window.location.reload()
+    deactivate()
   }
 
   const addTokenToMM = async () => {

@@ -50,6 +50,7 @@ import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetai
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {Icon} from '../../components/Icon/Icon'
 import {AlertCircle} from 'react-feather'
+import React from 'react'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -414,14 +415,14 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     marketName,
     logo: marketLogo,
     currency: priceCurrency,
-    IndexesConstruction: marketIndex,
-    FullLogo: fullMarketLogo,
-    ProposedBy,
-    Approved,
-    Contract,
-    Sources: sources,
-    AdditionalInfo,
-    DescriptionText,
+    indexesConstruction: marketIndex,
+    fullLogo: fullMarketLogo,
+    proposedBy,
+    approved,
+    contract,
+    sources: sources,
+    additionalInfo,
+    descriptionText,
   } = MarketDetails[marketId]
 
   const baseTokenInfo = useToken(baseTokenAddress)
@@ -959,7 +960,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
         />
       </BuildContainer>
-      {DescriptionText && (
+      {descriptionText && (
         <>
           <AboutMarketTitle>About Market</AboutMarketTitle>
           <AboutMarketSection>
@@ -969,7 +970,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                   <Icon size={40}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
                   <TextAboveLogo>{marketName}</TextAboveLogo>
                 </TextBesideLogo>
-                <TextBelowLogo>{DescriptionText}</TextBelowLogo>
+                <TextBelowLogo>{descriptionText}</TextBelowLogo>
               </FirstColumn>
             </AboutMarketText>
             <AboutMarket>
@@ -988,22 +989,32 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                   </RightDetailColumn>
                 </SecondColumn>
               )}
-              {ProposedBy && (
+              {proposedBy && (
                 <SecondColumn>
                   <LeftDetailColumn>Proposed by</LeftDetailColumn>
-                  <RightDetailColumn>{ProposedBy}</RightDetailColumn>
+                  <RightDetailColumn>
+                    <a href={proposedBy.url} style={proposedBy.url ? {color: colors(false).dark.blue2} : {}}>
+                      {proposedBy.name}
+                    </a>
+                  </RightDetailColumn>
                 </SecondColumn>
               )}
-              {Approved && (
+              {approved && (
                 <SecondColumn>
-                  <LeftDetailColumn>Approved</LeftDetailColumn>
-                  <RightDetailColumn>{Approved}</RightDetailColumn>
+                  <LeftDetailColumn>approved</LeftDetailColumn>
+                  <RightDetailColumn>
+                    <a href={approved.url} style={approved.url ? {color: colors(false).dark.blue2} : {}}>
+                      {approved.name}
+                    </a>
+                  </RightDetailColumn>
                 </SecondColumn>
               )}
-              {Contract && (
+              {contract && (
                 <SecondColumn>
-                  <LeftDetailColumn>Contract</LeftDetailColumn>
-                  <RightDetailColumn>{Contract}</RightDetailColumn>
+                  <LeftDetailColumn>contract</LeftDetailColumn>
+                  <a href={contract.url} style={contract.url ? {color: colors(false).dark.blue2} : {}}>
+                    {contract.name}
+                  </a>
                 </SecondColumn>
               )}
             </AboutMarket>
@@ -1014,16 +1025,20 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                   <RightDetailColumn>
                     <UlList style={{gap: '16px'}}>
                       {sources.map((element, index) => (
-                        <LiList key={index}>{element}</LiList>
+                        <LiList key={index}>
+                          <a href={element.url} style={element.url ? {color: colors(false).dark.blue2} : {}}>
+                            {element.name}
+                          </a>
+                        </LiList>
                       ))}
                     </UlList>
                   </RightDetailColumn>
                 </SecondColumn>
               )}
-              {AdditionalInfo && (
+              {additionalInfo && (
                 <SecondColumn>
                   <LeftDetailColumn>Additional Information</LeftDetailColumn>
-                  <RightDetailColumn>{AdditionalInfo}</RightDetailColumn>
+                  <RightDetailColumn>{additionalInfo}</RightDetailColumn>
                 </SecondColumn>
               )}
             </AboutMarket>

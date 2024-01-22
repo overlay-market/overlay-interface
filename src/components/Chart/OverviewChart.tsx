@@ -150,12 +150,12 @@ const OverviewChart = () => {
     positionsTableData: unwinds,
     isUninitialized: isUninitializedUnwinds,
     refetch: refetchUnwinds,
-  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed, undefined)
   const {
     positionsTableData: liquidates,
     isUninitialized: isUninitializedLiquidates,
     refetch: refetchLiquidatedPositions,
-  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated, undefined)
 
   useEffect(() => {
     !isUninitializedUnwinds && refetchUnwinds()

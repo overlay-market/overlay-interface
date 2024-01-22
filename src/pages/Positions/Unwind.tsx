@@ -2,7 +2,7 @@ import React, {useEffect, useCallback, useMemo, useState} from 'react'
 import {useHistory} from 'react-router-dom'
 import styled from 'styled-components'
 import {BigNumber, BigNumberish} from 'ethers'
-import {RouteComponentProps} from 'react-router'
+import {RouteComponentProps} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
@@ -326,7 +326,7 @@ export function Unwind({
   return !isMarketShutDown ? (
     <InterfaceWrapper>
       <>
-        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <Back arrowSize={16} fontSize={16} />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
@@ -467,7 +467,7 @@ export function Unwind({
   ) : (
     <InterfaceWrapper>
       <>
-        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <Back arrowSize={16} fontSize={16} />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>

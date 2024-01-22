@@ -7,8 +7,6 @@ import {useDarkModeManager} from '../../state/user/hooks'
 import {FlexRow} from '../Container/Container'
 import {enableLock, disableLock} from '../../utils/scrollLock'
 import {TEXT, colors} from '../../theme/theme'
-import More from '../More/More'
-import Burger from '../Hamburger/Hamburger'
 import SlideMenu from '../SlideMenu/SlideMenu'
 import Web3Status from '../Web3Status/Web3Status'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
@@ -182,7 +180,6 @@ export default function Header() {
 
   const menuId = 'main-menu'
 
-  const NEW_HEADER_FLAG = true
   const HIDE_POWER_CARDS = true
   const HIDE_BUY_OVL = true
   const HIDE_EARN_DROPDOWN_FLAG = true
@@ -284,8 +281,8 @@ export default function Header() {
           </UnstyledLink>
         )}
         <Web3Status />
-        {NEW_HEADER_FLAG ? <WalletMenu /> : <More />}
-        {NEW_HEADER_FLAG ? <MobileWalletMenu open={open} setOpen={setOpen} /> : <Burger open={open} setOpen={setOpen} aria-controls={menuId} />}
+        <WalletMenu />
+        <MobileWalletMenu open={open} setOpen={setOpen} />
       </AccountContainer>
       <SlideMenu open={open} setOpen={setOpen} />
       <SetSlippageModal />

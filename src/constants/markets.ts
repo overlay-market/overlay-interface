@@ -163,7 +163,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   },
   '0x553de578e68a4faa55d4522665cb2d2d53390d22': {
     marketName: 'BTC Dominance',
-    logo: BitcoinLogo,
+    logo: BtcdLogo,
     currency: '',
     IndexesConstruction: [],
     FullLogo: BtcdFull,
@@ -176,7 +176,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   },
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',
-    logo: BitcoinLogo,
+    logo: BtcdLogo,
     currency: '',
     IndexesConstruction: [],
     FullLogo: BtcdFull,

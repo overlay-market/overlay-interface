@@ -325,13 +325,13 @@ const Leaderboard = () => {
         isLoading={dataLoading || userDataLoading}
       />
 
-      <LeaderboardsTable smWidth="100%">
+      <LeaderboardsTable smwidth="100%">
         <TableHead>
           <StyledTableHeaderRow>
-            <HeaderCell widthCell={'40px'} smWidth={20} className="rank" textalign="center" noborder={`${account && 'true'}`}>
+            <HeaderCell widthCell={'40px'} smwidth={20} className="rank" textalign="center" noborder={`${account && 'true'}`}>
               <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
             </HeaderCell>
-            <HeaderCell smWidth={80} textalign="start" noborder={`${account && 'true'}`}>
+            <HeaderCell smwidth={80} textalign="start" noborder={`${account && 'true'}`}>
               <TEXT.SmallBody className="rankings-header" fontWeight={600} color={colors(true).dark.white}>
                 Leaderboard Rankings
               </TEXT.SmallBody>

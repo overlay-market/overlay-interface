@@ -8,10 +8,24 @@ import {isAddress, shortenAddressStartEnd} from '../../utils/web3'
 import {FC, useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
+import clsx from 'clsx'
 
-const useStyles = makeStyles(() => ({
-  table: {
-    width: 'auto',
+const useStyles = makeStyles(theme => ({
+  oneAirdropStyle: {
+    [theme.breakpoints.up('lg')]: {
+      width: '814px',
+      display: 'flex !important',
+      alignItems: 'center',
+      gap: '200px',
+    },
+  },
+  twoAirdropStyle: {
+    [theme.breakpoints.up('lg')]: {
+      width: '814px',
+      display: 'flex !important',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
   },
   styledLink: {
     display: 'flex',
@@ -23,6 +37,17 @@ const useStyles = makeStyles(() => ({
     borderBottom: '1px solid #2e3343 !important',
   },
 }))
+
+const StyledTable = styled(Table)`
+  width: 100% !important;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    max-width: 100% !important;
+    @media (max-width: 814px) {
+      min-width: 100% !important;
+    }
+  `};
+`
 
 const TitleContainer = styled.div`
   display: flex;
@@ -72,7 +97,7 @@ const FlexBox = styled(Box)`
 
 const CopiedBox = styled(Box)`
   position: absolute;
-  left: 120px;
+  left: 130px;
   bottom: 1px;
   z-index: 100;
   padding: 4px;
@@ -147,9 +172,14 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
 
       <TableContainer>
         <ScrollBox>
-          <Table className={classes.table}>
+          <StyledTable>
             <TableHead>
-              <StyledTableRow className={classes.underlineRow}>
+              <StyledTableRow
+                className={clsx(classes.underlineRow, {
+                  [classes.oneAirdropStyle]: Object.keys(airdrops).length === 1,
+                  [classes.twoAirdropStyle]: Object.keys(airdrops).length === 2,
+                })}
+              >
                 <StyledTableCell id="address">
                   <TEXT.Supplemental color={colors(true).dark.grey2}>Address</TEXT.Supplemental>
                 </StyledTableCell>
@@ -167,7 +197,13 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
               {addressRows &&
                 Object.keys(addressRows).map(address => {
                   return (
-                    <StyledTableRow key={address}>
+                    <StyledTableRow
+                      key={address}
+                      className={clsx({
+                        [classes.oneAirdropStyle]: Object.keys(airdrops).length === 1,
+                        [classes.twoAirdropStyle]: Object.keys(airdrops).length === 2,
+                      })}
+                    >
                       <StyledTableCell id="account">
                         <FlexBox onClick={() => copyToClipboardHandle(address)}>
                           <TEXT.Supplemental color={colors(true).dark.white}>
@@ -188,11 +224,29 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   )
                 })}
               {totalAmountValues && (
-                <StyledTableRow>
+                <StyledTableRow
+                  className={clsx({
+                    [classes.oneAirdropStyle]: Object.keys(airdrops).length === 1,
+                    [classes.twoAirdropStyle]: Object.keys(airdrops).length === 2,
+                  })}
+                >
                   <StyledTableCell id="totalamount">
-                    <TEXT.Supplemental color={colors(true).dark.grey2}>{totalAmountValues[0]}</TEXT.Supplemental>
+                    <FlexBox>
+                      <TEXT.Supplemental color={colors(true).dark.grey2}>Total amount</TEXT.Supplemental>
+                      {Object.keys(airdrops).length === 1 && (
+                        <Link
+                          to={`/claim/${MERKLE_DISTIBUTOR_ADDRESSES[Object.keys(airdrops)[0]]}`}
+                          target="_blank"
+                          className={classes.styledLink}
+                          style={{color: AIRDROPS[Object.keys(airdrops)[0]].isTBA ? colors(true).dark.grey1 : colors(false).dark.blue2}}
+                        >
+                          Claim
+                          <OpenInNewIcon fontSize="inherit" />
+                        </Link>
+                      )}
+                    </FlexBox>
                   </StyledTableCell>
-                  {totalAmountValues.slice(1).map((value: string | number, ind) => {
+                  {totalAmountValues.map((value: string | number, ind) => {
                     return (
                       <StyledTableCell key={ind}>
                         <TEXT.Supplemental color={colors(false).dark.white}>{value}</TEXT.Supplemental>
@@ -201,8 +255,13 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   })}
                 </StyledTableRow>
               )}
-              {addressRows && (
-                <StyledTableRow>
+              {addressRows && Object.keys(airdrops).length > 1 && (
+                <StyledTableRow
+                  className={clsx({
+                    [classes.oneAirdropStyle]: Object.keys(airdrops).length === 1,
+                    [classes.twoAirdropStyle]: Object.keys(airdrops).length === 2,
+                  })}
+                >
                   <StyledTableCell id="claim">
                     <TEXT.Supplemental color={colors(true).dark.grey2}>Claim OVL</TEXT.Supplemental>
                   </StyledTableCell>
@@ -232,7 +291,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                 </TEXT.SmallBody>
               </StyledTableRow>
             )}
-          </Table>
+          </StyledTable>
         </ScrollBox>
       </TableContainer>
     </>

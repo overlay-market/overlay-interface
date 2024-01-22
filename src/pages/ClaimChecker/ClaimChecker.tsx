@@ -128,7 +128,7 @@ const ClaimChecker = () => {
   }, [addressResults, activeAirdropsEnum, TBAairdrops])
 
   const getTotalAmountValues = useCallback(() => {
-    let totalAmountsRow: string[] = ['Total amount']
+    let totalAmountsRow: string[] = []
 
     let arrOfAirdropMaps = Object.keys(activeAirdrops).map(airdrop => {
       const tempMap = new Map()

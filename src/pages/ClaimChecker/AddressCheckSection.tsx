@@ -36,13 +36,18 @@ const InputAddressesBox = styled.textarea`
 
   ${({theme}) => theme.mediaWidth.minSmall`
     height: 280px;
-    max-width: ${MEDIA_WIDTHS.minMedium};
+    width: 700px !important;
+    min-width: ${MEDIA_WIDTHS.minSmall}px !important;
+    @media (max-width: 814px) {
+      min-width: calc(100vw - (100vw - 100%)) !important;
+      width: 100%;
+    }
   `}
 
   ${({theme}) => theme.mediaWidth.minMedium`
     height: 160px;
-    max-width: 814px;
-    min-width: 814px;
+    max-width: 814px !important;
+    min-width: 814px !important;
   `}
 `
 
@@ -64,6 +69,13 @@ const ClearAllButton = styled.div`
 
   ${({theme}) => theme.mediaWidth.minSmall`
     padding-bottom: 0px;
+    margin-left: 0 !important;
+    width: 700px !important;
+    min-width: ${MEDIA_WIDTHS.minSmall}px !important;
+    @media (max-width: 814px) {
+      min-width: calc(100vw - (100vw - 100%)) !important;
+      width: 100%;
+    }
   `}
 
   ${({theme}) => theme.mediaWidth.minMedium`
@@ -71,7 +83,7 @@ const ClearAllButton = styled.div`
     bottom: 50px;
     right: 16px;
     margin-bottom: -33px;
-    width: 814px;
+    width: 814px !important;
     margin-left: 0;
   `}
 `

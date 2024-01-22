@@ -21,10 +21,10 @@ const FooterContainer = styled.div`
   display: flex;
   flex-direction: column;
 
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
+  ${({theme}) => theme.mediaWidth.minSmall`
     flex-direction: row;
     justify-content: space-between;
-    padding: 40px 24px;
+    padding: 40px 50px 40px 24px;
   `}
 
   ${({theme}) => theme.mediaWidth.minLarge`
@@ -50,7 +50,7 @@ const CopyrightText = styled(TEXT.SmallBody)`
   margin-bottom: 32px !important;
   color: ${colors(false).dark.grey1} !important;
 
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
+  ${({theme}) => theme.mediaWidth.minSmall`
     margin-bottom: 0px !important;
     color: ${colors(true).dark.white} !important;
   `}

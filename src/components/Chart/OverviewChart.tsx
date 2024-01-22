@@ -146,8 +146,8 @@ const OverviewChart = () => {
   const {account} = useActiveWeb3React()
 
   // TODO: separate hook
-  const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
-  const {positionsTableData: liquidates} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
+  const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed, undefined)
+  const {positionsTableData: liquidates} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated, undefined)
 
   const chartData = useMemo(() => {
     const unwindRows = unwinds?.account?.unwinds ?? []

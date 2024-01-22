@@ -25,7 +25,7 @@ const RelativeContainer = styled.div`
   `};
 `
 
-const WalletMenuButton = styled.button`
+const WalletMenuButton = styled.div`
   display: flex;
   align-items: center;
   padding: 8px;

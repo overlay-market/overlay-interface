@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import {TEXT} from '../../theme/theme'
 import {NavLink, useLocation} from 'react-router-dom'
 import {bool} from 'prop-types'
-import {LanguageMenuItem} from '../More/More'
 import {SUPPORTED_LOCALES} from '../../constants/locales'
 import {useActiveLocale} from '../../hooks/useActiveLocale'
 import {useWindowDimensions} from '../../hooks/useWindowDimensions'
@@ -126,7 +125,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
 
   return (
     <StyledMenu onClick={() => setOpen(!open)} open={open} aria-hidden={!isHidden} height={height} width={width} {...props}>
-      {NEW_MOBILE_MENU_FLAG ? (
+      {
         <Content onClick={e => e.stopPropagation()}>
           {account && chainId ? (
             <NetworkLabelContainer>

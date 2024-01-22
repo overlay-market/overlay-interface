@@ -3,7 +3,7 @@ import {Web3Provider} from '@ethersproject/providers'
 import {useWeb3React as useWeb3ReactCore} from '@web3-react/core'
 import {Web3ReactContextInterface} from '@web3-react/core/dist/types'
 import {NetworkContextName} from '../constants/misc'
-import {injected} from './../connectors/connectors'
+import {injected, walletconnect} from './../connectors/connectors'
 import {isMobile} from 'react-device-detect'
 import {ChainId} from '@sushiswap/sdk'
 
@@ -19,10 +19,16 @@ export function useEagerConnect() {
   const {activate, active} = useWeb3ReactCore()
   const [tried, setTried] = useState(false)
 
-  const storedValue = localStorage.getItem('disconnected')
+  const storedDisconnected = localStorage.getItem('disconnected')
+  const storedConnection = localStorage.getItem('connectionMeta')
 
   useEffect(() => {
-    if (storedValue === 'true' && !isMobile) {
+    if (storedDisconnected === 'true') {
+      if (isMobile && window.ethereum) {
+        activate(injected, undefined, true).catch(() => {
+          setTried(true)
+        })
+      }
       setTried(true)
     } else {
       injected.isAuthorized().then(isAuthorized => {
@@ -31,8 +37,8 @@ export function useEagerConnect() {
             setTried(true)
           })
         } else {
-          if (isMobile && window.ethereum) {
-            activate(injected, undefined, true).catch(() => {
+          if (storedConnection === 'walletconnect') {
+            activate(walletconnect, undefined, true).catch(() => {
               setTried(true)
             })
           } else {
@@ -41,7 +47,7 @@ export function useEagerConnect() {
         }
       })
     }
-  }, [activate, storedValue])
+  }, [activate, storedDisconnected, storedConnection])
 
   useEffect(() => {
     if (active) {

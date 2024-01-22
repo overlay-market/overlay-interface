@@ -22,7 +22,6 @@ export const SUPPORTED_WALLETS: {[key: string]: WalletInfo} = {
     description: 'Injected web3 provider.',
     href: null,
     primary: true,
-    mobile: true,
   },
   METAMASK: {
     connector: injected,
@@ -30,7 +29,6 @@ export const SUPPORTED_WALLETS: {[key: string]: WalletInfo} = {
     iconURL: METAMASK_ICON,
     description: 'Easy-to-use browser extension.',
     href: null,
-    mobile: true,
   },
   WALLET_CONNECT: {
     connector: walletconnect,
@@ -38,5 +36,6 @@ export const SUPPORTED_WALLETS: {[key: string]: WalletInfo} = {
     iconURL: WALLETCONNECT_ICON,
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
+    mobile: true,
   },
 }

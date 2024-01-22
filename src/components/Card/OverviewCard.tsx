@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {Box} from '@material-ui/core'
+import React from 'react'
 
 const Container = styled.div`
   display: flex;
@@ -62,7 +63,7 @@ const OverviewCard = (props: DataProps) => {
           {value}
         </BoldHeader1>
       )}
-      <Box display="flex" alignItems="center"> 
+      <Box display="flex" alignItems="center">
         {!valueType ? (
           <Box mt={'18px'}></Box>
         ) : (

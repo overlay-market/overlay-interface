@@ -12,6 +12,7 @@ import MainOverviewCard from '../../components/Card/MainOverviewCard'
 import OverviewChart from '../../components/Chart/OverviewChart'
 import {usePositionsTableData} from '../../state/build/hooks'
 import {PositionStatus} from './PositionsPage'
+import React from 'react'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -51,8 +52,8 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const totalFees = useTotalFees(account)
 
   // TODO: separate hooks
-  const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed)
-  const {positionsTableData: liquidatedPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated)
+  const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed, undefined)
+  const {positionsTableData: liquidatedPositions} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated, undefined)
 
   const upnl = useMemo(() => {
     let formatValue = 0

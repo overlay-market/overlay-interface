@@ -4,6 +4,7 @@ import {TEXT, colors} from '../../theme/theme'
 import {darken, makeStyles} from '@material-ui/core/styles'
 import {OutlinedInput} from '@material-ui/core'
 import {TriggerActionButton} from '../../components/Button/Button'
+import React from 'react'
 
 const useStyles = makeStyles(theme => ({
   toggleButton: {

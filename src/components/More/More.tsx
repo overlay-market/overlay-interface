@@ -5,7 +5,6 @@ import {makeStyles, createStyles, Theme} from '@material-ui/core/styles'
 import {MoreVertical, AlertCircle, Globe, ChevronLeft} from 'react-feather'
 import {Fade, MenuItem, MenuList, Paper, Button, Popper, ClickAwayListener} from '@material-ui/core'
 import {SupportedLocale, LOCALE_LABEL, SUPPORTED_LOCALES} from '../../constants/locales'
-import {useLocationLinkProps} from '../../hooks/useLocationLinkProps'
 import {useActiveLocale} from '../../hooks/useActiveLocale'
 import {FlexRow} from '../Container/Container'
 import {MenuLink} from '../Link/Link'
@@ -77,34 +76,6 @@ export const InternalMenuItem = styled(Link)<{fontFamily?: string}>`
   user-select: none;
 `
 
-export function LanguageMenuItem({
-  locale,
-  active,
-  componentKey,
-  fontFamily,
-}: {
-  locale: SupportedLocale
-  active: boolean
-  componentKey: string
-  fontFamily?: string
-}) {
-  const {to} = useLocationLinkProps(locale)
-
-  if (!to) return null
-
-  return (
-    <InternalMenuItem key={componentKey} to={to} fontFamily={fontFamily}>
-      {active ? (
-        <strong>
-          <u>{LOCALE_LABEL[locale]}</u>
-        </strong>
-      ) : (
-        <div>{LOCALE_LABEL[locale]}</div>
-      )}
-    </InternalMenuItem>
-  )
-}
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -115,102 +86,3 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 )
-
-export default function More() {
-  const classes = useStyles()
-  const [open, setOpen] = useState(false)
-  const [showLanguage, setShowLanguage] = useState(false)
-  const activeLocale = useActiveLocale()
-  const anchorRef = useRef<HTMLButtonElement>(null)
-
-  const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen)
-  }
-
-  const handleClose = (event: React.MouseEvent<EventTarget>) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) return
-
-    setOpen(false)
-  }
-
-  function handleListKeyDown(event: React.KeyboardEvent) {
-    if (event.key === 'Tab') {
-      event.preventDefault()
-      setOpen(false)
-    }
-  }
-
-  const handleLanguageToggle = (event: React.MouseEvent<EventTarget>) => {
-    event.preventDefault()
-    setShowLanguage(prevState => !prevState)
-  }
-
-  const handleLanguageClose = () => {
-    setShowLanguage(false)
-  }
-
-  // return focus to the button when we transitioned from !open -> open
-  const prevOpen = useRef(open)
-
-  useEffect(() => {
-    if (prevOpen.current === true && open === false) {
-      anchorRef.current!.focus()
-    }
-
-    prevOpen.current = open
-  }, [open])
-
-  return (
-    <div className={classes.root}>
-      <div>
-        <StyledButton ref={anchorRef} aria-controls={open ? 'menu-list-grow' : undefined} aria-haspopup="true" onClick={handleToggle}>
-          <MoreVertical color={'white'} />
-        </StyledButton>
-        <StyledPopper open={open} anchorEl={anchorRef.current} placement={'bottom-end'} role={undefined} transition disablePortal>
-          {({TransitionProps, placement}) => (
-            <Fade {...TransitionProps} timeout={200}>
-              <StyledPaper>
-                <ClickAwayListener onClickAway={handleClose}>
-                  <StyledMenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    {showLanguage
-                      ? [
-                          <StyledMenuHeaderItem key="menu-header" disableRipple onClick={handleLanguageClose}>
-                            <IconContainer>
-                              <ChevronLeft size={14} />
-                            </IconContainer>
-                            Menu
-                          </StyledMenuHeaderItem>,
-                          ...SUPPORTED_LOCALES.map((locale, key) => (
-                            <StyledMenuItem key={locale} disableRipple>
-                              <LanguageMenuItem locale={locale} active={activeLocale === locale} componentKey={key.toString()} />
-                            </StyledMenuItem>
-                          )),
-                        ]
-                      : [
-                          <StyledMenuItem key="risks" disableRipple onClick={handleClose}>
-                            <MenuLink pt={2} pb={2} pl={2} pr={3} minWidth={100} href="https://overlay.market">
-                              <IconContainer mr={'3px'}>
-                                <AlertCircle size={14} />
-                              </IconContainer>
-                              Risks
-                            </MenuLink>
-                          </StyledMenuItem>,
-                          <StyledMenuItem key="language" disableRipple onClick={handleLanguageToggle}>
-                            <MenuLink pt={2} pb={2} pl={2} pr={3} minWidth={100} href="">
-                              <IconContainer mr={'3px'}>
-                                <Globe size={14} />
-                              </IconContainer>
-                              Language
-                            </MenuLink>
-                          </StyledMenuItem>,
-                        ]}
-                  </StyledMenuList>
-                </ClickAwayListener>
-              </StyledPaper>
-            </Fade>
-          )}
-        </StyledPopper>
-      </div>
-    </div>
-  )
-}

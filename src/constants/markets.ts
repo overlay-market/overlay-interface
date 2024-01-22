@@ -174,6 +174,10 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     AdditionalInfo: '',
     DescriptionText: '',
   },
+  '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
+    marketName: 'BTC Dominance',
+    logo: BitcoinLogo,
+  },
   '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
     marketName: 'BAYC / WETH',
     logo: BitcoinLogo,
@@ -363,22 +367,7 @@ type ComingSoonMarketsData = MarketDetailsData & {
 }
 
 export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
-  '111': {
-    marketName: 'BTC Dominance',
-    logo: BtcdLogo,
-    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
-    disabled: false,
-    isComingSoon: true,
-    IndexesConstruction: [],
-    FullLogo: BtcdFull,
-    ProposedBy: '',
-    Approved: '',
-    Contract: '',
-    Sources: [],
-    AdditionalInfo: '',
-    DescriptionText: '',
-  },
-  '222': {
+  '333': {
     marketName: 'OV Supply',
     logo: OVSupplyLogo,
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],

@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {RouteComponentProps} from 'react-router'
+import {RouteComponentProps} from 'react-router-dom'
 import styled from 'styled-components'
 import {BuildInterface} from './Build'
 import {useBuildActionHandlers} from '../../state/build/hooks'

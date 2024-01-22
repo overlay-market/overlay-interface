@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import {TEXT} from '../../theme/theme'
 import {NavLink, useLocation} from 'react-router-dom'
 import {bool} from 'prop-types'
-import {LanguageMenuItem} from '../More/More'
 import {SUPPORTED_LOCALES} from '../../constants/locales'
 import {useActiveLocale} from '../../hooks/useActiveLocale'
 import {useWindowDimensions} from '../../hooks/useWindowDimensions'
@@ -126,7 +125,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
 
   return (
     <StyledMenu onClick={() => setOpen(!open)} open={open} aria-hidden={!isHidden} height={height} width={width} {...props}>
-      {NEW_MOBILE_MENU_FLAG ? (
+      {
         <Content onClick={e => e.stopPropagation()}>
           {account && chainId ? (
             <NetworkLabelContainer>
@@ -160,29 +159,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
           <Separator />
           <ExternalLinks mobile isSubMenuOpen={isSubMenuOpen} setIsSubMenuOpen={setIsSubMenuOpen} />
         </Content>
-      ) : (
-        <Content onClick={e => e.stopPropagation()}>
-          <StyledInternalLink tabIndex={tabIndex} to={'/markets'}>
-            <StyledMenuLink displayText={'Markets'} linkDestination={'/markets'} currentLocation={location} />
-          </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
-            <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
-          </StyledInternalLink>
-          {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
-            <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
-          </StyledInternalLink> */}
-          <Separator />
-
-          <StyledExternalLink href="https://overlay.market">Risks</StyledExternalLink>
-          <Accordion activeAccordionText={'Language'} inactiveAccordionText={'Language'}>
-            {SUPPORTED_LOCALES.map((locale, key) => (
-              <AccordionSelection key={key.toString()}>
-                <LanguageMenuItem locale={locale} active={activeLocale === locale} componentKey={key.toString()} />
-              </AccordionSelection>
-            ))}
-          </Accordion>
-        </Content>
-      )}
+      }
     </StyledMenu>
   )
 }

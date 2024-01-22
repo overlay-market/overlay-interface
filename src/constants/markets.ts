@@ -93,7 +93,7 @@ export type MarketDetailsData = {
   disabled?: boolean
   DescriptionText?: string
   IndexesConstruction?: Array<string>
-  FullLogo: string
+  FullLogo?: string
   ProposedBy?: string
   Approved?: string
   Contract?: string
@@ -119,20 +119,6 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
-    IndexesConstruction: ['Nike Blahs', 'AirJordan 6', 'ASICS Retro', 'Puma Attack', 'Hoka Speedgoat'],
-    FullLogo: BtcdFull,
-    ProposedBy: '@unthoughtfulwizard',
-    Approved: '11.5.24 - OGP 28',
-    Contract: '0xbb12...12J9',
-    Sources: [
-      'University of Washington Earth Sciences Labratory',
-      'KEXP Radio Tower Su22',
-      'Seattle Municipal Station # 12',
-      'Seattle Municipal Station # 6',
-    ],
-    AdditionalInfo: 'doc.overlay.market',
-    DescriptionText:
-      'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur.',
   },
   '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b': {
     marketName: 'Crypto Volatility Index',
@@ -165,27 +151,25 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     currency: '',
-    IndexesConstruction: [],
+    IndexesConstruction: ['Nike Blahs', 'AirJordan 6', 'ASICS Retro', 'Puma Attack', 'Hoka Speedgoat'],
     FullLogo: BtcdFull,
-    ProposedBy: '',
-    Approved: '',
-    Contract: '',
-    Sources: [],
-    AdditionalInfo: '',
-    DescriptionText: '',
+    ProposedBy: '@unthoughtfulwizard',
+    Approved: '11.5.24 - OGP 28',
+    Contract: '0xbb12...12J9',
+    Sources: [
+      'University of Washington Earth Sciences Labratory',
+      'KEXP Radio Tower Su22',
+      'Seattle Municipal Station # 12',
+      'Seattle Municipal Station # 6',
+    ],
+    AdditionalInfo: 'doc.overlay.market',
+    DescriptionText:
+      'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur.',
   },
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     currency: '',
-    IndexesConstruction: [],
-    FullLogo: BtcdFull,
-    ProposedBy: '',
-    Approved: '',
-    Contract: '',
-    Sources: [],
-    AdditionalInfo: '',
-    DescriptionText: '',
   },
   '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
     marketName: 'BAYC / WETH',

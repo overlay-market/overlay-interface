@@ -51,6 +51,21 @@ const InputAddressesBox = styled.textarea`
     max-width: 814px !important;
     min-width: 814px !important;
   `}
+
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
 `
 
 const ClearAllButton = styled.div`

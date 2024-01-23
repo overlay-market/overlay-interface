@@ -2,6 +2,8 @@ import styled from 'styled-components'
 import {TEXT, colors, MEDIA_WIDTHS} from '../../theme/theme'
 import {SelectActionButton} from '../../components/Button/Button'
 import Loader from '../../components/Loaders/Loaders'
+import InvalidAddressesWarning from './InvalidAddressesWarning'
+import {useEffect, useState} from 'react'
 
 const TitleContainer = styled.div`
   display: flex;
@@ -143,10 +145,19 @@ interface Props {
   addresses: string
   setAddresses: Function
   checkAddressesHandle: Function
+  invalidAddresses: string[]
   loading: boolean
 }
 
-function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, loading}: Props) {
+function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, invalidAddresses, loading}: Props) {
+  const [isOpenedWarning, setIsOpenedWarning] = useState(invalidAddresses ? invalidAddresses.length > 0 : false)
+
+  useEffect(() => {
+    if (invalidAddresses && invalidAddresses.length > 0) {
+      setIsOpenedWarning(true)
+    }
+  }, [invalidAddresses])
+
   return (
     <>
       <TitleContainer>
@@ -155,7 +166,7 @@ function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, loa
       </TitleContainer>
 
       <InputAddressesBox
-        placeholder="Paste addresses here (ENS and SNS addresses are supported)"
+        placeholder="Paste addresses here (ENS addresses are supported)"
         value={addresses}
         onChange={e => setAddresses(e.target.value)}
       />
@@ -166,6 +177,8 @@ function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, loa
           <TEXT.SmallBody color={colors(true).dark.blue2}>Clear all</TEXT.SmallBody>
         </ClearAllButton>
       )}
+
+      {isOpenedWarning && <InvalidAddressesWarning invalidAddresses={invalidAddresses} setIsOpenedWarning={setIsOpenedWarning} />}
 
       <ButtonsContainer>
         {loading ? (

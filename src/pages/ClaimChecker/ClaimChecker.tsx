@@ -107,6 +107,12 @@ const ClaimChecker = () => {
     }
   }, [responseData])
 
+  const invalidAddresses = useMemo<string[]>(() => {
+    if (responseData) {
+      return responseData.invalidAddresses
+    }
+  }, [responseData])
+
   const getAddressRows = useCallback(() => {
     let addressRows: AddressRowsType = {}
 
@@ -191,7 +197,13 @@ const ClaimChecker = () => {
         <BoldHeader1>Airdrop Checker</BoldHeader1>
         <TEXT.SmallBody color={colors(true).dark.blue1}>Check eligibility for different airdrops</TEXT.SmallBody>
       </TitleSection>
-      <AddressCheckSection addresses={addresses} setAddresses={setAddresses} checkAddressesHandle={checkAddressesHandle} loading={loading} />
+      <AddressCheckSection
+        addresses={addresses}
+        setAddresses={setAddresses}
+        checkAddressesHandle={checkAddressesHandle}
+        invalidAddresses={invalidAddresses}
+        loading={loading}
+      />
 
       <EligibilitySection airdrops={allAirdrops} addressRows={addressRows} totalAmountValues={totalAmountValues} />
     </PageWrapper>

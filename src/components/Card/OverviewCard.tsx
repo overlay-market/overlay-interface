@@ -34,10 +34,11 @@ interface DataProps {
   percentageChange?: number | null
   period?: string
   isOver1000OpenPositions?: boolean
+  valueTypeLink?: string | null
 }
 
 const OverviewCard = (props: DataProps) => {
-  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions} = props
+  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions, valueTypeLink} = props
 
   return (
     <Container>
@@ -68,7 +69,9 @@ const OverviewCard = (props: DataProps) => {
           <Box mt={'18px'}></Box>
         ) : (
           <TEXT.SmallBody fontSize={14} color="#c4c4c4">
-            {valueType}
+            <a href={valueTypeLink} style={valueTypeLink ? {color: colors(false).dark.blue2} : {}}>
+              {valueType}
+            </a>
           </TEXT.SmallBody>
         )}
         <Box display="flex" alignItems="center" marginLeft="auto">

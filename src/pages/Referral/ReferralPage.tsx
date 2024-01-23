@@ -37,7 +37,8 @@ export const ReferralPage = () => {
     {
       title: 'Create a referral code',
       value: '500,000 $OV volume left',
-      valueType: 'Create codem ->',
+      valueType: 'Create code ->',
+      valueTypeLink: null,
       percentageChange: null,
       period: 'Claim ->',
     },
@@ -88,6 +89,7 @@ export const ReferralPage = () => {
                       title={card.title}
                       value={card.value}
                       valueType={card.valueType}
+                      valueTypeLink={card.valueTypeLink}
                       percentageChange={card.percentageChange}
                       period={card.period}
                     />

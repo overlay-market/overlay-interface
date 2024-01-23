@@ -12,6 +12,7 @@ import ExternalLinks from '../Header/ExternalLinks'
 import {useState} from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {ClaimId} from '../../constants/claims'
+import React from 'react'
 
 const NEW_MOBILE_MENU_FLAG = true
 
@@ -162,32 +163,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
           <Separator />
           <ExternalLinks mobile isSubMenuOpen={isSubMenuOpen} setIsSubMenuOpen={setIsSubMenuOpen} />
         </Content>
-      ) : (
-        <Content onClick={e => e.stopPropagation()}>
-          <StyledInternalLink tabIndex={tabIndex} to={'/markets'}>
-            <StyledMenuLink displayText={'Markets'} linkDestination={'/markets'} currentLocation={location} />
-          </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
-            <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
-          </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/referral'}>
-            <StyledMenuLink displayText={'Referral'} linkDestination={'/referrak'} currentLocation={location} />
-          </StyledInternalLink>
-          {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
-            <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
-          </StyledInternalLink> */}
-          <Separator />
-
-          <StyledExternalLink href="https://overlay.market">Risks</StyledExternalLink>
-          <Accordion activeAccordionText={'Language'} inactiveAccordionText={'Language'}>
-            {SUPPORTED_LOCALES.map((locale, key) => (
-              <AccordionSelection key={key.toString()}>
-                <LanguageMenuItem locale={locale} active={activeLocale === locale} componentKey={key.toString()} />
-              </AccordionSelection>
-            ))}
-          </Accordion>
-        </Content>
-      )}
+      }
     </StyledMenu>
   )
 }

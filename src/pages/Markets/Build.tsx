@@ -1026,7 +1026,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                     <UlList style={{gap: '16px'}}>
                       {sources.map((element, index) => (
                         <LiList key={index}>
-                          <a href={element.url} style={element.url ? {color: colors(false).dark.blue2} : {}}>
+                          <a href={element.url} target="_blank" style={element.url ? {color: colors(false).dark.blue2} : {}}>
                             {element.name}
                           </a>
                         </LiList>

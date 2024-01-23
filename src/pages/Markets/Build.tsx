@@ -993,7 +993,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <SecondColumn>
                   <LeftDetailColumn>Proposed by</LeftDetailColumn>
                   <RightDetailColumn>
-                    <a href={proposedBy.url} style={proposedBy.url ? {color: colors(false).dark.blue2} : {}}>
+                    <a href={proposedBy.url} target="_blank" style={proposedBy.url ? {color: colors(false).dark.blue2} : {}}>
                       {proposedBy.name}
                     </a>
                   </RightDetailColumn>
@@ -1003,7 +1003,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <SecondColumn>
                   <LeftDetailColumn>approved</LeftDetailColumn>
                   <RightDetailColumn>
-                    <a href={approved.url} style={approved.url ? {color: colors(false).dark.blue2} : {}}>
+                    <a href={approved.url} target="_blank" style={approved.url ? {color: colors(false).dark.blue2} : {}}>
                       {approved.name}
                     </a>
                   </RightDetailColumn>
@@ -1012,7 +1012,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               {contract && (
                 <SecondColumn>
                   <LeftDetailColumn>contract</LeftDetailColumn>
-                  <a href={contract.url} style={contract.url ? {color: colors(false).dark.blue2} : {}}>
+                  <a href={contract.url} target="_blank" style={contract.url ? {color: colors(false).dark.blue2} : {}}>
                     {contract.name}
                   </a>
                 </SecondColumn>

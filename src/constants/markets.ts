@@ -95,7 +95,7 @@ export type MarketDetailsData = {
   descriptionText?: string
   indexesConstruction?: Array<string>
   fullLogo?: string
-  proposedBy: {
+  proposedBy?: {
     name?: string
     url?: string
   }

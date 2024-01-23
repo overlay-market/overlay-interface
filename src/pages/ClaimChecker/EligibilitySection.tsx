@@ -145,7 +145,7 @@ const ScrollBox = styled.div`
 
 interface Props {
   airdrops: AirdropMap
-  addressRows: AddressRowsType
+  addressRows: AddressRowsType | undefined
   totalAmountValues: string[]
 }
 
@@ -227,7 +227,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                     </StyledTableRow>
                   )
                 })}
-              {totalAmountValues && (
+              {totalAmountValues && addressRows && Object.keys(addressRows).length !== 0 && (
                 <StyledTableRow
                   className={clsx({
                     [classes.oneAirdropStyle]: Object.keys(airdrops).length === 1,
@@ -263,7 +263,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   })}
                 </StyledTableRow>
               )}
-              {addressRows && Object.keys(airdrops).length > 1 && (
+              {addressRows && Object.keys(airdrops).length > 1 && Object.keys(addressRows).length !== 0 && (
                 <StyledTableRow
                   className={clsx({
                     [classes.oneAirdropStyle]: Object.keys(airdrops).length === 1,
@@ -296,7 +296,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
               )}
             </TableBody>
 
-            {!addressRows && (
+            {(!addressRows || Object.keys(addressRows).length === 0) && (
               <StyledTableRow>
                 <TEXT.SmallBody color={colors(false).dark.blue1} sx={{padding: '16px'}}>
                   No addresses yet

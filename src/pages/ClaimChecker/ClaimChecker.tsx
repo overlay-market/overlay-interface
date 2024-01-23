@@ -2,7 +2,7 @@ import AddressCheckSection from './AddressCheckSection'
 import EligibilitySection from './EligibilitySection'
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import useAxios from 'axios-hooks'
 import {AIRDROP_CHECKER_API, AirdropMap, AIRDROPS, AirdropType} from '../../constants/claims'
 import {AddressResults, AddressRowsType, AirdropAmount} from './type'
@@ -45,6 +45,8 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
 
 const ClaimChecker = () => {
   const [addresses, setAddresses] = useState<string>('')
+  const [validAddresses, setValidAddresses] = useState<string[] | undefined>([])
+  const [isCheckBtnClicked, setIsCheckBtnClicked] = useState(false)
 
   function getAirdrops(active: boolean) {
     const mapToObject = (map: Map<string, AirdropType>) => Object.fromEntries(map.entries())
@@ -95,6 +97,7 @@ const ClaimChecker = () => {
         await getResponseData({
           data: JSON.stringify(requestData),
         })
+        setIsCheckBtnClicked(true)
       } catch (error: unknown) {
         console.log(error)
       }
@@ -113,9 +116,17 @@ const ClaimChecker = () => {
     }
   }, [responseData])
 
+  useEffect(() => {
+    if (isCheckBtnClicked) {
+      setValidAddresses(requestData.users.filter(user => !invalidAddresses.includes(user)))
+      setIsCheckBtnClicked(false)
+    }
+  }, [isCheckBtnClicked])
+
   const getAddressRows = useCallback(() => {
     let addressRows: AddressRowsType = {}
 
+    // get addressRows when there are active airdrops
     Object.keys(addressResults).forEach(address => {
       addressRows = {
         ...addressRows,
@@ -129,6 +140,18 @@ const ClaimChecker = () => {
 
       Object.keys(TBAairdrops).forEach(() => addressRows[address].push('TBA'))
     })
+
+    // get addressRows when there are no active airdrops
+    if (validAddresses && activeAirdropsEnum.length === 0) {
+      validAddresses.forEach(address => {
+        addressRows = {
+          ...addressRows,
+          [address]: [],
+        }
+
+        Object.keys(TBAairdrops).forEach(() => addressRows[address].push('TBA'))
+      })
+    }
 
     return addressRows
   }, [addressResults, activeAirdropsEnum, TBAairdrops])

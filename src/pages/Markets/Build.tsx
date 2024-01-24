@@ -38,7 +38,7 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {useFractionOfCapOi} from '../../hooks/useFractionOfCapOi'
 import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
-import {MarketDetails} from '../../constants/markets'
+import {MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
@@ -48,6 +48,9 @@ import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
+import {Icon} from '../../components/Icon/Icon'
+import {AlertCircle} from 'react-feather'
+import React from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
@@ -237,6 +240,140 @@ const RightColumn = styled.div`
   `}
 `
 
+const AboutMarketTitle = styled.h2`
+  padding-top: 32px;
+  @media (max-width: 1400px) {
+    margin: 0px 24px;
+    padding-bottom: 24px;
+  }
+  @media (max-width: 1025px) {
+    padding-top: 150px;
+  }
+  @media (max-width: 760px) {
+    margin: 0px;
+  }
+`
+
+const AboutMarketSection = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 38px;
+  max-width: 1230px;
+  margin-bottom: 20px;
+  @media (max-width: 1400px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 0px 24px;
+  }
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+    margin: 0px;
+  }
+`
+const AboutMarketText = styled.div`
+  width: 100%;
+  margin-bottom: 10px;
+  @media (max-width: 1400px) {
+    grid-column: span 2;
+    max-width: 60%;
+  }
+  @media (max-width: 760px) {
+    grid-column: 1;
+    max-width: 100%;
+  }
+`
+
+const AboutMarket = styled.div`
+  width: 100%;
+  margin-bottom: 10px;
+`
+
+const ImageContainer = styled.div`
+  width: 100%;
+  grid-column: span 2;
+
+  @media (max-width: 1400px) {
+    max-width: 100%;
+    grid-column: span 1;
+  }
+`
+
+const ImageComponent = styled.img`
+  width: 100%;
+  height: auto;
+`
+
+const FirstColumn = styled.div`
+  display: flex;
+  gap: 25px;
+  flex-direction: column;
+`
+
+const SecondColumn = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margintop: 15px;
+  padding-bottom: 21px;
+`
+
+const LeftDetailColumn = styled.div`
+  color: var(--v-2-dark-grey-2, #a8a6a6);
+`
+
+const RightDetailColumn = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  align-content: flex-start;
+  @media (max-width: 1400px) {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+`
+
+const TextBesideLogo = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+const TextAboveLogo = styled.p`
+  padding-left: 22px;
+  font-weight: bold;
+  color: var(--v-2-dark-grey-2, #a8a6a6);
+`
+
+const TextBelowLogo = styled.p`
+  margin-top: 5px;
+  font-style: italic;
+`
+
+const LiList = styled.li`
+  list-style: none;
+  margin: 0px;
+  display: flex;
+  justify-items: end;
+  justify-content: flex-end;
+  text-align: end;
+`
+
+const UlList = styled.ul`
+  margin: 0px;
+  display: grid;
+`
+
+const SeeMoreButton = styled.button`
+  display: flex;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  color: white;
+  justify-items: end;
+  justify-content: end;
+`
+
 export const MINIMUM_SLIPPAGE_VALUE = 0.05
 
 // @TO-DO: Break down BuildInterface into sub-components
@@ -266,8 +403,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
 
-  console.log({markets})
-
   // force refetch when refreshing page
   useEffect(() => {
     refetch()
@@ -282,14 +417,32 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   // @TO-DO: pull market name from feed
   const {decimals, baseTokenAddress, quoteTokenAddress} = useMarketName(market?.feedAddress)
 
+  const {
+    marketName,
+    logo: marketLogo,
+    currency: priceCurrency,
+    indexesConstruction: marketIndex,
+    fullLogo: fullMarketLogo,
+    proposedBy,
+    approved,
+    contract,
+    sources: sources,
+    additionalInfo,
+    descriptionText,
+  } = MarketDetails[marketId]
+
   const toggleWalletModal = useWalletModalToggle()
-
-  const marketName = MarketDetails[marketId]?.marketName
-
-  const priceCurrency = MarketDetails[marketId]?.currency ?? ''
 
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
+
+  const [showAll, setShowAll] = useState(false)
+
+  const toggleShowAll = () => {
+    setShowAll(!showAll)
+  }
+
+  const visibleIndexes = showAll ? marketIndex : marketIndex?.slice(0, 4)
 
   const baseTokenDecimals = useMemo(() => {
     if (!baseTokenInfo) return undefined
@@ -598,7 +751,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   const {buildData, inputError} = useDerivedBuildInfo()
   const estPrice = isLong ? estimatedAsk : estimatedBid
-  const {callback: buildCallback, minPrice} = useBuildCallback(buildData, market?.id, estPrice, minCollateral, inputError) //change here
+  const {callback: buildCallback, minPrice} = useBuildCallback(buildData, market?.id, estPrice, minCollateral, inputError)
   const disableBuildButton: boolean = useMemo(() => {
     if (!typedValue || !maxInputIncludingFees || !minCollateral || isLong === undefined || !estPrice) {
       return true
@@ -822,6 +975,100 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
         />
       </BuildContainer>
+      {descriptionText && (
+        <>
+          <AboutMarketTitle>About Market</AboutMarketTitle>
+          <AboutMarketSection>
+            <AboutMarketText>
+              <FirstColumn>
+                <TextBesideLogo>
+                  <Icon size={40}>{marketLogo ? <img src={marketLogo} alt="Market Feed Logo" /> : <AlertCircle size={20} />}</Icon>
+                  <TextAboveLogo>{marketName}</TextAboveLogo>
+                </TextBesideLogo>
+                <TextBelowLogo>{descriptionText}</TextBelowLogo>
+              </FirstColumn>
+            </AboutMarketText>
+            <AboutMarket>
+              {marketIndex && marketIndex.length > 0 && (
+                <SecondColumn>
+                  <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
+                  <RightDetailColumn style={{height: '126px'}}>
+                    <UlList>
+                      {visibleIndexes?.map((element, index) => (
+                        <LiList key={index}>{element}</LiList>
+                      ))}
+                    </UlList>
+                    {marketIndex && marketIndex.length > 4 && (
+                      <SeeMoreButton onClick={toggleShowAll}>{showAll ? 'Show less' : 'See more'}</SeeMoreButton>
+                    )}
+                  </RightDetailColumn>
+                </SecondColumn>
+              )}
+              {proposedBy && (
+                <SecondColumn>
+                  <LeftDetailColumn>Proposed by</LeftDetailColumn>
+                  <RightDetailColumn>
+                    <a href={proposedBy.url} target="_blank" style={proposedBy.url ? {color: colors(false).dark.blue2} : {}}>
+                      {proposedBy.name}
+                    </a>
+                  </RightDetailColumn>
+                </SecondColumn>
+              )}
+              {approved && (
+                <SecondColumn>
+                  <LeftDetailColumn>approved</LeftDetailColumn>
+                  <RightDetailColumn>
+                    <a href={approved.url} target="_blank" style={approved.url ? {color: colors(false).dark.blue2} : {}}>
+                      {approved.name}
+                    </a>
+                  </RightDetailColumn>
+                </SecondColumn>
+              )}
+              {contract && (
+                <SecondColumn>
+                  <LeftDetailColumn>contract</LeftDetailColumn>
+                  <a href={contract.url} target="_blank" style={contract.url ? {color: colors(false).dark.blue2} : {}}>
+                    {contract.name}
+                  </a>
+                </SecondColumn>
+              )}
+            </AboutMarket>
+            <AboutMarket>
+              {sources && sources.length > 0 && (
+                <SecondColumn>
+                  <LeftDetailColumn>Sources</LeftDetailColumn>
+                  <RightDetailColumn>
+                    <UlList style={{gap: '16px'}}>
+                      {sources.map((element, index) => (
+                        <LiList key={index}>
+                          <a href={element.url} target="_blank" style={element.url ? {color: colors(false).dark.blue2} : {}}>
+                            {element.name}
+                          </a>
+                        </LiList>
+                      ))}
+                    </UlList>
+                  </RightDetailColumn>
+                </SecondColumn>
+              )}
+              {additionalInfo && (
+                <SecondColumn>
+                  <LeftDetailColumn>Additional Information</LeftDetailColumn>
+                  <RightDetailColumn>
+                    <a href={additionalInfo.url} target="_blank" style={additionalInfo.url ? {color: colors(false).dark.blue2} : {}}>
+                      {additionalInfo.name}
+                    </a>
+                  </RightDetailColumn>
+                </SecondColumn>
+              )}
+            </AboutMarket>
+            {fullMarketLogo && (
+              <ImageContainer>
+                <ImageComponent src={fullMarketLogo} alt="Image description" />
+              </ImageContainer>
+            )}
+          </AboutMarketSection>
+        </>
+      )}
     </div>
   )
 }

@@ -46,6 +46,7 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
 const ClaimChecker = () => {
   const [addresses, setAddresses] = useState<string>('')
   const [validAddresses, setValidAddresses] = useState<string[] | undefined>([])
+  const [detectedInvalidAddresses, setDetectedInvalidAddresses] = useState<boolean>(false)
   const [isCheckBtnClicked, setIsCheckBtnClicked] = useState(false)
 
   function getAirdrops(active: boolean) {
@@ -119,6 +120,7 @@ const ClaimChecker = () => {
   useEffect(() => {
     if (isCheckBtnClicked) {
       setValidAddresses(requestData.users.filter(user => !invalidAddresses.includes(user)))
+      setDetectedInvalidAddresses(invalidAddresses.length > 0)
       setIsCheckBtnClicked(false)
     }
   }, [isCheckBtnClicked])
@@ -224,7 +226,9 @@ const ClaimChecker = () => {
         addresses={addresses}
         setAddresses={setAddresses}
         checkAddressesHandle={checkAddressesHandle}
-        invalidAddresses={invalidAddresses}
+        detectedInvalidAddresses={detectedInvalidAddresses}
+        setDetectedInvalidAddresses={setDetectedInvalidAddresses}
+        // invalidAddresses={invalidAddresses}
         loading={loading}
       />
 

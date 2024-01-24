@@ -2,8 +2,6 @@ import styled from 'styled-components'
 import {TEXT, colors, MEDIA_WIDTHS} from '../../theme/theme'
 import {SelectActionButton} from '../../components/Button/Button'
 import Loader from '../../components/Loaders/Loaders'
-import InvalidAddressesWarning from './InvalidAddressesWarning'
-import {useEffect, useState} from 'react'
 
 const TitleContainer = styled.div`
   display: flex;
@@ -68,21 +66,10 @@ const InputAddressesBox = styled.textarea`
   }
 `
 
-const ClearAllButton = styled.div`
+const AddWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  height: 33px;
-  box-sizing: border-box;
-  padding: 16px 0 0 0;
-  width: fit-content;
-  margin-left: auto;
-  cursor: pointer;
-  padding-bottom: 4px;
-  :hover {
-    opacity: 0.8;
-  }
+  justify-content: space-between;
+  padding-top: 4px;
 
   ${({theme}) => theme.mediaWidth.minSmall`
     padding-bottom: 0px;
@@ -94,14 +81,33 @@ const ClearAllButton = styled.div`
       width: 100%;
     }
   `}
+  ${({theme}) => theme.mediaWidth.minMedium`
+    width: 814px !important;
+    margin-left: 0;
+  `}
+`
+
+const ClearAllButton = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  height: 33px;
+  box-sizing: border-box;
+  padding: 12px 0 4px 0;
+  width: fit-content;
+  margin-left: auto;
+  cursor: pointer;
+  :hover {
+    opacity: 0.8;
+  }
 
   ${({theme}) => theme.mediaWidth.minMedium`
     position: relative;
     bottom: 50px;
     right: 16px;
     margin-bottom: -33px;
-    width: 814px !important;
-    margin-left: 0;
+    margin-left: auto;
   `}
 `
 
@@ -160,19 +166,12 @@ interface Props {
   addresses: string
   setAddresses: Function
   checkAddressesHandle: Function
-  invalidAddresses: string[]
+  detectedInvalidAddresses: boolean
+  setDetectedInvalidAddresses: Function
   loading: boolean
 }
 
-function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, invalidAddresses, loading}: Props) {
-  const [isOpenedWarning, setIsOpenedWarning] = useState(invalidAddresses ? invalidAddresses.length > 0 : false)
-
-  useEffect(() => {
-    if (invalidAddresses && invalidAddresses.length > 0) {
-      setIsOpenedWarning(true)
-    }
-  }, [invalidAddresses])
-
+function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, detectedInvalidAddresses, setDetectedInvalidAddresses, loading}: Props) {
   return (
     <>
       <TitleContainer>
@@ -186,14 +185,21 @@ function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, inv
         onChange={e => setAddresses(e.target.value)}
       />
 
-      {addresses.length > 0 && (
-        <ClearAllButton onClick={() => setAddresses('')}>
-          <CloseIcon>×</CloseIcon>
-          <TEXT.SmallBody color={colors(true).dark.blue2}>Clear all</TEXT.SmallBody>
-        </ClearAllButton>
-      )}
+      <AddWrapper>
+        {detectedInvalidAddresses && <TEXT.Supplemental color={colors(false).dark.red}>One or more invalid addresses detected</TEXT.Supplemental>}
 
-      {isOpenedWarning && <InvalidAddressesWarning invalidAddresses={invalidAddresses} setIsOpenedWarning={setIsOpenedWarning} />}
+        {addresses.length > 0 && (
+          <ClearAllButton
+            onClick={() => {
+              setAddresses('')
+              setDetectedInvalidAddresses(false)
+            }}
+          >
+            <CloseIcon>×</CloseIcon>
+            <TEXT.SmallBody color={colors(true).dark.blue2}>Clear all</TEXT.SmallBody>
+          </ClearAllButton>
+        )}
+      </AddWrapper>
 
       <ButtonsContainer>
         {loading ? (

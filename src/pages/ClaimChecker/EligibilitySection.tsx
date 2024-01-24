@@ -1,14 +1,15 @@
 import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
-import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell, Box} from '@material-ui/core'
+import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell, TableFooter, Box} from '@material-ui/core'
 import {AirdropMap, MERKLE_DISTIBUTOR_ADDRESSES, AIRDROPS} from '../../constants/claims'
 import {AddressRowsType} from './type'
 import AirdropIdWithTooltip from './AirdropIdWithTooltip'
-import {isAddress, shortenAddressStartEnd} from '../../utils/web3'
+import {isAddress, shortenAddress, shortenAddressStartEnd} from '../../utils/web3'
 import {FC, useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import clsx from 'clsx'
+import {isMobile} from 'react-device-detect'
 
 const useStyles = makeStyles(theme => ({
   oneAirdropStyle: {
@@ -39,6 +40,13 @@ const useStyles = makeStyles(theme => ({
 
   cursorPointer: {
     cursor: 'pointer',
+  },
+  tableFooter: {
+    width: '160px',
+    padding: '16px 16px 16px 4px',
+    [theme.breakpoints.up(500)]: {
+      padding: '16px',
+    },
   },
 }))
 
@@ -72,7 +80,7 @@ const StyledTableCell = styled(TableCell)`
   font-size: 12px !important;
   border-bottom: none !important;
   text-align: right !important;
-  min-width: 180px !important;
+  min-width: 160px !important;
   padding: 0 !important;
 
   ${({theme}) => theme.mediaWidth.minSmall`
@@ -81,8 +89,12 @@ const StyledTableCell = styled(TableCell)`
 
   &:first-child {
     text-align: left !important;
-    min-width: 140px !important;
+    min-width: 100px !important;
     padding-left: 16px !important;
+
+    @media (max-width: 500px) {
+      padding-left: 4px !important;
+    }
   }
   &:last-child {
     padding-right: 16px !important;
@@ -101,7 +113,7 @@ const FlexBox = styled(Box)`
 
 const CopiedBox = styled(Box)`
   position: absolute;
-  left: 130px;
+  left: 120px;
   bottom: 1px;
   z-index: 100;
   padding: 4px;
@@ -132,13 +144,13 @@ const ScrollBox = styled.div`
     height: 12px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: ${colors(true).dark.grey4};
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(46, 51, 67, 0.6);
+    background: ${colors(true).dark.grey2};
     border-radius: 20px;
     &:hover {
-      background: rgba(46, 51, 67, 0.8);
+      background: ${colors(true).dark.grey1};
     }
   }
 `
@@ -165,6 +177,22 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
       () => setCopiedStatus('Copied'),
       () => setCopiedStatus('Could not copy'),
     )
+  }
+
+  const displayAddress = (address: string) => {
+    if (isMobile) {
+      if (isAddress(address)) {
+        return shortenAddress(address)
+      } else {
+        return address
+      }
+    } else {
+      if (isAddress(address)) {
+        return shortenAddressStartEnd(address)
+      } else {
+        return address
+      }
+    }
   }
 
   return (
@@ -210,9 +238,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                     >
                       <StyledTableCell id="account" className={classes.cursorPointer}>
                         <FlexBox onClick={() => copyToClipboardHandle(address)}>
-                          <TEXT.Supplemental color={colors(true).dark.white}>
-                            {isAddress(address) ? shortenAddressStartEnd(address) : address}
-                          </TEXT.Supplemental>
+                          <TEXT.Supplemental color={colors(true).dark.white}>{displayAddress(address)}</TEXT.Supplemental>
                           <CopyToClipboardIcon />
                           {copiedStatus && copiedAddress === address && <CopiedBox>{copiedStatus}</CopiedBox>}
                         </FlexBox>
@@ -297,11 +323,15 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
             </TableBody>
 
             {(!addressRows || Object.keys(addressRows).length === 0) && (
-              <StyledTableRow>
-                <TEXT.SmallBody color={colors(false).dark.blue1} sx={{padding: '16px'}}>
-                  No addresses yet
-                </TEXT.SmallBody>
-              </StyledTableRow>
+              <TableFooter>
+                <tr>
+                  <td>
+                    <TEXT.SmallBody color={colors(false).dark.blue1} className={classes.tableFooter}>
+                      No addresses yet
+                    </TEXT.SmallBody>
+                  </td>
+                </tr>
+              </TableFooter>
             )}
           </StyledTable>
         </ScrollBox>

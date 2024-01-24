@@ -51,6 +51,7 @@ import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentM
 import {Icon} from '../../components/Icon/Icon'
 import {AlertCircle} from 'react-feather'
 import React from 'react'
+import {useWalletModalToggle} from '../../state/application/hooks'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -80,6 +81,11 @@ const SelectShortPositionButton = styled(SelectPositionSideButton)`
 
 const TriggerBuildButton = styled(TriggerActionButton)`
   border: 1px solid #f2f2f2;
+`
+
+const ConnectWalletButton = styled(TriggerActionButton)`
+  color: ${colors(false).dark.white};
+  background: #53b1f9;
 `
 
 const ControlInterfaceContainer = styled(FlexColumn)`
@@ -403,7 +409,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   }, [marketId, isLoading, refetch])
 
   // const market = marketData?.market
-  const {chainId} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
   const ovlBalance = useOvlBalance()
   const parsedOvlBalance = ovlBalance && ovlBalance.toFixed(8)
   const ovl = chainId ? OVL[chainId] : undefined
@@ -424,6 +430,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     additionalInfo,
     descriptionText,
   } = MarketDetails[marketId]
+
+  const toggleWalletModal = useWalletModalToggle()
 
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
@@ -882,38 +890,45 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               />
             </ControlInterfaceContainer>
 
-            <ButtonContainer>
-              {showUnderwaterFlow ? (
-                <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-                  Position Underwater
-                </TriggerBuildButton>
-              ) : exceedOiCap ? (
-                <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-                  Exceeds OI Cap
-                </TriggerBuildButton>
-              ) : showBalanceNotEnoughWarning ? (
-                <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
-                  OVL Balance Below Minimum
-                </TriggerBuildButton>
-              ) : showApprovalFlow ? (
-                <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
-              ) : (
-                <TriggerBuildButton
-                  onClick={() => {
-                    setBuildState({
-                      showConfirm: true,
-                      attemptingTransaction: false,
-                      transactionErrorMessage: undefined,
-                      transactionHash: undefined,
-                    })
-                  }}
-                  isDisabled={disableBuildButton}
-                  disabled={disableBuildButton}
-                >
-                  Build {isPriceImpactHigh && '- High Price Impact'}
-                </TriggerBuildButton>
-              )}
-            </ButtonContainer>
+            {!account && (
+              <ButtonContainer>
+                <ConnectWalletButton onClick={toggleWalletModal}>Connect wallet</ConnectWalletButton>
+              </ButtonContainer>
+            )}
+            {account && (
+              <ButtonContainer>
+                {showUnderwaterFlow ? (
+                  <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                    Position Underwater
+                  </TriggerBuildButton>
+                ) : exceedOiCap ? (
+                  <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                    Exceeds OI Cap
+                  </TriggerBuildButton>
+                ) : showBalanceNotEnoughWarning ? (
+                  <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                    OVL Balance Below Minimum
+                  </TriggerBuildButton>
+                ) : showApprovalFlow ? (
+                  <ApproveTransactionButton attemptingTransaction={attemptingTransaction} onClick={handleApprove} />
+                ) : (
+                  <TriggerBuildButton
+                    onClick={() => {
+                      setBuildState({
+                        showConfirm: true,
+                        attemptingTransaction: false,
+                        transactionErrorMessage: undefined,
+                        transactionHash: undefined,
+                      })
+                    }}
+                    isDisabled={disableBuildButton}
+                    disabled={disableBuildButton}
+                  >
+                    Build {isPriceImpactHigh && '- High Price Impact'}
+                  </TriggerBuildButton>
+                )}
+              </ButtonContainer>
+            )}
 
             <AdditionalDetails
               priceCurrency={priceCurrency}

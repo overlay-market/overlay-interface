@@ -1038,7 +1038,11 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               {additionalInfo && (
                 <SecondColumn>
                   <LeftDetailColumn>Additional Information</LeftDetailColumn>
-                  <RightDetailColumn>{additionalInfo}</RightDetailColumn>
+                  <RightDetailColumn>
+                    <a href={additionalInfo.url} target="_blank" style={additionalInfo.url ? {color: colors(false).dark.blue2} : {}}>
+                      {additionalInfo.name}
+                    </a>
+                  </RightDetailColumn>
                 </SecondColumn>
               )}
             </AboutMarket>

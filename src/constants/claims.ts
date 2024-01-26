@@ -15,6 +15,8 @@ export enum ClaimId {
   TESTING_A = 'testing-a',
   TESTING_B = 'testing-b',
   LB4 = 'lb4',
+  RETRO = 'retro',
+  OVL_TO_OV = 'ovl-to-ov',
 }
 
 export type ClaimMap = {[claimId: string]: string}
@@ -71,22 +73,22 @@ export type AirdropMap = {
 }
 
 export const AIRDROPS: AirdropMap = {
-  [ClaimId.BEACON_HOLDERS]: {
-    title: ClaimId.BEACON_HOLDERS,
+  [ClaimId.RETRO]: {
+    title: 'Retro airdrop',
     expectedDate: '22.12.2023',
     summary: 'This airdrop is for Overlay OG’s who joined before 2022',
     isTBA: false,
   },
-  [ClaimId.OVERLAY]: {
-    title: ClaimId.OVERLAY,
+  [ClaimId.OVL_TO_OV]: {
+    title: 'OVL -> OV',
     expectedDate: '20.12.2023',
     summary: 'This airdrop is for Overlay OG’s who joined before 2022',
     isTBA: false,
   },
-  [ClaimId.ARBITRUM]: {
-    title: ClaimId.ARBITRUM,
-    expectedDate: '23.12.2023',
-    summary: 'This airdrop is for Overlay OG’s who joined before 2022',
-    isTBA: true,
-  },
+  //   [ClaimId.ARBITRUM]: {
+  //     title: ClaimId.ARBITRUM,
+  //     expectedDate: '23.12.2023',
+  //     summary: 'This airdrop is for Overlay OG’s who joined before 2022',
+  //     isTBA: true,
+  //   },
 }

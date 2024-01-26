@@ -137,7 +137,7 @@ const ClaimChecker = () => {
 
       activeAirdropsEnum.forEach(airdropId => {
         const airdropIdAmount = addressResults[address].find(item => item.airdropID === airdropId)!
-        addressRows[address].push(airdropIdAmount['amount'] ?? 'N/A')
+        addressRows[address].push(airdropIdAmount['amount'] ? (+airdropIdAmount['amount'] / 1e18).toFixed(0).toString() : 'N/A')
       })
 
       Object.keys(TBAairdrops).forEach(() => addressRows[address].push('TBA'))
@@ -189,7 +189,7 @@ const ClaimChecker = () => {
         totalValue = valuesArr.reduce(
           (accumulator: string, curVal: string) =>
             Big(accumulator)
-              .plus(Big(Number(curVal).toString()))
+              .plus(Big((Number(curVal) / 1e18).toFixed(0).toString()))
               .toString(),
           Big('0'),
         )

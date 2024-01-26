@@ -297,7 +297,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   })}
                 >
                   <StyledTableCell id="claim">
-                    <TEXT.Supplemental color={colors(true).dark.grey2}>Claim OVL</TEXT.Supplemental>
+                    <TEXT.Supplemental color={colors(true).dark.grey2}>Claim OV</TEXT.Supplemental>
                   </StyledTableCell>
                   {Object.keys(AIRDROPS).map(airdropId => {
                     return (

@@ -87,11 +87,11 @@ export default function ChangeNetworkModal({setOpenModal}: Props) {
   }
 
   return (
-    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} width="375px">
+    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90}>
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>
-            Change Network to {NETWORK_LABELS[SupportedChainId.ARBITRUM]}
+            Change Network to {NETWORK_LABELS[SupportedChainId.DEFAULT]}
           </TEXT.StandardBody>
           {/* <CurrencyLogo src={NETWORK_LOGO[SupportedChainId.ARBITRUM]} /> */}
           <CloseIcon onClick={toggleWalletModal}>
@@ -102,11 +102,11 @@ export default function ChangeNetworkModal({setOpenModal}: Props) {
           <CardHeader>
             <CardText>
               <IconWrapper size={40}>
-                <img src={NETWORK_LOGO[SupportedChainId.MAINNET]} alt={'Icon'} />
+                <img src={NETWORK_LOGO[chainId ?? SupportedChainId.MAINNET]} alt={'Icon'} />
               </IconWrapper>
               <ArrowRight color="white" size={40} />
               <IconWrapper size={40}>
-                <img src={NETWORK_LOGO[SupportedChainId.ARBITRUM]} alt={'Icon'} />
+                <img src={NETWORK_LOGO[SupportedChainId.DEFAULT]} alt={'Icon'} />
               </IconWrapper>
             </CardText>
             {/* <SubHeader>subheader</SubHeader> */}

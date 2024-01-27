@@ -3,6 +3,7 @@ import {OVL_TOKEN_ADDRESS, LL_TOKEN_ADDRESS} from './addresses'
 import {SupportedChainId} from './chains'
 import ETHEREUM_LOGO from '../assets/images/ethereum-logo.png'
 import ARBITRUM_LOGO from '../assets/images/arbitrum-logo.png'
+import ARBITRUM_TESTNET_LOGO from '../assets/images/arbitrum-testnet-logo.png'
 
 export const OVL: {[chainId: number]: Token} = {
   [SupportedChainId.MAINNET]: new Token(SupportedChainId.MAINNET, OVL_TOKEN_ADDRESS[1], 18, 'OVL', 'Overlay'),
@@ -18,7 +19,7 @@ export const NETWORK_LOGO: {[chainId: number]: string} = {
   [SupportedChainId.ARBITRUM]: ARBITRUM_LOGO,
   [SupportedChainId.GÖRLI]: ETHEREUM_LOGO,
   [SupportedChainId.ARBITRUM_GÖRLI]: ARBITRUM_LOGO,
-  [SupportedChainId.ARBITRUM_SEPOLIA]: ARBITRUM_LOGO,
+  [SupportedChainId.ARBITRUM_SEPOLIA]: ARBITRUM_TESTNET_LOGO,
 }
 
 //@dev: remove LL Token addresses after bridge testing

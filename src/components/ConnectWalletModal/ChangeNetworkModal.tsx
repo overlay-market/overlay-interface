@@ -68,19 +68,26 @@ export const OptionCardClickable = styled(OptionCard as any)<{clickable?: boolea
   opacity: ${({disabled}) => (disabled ? '0.5' : '1')};
 `
 
-export default function ChangeNetworkModal() {
+export interface Props {
+  setOpenModal?: Function
+}
+
+export default function ChangeNetworkModal({setOpenModal}: Props) {
   const [walletModalOpen, setWalletModalOpen] = useState(true)
   const {chainId} = useActiveWeb3React()
-  if (chainId !== 1) return <></>
+  // if (chainId !== 1) return <></>
 
-  const toggleWalletModal = () => setWalletModalOpen(false)
+  const toggleWalletModal = () => {
+    setWalletModalOpen(false)
+    setOpenModal && setOpenModal(false)
+  }
 
   const onClick = () => {
     switchNetworkToArbitrum()
   }
 
   return (
-    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} width='375px'>
+    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} width="375px">
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>

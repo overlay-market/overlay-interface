@@ -16,6 +16,7 @@ import Claim from './Claim/Claim'
 import ClaimPage from './Claim/ClaimPage'
 import Pools from './Stake/StakePage'
 import Pool from './Stake/PoolWrapper'
+import SepoliaChecker from './SepoliaChecker/SepoliaChecker'
 import Popups from '../components/Popup/Popups'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import {cookie3Analytics} from '@cookie3/analytics'
@@ -64,6 +65,7 @@ const App = () => {
               <Route exact strict path="/stake/:poolAddress" component={Pool} />
               <Route exact strict path="/liquidate" component={Liquidate} />
               <Route exact strict path="/bridge" component={Bridge} />
+              <Route exact strict path="/sepolia-checker" component={SepoliaChecker} />
             </Switch>
           </ContentWrapper>
         </Web3ReactManager>

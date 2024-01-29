@@ -1,5 +1,5 @@
 import './App.css'
-import {Route, Switch, Redirect} from 'react-router-dom'
+import {Route, Switch, Redirect, useHistory, useLocation} from 'react-router-dom'
 import Web3ReactManager from '../components/Web3ReactManager/Web3ReactManager'
 import TermsOfServiceManager from '../components/TermsOfServiceModal/TermsOfServiceManager'
 import Header from '../components/Header/Header'
@@ -16,10 +16,15 @@ import Claim from './Claim/Claim'
 import ClaimPage from './Claim/ClaimPage'
 import Pools from './Stake/StakePage'
 import Pool from './Stake/PoolWrapper'
+import SepoliaChecker from './SepoliaChecker/SepoliaChecker'
 import Popups from '../components/Popup/Popups'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import {cookie3Analytics} from '@cookie3/analytics'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
+import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
+import {ProtectedRoute} from '../routes/ProtectedRoute'
+import {useActiveWeb3React} from '../hooks/web3'
+import {SupportedChainId, DEFAULT_NET} from '../constants/chains'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -35,6 +40,32 @@ export const ContentWrapper = styled.div`
 `
 
 const App = () => {
+  let history = useHistory()
+  let location = useLocation()
+  const {chainId} = useActiveWeb3React()
+  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId] === DEFAULT_NET)
+  const [showLoader, setShowLoader] = useState(false)
+  const [currentPathName, setCurrentPathName] = useState(location.pathname)
+
+  useEffect(() => {
+    setCurrentPathName(location.pathname)
+  }, [])
+
+  useEffect(() => {
+    if (!chainId) {
+      setShowLoader(true)
+    }
+    if (chainId) {
+      setShowLoader(false)
+    }
+  }, [chainId, location])
+
+  useEffect(() => {
+    if (!supportedChainId) {
+      history.push('/network-checker')
+    }
+  }, [chainId, supportedChainId, location])
+
   useEffect(() => {
     var gaProperty: string = 'G-QJR084KXFT'
     var disableStr: string = 'ga-disable-' + gaProperty
@@ -51,20 +82,36 @@ const App = () => {
         <Header />
         <Web3ReactManager>
           <ContentWrapper>
-            <Switch>
-              <Route exact strict path="/" render={() => <Redirect to="/markets" />} />
-              <Route exact strict path="/markets" component={Markets} />
-              <Route exact strict path="/markets/:marketId" component={Market} />
-              <Route exact strict path="/positions" component={Positions} />
-              <Route exact strict path="/positions/:marketPositionId/:positionId" component={Unwind} />
-              <Route exact strict path="/closed-positions/:unwindId/:positionId" component={ClosedPosition} />
-              <Route exact strict path="/claim/:claimId" component={Claim} />
-              <Route exact strict path="/claimpage" component={ClaimPage} />
-              <Route exact strict path="/stake" component={Pools} />
-              <Route exact strict path="/stake/:poolAddress" component={Pool} />
-              <Route exact strict path="/liquidate" component={Liquidate} />
-              <Route exact strict path="/bridge" component={Bridge} />
-            </Switch>
+            <Route
+              path="/network-checker"
+              children={
+                <NetworkCheckerRoute currentPathName={currentPathName} showLoader={showLoader}>
+                  <SepoliaChecker />
+                </NetworkCheckerRoute>
+              }
+            />
+
+            <Route
+              path="/"
+              children={
+                <ProtectedRoute>
+                  <Switch>
+                    <Route exact strict path="/" render={() => <Redirect to="/markets" />} />
+                    <Route exact strict path="/markets" component={Markets} />
+                    <Route exact strict path="/markets/:marketId" component={Market} />
+                    <Route exact strict path="/positions" component={Positions} />
+                    <Route exact strict path="/positions/:marketPositionId/:positionId" component={Unwind} />
+                    <Route exact strict path="/closed-positions/:unwindId/:positionId" component={ClosedPosition} />
+                    <Route exact strict path="/claim/:claimId" component={Claim} />
+                    <Route exact strict path="/claimpage" component={ClaimPage} />
+                    <Route exact strict path="/stake" component={Pools} />
+                    <Route exact strict path="/stake/:poolAddress" component={Pool} />
+                    <Route exact strict path="/liquidate" component={Liquidate} />
+                    <Route exact strict path="/bridge" component={Bridge} />
+                  </Switch>
+                </ProtectedRoute>
+              }
+            />
           </ContentWrapper>
         </Web3ReactManager>
         <Footer />

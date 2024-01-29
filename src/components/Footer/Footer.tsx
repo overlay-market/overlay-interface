@@ -4,6 +4,7 @@ import {Image} from 'rebass'
 import OverlayLogoDark from '../../assets/images/overlay-logo-dark.png'
 import {LINKS} from '../../constants/links'
 import {TEXT, colors} from '../../theme/theme'
+import {useLocation} from 'react-router-dom'
 
 const StyledFooter = styled.footer`
   position: absolute;
@@ -157,6 +158,8 @@ const LinkSection = ({title, links}: {title: string; links: Array<LinkAsset>}) =
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+  let location = useLocation().pathname
+  if (location === '/network-checker') return null
 
   return (
     <StyledFooter>

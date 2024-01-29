@@ -17,6 +17,7 @@ import ConnectWalletModal from '../ConnectWalletModal/ConnectWalletModal'
 import Loader from '../Loaders/Loaders'
 import {ethers} from 'ethers'
 import {switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
+import {useLocation} from 'react-router-dom'
 
 const NEW_HEADER_FLAG = true
 
@@ -166,6 +167,9 @@ const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.R
 function Web3StatusInner() {
   const {account, chainId, error} = useActiveWeb3React()
 
+  let location = useLocation().pathname
+  const HIDE_WALLET_BALANCE = location === '/network-checker'
+
   const allTransactions = useAllTransactions()
 
   const sortedRecentTransactions = useMemo(() => {
@@ -220,10 +224,14 @@ function Web3StatusInner() {
         {NEW_HEADER_FLAG ? (
           <WalletDetails align="start">
             <TEXT.BoldSmallBody>{ens ?? shortenAddress(account)}</TEXT.BoldSmallBody>
-            <WalletBalance fontSize={12} color={colors(false).dark.grey1}>
-              {account && chainId && ovlBalance && <TokenBalance balance={Number(ovlBalance?.toFixed(4))} network={NETWORK_LABELS[chainId]} />}
-              {account && chainId && !ovlBalance && <TokenBalance balance={0} network={NETWORK_LABELS[chainId]} />}
-            </WalletBalance>
+            {HIDE_WALLET_BALANCE ? null : (
+              <>
+                <WalletBalance fontSize={12} color={colors(false).dark.grey1}>
+                  {account && chainId && ovlBalance && <TokenBalance balance={Number(ovlBalance?.toFixed(4))} network={NETWORK_LABELS[chainId]} />}
+                  {account && chainId && !ovlBalance && <TokenBalance balance={0} network={NETWORK_LABELS[chainId]} />}
+                </WalletBalance>
+              </>
+            )}
           </WalletDetails>
         ) : (
           <>

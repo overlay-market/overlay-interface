@@ -6,7 +6,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import Modal from '../Modal/Modal'
 import {CardText, IconWrapper} from './WalletOptions'
 import {NETWORK_LOGO} from '../../constants/tokens'
-import {SupportedChainId} from '../../constants/chains'
+import {DEFAULT_CHAINID, SupportedChainId} from '../../constants/chains'
 import {NETWORK_LABELS} from '../Web3Status/Web3Status'
 import {ArrowRight} from 'react-feather'
 import {switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
@@ -91,7 +91,7 @@ export default function ChangeNetworkModal({setOpenModal}: Props) {
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>
-            Change Network to {NETWORK_LABELS[SupportedChainId.DEFAULT]}
+            Change Network to {NETWORK_LABELS[DEFAULT_CHAINID]}
           </TEXT.StandardBody>
           {/* <CurrencyLogo src={NETWORK_LOGO[SupportedChainId.ARBITRUM]} /> */}
           <CloseIcon onClick={toggleWalletModal}>
@@ -106,7 +106,7 @@ export default function ChangeNetworkModal({setOpenModal}: Props) {
               </IconWrapper>
               <ArrowRight color="white" size={40} />
               <IconWrapper size={40}>
-                <img src={NETWORK_LOGO[SupportedChainId.DEFAULT]} alt={'Icon'} />
+                <img src={NETWORK_LOGO[DEFAULT_CHAINID]} alt={'Icon'} />
               </IconWrapper>
             </CardText>
             {/* <SubHeader>subheader</SubHeader> */}

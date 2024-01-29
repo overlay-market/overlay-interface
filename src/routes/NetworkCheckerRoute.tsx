@@ -1,6 +1,6 @@
 import {Redirect} from 'react-router-dom'
 import {useActiveWeb3React} from '../hooks/web3'
-import {SupportedChainId} from '../constants/chains'
+import {SupportedChainId, DEFAULT_NET} from '../constants/chains'
 import Loader from '../components/Loaders/Loaders'
 import styled from 'styled-components'
 
@@ -22,7 +22,7 @@ export const NetworkCheckerRoute = ({
   children: JSX.Element
 }) => {
   const {chainId} = useActiveWeb3React()
-  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId] === 'DEFAULT')
+  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId] === DEFAULT_NET)
 
   if (!showLoader && chainId && supportedChainId) return <Redirect to={currentPathName === '/network-checker' ? '/' : currentPathName} />
 

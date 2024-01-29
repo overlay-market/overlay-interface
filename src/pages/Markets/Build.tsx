@@ -397,7 +397,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     transactionHash: undefined,
   })
 
-  const {chainId} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
   const {market, isLoading, isUninitialized, refetch} = useMarketData(marketId)
 
   const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
@@ -409,7 +409,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   }, [chainId, marketId, isLoading, isUninitialized, refetch])
 
   // const market = marketData?.market
-  const {account, chainId} = useActiveWeb3React()
   const ovlBalance = useOvlBalance()
   const parsedOvlBalance = ovlBalance && ovlBalance.toFixed(8)
   const ovl = chainId ? OVL[chainId] : undefined

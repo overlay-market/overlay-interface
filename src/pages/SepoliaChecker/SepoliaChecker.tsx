@@ -3,8 +3,7 @@ import {TEXT, colors} from '../../theme/theme'
 import {TriggerActionButton} from '../../components/Button/Button'
 import {Image} from 'rebass'
 import BlueYellowHearts from '../../assets/images/blue_yellow_hearts.png'
-import {useState} from 'react'
-import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
+import {switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
 
 const BgWrapper = styled.div`
   height: 100vh;
@@ -40,8 +39,6 @@ const ModalContainer = styled.div`
 `
 
 const SepoliaChecker = () => {
-  const [openModal, setOpenModal] = useState(false)
-
   return (
     <BgWrapper>
       <Container>
@@ -54,12 +51,10 @@ const SepoliaChecker = () => {
           <TEXT.BoldStandardBody textAlign={'center'}>
             Please make sure you are on Sepolia network to join the Testnet Trading Competition
           </TEXT.BoldStandardBody>
-          <TriggerActionButton onClick={() => setOpenModal(true)} active={true}>
+          <TriggerActionButton onClick={() => switchNetworkToArbitrum()} active={true}>
             Change
           </TriggerActionButton>
         </ModalContainer>
-
-        {openModal && <ChangeNetworkModal setOpenModal={setOpenModal} />}
       </Container>
     </BgWrapper>
   )

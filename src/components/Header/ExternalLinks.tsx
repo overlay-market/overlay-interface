@@ -1,4 +1,5 @@
 import styled from 'styled-components/macro'
+import {useLocation} from 'react-router-dom'
 import {FlexRow} from '../Container/Container'
 import {TEXT, colors} from '../../theme/theme'
 import {ChevronLeft, ChevronRight, Settings} from 'react-feather'
@@ -106,6 +107,8 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
   const {setSlippageValue} = useBuildState()
   const toggleWalletModal = useWalletModalToggle()
   const toggleSetSlippageModal = useSetSlippageModalToggle()
+  let location = useLocation().pathname
+  const HIDE_MENU_ITEMS = location === '/network-checker'
 
   const disconnectWallet = () => {
     localStorage.setItem('disconnected', 'true')
@@ -306,18 +309,24 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
           <MenuLink mobile={mobile} link={LINKS.GOVERNANCE}>
             <TEXT.SmallBody>Governance</TEXT.SmallBody>
           </MenuLink>
-          <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addSepoliaTokenToMM : addTokenToMM}>
-            <TEXT.SmallBody color={colors(false).dark.tan2}>Add OVL to Wallet</TEXT.SmallBody>
-          </MenuLink>
 
-          <SlippageItem mobile={mobile} onClick={toggleSetSlippageModal}>
-            <SlippageContainer>
-              <Settings size={16} />
-              <TEXT.SmallBody>Slippage</TEXT.SmallBody>
+          {HIDE_MENU_ITEMS ? null : (
+            <>
+              <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addSepoliaTokenToMM : addTokenToMM}>
+                <TEXT.SmallBody color={colors(false).dark.tan2}>Add OVL to Wallet</TEXT.SmallBody>
+              </MenuLink>
 
-              <TEXT.SmallBody marginLeft="8px">{setSlippageValue}%</TEXT.SmallBody>
-            </SlippageContainer>
-          </SlippageItem>
+              <SlippageItem mobile={mobile} onClick={toggleSetSlippageModal}>
+                <SlippageContainer>
+                  <Settings size={16} />
+                  <TEXT.SmallBody>Slippage</TEXT.SmallBody>
+
+                  <TEXT.SmallBody marginLeft="8px">{setSlippageValue}%</TEXT.SmallBody>
+                </SlippageContainer>
+              </SlippageItem>
+            </>
+          )}
+
           {account && (
             <MenuLink mobile={mobile} onClick={disconnectWallet}>
               <TEXT.SmallBody>Disconnect Wallet</TEXT.SmallBody>

@@ -122,6 +122,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
   const tabIndex = isHidden ? 0 : -1
 
   let location = useLocation().pathname
+  const HIDE_MENU_ITEMS = location === '/network-checker'
 
   return (
     <StyledMenu onClick={() => setOpen(!open)} open={open} aria-hidden={!isHidden} height={height} width={width} {...props}>
@@ -141,21 +142,27 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               </NetworkLabel>
             </NetworkLabelContainer>
           )}
-          <StyledInternalLink tabIndex={tabIndex} to={'/markets'}>
-            <StyledMenuLink displayText={'Markets'} linkDestination={'/markets'} currentLocation={location} />
-          </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
-            <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
-          </StyledInternalLink>
-          {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
+
+          {HIDE_MENU_ITEMS ? null : (
+            <>
+              <StyledInternalLink tabIndex={tabIndex} to={'/markets'}>
+                <StyledMenuLink displayText={'Markets'} linkDestination={'/markets'} currentLocation={location} />
+              </StyledInternalLink>
+              <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
+                <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
+              </StyledInternalLink>
+              {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
             <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />
           </StyledInternalLink> */}
-          {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
+              {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
           </StyledInternalLink> */}
-          {/* <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.LB4}`}>
+              {/* <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.LB4}`}>
             <StyledMenuLink displayText={'Claim'} linkDestination={'/claimpage'} currentLocation={location} />
           </StyledInternalLink> */}
+            </>
+          )}
+
           <Separator />
           <ExternalLinks mobile isSubMenuOpen={isSubMenuOpen} setIsSubMenuOpen={setIsSubMenuOpen} />
         </Content>

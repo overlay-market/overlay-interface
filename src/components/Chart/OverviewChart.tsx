@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer} from 'recharts'
 import {Box, Button, ButtonGroup} from '@material-ui/core'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {usePositionsTableData} from '../../state/build/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {PositionStatus} from '../../pages/Positions/PositionsPage'
@@ -143,11 +143,27 @@ const getFilterStartDate = (selectedInterval: IntervalType) => {
 
 const OverviewChart = () => {
   const [selectedInterval, setSelectedInterval] = useState<IntervalType>('1M')
-  const {account} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
 
   // TODO: separate hook
-  const {positionsTableData: unwinds} = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed, undefined)
-  const {positionsTableData: liquidates} = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated, undefined)
+  const {
+    positionsTableData: unwinds,
+    isUninitialized: isUninitializedUnwinds,
+    refetch: refetchUnwinds,
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Closed, undefined)
+  const {
+    positionsTableData: liquidates,
+    isUninitialized: isUninitializedLiquidates,
+    refetch: refetchLiquidatedPositions,
+  } = usePositionsTableData(account, Infinity, 0, PositionStatus.Liquidated, undefined)
+
+  useEffect(() => {
+    !isUninitializedUnwinds && refetchUnwinds()
+  }, [chainId, isUninitializedUnwinds, refetchUnwinds])
+
+  useEffect(() => {
+    !isUninitializedLiquidates && refetchLiquidatedPositions()
+  }, [chainId, isUninitializedLiquidates, refetchLiquidatedPositions])
 
   const chartData = useMemo(() => {
     const unwindRows = unwinds?.account?.unwinds ?? []
@@ -227,8 +243,6 @@ const OverviewChart = () => {
     // Filter data for selected interval
     const startDate = getFilterStartDate(selectedInterval)
     data = data.filter(item => moment(item.date).isSameOrAfter(startDate))
-
-    console.log(data)
 
     return data
   }, [unwinds, liquidates, selectedInterval])

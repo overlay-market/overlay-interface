@@ -5,7 +5,7 @@ import {Back} from '../../components/Back/Back'
 import {TEXT, colors} from '../../theme/theme'
 import {Icon} from '../../components/Icon/Icon'
 import {useMarketData, useActiveMarketsData} from '../../state/markets/hooks'
-import {useMemo} from 'react'
+import {useEffect, useMemo} from 'react'
 import {useMarketName} from '../../hooks/useMarketName'
 import {getCharactersBeforeSlash} from '../../utils/getCharactersBeforeSlash'
 import {MarketDetails} from '../../constants/markets'
@@ -13,6 +13,7 @@ import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetai
 import Dropdown from '../../components/Dropdown/Dropdown'
 import {useHistory} from 'react-router-dom'
 import Loader from '../../components/Loaders/Loaders'
+import {useActiveWeb3React} from '../../hooks/web3'
 
 const Container = styled(FlexColumn)`
   padding: 12px;
@@ -38,10 +39,15 @@ const BuildHeader = ({marketId}: {marketId: string}) => {
   const baseToken = useMemo(() => getCharactersBeforeSlash(marketName || ''), [marketName])
   // const marketLogo = useMemo(() => MARKET_LOGO_FROM_BASE[baseToken], [baseToken])
   const marketLogo = MarketDetails[marketId]?.logo
+  const {chainId} = useActiveWeb3React()
 
-  const {markets} = useActiveMarketsData()
+  const {markets, isUninitialized, refetch: refetchActiveMarkets} = useActiveMarketsData()
   const marketDetail: AdditionalMarketData[] = useMarketDetails(markets)
   const history = useHistory()
+
+  useEffect(() => {
+    !isUninitialized && refetchActiveMarkets()
+  }, [chainId, isUninitialized, refetchActiveMarkets])
 
   const marketOptions = marketDetail
     .filter(market => market?.id !== marketId)

@@ -41,6 +41,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {formatDecimalToPercentage} from '../../utils/formatDecimal'
 import {toScientificNumber} from '../../utils/toScientificNumber'
 import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCallback'
+import {useSetSlippageModalToggle} from '../../state/application/hooks'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -323,6 +324,8 @@ export function Unwind({
     return false
   }, [customInput, currentValue])
 
+  const toggleSetSlippageModal = useSetSlippageModalToggle()
+
   return !isMarketShutDown ? (
     <InterfaceWrapper>
       <>
@@ -339,7 +342,7 @@ export function Unwind({
               {isLong !== undefined ? isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice) : <Loader stroke="white" size="12px" />}
             </TEXT.StandardHeader1>
             <Icon
-              onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
+              onClick={toggleSetSlippageModal}
               size={24}
               top={'18px'}
               right={'0px'}
@@ -351,15 +354,6 @@ export function Unwind({
               {isTxnSettingsOpen ? <X color={'#12B4FF'} /> : <Sliders color={'#B9BABD'} />}
             </Icon>
           </ControlInterfaceHeadContainer>
-          <TransactionSettingsModal
-            isTxnSettingsOpen={isTxnSettingsOpen}
-            setSlippageValue={setSlippageValue}
-            isTxnSettingsAuto={isTxnSettingsAuto}
-            txnDeadline={txnDeadline}
-            onSetSlippage={onSetSlippage}
-            handleResetTxnSettings={handleResetTxnSettings}
-            onSetTxnDeadline={onSetTxnDeadline}
-          />
 
           <FlexRow mb="4px" width="100%">
             <TEXT.StandardBody margin={'0 auto 4px 0'} color={'white'}>

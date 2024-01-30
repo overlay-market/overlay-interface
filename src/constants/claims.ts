@@ -61,12 +61,18 @@ export const MERKLE_PROOFS: ClaimMap = {
 
 export const AIRDROP_CHECKER_API = 'https://api.overlay.market/airdrop-checker/'
 
+export enum AirdropStatus {
+  ACTIVATED = 'Activated',
+  COMING_SOON = 'Coming soon',
+  TBA = 'TBA',
+}
+
 export type AirdropType = {
   title: string
   expectedDate?: string
   summary: string
   boldSummary?: string
-  isTBA: boolean
+  status: AirdropStatus
 }
 
 export type AirdropMap = {
@@ -74,39 +80,29 @@ export type AirdropMap = {
 }
 
 export const AIRDROPS: AirdropMap = {
-  [ClaimId.RETRO]: {
-    title: 'Retro airdrop',
-    expectedDate: '22.12.2023',
-    summary: 'If you held OVL on Ethereum or Arbitrum before the Polkastarter launch announcement, you are eligible for OV.',
-    isTBA: false,
-  },
+  // [ClaimId.RETRO]: {
+  //   title: 'Retro airdrop',
+  //   expectedDate: '22.12.2023',
+  //   summary: 'If you held OVL on Ethereum or Arbitrum before the Polkastarter launch announcement, you are eligible for OV.',
+  //   status: AirdropStatus.ACTIVATED,
+  // },
   [ClaimId.OVL_TO_OV]: {
     title: 'OVL -> OV',
-    // expectedDate: '20.12.2023',
-    summary:
-      'If you received Overlay NFTs, PCD, or purchased an Overlay Hoodie, you are eligible for Airdrop 1. Different multipliers apply for each NFT or criteria.',
-    boldSummary: '(25% is available on TGE, and the remaining amount unlocks linearly over 3 months).',
-    isTBA: false,
-  },
-  [ClaimId.BEACON_HOLDERS]: {
-    title: 'ex-OVL holder',
-    // expectedDate: '22.12.2023',
     summary: 'If you held OVL on Ethereum or Arbitrum before the Polkastarter launch announcement, you are eligible for OV. ',
     boldSummary: '(25% is available on TGE, and the rest unlocks linearly over 3 months).',
-    isTBA: false,
+    status: AirdropStatus.COMING_SOON,
   },
   [ClaimId.OVERLAY]: {
-    title: 'Overlay OG airdrop',
-    expectedDate: '20.12.2023',
+    title: 'Overlay OG',
     summary:
       'If you received Overlay NFTs, PCD, or purchased an Overlay Hoodie, you are eligible for Airdrop 1. Different multipliers apply for each NFT or criteria.',
     boldSummary: '(25% is available on TGE, and the remaining amount unlocks linearly over 3 months).',
-    isTBA: false,
+    status: AirdropStatus.COMING_SOON,
   },
-  //   [ClaimId.ARBITRUM]: {
-  //     title: ClaimId.ARBITRUM,
-  //     expectedDate: '23.12.2023',
-  //     summary: 'This airdrop is for Overlay OG’s who joined before 2022',
-  //     isTBA: true,
-  //   },
+  // [ClaimId.ARBITRUM]: {
+  //   title: ClaimId.ARBITRUM,
+  //   expectedDate: '23.12.2023',
+  //   summary: 'This airdrop is for Overlay OG’s who joined before 2022',
+  //   status: AirdropStatus.TBA,
+  // },
 }

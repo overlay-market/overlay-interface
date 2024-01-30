@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import useAxios from 'axios-hooks'
-import {AIRDROP_CHECKER_API, AirdropMap, AIRDROPS, AirdropType} from '../../constants/claims'
+import {AIRDROP_CHECKER_API, AirdropMap, AIRDROPS, AirdropType, AirdropStatus} from '../../constants/claims'
 import {AddressResults, AddressRowsType, AirdropAmount} from './type'
 import Big from 'big.js'
 
@@ -64,9 +64,10 @@ const ClaimChecker = () => {
     const mapToObject = (map: Map<string, AirdropType>) => Object.fromEntries(map.entries())
 
     const newOb = new Map<string, AirdropType>()
+    const statusArray = active ? [AirdropStatus.ACTIVATED, AirdropStatus.COMING_SOON] : [AirdropStatus.TBA]
 
     Object.keys(AIRDROPS)
-      .filter(airdropId => AIRDROPS[airdropId].isTBA === !active)
+      .filter(airdropId => statusArray.includes(AIRDROPS[airdropId].status))
       .map(adr => {
         return newOb.set(adr, AIRDROPS[adr])
       })
@@ -74,8 +75,8 @@ const ClaimChecker = () => {
     return mapToObject(newOb)
   }
 
-  const activeAirdrops: AirdropMap = getAirdrops(true)
-  const TBAairdrops: AirdropMap = getAirdrops(false)
+  const activeAirdrops: AirdropMap = getAirdrops(true) // activated and coming soon
+  const TBAairdrops: AirdropMap = getAirdrops(false) // TBA
   const allAirdrops: AirdropMap = {...activeAirdrops, ...TBAairdrops}
   const activeAirdropsEnum = Object.keys(activeAirdrops).map(airdrop => airdrop.toUpperCase().replace(/-/g, '_'))
 
@@ -251,7 +252,6 @@ const ClaimChecker = () => {
         checkAddressesHandle={checkAddressesHandle}
         detectedInvalidAddresses={detectedInvalidAddresses}
         setDetectedInvalidAddresses={setDetectedInvalidAddresses}
-        // invalidAddresses={invalidAddresses}
         loading={loading}
       />
 

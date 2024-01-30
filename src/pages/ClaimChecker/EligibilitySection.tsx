@@ -1,7 +1,7 @@
 import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
 import {TableBody, TableContainer, Table, TableHead, makeStyles, TableRow, TableCell, TableFooter, Box} from '@material-ui/core'
-import {AirdropMap, MERKLE_DISTIBUTOR_ADDRESSES, AIRDROPS} from '../../constants/claims'
+import {AirdropMap, MERKLE_DISTIBUTOR_ADDRESSES, AIRDROPS, AirdropStatus} from '../../constants/claims'
 import {AddressRowsType} from './type'
 import AirdropIdWithTooltip from './AirdropIdWithTooltip'
 import {isAddress, shortenAddress, shortenAddressStartEnd} from '../../utils/web3'
@@ -84,7 +84,7 @@ const StyledTableCell = styled(TableCell)`
   padding: 0 !important;
 
   ${({theme}) => theme.mediaWidth.minSmall`
-    min-width: 212px !important;
+    min-width: 200px !important;
   `}
 
   &:first-child {
@@ -95,6 +95,9 @@ const StyledTableCell = styled(TableCell)`
     @media (max-width: 500px) {
       padding-left: 4px !important;
     }
+    ${({theme}) => theme.mediaWidth.minMedium`
+    width: 135px;
+  `}
   }
   &:last-child {
     padding-right: 16px !important;
@@ -212,7 +215,7 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   [classes.twoAirdropStyle]: Object.keys(airdrops).length === 2,
                 })}
               >
-                <StyledTableCell id="address">
+                <StyledTableCell id="address" style={{width: Object.keys(airdrops).length === 1 ? '160px' : '135px'}}>
                   <TEXT.Supplemental color={colors(true).dark.grey2}>Address</TEXT.Supplemental>
                 </StyledTableCell>
                 {airdrops &&
@@ -236,7 +239,11 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                         [classes.twoAirdropStyle]: Object.keys(airdrops).length === 2,
                       })}
                     >
-                      <StyledTableCell id="account" className={classes.cursorPointer}>
+                      <StyledTableCell
+                        id="account"
+                        className={classes.cursorPointer}
+                        style={{width: Object.keys(airdrops).length === 1 ? '160px' : '135px'}}
+                      >
                         <FlexBox onClick={() => copyToClipboardHandle(address)}>
                           <TEXT.Supplemental color={colors(true).dark.white}>{displayAddress(address)}</TEXT.Supplemental>
                           <CopyToClipboardIcon />
@@ -260,24 +267,28 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                     [classes.twoAirdropStyle]: Object.keys(airdrops).length === 2,
                   })}
                 >
-                  <StyledTableCell id="totalamount">
+                  <StyledTableCell id="totalamount" style={{width: Object.keys(airdrops).length === 1 ? '160px' : '135px'}}>
                     <FlexBox>
                       <TEXT.Supplemental color={colors(true).dark.grey2}>Total amount</TEXT.Supplemental>
-                      {Object.keys(airdrops).length === 1 && (
-                        <Link
-                          to={`/claim/${MERKLE_DISTIBUTOR_ADDRESSES[Object.keys(airdrops)[0]]}`}
-                          onClick={event => AIRDROPS[Object.keys(airdrops)[0]].isTBA && event.preventDefault()}
-                          target="_blank"
-                          className={classes.styledLink}
-                          style={{
-                            color: AIRDROPS[Object.keys(airdrops)[0]].isTBA ? colors(true).dark.grey1 : colors(false).dark.blue2,
-                            cursor: AIRDROPS[Object.keys(airdrops)[0]].isTBA ? 'default' : 'pointer',
-                          }}
-                        >
-                          Claim
-                          <OpenInNewIcon fontSize="inherit" />
-                        </Link>
-                      )}
+                      {Object.keys(airdrops).length === 1 &&
+                        (AIRDROPS[Object.keys(airdrops)[0]].status === AirdropStatus.COMING_SOON ? (
+                          <TEXT.Supplemental color={colors(true).dark.blue2}>Coming soon</TEXT.Supplemental>
+                        ) : (
+                          <Link
+                            to={`/claim/${MERKLE_DISTIBUTOR_ADDRESSES[Object.keys(airdrops)[0]]}`}
+                            onClick={event => AIRDROPS[Object.keys(airdrops)[0]].status === AirdropStatus.TBA && event.preventDefault()}
+                            target="_blank"
+                            className={classes.styledLink}
+                            style={{
+                              color:
+                                AIRDROPS[Object.keys(airdrops)[0]].status === AirdropStatus.TBA ? colors(true).dark.grey1 : colors(false).dark.blue2,
+                              cursor: AIRDROPS[Object.keys(airdrops)[0]].status === AirdropStatus.TBA ? 'default' : 'pointer',
+                            }}
+                          >
+                            Claim
+                            <OpenInNewIcon fontSize="inherit" />
+                          </Link>
+                        ))}
                     </FlexBox>
                   </StyledTableCell>
                   {totalAmountValues.map((value: string | number, ind) => {
@@ -302,19 +313,23 @@ function EligibilitySection({airdrops, addressRows, totalAmountValues}: Props) {
                   {Object.keys(AIRDROPS).map(airdropId => {
                     return (
                       <StyledTableCell key={airdropId}>
-                        <Link
-                          to={`/claim/${MERKLE_DISTIBUTOR_ADDRESSES[airdropId]}`}
-                          onClick={event => AIRDROPS[airdropId].isTBA && event.preventDefault()}
-                          target="_blank"
-                          className={classes.styledLink}
-                          style={{
-                            color: AIRDROPS[airdropId].isTBA ? colors(true).dark.grey1 : colors(false).dark.blue2,
-                            cursor: AIRDROPS[airdropId].isTBA ? 'default' : 'pointer',
-                          }}
-                        >
-                          Claim
-                          <OpenInNewIcon fontSize="inherit" />
-                        </Link>
+                        {AIRDROPS[airdropId].status === AirdropStatus.COMING_SOON ? (
+                          <TEXT.Supplemental color={colors(true).dark.grey2}>Coming soon</TEXT.Supplemental>
+                        ) : (
+                          <Link
+                            to={`/claim/${MERKLE_DISTIBUTOR_ADDRESSES[airdropId]}`}
+                            onClick={event => AIRDROPS[airdropId].status === AirdropStatus.TBA && event.preventDefault()}
+                            target="_blank"
+                            className={classes.styledLink}
+                            style={{
+                              color: AIRDROPS[airdropId].status === AirdropStatus.TBA ? colors(true).dark.grey1 : colors(false).dark.blue2,
+                              cursor: AIRDROPS[airdropId].status === AirdropStatus.TBA ? 'default' : 'pointer',
+                            }}
+                          >
+                            Claim
+                            <OpenInNewIcon fontSize="inherit" />
+                          </Link>
+                        )}
                       </StyledTableCell>
                     )
                   })}

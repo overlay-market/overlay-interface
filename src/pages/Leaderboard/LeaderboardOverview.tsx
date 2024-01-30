@@ -17,7 +17,6 @@ const OverviewContainer = styled.div`
   `}
 
   ${({theme}) => theme.mediaWidth.minMedium`
-    background: red;
     flex-direction: row;
     gap: 0;
   `}

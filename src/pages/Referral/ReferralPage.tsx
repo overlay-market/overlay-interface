@@ -3,10 +3,10 @@ import {TEXT, colors} from '../../theme/theme'
 import {useActiveWeb3React} from '../../hooks/web3'
 import Grid from '@material-ui/core/Grid'
 import styled from 'styled-components'
-import MainOverviewCard from '../../components/Card/MainOverviewCard'
 import OverviewCard from '../../components/Card/OverviewCard'
 import {PageContainer} from '../../components/Container/Container'
-import React from 'react'
+import ReferralModal from './ReferralModal'
+import {RebatesTable} from './RebatesTable'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -23,11 +23,6 @@ const Container = styled.div<{mt?: string}>`
 const StyledGrid = styled(Grid)<{order?: number}>`
   display: flex;
   padding: 4px !important;
-
-  ${({theme, order}) => theme.mediaWidth.minMedium`
-  order: ${order ? `${order}` : 0};
-  padding: 12px !important;
-  `}
 `
 
 export const ReferralPage = () => {
@@ -36,8 +31,8 @@ export const ReferralPage = () => {
   const cardsData = [
     {
       title: 'Create a referral code',
-      value: '500,000 $OV volume left',
-      valueType: 'Create code ->',
+      value: '500,000 $OV',
+      valueType: 'volume left',
       valueTypeLink: null,
       percentageChange: null,
       period: 'Claim ->',
@@ -64,27 +59,38 @@ export const ReferralPage = () => {
     },
   ]
 
+  cardsData.forEach(cardsData => {
+    if (cardsData.title === 'Create a referral code' && cardsData.value === '0 $OV') {
+      cardsData.value = cardsData.value + ' volume left'
+      cardsData.valueType = 'Create code ->'
+    }
+  })
+
   return (
     <PageContainer>
       <Container mt={'50px'}>
-        <TEXT.BoldHeader1 mb="16px">Referral</TEXT.BoldHeader1>
-        <TEXT.SmallBody mb="32px">
-          Refer users to earn rewards. Ambassadors earn greater rewards.{' '}
-          <a href="/" style={{color: colors(false).dark.blue2}}>
-            How does it work
-          </a>
-        </TEXT.SmallBody>
+        <Box>
+          <ReferralModal />
+          <TEXT.SmallBody mb="32px">
+            Refer users to earn rewards. Ambassadors earn greater rewards.{' '}
+            <a href="/" style={{color: colors(false).dark.blue2}}>
+              How does it work
+            </a>
+          </TEXT.SmallBody>
+        </Box>
         <Box>
           {account ? (
             <Grid container spacing={3}>
-              {/* Chart */}
-              {/* <StyledGrid order={-1} item key={'chart'} xs={12} lg={8}>
-              <OverviewChart />
-            </StyledGrid> */}
-
               {cardsData.map(card => {
                 return (
-                  <StyledGrid item key={card.title} xs={12} sm={6} md={4} lg={3}>
+                  <StyledGrid
+                    item
+                    key={card.title}
+                    xs={card.title === 'Create a referral code' || card.title === 'Locked Sum' ? 12 : 6}
+                    sm={6}
+                    md={6}
+                    lg={3}
+                  >
                     <OverviewCard
                       title={card.title}
                       value={card.value}
@@ -106,6 +112,9 @@ export const ReferralPage = () => {
               page to begin.
             </TEXT.SupplementalHeader>
           )}
+        </Box>
+        <Box>
+          <RebatesTable />
         </Box>
       </Container>
     </PageContainer>

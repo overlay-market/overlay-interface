@@ -20,7 +20,7 @@ import Popups from '../components/Popup/Popups'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import {cookie3Analytics} from '@cookie3/analytics'
 import {useEffect} from 'react'
-import {ReferralPage} from './Referral/referralPage'
+import {ReferralPage} from './Referral/ReferralPage'
 import React from 'react'
 
 export const AppWrapper = styled.div`

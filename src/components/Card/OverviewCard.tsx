@@ -69,7 +69,7 @@ const OverviewCard = (props: DataProps) => {
           <Box mt={'18px'}></Box>
         ) : (
           <TEXT.SmallBody fontSize={14} color="#c4c4c4">
-            <a href={valueTypeLink} style={valueTypeLink ? {color: colors(false).dark.blue2} : {}}>
+            <a href={valueTypeLink ?? undefined} style={valueTypeLink ? {color: colors(false).dark.blue2} : {}}>
               {valueType}
             </a>
           </TEXT.SmallBody>

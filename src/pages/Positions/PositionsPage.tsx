@@ -135,11 +135,11 @@ const StyledTableCell = styled(TableCell)`
 const ROWS_PER_PAGE = [10, 20, 40, 50]
 
 const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
-  const {account} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
-  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
     (page - 1) * rowsPerPage,
@@ -147,6 +147,10 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     undefined,
   )
   const [showLoader, setShowLoader] = useState(false)
+
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   // Show loader only on page change
   useEffect(() => {
@@ -317,12 +321,12 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 }
 
 export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, marketsData}: PositionsTableProps) => {
-  const {account} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const params = useParams<{marketId: string}>()
-  const {positionsTableData, isUninitialized, isLoading, numberOfPositions} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isLoading, numberOfPositions, refetch} = usePositionsTableData(
     account,
     1000,
     0,
@@ -330,6 +334,10 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     params?.marketId,
   )
   const [showLoader, setShowLoader] = useState(false)
+
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   // Show loader only on page change
   useEffect(() => {
@@ -371,7 +379,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
         {rows
           .map((row: any) => {
             const marketAddress = positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
-            const marketState = marketsData.find((market: any) => market.marketAddress === marketAddress)
+            const marketState = marketsData[0]
 
             if (positionStatus === PositionStatus.Build) {
               if (marketAddress === params?.marketId) {
@@ -475,11 +483,23 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
 }
 
 const Positions = () => {
-  const {account} = useActiveWeb3React()
-  const {positionsTableDetails} = usePositionsTableDetails(account)
-  const {markets} = useTotalMarketsData()
+  const {account, chainId} = useActiveWeb3React()
+  const {
+    positionsTableDetails,
+    isUninitialized: isUninitializedPosTableDetails,
+    refetch: refetchPositionsTableDetails,
+  } = usePositionsTableDetails(account)
+  const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData} = useCurrentMarketState(marketDetails)
+
+  useEffect(() => {
+    !isUninitializedPosTableDetails && refetchPositionsTableDetails()
+  }, [chainId, isUninitializedPosTableDetails, refetchPositionsTableDetails])
+
+  useEffect(() => {
+    !isUninitializedMarkets && refetchMarkets()
+  }, [chainId, isUninitializedMarkets, refetchMarkets])
 
   return (
     <PageContainer>

@@ -8,6 +8,7 @@ import {useTotalMarketsData} from '../../state/markets/hooks'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
+import {useActiveWeb3React} from '../../hooks/web3'
 
 const Container = styled.div`
   width: 100%;
@@ -65,11 +66,16 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const [short, setShort] = React.useState<number>(0)
   const [total, setTotal] = React.useState<number>(0)
 
-  const {markets} = useTotalMarketsData()
+  const {chainId} = useActiveWeb3React()
+  const {markets, isUninitialized, refetch} = useTotalMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
 
   const marketDataDetails = React.useMemo(() => marketsData.find(market => market.id === marketData?.marketId), [marketsData, marketData])
+
+  React.useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   React.useEffect(() => {
     if (marketDataDetails?.parsedOiLong !== undefined) setLong(Number(marketDataDetails?.parsedOiLong))

@@ -11,6 +11,7 @@ import markets from './markets/reducer'
 import stake from './stake/reducer'
 import {updateVersion} from './global/actions'
 import {api as dataApi} from './data/slice'
+import {setupListeners} from '@reduxjs/toolkit/query'
 
 const PERSISTED_KEYS: string[] = ['user', 'transactions']
 
@@ -35,6 +36,8 @@ const store = configureStore({
 })
 
 store.dispatch(updateVersion())
+
+setupListeners(store.dispatch)
 
 export default store
 

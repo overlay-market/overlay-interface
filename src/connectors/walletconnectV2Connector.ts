@@ -2,7 +2,7 @@ import {ConnectorUpdate} from '@web3-react/types'
 import {AbstractConnector} from '@web3-react/abstract-connector'
 import type WalletConnectProvider from '@walletconnect/ethereum-provider'
 import {EthereumProviderOptions} from '@walletconnect/ethereum-provider/dist/types/EthereumProvider'
-import {SupportedChainId} from '../constants/chains'
+import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
 
 export class WalletConnectV2Connector extends AbstractConnector {
   provider?: typeof WalletConnectProvider.prototype
@@ -42,7 +42,7 @@ export class WalletConnectV2Connector extends AbstractConnector {
         optionalMethods: ['eth_accounts', 'eth_requestAccounts', 'eth_sendRawTransaction', 'eth_signTransaction', 'wallet_switchEthereumChain'],
         events: ['chainChanged', 'accountsChanged'],
         optionalEvents: ['disconnect'],
-        optionalChains: [SupportedChainId.ARBITRUM, SupportedChainId.ARBITRUM_SEPOLIA],
+        optionalChains: [DEFAULT_CHAINID],
       })
     })
 

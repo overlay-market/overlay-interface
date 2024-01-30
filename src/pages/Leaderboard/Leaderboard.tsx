@@ -24,7 +24,7 @@ const PageWrapper = styled.div`
   height: 100vh;
   position: fixed;
   top: 100px;
-  z-index: 500;
+  z-index: 100;
   overflow: hidden;
   background: rgba(32, 36, 49, 0.85) !important;
   backdrop-filter: blur(2px);
@@ -35,7 +35,7 @@ const FrontCover = styled.div`
   top: 42px;
   width: 100vw;
   height: 100vh;
-  z-index: 10000;
+  z-index: 1000;
   overflow: hidden;
   background: rgba(32, 36, 49, 0.85) !important;
   backdrop-filter: blur(2px);
@@ -466,6 +466,7 @@ const Leaderboard = () => {
           </ButtonWrapper>
         )}
       </PageContainerStyled>
+      //{' '}
     </PageWrapper>
   )
 }

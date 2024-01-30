@@ -121,8 +121,9 @@ export default function ThemeProvider({children}: {children: React.ReactNode}) {
   return <StyledComponentsThemeProvider theme={themeObject}>{children}</StyledComponentsThemeProvider>
 }
 
-const TextWrapper = styled(Text)<{color: keyof Colors}>`
+const TextWrapper = styled(Text)<{color: keyof Colors; onClick: any}>`
   color: ${({color, theme}) => (theme as any)[color]};
+  cursor: ${({onClick}) => (onClick ? 'pointer' : '')};
 `
 
 const TextWrapperUnderlined = styled(Text)<{color: keyof Colors}>`

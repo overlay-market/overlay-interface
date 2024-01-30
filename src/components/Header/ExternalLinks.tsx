@@ -20,14 +20,14 @@ export const PlatformLogo = styled.div<{src: string; open?: boolean}>`
   transition: all 0.2s linear;
 `
 
-const MenuTitle = styled.div<{open?: boolean}>`
+const MenuTitle = styled.div<{open?: boolean; mobile?: boolean}>`
   opacity: ${({open}) => (open ? '1' : '0')};
   cursor: ${({open}) => (open ? 'pointer' : 'default')};
   font-family: Inter;
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
-  padding: 8px 16px;
+  padding: ${({mobile}) => (mobile ? '12px 16px' : '8px 16px')};
   display: flex;
   align-items: center;
 `
@@ -242,7 +242,7 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
   return (
     <>
       {(!mobile || isSubMenuOpen) && (
-        <MenuTitle open={isSubMenuOpen} onClick={() => (isSubMenuOpen ? setIsSubMenuOpen(false) : null)}>
+        <MenuTitle mobile={mobile} open={isSubMenuOpen} onClick={() => (isSubMenuOpen ? setIsSubMenuOpen(false) : null)}>
           <ChevronLeft size={16} />
           <TEXT.SmallBody ml="4px">Menu</TEXT.SmallBody>
         </MenuTitle>

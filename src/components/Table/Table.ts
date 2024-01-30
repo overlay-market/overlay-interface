@@ -35,8 +35,8 @@ export const StyledTableCellThin = styled(StyledTableCell)`
   font-weight: 400;
 `
 
-export const StyledTableRow = styled(TableRow)`
-  cursor: pointer;
+export const StyledTableRow = styled(TableRow)<{notclickable?: string}>`
+  cursor: ${({notclickable}) => (notclickable === 'true' ? '' : 'pointer')};
   background: ${({theme}) => theme.dark.background};
   height: 69px;
 

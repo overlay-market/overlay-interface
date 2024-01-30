@@ -43,6 +43,17 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
   `}
 `
 
+const Gradient = styled.span`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 160%;
+  color: transparent;
+  --grad: linear-gradient(89deg, #d5b4ff -1.18%, #ffa1b9 26.07%, #ff648a 47.56%, #ffcc8f 64.85%, #d5b4ff 99.44%);
+  background: var(--grad), var(--grad) bottom 1px left 0/100% 1px no-repeat;
+  background-clip: text, padding-box;
+  -webkit-background-clip: text, padding-box;
+`
+
 const ClaimChecker = () => {
   const [addresses, setAddresses] = useState<string>('')
   const [validAddresses, setValidAddresses] = useState<string[] | undefined>([])
@@ -219,8 +230,20 @@ const ClaimChecker = () => {
   return (
     <PageWrapper>
       <TitleSection>
-        <BoldHeader1>Airdrop Checker</BoldHeader1>
-        <TEXT.SmallBody color={colors(true).dark.blue1}>Check eligibility for different airdrops</TEXT.SmallBody>
+        <BoldHeader1>Airdrop 1 Eligibility Checker 🪂</BoldHeader1>
+        <TEXT.StandardBody color={colors(true).dark.blue1}>
+          Check eligibility for Airdrop 1. Airdrop 1 is for{' '}
+          <span style={{fontWeight: '700'}}>ex-OVL holders, PlanckCat DAO NFT Holders, Overlay Hoodie buyers,</span> and{' '}
+          <span style={{fontWeight: '700'}}>Overlay NFT holders.</span>
+        </TEXT.StandardBody>
+        <TEXT.StandardBody color={colors(true).dark.blue1}>
+          Not eligible? ;’( Don’t worry :)
+          <span style={{fontWeight: '700'}}> Airdrop 2 </span>
+          campaign is live now.
+          <a href="https://overlay.market/#/" target="_blank" style={{textDecoration: 'none'}}>
+            <Gradient> Check out this article to learn more about Airdrop 2, aka TUNA by Overlay.</Gradient>{' '}
+          </a>
+        </TEXT.StandardBody>
       </TitleSection>
       <AddressCheckSection
         addresses={addresses}

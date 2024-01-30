@@ -116,7 +116,7 @@ export type MarketDetailsData = {
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9': {
-    marketName: 'CSGO Sepolia / USD',
+    marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
   },
@@ -141,26 +141,26 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     currency: '',
-    indexesConstruction: ['Nike Blahs', 'AirJordan 6', 'ASICS Retro', 'Puma Attack', 'Hoka Speedgoat'],
-    fullLogo: BtcdFull,
-    proposedBy: {name: '@VitalikButermin', url: 'https://twitter.com/VitalikButermin'},
-    approved: {
-      name: '11.5.24 - OGP 28',
-      url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
-    },
-    contract: {
-      name: shortenAddress('0x553de578e68a4faa55d4522665cb2d2d53390d22'),
-      url: 'https://sepolia.arbiscan.io/address/0x553de578e68a4faa55d4522665cb2d2d53390d22',
-    },
-    sources: [
-      {name: 'University of Washington Earth Sciences Labratory', url: 'https://ess.uw.edu/'},
-      {name: 'KEXP Radio Tower Su22'},
-      {name: 'Seattle Municipal Station # 12', url: 'https://www.seattle.gov/fire/about-us/fire-stations'},
-      {name: 'Seattle Municipal Station # 6'},
-    ],
-    additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
-    descriptionText:
-      'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur.',
+    // indexesConstruction: ['Nike Blahs', 'AirJordan 6', 'ASICS Retro', 'Puma Attack', 'Hoka Speedgoat'],
+    // fullLogo: BtcdFull,
+    // proposedBy: {name: '@VitalikButermin', url: 'https://twitter.com/VitalikButermin'},
+    // approved: {
+    //   name: '11.5.24 - OGP 28',
+    //   url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
+    // },
+    // contract: {
+    //   name: shortenAddress('0x553de578e68a4faa55d4522665cb2d2d53390d22'),
+    //   url: 'https://sepolia.arbiscan.io/address/0x553de578e68a4faa55d4522665cb2d2d53390d22',
+    // },
+    // sources: [
+    //   {name: 'University of Washington Earth Sciences Labratory', url: 'https://ess.uw.edu/'},
+    //   {name: 'KEXP Radio Tower Su22'},
+    //   {name: 'Seattle Municipal Station # 12', url: 'https://www.seattle.gov/fire/about-us/fire-stations'},
+    //   {name: 'Seattle Municipal Station # 6'},
+    // ],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    // descriptionText:
+    //   'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur.',
   },
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',

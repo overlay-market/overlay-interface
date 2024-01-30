@@ -177,14 +177,14 @@ const SoonTag = styled.div`
 export default function Header() {
   const [darkMode] = useDarkModeManager()
   const [open, setOpen] = useState<boolean>(false)
+  let location = useLocation().pathname
 
   const menuId = 'main-menu'
 
   const HIDE_POWER_CARDS = true
   const HIDE_BUY_OVL = true
   const HIDE_EARN_DROPDOWN_FLAG = true
-
-  let location = useLocation().pathname
+  const HIDE_MENU_ITEMS = location === '/network-checker'
 
   // close menu when at new route
   useEffect(() => {
@@ -216,22 +216,26 @@ export default function Header() {
           )}
         </IconButton>
       </LogoContainer>
-      <StyledLink to={'/markets'}>
-        <TEXT.Menu>Markets</TEXT.Menu>
-      </StyledLink>
-      <StyledLink to={'/positions'}>
-        <TEXT.Menu>Positions</TEXT.Menu>
-      </StyledLink>
-      {/* <StyledLink to={'/stake'}>
-        <TEXT.Menu>Stake</TEXT.Menu>
-      </StyledLink> */}
-      {/* <StyledLink to={'/bridge'}>
-        <TEXT.Menu>Bridge</TEXT.Menu>
-      </StyledLink> */}
+      {HIDE_MENU_ITEMS ? null : (
+        <>
+          <StyledLink to={'/markets'}>
+            <TEXT.Menu>Markets</TEXT.Menu>
+          </StyledLink>
+          <StyledLink to={'/positions'}>
+            <TEXT.Menu>Positions</TEXT.Menu>
+          </StyledLink>
+          {/* <StyledLink to={'/stake'}>
+               <TEXT.Menu>Stake</TEXT.Menu>
+            </StyledLink> */}
+          {/* <StyledLink to={'/bridge'}>
+                <TEXT.Menu>Bridge</TEXT.Menu>
+              </StyledLink> */}
 
-      {/* <StyledLink to={`/claim/${ClaimId.LB4}`}>
-        <TEXT.Menu>Claim</TEXT.Menu>
-      </StyledLink> */}
+          {/* <StyledLink to={`/claim/${ClaimId.LB4}`}>
+                <TEXT.Menu>Claim</TEXT.Menu>
+              </StyledLink> */}
+        </>
+      )}
 
       {HIDE_POWER_CARDS ? null : (
         <PowerCardLink to={'/powercards'}>

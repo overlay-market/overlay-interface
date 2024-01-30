@@ -1,14 +1,16 @@
 import {ethers} from 'ethers'
-import {SupportedChainId} from '../constants/chains'
+import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function switchNetworkToArbitrum() {
   if (window.ethereum && window.ethereum.request) {
     try {
       // check if the chain to connect to is installed
+      const hex_chainId = ethers.utils.hexValue(DEFAULT_CHAINID)
+
       window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{chainId: ethers.utils.hexlify(SupportedChainId.ARBITRUM)}], // chainId must be in hexadecimal numbers
+        params: [{chainId: hex_chainId}], // chainId must be in hexadecimal numbers
       })
     } catch (error: any) {
       // This error code indicates that the chain has not been added to MetaMask
@@ -19,8 +21,8 @@ export function switchNetworkToArbitrum() {
             method: 'wallet_addEthereumChain',
             params: [
               {
-                chainId: ethers.utils.hexlify(SupportedChainId.ARBITRUM),
-                rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+                chainId: ethers.utils.hexValue(DEFAULT_CHAINID),
+                rpcUrl: 'https://arbitrum-sepolia.blockpi.network/v1/rpc/public',
               },
             ],
           })

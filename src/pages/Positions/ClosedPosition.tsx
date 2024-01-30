@@ -54,8 +54,12 @@ export function ClosedPosition({
     params: {unwindId, positionId},
   },
 }: RouteComponentProps<{unwindId: string; positionId: string}>) {
-  const {account} = useActiveWeb3React()
-  const {positions} = useCurrentWalletPositionsV2(account)
+  const {account, chainId} = useActiveWeb3React()
+  const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
+
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   const {onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
 

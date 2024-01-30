@@ -186,8 +186,6 @@ function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, det
       />
 
       <AddWrapper>
-        {detectedInvalidAddresses && <TEXT.Supplemental color={colors(false).dark.red}>One or more invalid addresses detected</TEXT.Supplemental>}
-
         {addresses.length > 0 && (
           <ClearAllButton
             onClick={() => {
@@ -200,6 +198,7 @@ function AddressCheckSection({addresses, setAddresses, checkAddressesHandle, det
           </ClearAllButton>
         )}
       </AddWrapper>
+      {detectedInvalidAddresses && <TEXT.Supplemental color={colors(false).dark.red}>One or more invalid addresses detected</TEXT.Supplemental>}
 
       <ButtonsContainer>
         {loading ? (

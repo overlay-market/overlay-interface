@@ -1,5 +1,5 @@
 import {FC, useEffect, useState} from 'react'
-import {colors, MEDIA_WIDTHS} from '../../theme/theme'
+import {colors, MEDIA_WIDTHS, TEXT} from '../../theme/theme'
 import {Tooltip, withStyles, makeStyles} from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import styled from 'styled-components'
@@ -74,11 +74,16 @@ const AirdropIdWithTooltip = ({airdrop}: Props) => {
   const tooltipContent = () => {
     return (
       <>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px'}}>
-          <div style={{fontWeight: '700'}}>Expected airdrop date: {airdrop.expectedDate}</div>
-          {!isDesktop && <CloseIcon fontSize="small" onClick={handleClose} />}
+        <div style={{display: 'flex'}}>
+          <div>
+            {airdrop.expectedDate && (
+              <TEXT.BoldSupplemental style={{paddingBottom: '8px'}}>Expected airdrop date: {airdrop.expectedDate}</TEXT.BoldSupplemental>
+            )}
+            <TEXT.SupplementalHeader color={colors(false).dark.white}>{airdrop.summary}</TEXT.SupplementalHeader>
+            {airdrop.boldSummary && <TEXT.BoldSupplemental>{airdrop.boldSummary}</TEXT.BoldSupplemental>}
+          </div>
+          <div>{!isDesktop && <CloseIcon fontSize="small" onClick={handleClose} />}</div>
         </div>
-        <div>{airdrop.summary}</div>
       </>
     )
   }

@@ -63,8 +63,9 @@ export const AIRDROP_CHECKER_API = 'https://api.overlay.market/airdrop-checker/'
 
 export type AirdropType = {
   title: string
-  expectedDate: string
+  expectedDate?: string
   summary: string
+  boldSummary?: string
   isTBA: boolean
 }
 
@@ -76,13 +77,30 @@ export const AIRDROPS: AirdropMap = {
   [ClaimId.RETRO]: {
     title: 'Retro airdrop',
     expectedDate: '22.12.2023',
-    summary: 'This airdrop is for Overlay OG’s who joined before 2022',
+    summary: 'If you held OVL on Ethereum or Arbitrum before the Polkastarter launch announcement, you are eligible for OV.',
     isTBA: false,
   },
   [ClaimId.OVL_TO_OV]: {
     title: 'OVL -> OV',
+    // expectedDate: '20.12.2023',
+    summary:
+      'If you received Overlay NFTs, PCD, or purchased an Overlay Hoodie, you are eligible for Airdrop 1. Different multipliers apply for each NFT or criteria.',
+    boldSummary: '(25% is available on TGE, and the remaining amount unlocks linearly over 3 months).',
+    isTBA: false,
+  },
+  [ClaimId.BEACON_HOLDERS]: {
+    title: 'ex-OVL holder',
+    // expectedDate: '22.12.2023',
+    summary: 'If you held OVL on Ethereum or Arbitrum before the Polkastarter launch announcement, you are eligible for OV. ',
+    boldSummary: '(25% is available on TGE, and the rest unlocks linearly over 3 months).',
+    isTBA: false,
+  },
+  [ClaimId.OVERLAY]: {
+    title: 'Overlay OG airdrop',
     expectedDate: '20.12.2023',
-    summary: 'This airdrop is for Overlay OG’s who joined before 2022',
+    summary:
+      'If you received Overlay NFTs, PCD, or purchased an Overlay Hoodie, you are eligible for Airdrop 1. Different multipliers apply for each NFT or criteria.',
+    boldSummary: '(25% is available on TGE, and the remaining amount unlocks linearly over 3 months).',
     isTBA: false,
   },
   //   [ClaimId.ARBITRUM]: {

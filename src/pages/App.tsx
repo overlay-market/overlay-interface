@@ -51,8 +51,10 @@ const App = () => {
   const [currentPathName, setCurrentPathName] = useState(location.pathname)
 
   useEffect(() => {
-    setCurrentPathName(location.pathname)
-  }, [])
+    if (location.pathname !== '/network-checker' && location.pathname !== '/claim-checker') {
+      setCurrentPathName(location.pathname)
+    }
+  }, [location])
 
   useEffect(() => {
     if (!chainId) {
@@ -64,7 +66,7 @@ const App = () => {
   }, [chainId, location])
 
   useEffect(() => {
-    if (!supportedChainId) {
+    if (!supportedChainId && location.pathname !== '/claim-checker') {
       history.push('/network-checker')
     }
   }, [chainId, supportedChainId, location])

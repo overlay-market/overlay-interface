@@ -244,13 +244,15 @@ export default function Header() {
       )}
 
       {HIDE_EARN_DROPDOWN_FLAG ? (
-        <>
-          <StyledLink to={'/leaderboard'}>
-            {/* <Trans> */}
-            <TEXT.Menu>Leaderboard</TEXT.Menu>
-            {/* </Trans> */}
-          </StyledLink>
-        </>
+        HIDE_MENU_ITEMS ? null : (
+          <>
+            <StyledLink to={'/leaderboard'}>
+              {/* <Trans> */}
+              <TEXT.Menu>Leaderboard</TEXT.Menu>
+              {/* </Trans> */}
+            </StyledLink>
+          </>
+        )
       ) : (
         <Dropdown active={location === '/stake' || location === '/leaderboard' || location === '/referrals'}>
           <DropdownContent>

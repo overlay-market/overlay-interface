@@ -273,13 +273,6 @@ export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
     disabled: false,
     isComingSoon: true,
   },
-  '3333': {
-    marketName: 'Ethereum Volatility Index',
-    logo: CVIXLogo,
-    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
-    disabled: false,
-    isComingSoon: true,
-  },
   '3334': {
     marketName: 'ETH Dominance',
     logo: EthDominanceLogo,

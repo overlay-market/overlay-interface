@@ -16,6 +16,12 @@ import CVIXLogo from '../assets/images/tokens/Crypto-VIX-logo.png'
 import csgoLogo from '../assets/images/tokens/csgo-logo.svg'
 import BtcdLogo from '../assets/images/tokens/bitcoin-dominance-logo.png'
 import OVSupplyLogo from '../assets/images/tokens/ov-supply-logo.png'
+import EthBurnLogo from '../assets/images/tokens/eth-burn.png'
+import EthDominanceLogo from '../assets/images/tokens/eth-dominance.png'
+import MiladyNewLogo from '../assets/images/tokens/milady.png'
+import BtcFrogsLogo from '../assets/images/tokens/btc-frogs.png'
+import NodeMonkesLogo from '../assets/images/tokens/node-monkes.png'
+import EthVixLogo from '../assets/images/tokens/eth-vix.png'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 import {shortenAddress} from '../utils/web3'
 
@@ -253,9 +259,51 @@ type ComingSoonMarketsData = MarketDetailsData & {
 }
 
 export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
-  '333': {
+  '3331': {
     marketName: 'OV Supply',
     logo: OVSupplyLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3332': {
+    marketName: 'Milady Floor Price',
+    logo: MiladyLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3334': {
+    marketName: 'ETH Dominance',
+    logo: EthDominanceLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3335': {
+    marketName: 'ETH Burn Rate',
+    logo: EthBurnLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3336': {
+    marketName: 'Bitcoin Frogs',
+    logo: BtcFrogsLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3337': {
+    marketName: 'NodeMonkes',
+    logo: NodeMonkesLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3338': {
+    marketName: 'Eth Volatility Index',
+    logo: EthVixLogo,
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,

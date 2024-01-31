@@ -268,7 +268,7 @@ export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
   },
   '3332': {
     marketName: 'Milady Floor Price',
-    logo: MiladyNewLogo,
+    logo: MiladyLogo,
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,

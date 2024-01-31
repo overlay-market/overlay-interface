@@ -92,7 +92,7 @@ export const AIRDROPS: AirdropMap = {
     boldSummary: '(25% is available on TGE, and the rest unlocks linearly over 3 months).',
     status: AirdropStatus.COMING_SOON,
   },
-  [ClaimId.OVERLAY]: {
+  [ClaimId.RETRO]: {
     title: 'Overlay OG',
     summary:
       'If you received Overlay NFTs, PCD, or purchased an Overlay Hoodie, you are eligible for Airdrop 1. Different multipliers apply for each NFT or criteria.',

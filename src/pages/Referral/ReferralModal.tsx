@@ -3,6 +3,7 @@ import Modal from '../../components/Modal/Modal'
 import Box from '@material-ui/core/Box'
 import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
+import {X} from 'react-feather'
 
 const ModalContent = styled.div`
   display: flex;
@@ -12,6 +13,16 @@ const ModalContent = styled.div`
   background: #0b0f1c;
   @media (max-width: 768px) {
     padding: 32px 16px;
+  }
+  position: relative;
+`
+const CloseIcon = styled.div`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  :hover {
+    cursor: pointer;
+    opacity: 0.7;
   }
 `
 
@@ -42,7 +53,9 @@ function ReferralModal() {
       {modalOpen && (
         <Modal isOpen={modalOpen} onDismiss={handleCloseModal} width={'30vw'}>
           <ModalContent>
-            <TEXT.BoldHeader1 color={'#FFF'} alignSelf={'stretch'} mb={'8px'}>
+            <CloseIcon onClick={handleCloseModal}>
+              <X color={'white'} height={24} width={24} />
+            </CloseIcon>
               How Referral Rewards Work
             </TEXT.BoldHeader1>
             <p style={{color: 'white'}}>
@@ -53,7 +66,7 @@ function ReferralModal() {
               If you have referred $10M in 30d volume or have 5,000+ social media followers, you can apply for the Ambassador program.
             </p>
             <TEXT.SmallBody width={'auto'} mt={'5px'}>
-              <a style={{color: colors(false).dark.blue2}}>Apply for the Ambassador program.</a>
+              <a style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>Apply for the Ambassador program. &rarr;</a>
             </TEXT.SmallBody>
           </ModalContent>
         </Modal>

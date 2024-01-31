@@ -20,6 +20,7 @@ import SepoliaChecker from './SepoliaChecker/SepoliaChecker'
 import Popups from '../components/Popup/Popups'
 import ClaimChecker from './ClaimChecker/ClaimChecker'
 import {ClosedPosition} from './Positions/ClosedPosition'
+import Leaderboard from './Leaderboard/Leaderboard'
 import {cookie3Analytics} from '@cookie3/analytics'
 import {useEffect, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
@@ -111,6 +112,7 @@ const App = () => {
                     <Route exact strict path="/liquidate" component={Liquidate} />
                     <Route exact strict path="/bridge" component={Bridge} />
                     <Route exact strict path="/claim-checker" component={ClaimChecker} />
+                    <Route exact strict path="/leaderboard" component={Leaderboard} />
                   </Switch>
                 </ProtectedRoute>
               }

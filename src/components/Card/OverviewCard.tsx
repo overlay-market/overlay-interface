@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {Box} from '@material-ui/core'
 
-const Container = styled.div`
+const Container = styled.div<{isLeaderboardCard?: boolean}>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -24,6 +24,11 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
   ${({theme}) => theme.mediaWidth.minMedium`
     font-size: 20px !important;
   `}
+
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    padding: 24px;
+    flex-direction: row;
+  `}
 `
 
 interface DataProps {
@@ -33,6 +38,7 @@ interface DataProps {
   percentageChange?: number | null
   period?: string
   isOver1000OpenPositions?: boolean
+  isLeaderboardCard?: boolean
 }
 
 const OverviewCard = (props: DataProps) => {

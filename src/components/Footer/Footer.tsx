@@ -141,6 +141,11 @@ const SOCIAL_LINKS: Array<LinkAsset> = [
   },
 ]
 
+const CHECKCLAIM_LINK = {
+  label: 'Check Claim',
+  href: './#/claim-checker',
+}
+
 const LinkSection = ({title, links}: {title: string; links: Array<LinkAsset>}) => {
   return (
     <LinkColumn>
@@ -180,6 +185,9 @@ const Footer = () => {
           {/* About */}
           <AboutContainer>
             <LinkSection title="About" links={ABOUT_LINKS} />
+            <StyledLink key={CHECKCLAIM_LINK.label} href={CHECKCLAIM_LINK.href} underline="none">
+              <TEXT.SmallBody lineHeight={'160%'}>{CHECKCLAIM_LINK.label}</TEXT.SmallBody>
+            </StyledLink>
           </AboutContainer>
 
           {/* Socials */}

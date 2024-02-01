@@ -18,6 +18,7 @@ import Pools from './Stake/StakePage'
 import Pool from './Stake/PoolWrapper'
 import SepoliaChecker from './SepoliaChecker/SepoliaChecker'
 import Popups from '../components/Popup/Popups'
+import ClaimChecker from './ClaimChecker/ClaimChecker'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import Leaderboard from './Leaderboard/Leaderboard'
 import {cookie3Analytics} from '@cookie3/analytics'
@@ -32,6 +33,7 @@ export const AppWrapper = styled.div`
   height: 100%;
   min-height: 100vh;
   width: 100vw;
+  max-width: calc(100vw - (100vw - 100%)); //the width of the scrollbar is subtracted
   position: relative;
 `
 
@@ -49,8 +51,10 @@ const App = () => {
   const [currentPathName, setCurrentPathName] = useState(location.pathname)
 
   useEffect(() => {
-    setCurrentPathName(location.pathname)
-  }, [])
+    if (location.pathname !== '/network-checker' && location.pathname !== '/claim-checker') {
+      setCurrentPathName(location.pathname)
+    }
+  }, [location])
 
   useEffect(() => {
     if (!chainId) {
@@ -62,7 +66,7 @@ const App = () => {
   }, [chainId, location])
 
   useEffect(() => {
-    if (!supportedChainId) {
+    if (!supportedChainId && location.pathname !== '/claim-checker') {
       history.push('/network-checker')
     }
   }, [chainId, supportedChainId, location])
@@ -109,6 +113,7 @@ const App = () => {
                     <Route exact strict path="/stake/:poolAddress" component={Pool} />
                     <Route exact strict path="/liquidate" component={Liquidate} />
                     <Route exact strict path="/bridge" component={Bridge} />
+                    <Route exact strict path="/claim-checker" component={ClaimChecker} />
                     <Route exact strict path="/leaderboard" component={Leaderboard} />
                   </Switch>
                 </ProtectedRoute>

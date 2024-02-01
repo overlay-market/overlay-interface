@@ -21,15 +21,20 @@ export const HeaderContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: auto;
-  max-width: 1200px;
+  max-width: 1440px;
+  box-sizing: border-box;
   margin: auto;
-  padding: 24px 16px 24px;
+  padding: 24px 8px 24px;
   position: sticky;
   z-index: 420;
 
   ${({theme}) => theme.mediaWidth.minSmall`
     width: auto;
-    padding: 24px 16px;
+    padding: 24px 24px;
+  `};
+  ${({theme}) => theme.mediaWidth.minMedium`
+    width: auto;
+    padding: 24px 32px;
   `};
 `
 
@@ -239,13 +244,15 @@ export default function Header() {
       )}
 
       {HIDE_EARN_DROPDOWN_FLAG ? (
-        <>
-          <StyledLink to={'/leaderboard'}>
-            {/* <Trans> */}
-            <TEXT.Menu>Leaderboard</TEXT.Menu>
-            {/* </Trans> */}
-          </StyledLink>
-        </>
+        HIDE_MENU_ITEMS ? null : (
+          <>
+            <StyledLink to={'/leaderboard'}>
+              {/* <Trans> */}
+              <TEXT.Menu>Leaderboard</TEXT.Menu>
+              {/* </Trans> */}
+            </StyledLink>
+          </>
+        )
       ) : (
         <Dropdown active={location === '/stake' || location === '/leaderboard' || location === '/referrals'}>
           <DropdownContent>

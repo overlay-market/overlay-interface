@@ -7,6 +7,7 @@ import OverviewCard from '../../components/Card/OverviewCard'
 import {PageContainer} from '../../components/Container/Container'
 import ReferralModal from './ReferralModal'
 import {RebatesTable} from './RebatesTable'
+import {useHistory} from 'react-router-dom'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -27,6 +28,10 @@ const StyledGrid = styled(Grid)<{order?: number}>`
 
 export const ReferralPage = () => {
   const {account} = useActiveWeb3React()
+  const history = useHistory()
+  const handleTraderLinkClick = () => {
+    history.push('/trader')
+  }
 
   const cardsData = [
     {
@@ -73,7 +78,7 @@ export const ReferralPage = () => {
           <Box display={'flex'} flexDirection={'row'}>
             <TEXT.BoldHeader1 mb="16px">Referral</TEXT.BoldHeader1>
             <TEXT.SmallBody width={'auto'} ml={'auto'} mt={'5px'}>
-              <a href="/" target="blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
+              <a onClick={handleTraderLinkClick} target="blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
                 Enter a referral code &rarr;
               </a>
             </TEXT.SmallBody>

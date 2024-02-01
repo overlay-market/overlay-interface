@@ -43,10 +43,10 @@ function ReferralModal() {
   return (
     <>
       <Box display={'flex'} flexDirection={'row'}>
-        <TEXT.BoldHeader1 mb="16px">Referral</TEXT.BoldHeader1>
-        <TEXT.SmallBody width={'auto'} ml={'auto'} mt={'5px'}>
+        <TEXT.SmallBody mb="32px">
+          Refer users to earn rewards. Ambassadors earn greater rewards.{' '}
           <a onClick={handleOpenModal} style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
-            Enter a referral code &rarr;
+            How does it work
           </a>
         </TEXT.SmallBody>
       </Box>

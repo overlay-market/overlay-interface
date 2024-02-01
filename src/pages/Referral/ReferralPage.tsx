@@ -70,13 +70,15 @@ export const ReferralPage = () => {
     <PageContainer>
       <Container mt={'50px'}>
         <Box>
+          <Box display={'flex'} flexDirection={'row'}>
+            <TEXT.BoldHeader1 mb="16px">Referral</TEXT.BoldHeader1>
+            <TEXT.SmallBody width={'auto'} ml={'auto'} mt={'5px'}>
+              <a href="/" target="blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
+                Enter a referral code &rarr;
+              </a>
+            </TEXT.SmallBody>
+          </Box>
           <ReferralModal />
-          <TEXT.SmallBody mb="32px">
-            Refer users to earn rewards. Ambassadors earn greater rewards.{' '}
-            <a href="/" style={{color: colors(false).dark.blue2}}>
-              How does it work
-            </a>
-          </TEXT.SmallBody>
         </Box>
         <Box>
           {account ? (

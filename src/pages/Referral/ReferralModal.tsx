@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box'
 import {TEXT, colors} from '../../theme/theme'
 import styled from 'styled-components'
 import {X} from 'react-feather'
+import React from 'react'
 
 const ModalContent = styled.div`
   display: flex;
@@ -56,8 +57,7 @@ function ReferralModal() {
             <CloseIcon onClick={handleCloseModal}>
               <X color={'white'} height={24} width={24} />
             </CloseIcon>
-              How Referral Rewards Work
-            </TEXT.BoldHeader1>
+            <TEXT.BoldHeader1>How Referral Rewards Work</TEXT.BoldHeader1>
             <p style={{color: 'white'}}>
               Referrers earn 10% of referred users’ fees, and referred users receive a 4% fee discount. Referral earnings will have a cap per referred
               user.

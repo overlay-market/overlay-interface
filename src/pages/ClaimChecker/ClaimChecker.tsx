@@ -85,6 +85,7 @@ const ClaimChecker = () => {
       .split('\n')
       .filter(el => el.trim())
       .map(el => el.trim()) // get rid of empty lines and spaces
+      .map(el => el.toLowerCase()) // get rid of empty lines and spaces
     const finalAddresses = Array.from(new Set(processedAddresses)) // get rid of duplicates
 
     return {

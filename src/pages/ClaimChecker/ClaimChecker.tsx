@@ -241,7 +241,11 @@ const ClaimChecker = () => {
           Not eligible? ;’( Don’t worry :)
           <span style={{fontWeight: '700'}}> Airdrop 2 </span>
           campaign is live now.
-          <a href="https://overlay.market/#/" target="_blank" style={{textDecoration: 'none'}}>
+          <a
+            href="https://mirror.xyz/0x7999C7f0b9f2259434b7aD130bBe36723a49E14e/Q5OmkZ7eXCZ8AgrDy37IaLfTQouVR9R1U3mmiRDDdz8"
+            target="_blank"
+            style={{textDecoration: 'none'}}
+          >
             <Gradient> Check out this article to learn more about Airdrop 2, aka TUNA by Overlay.</Gradient>{' '}
           </a>
         </TEXT.StandardBody>

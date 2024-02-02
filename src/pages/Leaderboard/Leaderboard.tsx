@@ -1,5 +1,4 @@
 import {TableBody, TableHead} from '@material-ui/core'
-import {ethers} from 'ethers'
 import {PageContainer} from '../../components/Container/Container'
 import {StyledHeaderCell, StyledTable, StyledTableCell, StyledTableHeaderRow, StyledTableRow} from '../../components/Table/Table'
 import LeaderboardOverview from './LeaderboardOverview'
@@ -12,6 +11,7 @@ import {LEADERBOARD_POINTS_API} from '../../constants/applications'
 import {FC, useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
 import {LoadMoreButton} from '../../components/Button/Button'
+import {getWeb3Avatar, getWeb3Username} from '../../utils/web3Name'
 
 const PageContainerStyled = styled(PageContainer)`
   > div {
@@ -159,7 +159,6 @@ export interface ILeaderboardPointsData {
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
-  // const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
   const [ranks, setRanks] = useState<ILeaderboardUserRank[] | null>(null)
   const [userData, setUserData] = useState<ILeaderboardUserRank | null>(null)
   const initialNumberOfRows = 10
@@ -287,8 +286,8 @@ const Leaderboard = () => {
 
   useEffect(() => {
     const getUserData = async () => {
-      const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-      const username = account && (await providerEth.lookupAddress(account))
+      const username = account && (await getWeb3Username(account))
+
       const userRankData = {
         ...userData,
         username: username ?? undefined,
@@ -307,9 +306,8 @@ const Leaderboard = () => {
     setIsLoadingProfiles(true)
     const processedRanks = await Promise.all(
       passedData.map(async data => {
-        const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-        const username = await providerEth.lookupAddress(data._id)
-        const avatar = username && (await providerEth.getAvatar(username))
+        const username = await getWeb3Username(data._id)
+        const avatar = username && (await getWeb3Avatar(username))
 
         return {
           ...data,

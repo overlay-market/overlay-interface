@@ -114,11 +114,11 @@ export default {
 
   subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
     console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID)
-    subscribeOnStream(symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback, lastBarsCache.get(symbolInfo.full_name))
+    // subscribeOnStream(symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback, lastBarsCache.get(symbolInfo.full_name))
   },
 
   unsubscribeBars: subscriberUID => {
     console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID)
-    unsubscribeFromStream(subscriberUID)
+    // unsubscribeFromStream(subscriberUID)
   },
 }

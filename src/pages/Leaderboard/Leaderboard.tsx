@@ -285,25 +285,25 @@ const Leaderboard = () => {
     setUserData(userRankData as unknown as ILeaderboardUserRank)
   }, [initialUserData, curUserData])
 
-  // useEffect(() => {
-  //   const getUserData = async () => {
-  //     const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-  //     const username = account && (await providerEth.lookupAddress(account))
-  //     const userRankData = {
-  //       ...userData,
-  //       username,
-  //     }
+  useEffect(() => {
+    const getUserData = async () => {
+      const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
+      const username = account && (await providerEth.lookupAddress(account))
+      const userRankData = {
+        ...userData,
+        username: username ?? undefined,
+      }
 
-  //     setUserData(userRankData as unknown as ILeaderboardUserRank)
-  //   }
+      setUserData(userRankData as unknown as ILeaderboardUserRank)
+    }
 
-  //   if (account && userData?._id && !userData.username) {
-  //     getUserData()
-  //   }
-  // }, [account, initialUserData, curUserData, userData, setUserData])
+    if (account && userData?._id && !userData.username) {
+      getUserData()
+    }
+  }, [account, initialUserData, curUserData, userData, setUserData])
 
   // get final ranks with usernames and avatars
-  const getFinalRanks = async (passedData: ILeaderboardRank[]) => {
+  const getFinalRanks = async (passedData: ILeaderboardRank[], firstCall: boolean) => {
     setIsLoadingProfiles(true)
     const processedRanks = await Promise.all(
       passedData.map(async data => {
@@ -320,22 +320,31 @@ const Leaderboard = () => {
         }
       }),
     )
-    if (ranks && processedRanks) {
-      const tempRanks = [...ranks, ...(processedRanks as unknown as [ILeaderboardUserRank])]
+
+    if (processedRanks) {
+      let tempRanks: ILeaderboardUserRank[] = []
+
+      if (firstCall) {
+        tempRanks = [...(processedRanks as unknown as [ILeaderboardUserRank])]
+      } else {
+        if (ranks) {
+          tempRanks = [...ranks, ...(processedRanks as unknown as [ILeaderboardUserRank])]
+        }
+      }
       setRanks(tempRanks)
       setIsLoadingProfiles(false)
     }
   }
 
-  // useEffect(() => {
-  //   if (leaderboardPointsData?.length > 0) {
-  //     getFinalRanks(leaderboardPointsData)
-  //   }
-  // }, [leaderboardPointsData])
+  useEffect(() => {
+    if (leaderboardPointsData && leaderboardPointsData?.length > 0) {
+      getFinalRanks(leaderboardPointsData, true)
+    }
+  }, [leaderboardPointsData])
 
   useEffect(() => {
     if (leaderboardPointsMoreData?.length > 0) {
-      getFinalRanks(leaderboardPointsMoreData)
+      getFinalRanks(leaderboardPointsMoreData, false)
     }
   }, [leaderboardPointsMoreData])
 
@@ -466,7 +475,6 @@ const Leaderboard = () => {
           </ButtonWrapper>
         )}
       </PageContainerStyled>
-      //{' '}
     </PageWrapper>
   )
 }

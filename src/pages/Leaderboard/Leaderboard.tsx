@@ -159,7 +159,6 @@ export interface ILeaderboardPointsData {
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
-  // const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
   const [ranks, setRanks] = useState<ILeaderboardUserRank[] | null>(null)
   const [userData, setUserData] = useState<ILeaderboardUserRank | null>(null)
   const initialNumberOfRows = 10
@@ -300,7 +299,7 @@ const Leaderboard = () => {
     if (account && userData?._id && !userData.username) {
       getUserData()
     }
-  }, [account, initialUserData, curUserData, userData, setUserData])
+  }, [account, initialUserData, curUserData, setUserData])
 
   // get final ranks with usernames and avatars
   const getFinalRanks = async (passedData: ILeaderboardRank[], firstCall: boolean) => {

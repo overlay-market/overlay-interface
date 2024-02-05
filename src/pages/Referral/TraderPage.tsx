@@ -4,7 +4,8 @@ import {TEXT, colors} from '../../theme/theme'
 import {darken, makeStyles} from '@material-ui/core/styles'
 import {OutlinedInput} from '@material-ui/core'
 import {TriggerActionButton} from '../../components/Button/Button'
-import React from 'react'
+import React, {useState} from 'react'
+import {useReferralCodeCallback} from '../../hooks/useReferralCode'
 
 const useStyles = makeStyles(theme => ({
   toggleButton: {
@@ -80,6 +81,52 @@ const useStyles = makeStyles(theme => ({
 
 export const TraderPage = () => {
   const classes = useStyles()
+  const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setReferralCodeState] = useState<{
+    showConfirm: boolean
+    attemptingTransaction: boolean
+    transactionErrorMessage: string | undefined
+    transactionHash: string | undefined
+  }>({
+    showConfirm: false,
+    attemptingTransaction: false,
+    transactionErrorMessage: undefined,
+    transactionHash: undefined,
+  })
+
+  const {callback: referralCodeCallback} = useReferralCodeCallback('0x85f66DBe1ed470A091d338CFC7429AA871720283')
+
+  const handleReferralCodeButton = () => {
+    if (!referralCodeCallback) return
+    setReferralCodeState({
+      showConfirm: true,
+      attemptingTransaction: true,
+      transactionErrorMessage: undefined,
+      transactionHash: undefined,
+    })
+    referralCodeCallback()
+      .then(hash => {
+        setReferralCodeState({
+          showConfirm: true,
+          attemptingTransaction: true,
+          transactionErrorMessage: undefined,
+          transactionHash: hash,
+        })
+        setReferralCodeState({
+          showConfirm: false,
+          attemptingTransaction: false,
+          transactionErrorMessage: undefined,
+          transactionHash: hash,
+        })
+      })
+      .catch(error => {
+        setReferralCodeState({
+          showConfirm: false,
+          attemptingTransaction: false,
+          transactionErrorMessage: error,
+          transactionHash: undefined,
+        })
+      })
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -112,7 +159,9 @@ export const TraderPage = () => {
             alignItems: 'center',
           }}
         > */}
-        <TriggerActionButton className={classes.referralButton}>Submit link</TriggerActionButton>
+        <TriggerActionButton onClick={handleReferralCodeButton} className={classes.referralButton}>
+          Submit link
+        </TriggerActionButton>
         {/* </Box> */}
       </Box>
     </Container>

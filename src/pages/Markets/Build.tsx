@@ -460,7 +460,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return difference
   }, [baseTokenDecimals, quoteTokenDecimals])
 
-  const sigFigConstant = 4
+  const sigFigConstant = 5
 
   // @TO-DO: pull market attributes
   const capLeverage = market ? formatWeiToParsedNumber(market.capLeverage, 18, 2) : undefined
@@ -700,19 +700,28 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const headerPrice: string = useMemo(() => {
     const price = estimatedReceivedPrice ?? prices.mid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return Number(formattedPrice).toLocaleString('en-US', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    })
   }, [estimatedReceivedPrice, prices])
 
   const longPrice: string = useMemo(() => {
     const price = prices.ask
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return Number(formattedPrice).toLocaleString('en-US', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    })
   }, [prices])
 
   const shortPrice: string = useMemo(() => {
     const price = prices.bid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return Number(formattedPrice).toLocaleString('en-US', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    })
   }, [prices])
 
   const priceImpact = useMemo(() => {

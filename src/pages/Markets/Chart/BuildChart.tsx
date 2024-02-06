@@ -6,6 +6,7 @@ import Datafeed from './chartDatafeed'
 import {useMarketName} from '../../../hooks/useMarketName'
 import {useActiveWeb3React} from '../../../hooks/web3'
 import {SupportedChainId} from '../../../constants/chains'
+import moment from 'moment'
 
 const TVChartContainer = styled.div`
   height: 592px;
@@ -86,6 +87,52 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
         studies_overrides: defaultProps.studiesOverrides,
         theme: defaultProps.theme,
         header_widget_buttons_mode: 'fullsize',
+        custom_formatters: {
+          timeFormatter: {
+            format: date => {
+              return moment.utc(date).format('HH:mm')
+            },
+            formatLocal: () => {
+              return ''
+            },
+          },
+          dateFormatter: {
+            format: date => {
+              return moment.utc(date).format('DD MMM `YY')
+            },
+            formatLocal: () => {
+              return ''
+            },
+          },
+          priceFormatterFactory: symbolInfo => {
+            if (symbolInfo === null) {
+              return null
+            }
+            if (symbolInfo.format === 'volume') {
+              return {
+                format: price => {
+                  if (price >= 1000000000) {
+                    return `${(price / 1000000000).toFixed(3)}B`
+                  }
+
+                  if (price >= 1000000) {
+                    return `${(price / 1000000).toFixed(3)}M`
+                  }
+
+                  if (price >= 1000) {
+                    return `${(price / 1000).toFixed(3)}K`
+                  }
+                  if (price < 1) {
+                    return price.toFixed(4)
+                  }
+                  return price.toFixed(2)
+                },
+              }
+            }
+
+            return null // The default formatter will be used.
+          },
+        },
       }
 
       const tvWidget = new widget(widgetOptions)

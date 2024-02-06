@@ -47,6 +47,7 @@ export default {
       data_status: 'streaming',
       marketAddress: marketId,
       has_intraday: true,
+      format: 'volume',
     }
 
     onSymbolResolvedCallback(symbolInfo)

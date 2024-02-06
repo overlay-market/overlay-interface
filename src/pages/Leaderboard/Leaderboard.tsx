@@ -299,7 +299,7 @@ const Leaderboard = () => {
     if (account && userData?._id && !userData.username) {
       getUserData()
     }
-  }, [account, initialUserData, curUserData, userData, setUserData])
+  }, [account, initialUserData, curUserData, setUserData])
 
   // get final ranks with usernames and avatars
   const getFinalRanks = async (passedData: ILeaderboardRank[], firstCall: boolean) => {

@@ -345,6 +345,7 @@ const TextAboveLogo = styled.p`
 const TextBelowLogo = styled.p`
   margin-top: 5px;
   font-style: italic;
+  white-space: pre-line;
 `
 
 const LiList = styled.li`

@@ -125,6 +125,13 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    descriptionText:
+      "TL;DR -- The market cap of the top 5000 most commonly traded Counter Strike skins.\n\nThe source of data is the API provided by several skin aggregators. \n\nIn order to be robust, yet representative, the methodology relies on a set of criteria to select the items that will be included in the index. The criteria are as follows:\n\nHighly Traded: The index is limited to the top 5000 most traded items. The most traded item is the one that has the most number of unique minimum listing prices in the analysis period.\n\nMinimum Number of Listings: The current version of the index is restricted to items with at least 100 listings on all days of the analysis period. This ensures that the items are not too concentrated in the hands of a few traders. Further, the number of listings per item is set to the minimum number of listings observed for that item in the analysis period.\n\nDetermining the Value of Each Item: The value for each item is derived using two key metrics from the API. Number of Listings, and Minimum Price.\n\nNumber of Listings: This represents the total number listings across all tracked exchanges. It captures the supply of that item in the market.\n\nMinimum Price: Among all the listings for an item, this is the lowest price at which the item is being offered.\n\nThe 'Market Capitalization' for each item is then calculated as: MCap = Number of Listings * Minimum Price. The sum of all these MCaps at a point in time is the index value for that point in time. However, to restrict manipulability and ensure robustness of the index over time, some further safety measures are imposed that may force the index value to diverge from the pure sum of all MCaps.",
+    indexesConstruction: ['Most traded Counter Strike 2 skins'],
+    contract: {
+      name: shortenAddress('0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9'),
+      url: 'https://sepolia.arbiscan.io/address/0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9',
+    },
   },
   '0x6bd76270a8e8e0c3c030f050134389777a3a7d7e': {
     marketName: 'Counter-Strike 2 Skins',
@@ -147,26 +154,21 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     currency: '',
-    // indexesConstruction: ['Nike Blahs', 'AirJordan 6', 'ASICS Retro', 'Puma Attack', 'Hoka Speedgoat'],
+    // indexesConstruction: ['Chainlink', 'Coinmarketcap', 'Cryptocompare', 'More'],
     // fullLogo: BtcdFull,
     // proposedBy: {name: '@VitalikButermin', url: 'https://twitter.com/VitalikButermin'},
     // approved: {
     //   name: '11.5.24 - OGP 28',
     //   url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
     // },
-    // contract: {
-    //   name: shortenAddress('0x553de578e68a4faa55d4522665cb2d2d53390d22'),
-    //   url: 'https://sepolia.arbiscan.io/address/0x553de578e68a4faa55d4522665cb2d2d53390d22',
-    // },
-    // sources: [
-    //   {name: 'University of Washington Earth Sciences Labratory', url: 'https://ess.uw.edu/'},
-    //   {name: 'KEXP Radio Tower Su22'},
-    //   {name: 'Seattle Municipal Station # 12', url: 'https://www.seattle.gov/fire/about-us/fire-stations'},
-    //   {name: 'Seattle Municipal Station # 6'},
-    // ],
+    contract: {
+      name: shortenAddress('0x553de578e68a4faa55d4522665cb2d2d53390d22'),
+      url: 'https://sepolia.arbiscan.io/address/0x553de578e68a4faa55d4522665cb2d2d53390d22',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
-    // descriptionText:
-    //   'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio quaerat in aliquam quibusdam dolore. Deserunt cum dolores provident tempora quos pariatur sint eum itaque minus, praesentium quidem odio, aut consequatur.',
+    descriptionText:
+      'BTC.D:\n\nTL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
   },
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',

@@ -1,12 +1,13 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import useAxios from 'axios-hooks'
 import {SEPOLIA_FAUCET_API} from '../../constants/claims'
 import {SelectActionButton} from '../../components/Button/Button'
 import Loader from '../../components/Loaders/Loaders'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useWalletModalToggle} from '../../state/application/hooks'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 const PageWrapper = styled.div`
   max-width: 1232px;
@@ -88,6 +89,7 @@ const CheckingButtonContent = styled.div`
 
 const SepoliaFaucet = () => {
   const {account} = useActiveWeb3React()
+  const [isDisabledClaimBtn, setIsDisabledClaimBtn] = useState(true)
 
   const [{data: responseData, loading, error}, getResponseData] = useAxios(
     {
@@ -125,14 +127,22 @@ const SepoliaFaucet = () => {
   const toggleWalletModal = useWalletModalToggle()
   console.log(txHash)
   console.log(error)
+
+  const onChangeCaptcha = () => {
+    setIsDisabledClaimBtn(false)
+  }
+
+  const onExpiredCaptcha = () => {
+    setIsDisabledClaimBtn(true)
+  }
+
   return (
     <PageWrapper>
       <TitleSection>
         <BoldHeader1>Sepolia Claiming Faucet </BoldHeader1>
       </TitleSection>
 
-      <TEXT.StandardBody color={colors(true).dark.blue1}>Captcha section</TEXT.StandardBody>
-
+      <ReCAPTCHA sitekey={`${process.env.REACT_APP_RECAPTCHA_CLIENT_SITE_KEY}`} onChange={onChangeCaptcha} onExpired={onExpiredCaptcha} />
       <ButtonsContainer>
         {loading ? (
           <CheckingButton>
@@ -143,8 +153,8 @@ const SepoliaFaucet = () => {
           </CheckingButton>
         ) : (
           <CheckAddressesButton
-            isDisabled={false}
-            disabled={false}
+            isDisabled={isDisabledClaimBtn}
+            disabled={isDisabledClaimBtn}
             onClick={() => {
               account ? claimHandle() : toggleWalletModal()
             }}

@@ -2,13 +2,13 @@ import {ethers} from 'ethers'
 import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
 
 // returns the checksummed address if the address is valid, otherwise returns false
-export function switchNetworkToArbitrum() {
+export async function switchNetworkToArbitrum() {
   if (window.ethereum && window.ethereum.request) {
     try {
       // check if the chain to connect to is installed
       const hex_chainId = ethers.utils.hexValue(DEFAULT_CHAINID)
 
-      window.ethereum.request({
+      await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{chainId: hex_chainId}], // chainId must be in hexadecimal numbers
       })
@@ -17,12 +17,19 @@ export function switchNetworkToArbitrum() {
       // if it is not, then install it into the user MetaMask
       if (error.code === 4902) {
         try {
-          window.ethereum.request({
+          await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [
               {
                 chainId: ethers.utils.hexValue(DEFAULT_CHAINID),
-                rpcUrl: 'https://arbitrum-sepolia.blockpi.network/v1/rpc/public',
+                chainName: 'Arbitrum Sepolia',
+                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://sepolia.arbiscan.io/'],
+                nativeCurrency: {
+                  decimals: 18,
+                  name: 'ETH-Sepolia',
+                  symbol: 'ETH',
+                },
               },
             ],
           })

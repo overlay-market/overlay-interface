@@ -19,6 +19,7 @@ import Pool from './Stake/PoolWrapper'
 import SepoliaChecker from './SepoliaChecker/SepoliaChecker'
 import Popups from '../components/Popup/Popups'
 import ClaimChecker from './ClaimChecker/ClaimChecker'
+import SepoliaFaucet from './SepoliaFaucet/SepoliaFaucet'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import Leaderboard from './Leaderboard/Leaderboard'
 import {cookie3Analytics} from '@cookie3/analytics'
@@ -51,7 +52,7 @@ const App = () => {
   const [currentPathName, setCurrentPathName] = useState(location.pathname)
 
   useEffect(() => {
-    if (location.pathname !== '/network-checker' && location.pathname !== '/claim-checker') {
+    if (location.pathname !== '/network-checker' && location.pathname !== '/claim-checker' && location.pathname !== '/sepolia-faucet') {
       setCurrentPathName(location.pathname)
     }
   }, [location])
@@ -66,7 +67,7 @@ const App = () => {
   }, [chainId, location])
 
   useEffect(() => {
-    if (!supportedChainId && location.pathname !== '/claim-checker') {
+    if (!supportedChainId && location.pathname !== '/claim-checker' && location.pathname !== '/sepolia-faucet') {
       history.push('/network-checker')
     }
   }, [chainId, supportedChainId, location])
@@ -114,6 +115,7 @@ const App = () => {
                     <Route exact strict path="/liquidate" component={Liquidate} />
                     <Route exact strict path="/bridge" component={Bridge} />
                     <Route exact strict path="/claim-checker" component={ClaimChecker} />
+                    <Route exact strict path="/sepolia-faucet" component={SepoliaFaucet} />
                     <Route exact strict path="/leaderboard" component={Leaderboard} />
                   </Switch>
                 </ProtectedRoute>

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import useAxios from 'axios-hooks'
 import {SEPOLIA_FAUCET_API} from '../../constants/claims'
 import {SelectActionButton} from '../../components/Button/Button'
@@ -89,9 +89,11 @@ const CheckingButtonContent = styled.div`
 
 const SepoliaFaucet = () => {
   const {account} = useActiveWeb3React()
-  const [isDisabledClaimBtn, setIsDisabledClaimBtn] = useState(true)
 
-  const [{data: responseData, loading, error}, getResponseData] = useAxios(
+  const [isDisabledClaimBtn, setIsDisabledClaimBtn] = useState(true)
+  const [responseMessage, setResponseMessage] = useState('')
+
+  const [{data: responseData, loading, error: responseError}, getResponseData] = useAxios(
     {
       url: SEPOLIA_FAUCET_API,
       method: 'POST',
@@ -104,10 +106,11 @@ const SepoliaFaucet = () => {
 
   const claimHandle = async () => {
     if (account) {
+      setResponseMessage('')
       try {
         await getResponseData({
           data: JSON.stringify({
-            token: 'eth',
+            tokens: ['eth', 'ovl'],
             recipient: account,
           }),
         })
@@ -115,18 +118,46 @@ const SepoliaFaucet = () => {
         console.log(error)
       }
     }
-    console.log('claim')
   }
 
-  const txHash = useMemo<string>(() => {
+  const response = useMemo<any>(() => {
     if (responseData) {
-      return responseData.txHash
+      return responseData
     }
   }, [responseData])
 
+  useEffect(() => {
+    if (response) {
+      if (response.hasOwnProperty('message')) {
+        if (response?.message === 'recipient has already claimed token (ovl)') {
+          setResponseMessage('Sorry, each wallet address may only claim free tokens once.')
+        } else {
+          setResponseMessage('An error occurred; please refresh and try again.')
+        }
+      }
+
+      if (response.hasOwnProperty('eth') && response.hasOwnProperty('ovl')) {
+        if (response.eth.status === 'success' && response.ovl.status === 'success') {
+          setResponseMessage('Congrats on getting your 50 OVL and 0.003 ETH! Start trading & earn your points now!')
+        }
+        if (response.eth.status === 'success' && response.ovl.status === 'error') {
+          setResponseMessage('Congrats on getting your 0.003 ETH! Start trading & earn your points now!')
+        }
+        if (response.eth.status === 'error' && response.ovl.status === 'success') {
+          setResponseMessage('Congrats on getting your 50 OVL! Start trading & earn your points now!')
+        }
+        if (response.eth.status === 'error' && response.ovl.status === 'error') {
+          setResponseMessage('An error occurred; please refresh and try again.')
+        }
+      }
+    }
+
+    if (responseError) {
+      setResponseMessage('An error occurred; please refresh and try again.')
+    }
+  }, [response, responseError])
+
   const toggleWalletModal = useWalletModalToggle()
-  console.log(txHash)
-  console.log(error)
 
   const onChangeCaptcha = () => {
     setIsDisabledClaimBtn(false)
@@ -164,7 +195,12 @@ const SepoliaFaucet = () => {
         )}
       </ButtonsContainer>
 
-      <TEXT.StandardBody color={colors(true).dark.blue1}>Message that appears after claiming</TEXT.StandardBody>
+      <TEXT.StandardBody color={colors(true).dark.blue1} style={{marginBottom: '16px'}}>
+        {responseMessage}
+      </TEXT.StandardBody>
+      {responseMessage && (
+        <TEXT.BoldSmallBody color={colors(true).dark.blue1}>You can get extra 100 OVL and 0.006 ETH on discord.</TEXT.BoldSmallBody>
+      )}
     </PageWrapper>
   )
 }

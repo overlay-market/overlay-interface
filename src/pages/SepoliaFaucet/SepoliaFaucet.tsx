@@ -8,6 +8,8 @@ import Loader from '../../components/Loaders/Loaders'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import ReCAPTCHA from 'react-google-recaptcha'
+import {Link} from '@material-ui/core'
+import {LINKS} from '../../constants/links'
 
 const PageWrapper = styled.div`
   max-width: 1232px;
@@ -206,7 +208,13 @@ const SepoliaFaucet = () => {
         {responseMessage}
       </TEXT.StandardBody>
       {responseMessage && (
-        <TEXT.BoldSmallBody color={colors(true).dark.blue1}>You can get extra 100 OVL and 0.0069 ETH on discord.</TEXT.BoldSmallBody>
+        <TEXT.BoldSmallBody color={colors(true).dark.blue1}>
+          You can get extra 100 OVL and 0.0069 ETH on{' '}
+          <Link key={'Discord'} target="_blank" href={LINKS.DISCORD} underline="none" style={{color: `${colors(true).dark.blue2}`}}>
+            discord
+          </Link>
+          .
+        </TEXT.BoldSmallBody>
       )}
     </PageWrapper>
   )

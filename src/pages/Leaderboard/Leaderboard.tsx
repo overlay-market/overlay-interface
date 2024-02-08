@@ -1,5 +1,4 @@
 import {TableBody, TableHead} from '@material-ui/core'
-import {ethers} from 'ethers'
 import {PageContainer} from '../../components/Container/Container'
 import {StyledHeaderCell, StyledTable, StyledTableCell, StyledTableHeaderRow, StyledTableRow} from '../../components/Table/Table'
 import LeaderboardOverview from './LeaderboardOverview'
@@ -12,6 +11,7 @@ import {LEADERBOARD_POINTS_API} from '../../constants/applications'
 import {FC, useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
 import {LoadMoreButton} from '../../components/Button/Button'
+import {getWeb3Avatar, getWeb3Username} from '../../utils/web3Name'
 
 const PageContainerStyled = styled(PageContainer)`
   > div {
@@ -159,7 +159,6 @@ export interface ILeaderboardPointsData {
 
 const Leaderboard = () => {
   const {account} = useActiveWeb3React()
-  // const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
   const [ranks, setRanks] = useState<ILeaderboardUserRank[] | null>(null)
   const [userData, setUserData] = useState<ILeaderboardUserRank | null>(null)
   const initialNumberOfRows = 10
@@ -285,31 +284,30 @@ const Leaderboard = () => {
     setUserData(userRankData as unknown as ILeaderboardUserRank)
   }, [initialUserData, curUserData])
 
-  // useEffect(() => {
-  //   const getUserData = async () => {
-  //     const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-  //     const username = account && (await providerEth.lookupAddress(account))
-  //     const userRankData = {
-  //       ...userData,
-  //       username,
-  //     }
+  useEffect(() => {
+    const getUserData = async () => {
+      const username = account && (await getWeb3Username(account))
 
-  //     setUserData(userRankData as unknown as ILeaderboardUserRank)
-  //   }
+      const userRankData = {
+        ...userData,
+        username: username ?? undefined,
+      }
 
-  //   if (account && userData?._id && !userData.username) {
-  //     getUserData()
-  //   }
-  // }, [account, initialUserData, curUserData, userData, setUserData])
+      setUserData(userRankData as unknown as ILeaderboardUserRank)
+    }
+
+    if (account && userData?._id && !userData.username) {
+      getUserData()
+    }
+  }, [account, initialUserData, curUserData, setUserData])
 
   // get final ranks with usernames and avatars
-  const getFinalRanks = async (passedData: ILeaderboardRank[]) => {
+  const getFinalRanks = async (passedData: ILeaderboardRank[], firstCall: boolean) => {
     setIsLoadingProfiles(true)
     const processedRanks = await Promise.all(
       passedData.map(async data => {
-        const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
-        const username = await providerEth.lookupAddress(data._id)
-        const avatar = username && (await providerEth.getAvatar(username))
+        const username = await getWeb3Username(data._id)
+        const avatar = username && (await getWeb3Avatar(username))
 
         return {
           ...data,
@@ -320,22 +318,31 @@ const Leaderboard = () => {
         }
       }),
     )
-    if (ranks && processedRanks) {
-      const tempRanks = [...ranks, ...(processedRanks as unknown as [ILeaderboardUserRank])]
+
+    if (processedRanks) {
+      let tempRanks: ILeaderboardUserRank[] = []
+
+      if (firstCall) {
+        tempRanks = [...(processedRanks as unknown as [ILeaderboardUserRank])]
+      } else {
+        if (ranks) {
+          tempRanks = [...ranks, ...(processedRanks as unknown as [ILeaderboardUserRank])]
+        }
+      }
       setRanks(tempRanks)
       setIsLoadingProfiles(false)
     }
   }
 
-  // useEffect(() => {
-  //   if (leaderboardPointsData?.length > 0) {
-  //     getFinalRanks(leaderboardPointsData)
-  //   }
-  // }, [leaderboardPointsData])
+  useEffect(() => {
+    if (leaderboardPointsData && leaderboardPointsData?.length > 0) {
+      getFinalRanks(leaderboardPointsData, true)
+    }
+  }, [leaderboardPointsData])
 
   useEffect(() => {
     if (leaderboardPointsMoreData?.length > 0) {
-      getFinalRanks(leaderboardPointsMoreData)
+      getFinalRanks(leaderboardPointsMoreData, false)
     }
   }, [leaderboardPointsMoreData])
 
@@ -355,119 +362,108 @@ const Leaderboard = () => {
   }
 
   return (
-    <PageWrapper>
-      <PageContainerStyled>
-        <FrontCover>
-          <MessageBox>
-            <TEXT.BoldHeader1 fontSize={24} color={'white'}>
-              Points will display 1 week after start of competition
-            </TEXT.BoldHeader1>
-          </MessageBox>
-        </FrontCover>
+    <PageContainerStyled>
+      <LeaderboardOverview
+        userPoints={userData?.totalPoints}
+        pointsUpdatedAt={prevWeekDetails?.sessionEnd}
+        isLoading={dataLoading || userDataLoading}
+      />
 
-        <LeaderboardOverview
-          userPoints={userData?.totalPoints}
-          pointsUpdatedAt={prevWeekDetails?.sessionEnd}
-          isLoading={dataLoading || userDataLoading}
-        />
+      <LeaderboardsTable smwidth="100%">
+        <TableHead>
+          <StyledTableHeaderRow>
+            <HeaderCell widthCell={'40px'} smwidth={20} className="rank" textalign="center" noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell smwidth={80} textalign="start" noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody className="rankings-header" fontWeight={600} color={colors(true).dark.white}>
+                Leaderboard Rankings
+              </TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell className="points-prev-week" widthCell={'240px'} noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell className="total-point" widthCell={'140px'} noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Total Points</TEXT.SmallBody>
+            </HeaderCell>
+          </StyledTableHeaderRow>
+        </TableHead>
 
-        <LeaderboardsTable smwidth="100%">
-          <TableHead>
-            <StyledTableHeaderRow>
-              <HeaderCell widthCell={'40px'} smwidth={20} className="rank" textalign="center" noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell smwidth={80} textalign="start" noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody className="rankings-header" fontWeight={600} color={colors(true).dark.white}>
-                  Leaderboard Rankings
+        {account && (
+          <TableBody>
+            <UserRankingRow notclickable="true">
+              <TableDataCell className="rank" noborder="true" textalign="center">
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.rank ?? 'N/A'}
                 </TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell className="points-prev-week" widthCell={'240px'} noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell className="total-point" widthCell={'140px'} noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Total Points</TEXT.SmallBody>
-              </HeaderCell>
-            </StyledTableHeaderRow>
-          </TableHead>
+              </TableDataCell>
+              <TableDataCell noborder="true">
+                <UsernameContainer>
+                  <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
+                    Your current rank
+                  </TEXT.BoldSmallBody>
+                  <TEXT.Supplemental color={colors(false).dark.grey1} className="username">
+                    {userData?.username ?? shortenAddress(account)}
+                  </TEXT.Supplemental>
+                </UsernameContainer>
+              </TableDataCell>
 
-          {account && (
-            <TableBody>
-              <UserRankingRow notclickable="true">
-                <TableDataCell className="rank" noborder="true" textalign="center">
-                  <TEXT.SmallBody color={colors(true).dark.white}>
-                    {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.rank ?? 'N/A'}
-                  </TEXT.SmallBody>
+              <TableDataCell className="points-prev-week" noborder="true">
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.previousWeekPoints ?? '0'}
+                </TEXT.SmallBody>
+              </TableDataCell>
+              <TableDataCell className="total-point" noborder="true">
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.totalPoints ?? '0'}
+                </TEXT.SmallBody>
+              </TableDataCell>
+            </UserRankingRow>
+          </TableBody>
+        )}
+
+        <TableBody>
+          {ranks &&
+            ranks.map((data: ILeaderboardUserRank, index) => (
+              <StyledTableRow notclickable="true" key={data._id}>
+                <TableDataCell className="rank" textalign="center">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell noborder="true">
+                <TableDataCell>
                   <UsernameContainer>
-                    <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
-                      Your current rank
-                    </TEXT.BoldSmallBody>
-                    <TEXT.Supplemental color={colors(false).dark.grey1} className="username">
-                      {userData?.username ?? shortenAddress(account)}
-                    </TEXT.Supplemental>
+                    <UsernameIcon
+                      src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
+                      alt={'Overlay user avatar'}
+                      height={'32px'}
+                      width={'32px'}
+                    />
+                    <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
                 </TableDataCell>
-
-                <TableDataCell className="points-prev-week" noborder="true">
-                  <TEXT.SmallBody color={colors(true).dark.white}>
-                    {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.previousWeekPoints ?? '0'}
-                  </TEXT.SmallBody>
+                <TableDataCell className="points-prev-week">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell className="total-point" noborder="true">
-                  <TEXT.SmallBody color={colors(true).dark.white}>
-                    {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.totalPoints ?? '0'}
-                  </TEXT.SmallBody>
+                <TableDataCell className="total-point">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
                 </TableDataCell>
-              </UserRankingRow>
-            </TableBody>
-          )}
+              </StyledTableRow>
+            ))}
+        </TableBody>
+      </LeaderboardsTable>
 
-          <TableBody>
-            {ranks &&
-              ranks.map((data: ILeaderboardUserRank, index) => (
-                <StyledTableRow notclickable="true" key={data._id}>
-                  <TableDataCell className="rank" textalign="center">
-                    <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <UsernameContainer>
-                      <UsernameIcon
-                        src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
-                        alt={'Overlay user avatar'}
-                        height={'32px'}
-                        width={'32px'}
-                      />
-                      <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
-                    </UsernameContainer>
-                  </TableDataCell>
-                  <TableDataCell className="points-prev-week">
-                    <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
-                  </TableDataCell>
-                  <TableDataCell className="total-point">
-                    <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
-                  </TableDataCell>
-                </StyledTableRow>
-              ))}
-          </TableBody>
-        </LeaderboardsTable>
-
-        {ranks && (
-          <ButtonWrapper>
-            <LoadMoreButton
-              isDisabled={isDisabledLoadMoreBtn}
-              onClick={loadMoreHandle}
-              disabled={moreLoading || isDisabledLoadMoreBtn || isLoadingProfiles}
-            >
-              <div>Load more</div>
-              {moreLoading || isLoadingProfiles ? <Loader size="16px" stroke={colors(true).dark.blue2} /> : <ChevronDownIcon />}
-            </LoadMoreButton>
-          </ButtonWrapper>
-        )}
-      </PageContainerStyled>
-      //{' '}
-    </PageWrapper>
+      {ranks && (
+        <ButtonWrapper>
+          <LoadMoreButton
+            isDisabled={isDisabledLoadMoreBtn}
+            onClick={loadMoreHandle}
+            disabled={moreLoading || isDisabledLoadMoreBtn || isLoadingProfiles}
+          >
+            <div>Load more</div>
+            {moreLoading || isLoadingProfiles ? <Loader size="16px" stroke={colors(true).dark.blue2} /> : <ChevronDownIcon />}
+          </LoadMoreButton>
+        </ButtonWrapper>
+      )}
+    </PageContainerStyled>
   )
 }
 

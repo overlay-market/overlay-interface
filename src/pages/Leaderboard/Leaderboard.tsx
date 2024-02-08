@@ -362,118 +362,108 @@ const Leaderboard = () => {
   }
 
   return (
-    <PageWrapper>
-      <PageContainerStyled>
-        <FrontCover>
-          <MessageBox>
-            <TEXT.BoldHeader1 fontSize={24} color={'white'}>
-              Points will display 1 week after start of competition
-            </TEXT.BoldHeader1>
-          </MessageBox>
-        </FrontCover>
+    <PageContainerStyled>
+      <LeaderboardOverview
+        userPoints={userData?.totalPoints}
+        pointsUpdatedAt={prevWeekDetails?.sessionEnd}
+        isLoading={dataLoading || userDataLoading}
+      />
 
-        <LeaderboardOverview
-          userPoints={userData?.totalPoints}
-          pointsUpdatedAt={prevWeekDetails?.sessionEnd}
-          isLoading={dataLoading || userDataLoading}
-        />
+      <LeaderboardsTable smwidth="100%">
+        <TableHead>
+          <StyledTableHeaderRow>
+            <HeaderCell widthCell={'40px'} smwidth={20} className="rank" textalign="center" noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell smwidth={80} textalign="start" noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody className="rankings-header" fontWeight={600} color={colors(true).dark.white}>
+                Leaderboard Rankings
+              </TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell className="points-prev-week" widthCell={'240px'} noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
+            </HeaderCell>
+            <HeaderCell className="total-point" widthCell={'140px'} noborder={`${account && 'true'}`}>
+              <TEXT.SmallBody color={colors(true).dark.white}>Total Points</TEXT.SmallBody>
+            </HeaderCell>
+          </StyledTableHeaderRow>
+        </TableHead>
 
-        <LeaderboardsTable smwidth="100%">
-          <TableHead>
-            <StyledTableHeaderRow>
-              <HeaderCell widthCell={'40px'} smwidth={20} className="rank" textalign="center" noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Rank</TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell smwidth={80} textalign="start" noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody className="rankings-header" fontWeight={600} color={colors(true).dark.white}>
-                  Leaderboard Rankings
+        {account && (
+          <TableBody>
+            <UserRankingRow notclickable="true">
+              <TableDataCell className="rank" noborder="true" textalign="center">
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.rank ?? 'N/A'}
                 </TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell className="points-prev-week" widthCell={'240px'} noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
-              </HeaderCell>
-              <HeaderCell className="total-point" widthCell={'140px'} noborder={`${account && 'true'}`}>
-                <TEXT.SmallBody color={colors(true).dark.white}>Total Points</TEXT.SmallBody>
-              </HeaderCell>
-            </StyledTableHeaderRow>
-          </TableHead>
+              </TableDataCell>
+              <TableDataCell noborder="true">
+                <UsernameContainer>
+                  <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
+                    Your current rank
+                  </TEXT.BoldSmallBody>
+                  <TEXT.Supplemental color={colors(false).dark.grey1} className="username">
+                    {userData?.username ?? shortenAddress(account)}
+                  </TEXT.Supplemental>
+                </UsernameContainer>
+              </TableDataCell>
 
-          {account && (
-            <TableBody>
-              <UserRankingRow notclickable="true">
-                <TableDataCell className="rank" noborder="true" textalign="center">
-                  <TEXT.SmallBody color={colors(true).dark.white}>
-                    {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.rank ?? 'N/A'}
-                  </TEXT.SmallBody>
+              <TableDataCell className="points-prev-week" noborder="true">
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.previousWeekPoints ?? '0'}
+                </TEXT.SmallBody>
+              </TableDataCell>
+              <TableDataCell className="total-point" noborder="true">
+                <TEXT.SmallBody color={colors(true).dark.white}>
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.totalPoints ?? '0'}
+                </TEXT.SmallBody>
+              </TableDataCell>
+            </UserRankingRow>
+          </TableBody>
+        )}
+
+        <TableBody>
+          {ranks &&
+            ranks.map((data: ILeaderboardUserRank, index) => (
+              <StyledTableRow notclickable="true" key={data._id}>
+                <TableDataCell className="rank" textalign="center">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell noborder="true">
+                <TableDataCell>
                   <UsernameContainer>
-                    <TEXT.BoldSmallBody fontWeight={600} color={colors(true).dark.white}>
-                      Your current rank
-                    </TEXT.BoldSmallBody>
-                    <TEXT.Supplemental color={colors(false).dark.grey1} className="username">
-                      {userData?.username ?? shortenAddress(account)}
-                    </TEXT.Supplemental>
+                    <UsernameIcon
+                      src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
+                      alt={'Overlay user avatar'}
+                      height={'32px'}
+                      width={'32px'}
+                    />
+                    <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
                 </TableDataCell>
-
-                <TableDataCell className="points-prev-week" noborder="true">
-                  <TEXT.SmallBody color={colors(true).dark.white}>
-                    {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.previousWeekPoints ?? '0'}
-                  </TEXT.SmallBody>
+                <TableDataCell className="points-prev-week">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
                 </TableDataCell>
-                <TableDataCell className="total-point" noborder="true">
-                  <TEXT.SmallBody color={colors(true).dark.white}>
-                    {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.totalPoints ?? '0'}
-                  </TEXT.SmallBody>
+                <TableDataCell className="total-point">
+                  <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
                 </TableDataCell>
-              </UserRankingRow>
-            </TableBody>
-          )}
+              </StyledTableRow>
+            ))}
+        </TableBody>
+      </LeaderboardsTable>
 
-          <TableBody>
-            {ranks &&
-              ranks.map((data: ILeaderboardUserRank, index) => (
-                <StyledTableRow notclickable="true" key={data._id}>
-                  <TableDataCell className="rank" textalign="center">
-                    <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>
-                  </TableDataCell>
-                  <TableDataCell>
-                    <UsernameContainer>
-                      <UsernameIcon
-                        src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
-                        alt={'Overlay user avatar'}
-                        height={'32px'}
-                        width={'32px'}
-                      />
-                      <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
-                    </UsernameContainer>
-                  </TableDataCell>
-                  <TableDataCell className="points-prev-week">
-                    <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
-                  </TableDataCell>
-                  <TableDataCell className="total-point">
-                    <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>
-                  </TableDataCell>
-                </StyledTableRow>
-              ))}
-          </TableBody>
-        </LeaderboardsTable>
-
-        {ranks && (
-          <ButtonWrapper>
-            <LoadMoreButton
-              isDisabled={isDisabledLoadMoreBtn}
-              onClick={loadMoreHandle}
-              disabled={moreLoading || isDisabledLoadMoreBtn || isLoadingProfiles}
-            >
-              <div>Load more</div>
-              {moreLoading || isLoadingProfiles ? <Loader size="16px" stroke={colors(true).dark.blue2} /> : <ChevronDownIcon />}
-            </LoadMoreButton>
-          </ButtonWrapper>
-        )}
-      </PageContainerStyled>
-    </PageWrapper>
+      {ranks && (
+        <ButtonWrapper>
+          <LoadMoreButton
+            isDisabled={isDisabledLoadMoreBtn}
+            onClick={loadMoreHandle}
+            disabled={moreLoading || isDisabledLoadMoreBtn || isLoadingProfiles}
+          >
+            <div>Load more</div>
+            {moreLoading || isLoadingProfiles ? <Loader size="16px" stroke={colors(true).dark.blue2} /> : <ChevronDownIcon />}
+          </LoadMoreButton>
+        </ButtonWrapper>
+      )}
+    </PageContainerStyled>
   )
 }
 

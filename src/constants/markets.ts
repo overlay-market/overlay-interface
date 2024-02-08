@@ -22,6 +22,7 @@ import MiladyNewLogo from '../assets/images/tokens/milady.png'
 import BtcFrogsLogo from '../assets/images/tokens/btc-frogs.png'
 import NodeMonkesLogo from '../assets/images/tokens/node-monkes.png'
 import EthVixLogo from '../assets/images/tokens/eth-vix.png'
+import FlippeningLogo from '../assets/images/tokens/flippening.png'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 import {shortenAddress} from '../utils/web3'
 
@@ -168,7 +169,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
     descriptionText:
-      'BTC.D:\n\nTL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
+      'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
   },
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',
@@ -254,6 +255,34 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
     disabled: true,
   },
+  '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e': {
+    marketName: 'ETH Dominance',
+    logo: EthDominanceLogo,
+    currency: '',
+    disabled: false,
+    contract: {
+      name: shortenAddress('0x3a204d03e9b1fee01b8989333665b6c46cc1f79e'),
+      url: 'https://sepolia.arbiscan.io/address/0x3a204d03e9b1fee01b8989333665b6c46cc1f79e',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
+  },
+  '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {
+    marketName: 'Flippening',
+    logo: FlippeningLogo,
+    currency: '',
+    disabled: false,
+    contract: {
+      name: shortenAddress('0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6'),
+      url: 'https://sepolia.arbiscan.io/address/0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      "TL;DR -- The Bitcoin market capitalization divided by the Ethereum market capitalization. \n\nThe Flippening... will it ever happen? Will Ethereum ever take the #1 spot as the biggest blockchain? It's already happened for total transactions and transactions fees. But for the market cap? Obviously that's the only thing that matters. \n\nData is sourced from Chainlink, Coinmarketcap, Cryptocompare, and others.",
+  },
 }
 
 type ComingSoonMarketsData = MarketDetailsData & {
@@ -271,13 +300,6 @@ export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
   '3332': {
     marketName: 'Milady Floor Price',
     logo: MiladyLogo,
-    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
-    disabled: false,
-    isComingSoon: true,
-  },
-  '3334': {
-    marketName: 'ETH Dominance',
-    logo: EthDominanceLogo,
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,

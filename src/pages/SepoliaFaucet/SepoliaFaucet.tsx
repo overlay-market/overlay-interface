@@ -93,7 +93,7 @@ const SepoliaFaucet = () => {
   const [isDisabledClaimBtn, setIsDisabledClaimBtn] = useState(true)
   const [responseMessage, setResponseMessage] = useState('')
 
-  const [{data: responseData, loading, error: responseError}, getResponseData] = useAxios(
+  const [{data: responseData, loading, error}, getResponseData] = useAxios(
     {
       url: SEPOLIA_FAUCET_API,
       method: 'POST',
@@ -120,42 +120,49 @@ const SepoliaFaucet = () => {
     }
   }
 
-  const response = useMemo<any>(() => {
+  const responseSuccess = useMemo<any>(() => {
     if (responseData) {
       return responseData
     }
   }, [responseData])
 
-  useEffect(() => {
-    if (response) {
-      if (response.hasOwnProperty('message')) {
-        if (response?.message === 'recipient has already claimed token (ovl)') {
-          setResponseMessage('Sorry, each wallet address may only claim free tokens once.')
-        } else {
-          setResponseMessage('An error occurred; please refresh and try again.')
-        }
-      }
+  const responseError = useMemo<any>(() => {
+    if (error) {
+      return error.response?.data
+    }
+  }, [error])
 
-      if (response.hasOwnProperty('eth') && response.hasOwnProperty('ovl')) {
-        if (response.eth.status === 'success' && response.ovl.status === 'success') {
+  useEffect(() => {
+    if (responseSuccess) {
+      if (responseSuccess.hasOwnProperty('eth') && responseSuccess.hasOwnProperty('ovl')) {
+        if (responseSuccess.eth.status === 'success' && responseSuccess.ovl.status === 'success') {
           setResponseMessage('Congrats on getting your 50 OVL and 0.003 ETH! Start trading & earn your points now!')
         }
-        if (response.eth.status === 'success' && response.ovl.status === 'error') {
+        if (responseSuccess.eth.status === 'success' && responseSuccess.ovl.status === 'error') {
           setResponseMessage('Congrats on getting your 0.003 ETH! Start trading & earn your points now!')
         }
-        if (response.eth.status === 'error' && response.ovl.status === 'success') {
+        if (responseSuccess.eth.status === 'error' && responseSuccess.ovl.status === 'success') {
           setResponseMessage('Congrats on getting your 50 OVL! Start trading & earn your points now!')
         }
-        if (response.eth.status === 'error' && response.ovl.status === 'error') {
+        if (responseSuccess.eth.status === 'error' && responseSuccess.ovl.status === 'error') {
           setResponseMessage('An error occurred; please refresh and try again.')
         }
       }
     }
 
     if (responseError) {
-      setResponseMessage('An error occurred; please refresh and try again.')
+      if (responseError.hasOwnProperty('message')) {
+        if (
+          responseError?.message === 'recipient has already claimed token (ovl)' ||
+          responseError?.message === 'recipient has already claimed token (eth)'
+        ) {
+          setResponseMessage('Sorry, each wallet address may only claim free tokens once.')
+        } else {
+          setResponseMessage('An error occurred; please refresh and try again.')
+        }
+      }
     }
-  }, [response, responseError])
+  }, [responseSuccess, responseError])
 
   const toggleWalletModal = useWalletModalToggle()
 

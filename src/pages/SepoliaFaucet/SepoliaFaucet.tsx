@@ -206,7 +206,7 @@ const SepoliaFaucet = () => {
         {responseMessage}
       </TEXT.StandardBody>
       {responseMessage && (
-        <TEXT.BoldSmallBody color={colors(true).dark.blue1}>You can get extra 100 OVL and 0.006 ETH on discord.</TEXT.BoldSmallBody>
+        <TEXT.BoldSmallBody color={colors(true).dark.blue1}>You can get extra 100 OVL and 0.0069 ETH on discord.</TEXT.BoldSmallBody>
       )}
     </PageWrapper>
   )

@@ -131,7 +131,10 @@ const LeaderboardOverview = ({userPoints, pointsUpdatedAt, isLoading}: {userPoin
 
           <FlexRowTextContainer>
             <TEXT.Supplemental color={colors(false).dark.grey2}>Points are calculated on Thursdays.</TEXT.Supplemental>
-            <LearnMoreLink target="_blank" href="https://mirror.xyz/0x7999C7f0b9f2259434b7aD130bBe36723a49E14e">
+            <LearnMoreLink
+              target="_blank"
+              href="https://mirror.xyz/0x7999C7f0b9f2259434b7aD130bBe36723a49E14e/Q5OmkZ7eXCZ8AgrDy37IaLfTQouVR9R1U3mmiRDDdz8"
+            >
               Learn more ➞
             </LearnMoreLink>
           </FlexRowTextContainer>

@@ -50,7 +50,11 @@ function useReferralCodeCallArguments(referralCode: string) {
 
   if (!referralCode || !referralListContract || referralListAddress === '') calldata = undefined
   else {
-    calldata = referralListContract.interface.encodeFunctionData('addAffiliateOrKOL', [referralCode])
+    try {
+      calldata = referralListContract.interface.encodeFunctionData('addAffiliateOrKOL', [referralCode])
+    } catch (e) {
+      calldata = undefined
+    }
   }
 
   return useMemo(() => {

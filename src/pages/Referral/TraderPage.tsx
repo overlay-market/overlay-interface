@@ -4,8 +4,9 @@ import {TEXT, colors} from '../../theme/theme'
 import {darken, makeStyles} from '@material-ui/core/styles'
 import {OutlinedInput} from '@material-ui/core'
 import {TriggerActionButton} from '../../components/Button/Button'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useReferralCodeCallback} from '../../hooks/useReferralCode'
+import {ethers} from 'ethers'
 
 const useStyles = makeStyles(theme => ({
   toggleButton: {
@@ -81,10 +82,13 @@ const useStyles = makeStyles(theme => ({
 
 export const TraderPage = () => {
   const classes = useStyles()
+  const [referralLink, setReferralLink] = useState('')
+  const [validAddress, setValidAddress] = useState(true)
+
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setReferralCodeState] = useState<{
     showConfirm: boolean
     attemptingTransaction: boolean
-    transactionErrorMessage: string | undefined
+    transactionErrorMessage: string | undefined | unknown
     transactionHash: string | undefined
   }>({
     showConfirm: false,
@@ -93,7 +97,11 @@ export const TraderPage = () => {
     transactionHash: undefined,
   })
 
-  const {callback: referralCodeCallback} = useReferralCodeCallback('0x85f66DBe1ed470A091d338CFC7429AA871720283')
+  useEffect(() => {
+    ethers.utils.isAddress(referralLink) || referralLink.length === 0 ? setValidAddress(false) : setValidAddress(true)
+  }, [referralLink])
+
+  const {callback: referralCodeCallback} = useReferralCodeCallback(referralLink)
 
   const handleReferralCodeButton = () => {
     if (!referralCodeCallback) return
@@ -150,7 +158,12 @@ export const TraderPage = () => {
             Overlay Referral Program &rarr;{' '}
           </a>
         </TEXT.StandardBody>
-        <OutlinedInput className={classes.referralInput} placeholder="Enter referral link" />
+        <OutlinedInput
+          error={validAddress}
+          className={classes.referralInput}
+          placeholder="Enter referral link"
+          onChange={e => setReferralLink(e.target.value)}
+        />
         {/* <Box
           sx={{
             marginTop: 20,
@@ -159,7 +172,7 @@ export const TraderPage = () => {
             alignItems: 'center',
           }}
         > */}
-        <TriggerActionButton onClick={handleReferralCodeButton} className={classes.referralButton}>
+        <TriggerActionButton onClick={() => handleReferralCodeButton()} className={classes.referralButton}>
           Submit link
         </TriggerActionButton>
         {/* </Box> */}

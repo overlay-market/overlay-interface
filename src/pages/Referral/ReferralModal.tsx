@@ -66,7 +66,9 @@ function ReferralModal() {
               If you have referred $10M in 30d volume or have 5,000+ social media followers, you can apply for the Ambassador program.
             </p>
             <TEXT.SmallBody width={'auto'} mt={'5px'}>
-              <a style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>Apply for the Ambassador program. &rarr;</a>
+              <a style={{color: colors(false).dark.blue2, cursor: 'pointer'}} target="blank" href="https://forms.gle/tAJQ7XUN43kp6smP7">
+                Apply for the Ambassador program. &rarr;
+              </a>
             </TEXT.SmallBody>
           </ModalContent>
         </Modal>

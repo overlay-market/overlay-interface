@@ -2,6 +2,8 @@ export function isSepolia(symbolInfo) {
   return (
     String(symbolInfo?.marketAddress).toLowerCase() === '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xf2ddf700fc481be8ce1f228da5c913f1a25a2d2d' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x553de578e68a4faa55d4522665cb2d2d53390d22'
   )
 }

@@ -7,6 +7,7 @@ import {useMarketName} from '../../../hooks/useMarketName'
 import {useActiveWeb3React} from '../../../hooks/web3'
 import {SupportedChainId} from '../../../constants/chains'
 import moment from 'moment'
+import {MarketDetails} from '../../../constants/markets'
 
 const TVChartContainer = styled.div`
   height: 592px;
@@ -46,7 +47,7 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
   useEffect(() => {
     if (marketId && description) {
       const defaultProps: Omit<ChartContainerProps, 'container'> = {
-        symbol: JSON.stringify({marketId, description}),
+        symbol: JSON.stringify({marketId, description: MarketDetails[marketId].marketName}),
         interval: '60' as ResolutionString,
         userId: 'public_user_id_paul',
         datafeedUrl:

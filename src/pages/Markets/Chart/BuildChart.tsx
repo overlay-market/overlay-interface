@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {widget, ChartingLibraryWidgetOptions, ResolutionString} from '../../../charting_library'
 import * as React from 'react'
 import styled from 'styled-components'
@@ -42,11 +42,23 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>
   const {description} = useMarketName(feedAddress)
   const {chainId} = useActiveWeb3React()
+  const [newDescription, setNewDescription] = useState(description)
 
   useEffect(() => {
-    if (marketId && description) {
+    if (description) {
+      if (description === 'CSGO Feed') {
+        setNewDescription('CS2 Feed')
+      }
+      if (description === 'ETHD Feed') {
+        setNewDescription('ETH Feed')
+      }
+    }
+  }, [description])
+
+  useEffect(() => {
+    if (marketId && newDescription) {
       const defaultProps: Omit<ChartContainerProps, 'container'> = {
-        symbol: JSON.stringify({marketId, description}),
+        symbol: JSON.stringify({marketId, description: newDescription}),
         interval: '60' as ResolutionString,
         userId: 'public_user_id_paul',
         datafeedUrl:
@@ -141,7 +153,7 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
         tvWidget.remove()
       }
     }
-  }, [marketId, description, chainId])
+  }, [marketId, newDescription, chainId])
 
   return <TVChartContainer ref={chartContainerRef} />
 }

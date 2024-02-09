@@ -2,6 +2,7 @@ import {useMarketData} from '../../../state/markets/hooks'
 import {LibrarySymbolInfo} from '../../../charting_library/charting_library'
 import {getBinSizeAndUnit, isSepolia} from './helpers'
 import {subscribeOnStream, unsubscribeFromStream} from './streaming'
+import {MarketDetails} from '../../../constants/markets'
 
 // Reference: https://www.tradingview.com/charting-library-docs/latest/tutorials/implement_datafeed_tutorial/Widget-Setup
 
@@ -29,10 +30,20 @@ export default {
     console.log('[resolveSymbol]: Method call', symbolName)
     const {marketId, description} = JSON.parse(symbolName || '{}')
 
+    let newDescription = description
+    if (newDescription) {
+      if (newDescription === 'CSGO Feed') {
+        newDescription = 'CS2 Feed'
+      }
+      if (newDescription === 'ETHD Feed') {
+        newDescription = 'ETH Feed'
+      }
+    }
+
     const symbolInfo: LibrarySymbolInfo = {
-      ticker: symbolName,
-      name: description,
-      description: description,
+      ticker: JSON.stringify({marketId, description: newDescription}),
+      name: MarketDetails[marketId].marketName,
+      description: newDescription,
       type: 'crypto',
       session: '24x7',
       timezone: 'Etc/UTC',

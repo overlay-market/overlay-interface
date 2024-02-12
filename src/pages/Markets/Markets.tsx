@@ -193,7 +193,7 @@ const Markets = () => {
                         capOi={market.parsedCapOi}
                         dailyFundingRate={market.parsedDailyFundingRate}
                         annualFundingRate={market.parsedAnnualFundingRate}
-                        oracleLogo={market.oracleLogo}
+                        oracleLogo={MarketDetails[market.marketAddress.toLowerCase()].oracleLogo ?? market.oracleLogo}
                         marketLogo={market.marketLogo}
                         priceCurrency={market.priceCurrency}
                         marketChartData={MarketChartMap[market.marketName ?? '']}

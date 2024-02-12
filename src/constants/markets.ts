@@ -25,6 +25,7 @@ import EthVixLogo from '../assets/images/tokens/eth-vix.png'
 import FlippeningLogo from '../assets/images/tokens/flippening.png'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 import {shortenAddress} from '../utils/web3'
+import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
 type CurrencyMap = {[marketQuoteToken: string]: string}
 const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
@@ -102,6 +103,7 @@ export type MarketDetailsData = {
   descriptionText?: string
   indexesConstruction?: Array<string>
   fullLogo?: string
+  oracleLogo?: string
   proposedBy?: {
     name?: string
     url?: string
@@ -125,6 +127,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9': {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
     descriptionText:
       "TL;DR -- The market cap of the top 5000 most commonly traded Counter Strike skins.\n\nThe source of data is the API provided by several skin aggregators. \n\nIn order to be robust, yet representative, the methodology relies on a set of criteria to select the items that will be included in the index. The criteria are as follows:\n\nHighly Traded: The index is limited to the top 5000 most traded items. The most traded item is the one that has the most number of unique minimum listing prices in the analysis period.\n\nMinimum Number of Listings: The current version of the index is restricted to items with at least 100 listings on all days of the analysis period. This ensures that the items are not too concentrated in the hands of a few traders. Further, the number of listings per item is set to the minimum number of listings observed for that item in the analysis period.\n\nDetermining the Value of Each Item: The value for each item is derived using two key metrics from the API. Number of Listings, and Minimum Price.\n\nNumber of Listings: This represents the total number listings across all tracked exchanges. It captures the supply of that item in the market.\n\nMinimum Price: Among all the listings for an item, this is the lowest price at which the item is being offered.\n\nThe 'Market Capitalization' for each item is then calculated as: MCap = Number of Listings * Minimum Price. The sum of all these MCaps at a point in time is the index value for that point in time. However, to restrict manipulability and ensure robustness of the index over time, some further safety measures are imposed that may force the index value to diverge from the pure sum of all MCaps.",
@@ -154,6 +157,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x553de578e68a4faa55d4522665cb2d2d53390d22': {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
     currency: '',
     // indexesConstruction: ['Chainlink', 'Coinmarketcap', 'Cryptocompare', 'More'],
     // fullLogo: BtcdFull,
@@ -258,6 +262,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e': {
     marketName: 'ETH Dominance',
     logo: EthDominanceLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
     currency: '',
     disabled: false,
     contract: {

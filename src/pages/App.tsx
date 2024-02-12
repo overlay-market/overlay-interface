@@ -23,6 +23,7 @@ import {useEffect} from 'react'
 import {ReferralPage} from './Referral/ReferralPage'
 import React from 'react'
 import {TraderPage} from './Referral/TraderPage'
+import {Referral} from './Referral/Referral'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -69,6 +70,7 @@ const App = () => {
               <Route exact strict path="/bridge" component={Bridge} />
               <Route exact strict path="/referral" component={ReferralPage} />
               <Route exact strict path="/trader" component={TraderPage} />
+              <Route exact strict path="/trader/:urlReferralCode" component={Referral} />
             </Switch>
           </ContentWrapper>
         </Web3ReactManager>

@@ -80,9 +80,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export const TraderPage = () => {
+export const TraderPage = ({urlReferralCode}: {urlReferralCode: string | undefined}) => {
   const classes = useStyles()
-  const [referralLink, setReferralLink] = useState('')
+  const [referralLink, setReferralLink] = useState(urlReferralCode ?? '')
   const [validAddress, setValidAddress] = useState(true)
 
   const [{showConfirm, attemptingTransaction, transactionErrorMessage, transactionHash}, setReferralCodeState] = useState<{
@@ -163,6 +163,7 @@ export const TraderPage = () => {
           className={classes.referralInput}
           placeholder="Enter referral link"
           onChange={e => setReferralLink(e.target.value)}
+          value={referralLink}
         />
         {/* <Box
           sx={{

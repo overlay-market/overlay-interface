@@ -154,11 +154,10 @@ const SepoliaFaucet = () => {
 
     if (responseError) {
       if (responseError.hasOwnProperty('message')) {
-        if (
-          responseError?.message === 'recipient has already claimed token (ovl)' ||
-          responseError?.message === 'recipient has already claimed token (eth)'
-        ) {
+        if (responseError?.message.startsWith('recipient has already claimed token')) {
           setResponseMessage('Sorry, each wallet address may only claim free tokens once.')
+        } else if (responseError?.message === 'recipient must have a non-zero arbitrum mainnet balance to claim tokens') {
+          setResponseMessage('Sorry - the wallet must hold some ETH on Arbitrum Mainnet.')
         } else {
           setResponseMessage('An error occurred; please refresh and try again.')
         }

@@ -60,6 +60,7 @@ export const MERKLE_PROOFS: ClaimMap = {
 }
 
 export const AIRDROP_CHECKER_API = 'https://api.overlay.market/airdrop-checker/'
+export const SEPOLIA_FAUCET_API = 'https://api.overlay.market/faucet/'
 
 export enum AirdropStatus {
   ACTIVATED = 'Activated',

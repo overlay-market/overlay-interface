@@ -1,7 +1,7 @@
 import {RouteComponentProps} from 'react-router-dom'
 import styled from 'styled-components'
 import {InterfaceWrapper} from '../../components/Container/Container'
-import {TraderPage} from './TraderPage'
+import {SubmitReferralCode} from './SubmitReferralCode'
 
 const CustomInterfaceWrapper = styled(InterfaceWrapper)`
   max-width: unset;
@@ -14,7 +14,7 @@ export function Referral({
 }: RouteComponentProps<{urlReferralCode: string}>) {
   return (
     <CustomInterfaceWrapper>
-      <TraderPage urlReferralCode={urlReferralCode} />
+      <SubmitReferralCode urlReferralCode={urlReferralCode} />
     </CustomInterfaceWrapper>
   )
 }

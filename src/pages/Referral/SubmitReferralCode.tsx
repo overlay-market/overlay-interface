@@ -7,6 +7,9 @@ import {TriggerActionButton} from '../../components/Button/Button'
 import React, {useEffect, useState} from 'react'
 import {useReferralCodeCallback} from '../../hooks/useReferralCode'
 import {ethers} from 'ethers'
+import styled from 'styled-components'
+import {useActiveWeb3React} from '../../hooks/web3'
+import {useWalletModalToggle} from '../../state/application/hooks'
 
 const useStyles = makeStyles(theme => ({
   toggleButton: {
@@ -80,7 +83,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export const TraderPage = ({urlReferralCode}: {urlReferralCode: string | undefined}) => {
+const ConnectWalletButton = styled(TriggerActionButton)`
+  color: ${colors(false).dark.white};
+  background: #53b1f9;
+  width: 90%;
+`
+
+export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string | undefined}) => {
+  const {account} = useActiveWeb3React()
   const classes = useStyles()
   const [referralLink, setReferralLink] = useState(urlReferralCode ?? '')
   const [validAddress, setValidAddress] = useState(true)
@@ -102,6 +112,8 @@ export const TraderPage = ({urlReferralCode}: {urlReferralCode: string | undefin
   }, [referralLink])
 
   const {callback: referralCodeCallback} = useReferralCodeCallback(referralLink)
+
+  const toggleWalletModal = useWalletModalToggle()
 
   const handleReferralCodeButton = () => {
     if (!referralCodeCallback) return
@@ -173,9 +185,12 @@ export const TraderPage = ({urlReferralCode}: {urlReferralCode: string | undefin
             alignItems: 'center',
           }}
         > */}
-        <TriggerActionButton onClick={() => handleReferralCodeButton()} className={classes.referralButton}>
-          Submit link
-        </TriggerActionButton>
+        {!account && <ConnectWalletButton onClick={toggleWalletModal}>Connect wallet</ConnectWalletButton>}
+        {account && (
+          <TriggerActionButton onClick={() => handleReferralCodeButton()} className={classes.referralButton}>
+            Submit link
+          </TriggerActionButton>
+        )}
         {/* </Box> */}
       </Box>
     </Container>

@@ -22,7 +22,7 @@ import {cookie3Analytics} from '@cookie3/analytics'
 import {useEffect} from 'react'
 import {ReferralPage} from './Referral/ReferralPage'
 import React from 'react'
-import {TraderPage} from './Referral/TraderPage'
+import {SubmitReferralCode} from './Referral/SubmitReferralCode'
 import {Referral} from './Referral/Referral'
 
 export const AppWrapper = styled.div`
@@ -69,7 +69,7 @@ const App = () => {
               <Route exact strict path="/liquidate" component={Liquidate} />
               <Route exact strict path="/bridge" component={Bridge} />
               <Route exact strict path="/referral" component={ReferralPage} />
-              <Route exact strict path="/trader" component={TraderPage} />
+              <Route exact strict path="/trader" component={SubmitReferralCode} />
               <Route exact strict path="/trader/:urlReferralCode" component={Referral} />
             </Switch>
           </ContentWrapper>

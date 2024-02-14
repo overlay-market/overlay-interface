@@ -38,6 +38,7 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
       <PopupTextContainer>
         <TEXT.BoldSmallBody>
           {info?.type === TransactionType.APPROVAL && 'Spending Limit Approved'}
+          {info?.type === TransactionType.REFERRAL_CODE && 'Referral code transaction successful'}
           {info?.type === TransactionType.BUILD_OVL_POSITION && 'Position Successfully Built'}
           {info?.type === TransactionType.UNWIND_OVL_POSITION && 'Unwind Successful'}
           {info?.type === TransactionType.LIQUIDATE_OVL_POSITION && 'Liquidation Successful'}

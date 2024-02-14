@@ -1,5 +1,4 @@
 import {useMemo} from 'react'
-import {utils} from 'ethers'
 import {BigNumber} from '@ethersproject/bignumber'
 import {useActiveWeb3React} from './web3'
 import {TransactionType} from './../state/transactions/actions'

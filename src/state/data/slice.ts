@@ -481,6 +481,32 @@ export const api = createApi({
         },
       }),
     }),
+    referralAccountQuery: builder.query({
+      query: ({account}) => ({
+        document: gql`
+          query referralAccount($account: ID!) {
+            account(id: $account) {
+              id
+              ovlVolumeTraded
+              referralPositions {
+                affiliatedTo {
+                  id
+                }
+                id
+                tier
+                totalAffiliateComission
+                totalAirdroppedAmount
+                totalRewardsPending
+                totalTraderDiscount
+              }
+            }
+          }
+        `,
+        variables: {
+          account,
+        },
+      }),
+    }),
   }),
 })
 

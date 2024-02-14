@@ -8,6 +8,9 @@ import {PageContainer} from '../../components/Container/Container'
 import ReferralModal from './ReferralModal'
 import {RebatesTable} from './RebatesTable'
 import {useHistory} from 'react-router-dom'
+import {useReferralAccountData} from '../../state/referral/hooks'
+import {useEffect} from 'react'
+import {formatBigNumber} from '../../utils/formatBigNumber'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -27,16 +30,22 @@ const StyledGrid = styled(Grid)<{order?: number}>`
 `
 
 export const ReferralPage = () => {
-  const {account} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
   const history = useHistory()
   const handleTraderLinkClick = () => {
     history.push('/trader')
   }
+  const {referralAccountData, isLoading, refetch, isUninitialized} = useReferralAccountData(account)
+
+  // force refetch when refreshing page
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isLoading, refetch, account, isUninitialized])
 
   const cardsData = [
     {
       title: 'Create a referral code',
-      value: '500,000 $OV',
+      value: (500000 - +(formatBigNumber(referralAccountData?.account?.ovlVolumeTraded, 18, 0) ?? 0)).toLocaleString('en-US') + ' $OV',
       valueType: 'volume left',
       valueTypeLink: null,
       percentageChange: null,

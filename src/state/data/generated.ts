@@ -4916,6 +4916,25 @@ export type ReferralAccountQuery = (
   )> }
 );
 
+export type TokenTransfersQueryVariables = Exact<{
+  to: Scalars['Bytes'];
+  from: Scalars['Bytes'];
+  token?: Maybe<Scalars['String']>;
+}>;
+
+
+export type TokenTransfersQuery = (
+  { __typename?: 'Query' }
+  & { tokenTransfers: Array<(
+    { __typename?: 'TokenTransfer' }
+    & Pick<TokenTransfer, 'amount' | 'from' | 'to'>
+    & { transaction: (
+      { __typename?: 'Transaction' }
+      & Pick<Transaction, 'timestamp' | 'id'>
+    ) }
+  )> }
+);
+
 
 export const AccountDocument = `
     query account($account: ID!) {
@@ -5316,6 +5335,19 @@ export const ReferralAccountDocument = `
   }
 }
     `;
+export const TokenTransfersDocument = `
+    query TokenTransfers($to: Bytes!, $from: Bytes!, $token: String) {
+  tokenTransfers(where: {to: $to, from: $from, token: $token}) {
+    amount
+    from
+    to
+    transaction {
+      timestamp
+      id
+    }
+  }
+}
+    `;
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -5358,9 +5390,12 @@ const injectedRtkApi = api.injectEndpoints({
     referralAccount: build.query<ReferralAccountQuery, ReferralAccountQueryVariables>({
       query: (variables) => ({ document: ReferralAccountDocument, variables })
     }),
+    TokenTransfers: build.query<TokenTransfersQuery, TokenTransfersQueryVariables>({
+      query: (variables) => ({ document: TokenTransfersDocument, variables })
+    }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, usePositionsQuery, useLazyPositionsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useMarketOpenPositionsQuery, useLazyMarketOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery, useReferralAccountQuery, useLazyReferralAccountQuery } = injectedRtkApi;
+export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, usePositionsQuery, useLazyPositionsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useMarketOpenPositionsQuery, useLazyMarketOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery, useReferralAccountQuery, useLazyReferralAccountQuery, useTokenTransfersQuery, useLazyTokenTransfersQuery } = injectedRtkApi;
 

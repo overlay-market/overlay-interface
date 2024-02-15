@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import styled from 'styled-components/macro'
-import {NavLink} from 'react-router-dom'
+import {NavLink, useHistory} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
 import {useActiveMarketsData} from '../../state/markets/hooks'
 import {PageContainer} from '../../components/Container/Container'
@@ -90,10 +90,11 @@ const infoTipDescriptions = {
 }
 
 const Markets = () => {
-  const {markets, isUninitialized, refetch} = useActiveMarketsData()
+  const {markets, isUninitialized, refetch, isError} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
+  let history = useHistory()
 
   // toggle to hide 7d chart if data unavailable
   const hide7dChart = true
@@ -101,6 +102,12 @@ const Markets = () => {
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
+
+  useEffect(() => {
+    if (markets === undefined && isError) {
+      history.push('/')
+    }
+  }, [markets, isError])
 
   // list of hidden markets from Markets page
 
@@ -186,7 +193,7 @@ const Markets = () => {
                         capOi={market.parsedCapOi}
                         dailyFundingRate={market.parsedDailyFundingRate}
                         annualFundingRate={market.parsedAnnualFundingRate}
-                        oracleLogo={market.oracleLogo}
+                        oracleLogo={MarketDetails[market.marketAddress.toLowerCase()].oracleLogo ?? market.oracleLogo}
                         marketLogo={market.marketLogo}
                         priceCurrency={market.priceCurrency}
                         marketChartData={MarketChartMap[market.marketName ?? '']}

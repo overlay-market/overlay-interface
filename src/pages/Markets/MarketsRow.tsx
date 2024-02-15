@@ -134,7 +134,10 @@ const MarketsRow = ({
       </StyledTableCellThin> */}
 
       <StyledTableCellThin align="left" id="marketFundingRate">
-        <TEXT.BoldNumber color={isFundingRatePositive ? '#FF648A' : '#5FD0AB'}>{dailyFundingRate}%</TEXT.BoldNumber>
+        <TEXT.BoldNumber color={isFundingRatePositive ? '#FF648A' : '#5FD0AB'}>
+          {isFundingRatePositive ? `+` : ``}
+          {dailyFundingRate}%
+        </TEXT.BoldNumber>
       </StyledTableCellThin>
 
       <StyledTableCellThin align="left" id="marketOi">

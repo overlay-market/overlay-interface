@@ -17,3 +17,11 @@ export function shortenAddress(address: string, chars = 4): string {
   }
   return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`
 }
+
+export function shortenAddressStartEnd(address: string, startChars = 6, endChars = 6): string {
+  const parsed = isAddress(address)
+  if (!parsed) {
+    throw Error(`Invalid 'address' parameter '${address}'.`)
+  }
+  return `${parsed.substring(0, startChars)}...${parsed.substring(42 - endChars)}`
+}

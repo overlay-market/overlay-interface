@@ -3,7 +3,7 @@ import {createApi} from '@reduxjs/toolkit/query/react'
 import {ClientError, gql, GraphQLClient} from 'graphql-request'
 import {AppState} from '../state'
 import {DocumentNode} from 'graphql'
-import {SupportedChainId} from '../../constants/chains'
+import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
 
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
@@ -545,7 +545,7 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
       const chainId = (getState() as AppState).application.chainId
 
       // if chainId in state is null, set default query to Arbitrum One
-      const subgraphUrl = chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[42161]
+      const subgraphUrl = chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
       if (!subgraphUrl) {
         return {

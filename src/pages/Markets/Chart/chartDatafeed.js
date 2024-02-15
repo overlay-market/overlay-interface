@@ -2,6 +2,7 @@ import {useMarketData} from '../../../state/markets/hooks'
 import {LibrarySymbolInfo} from '../../../charting_library/charting_library'
 import {getBinSizeAndUnit, isSepolia} from './helpers'
 import {subscribeOnStream, unsubscribeFromStream} from './streaming'
+import {MarketDetails} from '../../../constants/markets'
 
 // Reference: https://www.tradingview.com/charting-library-docs/latest/tutorials/implement_datafeed_tutorial/Widget-Setup
 
@@ -30,9 +31,9 @@ export default {
     const {marketId, description} = JSON.parse(symbolName || '{}')
 
     const symbolInfo: LibrarySymbolInfo = {
-      ticker: symbolName,
-      name: description,
-      description: description,
+      ticker: JSON.stringify({marketId, description: MarketDetails[marketId].marketName}),
+      name: MarketDetails[marketId].marketName,
+      description: MarketDetails[marketId].marketName,
       type: 'crypto',
       session: '24x7',
       timezone: 'Etc/UTC',
@@ -47,6 +48,7 @@ export default {
       data_status: 'streaming',
       marketAddress: marketId,
       has_intraday: true,
+      format: 'volume',
     }
 
     onSymbolResolvedCallback(symbolInfo)

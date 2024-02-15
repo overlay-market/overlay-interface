@@ -1,9 +1,10 @@
 import './App.css'
-import {Route, Switch, Redirect} from 'react-router-dom'
+import {Route, Switch, Redirect, useHistory, useLocation} from 'react-router-dom'
 import Web3ReactManager from '../components/Web3ReactManager/Web3ReactManager'
 import TermsOfServiceManager from '../components/TermsOfServiceModal/TermsOfServiceManager'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
+import ClaimBanner from '../components/Banner/ClaimBanner'
 import CurrentBlock from '../components/CurrentBlock/CurrentBlock'
 import Markets from './Markets/Markets'
 import {Market} from './Markets/Market'
@@ -16,12 +17,19 @@ import Claim from './Claim/Claim'
 import ClaimPage from './Claim/ClaimPage'
 import Pools from './Stake/StakePage'
 import Pool from './Stake/PoolWrapper'
+import SepoliaChecker from './SepoliaChecker/SepoliaChecker'
 import Popups from '../components/Popup/Popups'
+import ClaimChecker from './ClaimChecker/ClaimChecker'
+import SepoliaFaucet from './SepoliaFaucet/SepoliaFaucet'
 import {ClosedPosition} from './Positions/ClosedPosition'
+import Leaderboard from './Leaderboard/Leaderboard'
 import {cookie3Analytics} from '@cookie3/analytics'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
+import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
+import {ProtectedRoute} from '../routes/ProtectedRoute'
+import {useActiveWeb3React} from '../hooks/web3'
+import {SupportedChainId, DEFAULT_NET} from '../constants/chains'
 import {ReferralPage} from './Referral/ReferralPage'
-import React from 'react'
 import {SubmitReferralCode} from './Referral/SubmitReferralCode'
 import {Referral} from './Referral/Referral'
 
@@ -30,6 +38,7 @@ export const AppWrapper = styled.div`
   height: 100%;
   min-height: 100vh;
   width: 100vw;
+  max-width: calc(100vw - (100vw - 100%)); //the width of the scrollbar is subtracted
   position: relative;
 `
 
@@ -39,6 +48,34 @@ export const ContentWrapper = styled.div`
 `
 
 const App = () => {
+  let history = useHistory()
+  let location = useLocation()
+  const {chainId} = useActiveWeb3React()
+  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId] === DEFAULT_NET)
+  const [showLoader, setShowLoader] = useState(false)
+  const [currentPathName, setCurrentPathName] = useState(location.pathname)
+
+  useEffect(() => {
+    if (location.pathname !== '/network-checker' && location.pathname !== '/claim-checker' && location.pathname !== '/sepolia-faucet') {
+      setCurrentPathName(location.pathname)
+    }
+  }, [location])
+
+  useEffect(() => {
+    if (!chainId) {
+      setShowLoader(true)
+    }
+    if (chainId) {
+      setShowLoader(false)
+    }
+  }, [chainId, location])
+
+  useEffect(() => {
+    if (!supportedChainId && location.pathname !== '/claim-checker' && location.pathname !== '/sepolia-faucet') {
+      history.push('/network-checker')
+    }
+  }, [chainId, supportedChainId, location])
+
   useEffect(() => {
     var gaProperty: string = 'G-QJR084KXFT'
     var disableStr: string = 'ga-disable-' + gaProperty
@@ -52,26 +89,46 @@ const App = () => {
     <AppWrapper>
       <Popups />
       <TermsOfServiceManager>
+        <ClaimBanner />
         <Header />
         <Web3ReactManager>
           <ContentWrapper>
-            <Switch>
-              <Route exact strict path="/" render={() => <Redirect to="/markets" />} />
-              <Route exact strict path="/markets" component={Markets} />
-              <Route exact strict path="/markets/:marketId" component={Market} />
-              <Route exact strict path="/positions" component={Positions} />
-              <Route exact strict path="/positions/:marketPositionId/:positionId" component={Unwind} />
-              <Route exact strict path="/closed-positions/:unwindId/:positionId" component={ClosedPosition} />
-              <Route exact strict path="/claim/:claimId" component={Claim} />
-              <Route exact strict path="/claimpage" component={ClaimPage} />
-              <Route exact strict path="/stake" component={Pools} />
-              <Route exact strict path="/stake/:poolAddress" component={Pool} />
-              <Route exact strict path="/liquidate" component={Liquidate} />
-              <Route exact strict path="/bridge" component={Bridge} />
-              <Route exact strict path="/referral" component={ReferralPage} />
-              <Route exact strict path="/trader" component={SubmitReferralCode} />
-              <Route exact strict path="/trader/:urlReferralCode" component={Referral} />
-            </Switch>
+            <Route
+              path="/network-checker"
+              children={
+                <NetworkCheckerRoute currentPathName={currentPathName} showLoader={showLoader}>
+                  <SepoliaChecker />
+                </NetworkCheckerRoute>
+              }
+            />
+
+            <Route
+              path="/"
+              children={
+                <ProtectedRoute>
+                  <Switch>
+                    <Route exact strict path="/" render={() => <Redirect to="/markets" />} />
+                    <Route exact strict path="/markets" component={Markets} />
+                    <Route exact strict path="/markets/:marketId" component={Market} />
+                    <Route exact strict path="/positions" component={Positions} />
+                    <Route exact strict path="/positions/:marketPositionId/:positionId" component={Unwind} />
+                    <Route exact strict path="/closed-positions/:unwindId/:positionId" component={ClosedPosition} />
+                    <Route exact strict path="/claim/:claimId" component={Claim} />
+                    <Route exact strict path="/claimpage" component={ClaimPage} />
+                    <Route exact strict path="/stake" component={Pools} />
+                    <Route exact strict path="/stake/:poolAddress" component={Pool} />
+                    <Route exact strict path="/liquidate" component={Liquidate} />
+                    <Route exact strict path="/bridge" component={Bridge} />
+                    <Route exact strict path="/claim-checker" component={ClaimChecker} />
+                    <Route exact strict path="/sepolia-faucet" component={SepoliaFaucet} />
+                    <Route exact strict path="/leaderboard" component={Leaderboard} />
+                    <Route exact strict path="/referral" component={ReferralPage} />
+                    <Route exact strict path="/trader" component={SubmitReferralCode} />
+                    <Route exact strict path="/trader/:urlReferralCode" component={Referral} />
+                  </Switch>
+                </ProtectedRoute>
+              }
+            />
           </ContentWrapper>
         </Web3ReactManager>
         <Footer />

@@ -25,7 +25,7 @@ import {useEstimatedBuild} from '../../hooks/useEstimatedBuild'
 import {useBuildCallback} from '../../hooks/useBuildCallback'
 import {AdditionalDetails} from './AdditionalBuildDetails'
 import ConfirmTxnModal from '../../components/ConfirmTxnModal/ConfirmTxnModal'
-import {useMarketData, useTotalMarketsData} from '../../state/markets/hooks'
+import {useMarketData} from '../../state/markets/hooks'
 import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useToken} from '../../hooks/useToken'
 import {useV1PeripheryContract} from '../../hooks/useContract'
@@ -345,6 +345,7 @@ const TextAboveLogo = styled.p`
 const TextBelowLogo = styled.p`
   margin-top: 5px;
   font-style: italic;
+  white-space: pre-line;
 `
 
 const LiList = styled.li`
@@ -397,19 +398,18 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     transactionHash: undefined,
   })
 
-  const {market, isLoading, refetch} = useMarketData(marketId)
+  const {account, chainId} = useActiveWeb3React()
+  const {market, isLoading, isUninitialized, refetch} = useMarketData(marketId)
 
-  const {markets} = useTotalMarketsData()
-  const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
+  const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
 
   // force refetch when refreshing page
   useEffect(() => {
-    refetch()
-  }, [marketId, isLoading, refetch])
+    !isUninitialized && refetch()
+  }, [chainId, marketId, isLoading, isUninitialized, refetch])
 
   // const market = marketData?.market
-  const {account, chainId} = useActiveWeb3React()
   const ovlBalance = useOvlBalance()
   const parsedOvlBalance = ovlBalance && ovlBalance.toFixed(8)
   const ovl = chainId ? OVL[chainId] : undefined
@@ -461,7 +461,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return difference
   }, [baseTokenDecimals, quoteTokenDecimals])
 
-  const sigFigConstant = 4
+  const sigFigConstant = 5
 
   // @TO-DO: pull market attributes
   const capLeverage = market ? formatWeiToParsedNumber(market.capLeverage, 18, 2) : undefined
@@ -701,19 +701,28 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const headerPrice: string = useMemo(() => {
     const price = estimatedReceivedPrice ?? prices.mid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return Number(formattedPrice).toLocaleString('en-US', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    })
   }, [estimatedReceivedPrice, prices])
 
   const longPrice: string = useMemo(() => {
     const price = prices.ask
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return Number(formattedPrice).toLocaleString('en-US', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    })
   }, [prices])
 
   const shortPrice: string = useMemo(() => {
     const price = prices.bid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return Number(formattedPrice).toLocaleString('en-US', {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    })
   }, [prices])
 
   const priceImpact = useMemo(() => {

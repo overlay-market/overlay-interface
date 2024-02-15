@@ -4919,7 +4919,7 @@ export type ReferralAccountQuery = (
 export type TokenTransfersQueryVariables = Exact<{
   to: Scalars['Bytes'];
   from: Scalars['Bytes'];
-  token?: Maybe<Scalars['String']>;
+  token: Scalars['String'];
 }>;
 
 
@@ -5336,7 +5336,7 @@ export const ReferralAccountDocument = `
 }
     `;
 export const TokenTransfersDocument = `
-    query TokenTransfers($to: Bytes!, $from: Bytes!, $token: String) {
+    query TokenTransfers($to: Bytes!, $from: Bytes!, $token: String!) {
   tokenTransfers(where: {to: $to, from: $from, token: $token}) {
     amount
     from

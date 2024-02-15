@@ -8,9 +8,11 @@ import {PageContainer} from '../../components/Container/Container'
 import ReferralModal from './ReferralModal'
 import {RebatesTable} from './RebatesTable'
 import {useHistory} from 'react-router-dom'
-import {useReferralAccountData} from '../../state/referral/hooks'
+import {useReferralAccountData, useTokenTransfersReferralData} from '../../state/referral/hooks'
 import {useEffect} from 'react'
 import {formatBigNumber} from '../../utils/formatBigNumber'
+import {OVL_TOKEN_ADDRESS, REFERRAL_LIST_ADDRESS} from '../../constants/addresses'
+import {DEFAULT_CHAINID} from '../../constants/chains'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -36,11 +38,22 @@ export const ReferralPage = () => {
     history.push('/trader')
   }
   const {referralAccountData, isLoading, refetch, isUninitialized} = useReferralAccountData(account)
+  const {
+    tokenTransfersData,
+    isLoading: isLoadingTokenTransers,
+    refetch: refetchTokenTransfers,
+    isUninitialized: isUninitializedTokenTransfers,
+  } = useTokenTransfersReferralData(account, REFERRAL_LIST_ADDRESS[chainId ?? DEFAULT_CHAINID], OVL_TOKEN_ADDRESS[chainId ?? DEFAULT_CHAINID])
 
   // force refetch when refreshing page
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isLoading, refetch, account, isUninitialized])
+
+  // force refetch when refreshing page
+  useEffect(() => {
+    !isUninitializedTokenTransfers && refetchTokenTransfers()
+  }, [chainId, isLoadingTokenTransers, refetchTokenTransfers, account, isUninitializedTokenTransfers])
 
   const cardsData = [
     {

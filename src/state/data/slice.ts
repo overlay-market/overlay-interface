@@ -511,7 +511,7 @@ export const api = createApi({
     tokenTransfersQuery: builder.query({
       query: ({to, from, token}) => ({
         document: gql`
-          query TokenTransfers($to: Bytes!, $from: Bytes!, $token: String) {
+          query TokenTransfers($to: Bytes!, $from: Bytes!, $token: String!) {
             tokenTransfers(where: {to: $to, from: $from, token: $token}) {
               amount
               from

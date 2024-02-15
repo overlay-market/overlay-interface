@@ -2365,6 +2365,7 @@ export type ReferralPosition = {
   totalTraderDiscount: Scalars['BigInt'];
   totalAirdroppedAmount: Scalars['BigInt'];
   totalRewardsPending: Scalars['BigInt'];
+  accountsReferred: Scalars['Int'];
 };
 
 export type ReferralPosition_Filter = {
@@ -2481,6 +2482,14 @@ export type ReferralPosition_Filter = {
   totalRewardsPending_lte?: Maybe<Scalars['BigInt']>;
   totalRewardsPending_in?: Maybe<Array<Scalars['BigInt']>>;
   totalRewardsPending_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  accountsReferred?: Maybe<Scalars['Int']>;
+  accountsReferred_not?: Maybe<Scalars['Int']>;
+  accountsReferred_gt?: Maybe<Scalars['Int']>;
+  accountsReferred_lt?: Maybe<Scalars['Int']>;
+  accountsReferred_gte?: Maybe<Scalars['Int']>;
+  accountsReferred_lte?: Maybe<Scalars['Int']>;
+  accountsReferred_in?: Maybe<Array<Scalars['Int']>>;
+  accountsReferred_not_in?: Maybe<Array<Scalars['Int']>>;
   /** Filter for the block changed event. */
   _change_block?: Maybe<BlockChangedFilter>;
   and?: Maybe<Array<Maybe<ReferralPosition_Filter>>>;
@@ -2516,7 +2525,8 @@ export enum ReferralPosition_OrderBy {
   TotalAffiliateComission = 'totalAffiliateComission',
   TotalTraderDiscount = 'totalTraderDiscount',
   TotalAirdroppedAmount = 'totalAirdroppedAmount',
-  TotalRewardsPending = 'totalRewardsPending'
+  TotalRewardsPending = 'totalRewardsPending',
+  AccountsReferred = 'accountsReferred'
 }
 
 export type ReferralProgram = {
@@ -4897,7 +4907,7 @@ export type ReferralAccountQuery = (
     & Pick<Account, 'id' | 'ovlVolumeTraded'>
     & { referralPositions: Array<(
       { __typename?: 'ReferralPosition' }
-      & Pick<ReferralPosition, 'id' | 'tier' | 'totalAffiliateComission' | 'totalAirdroppedAmount' | 'totalRewardsPending' | 'totalTraderDiscount'>
+      & Pick<ReferralPosition, 'id' | 'tier' | 'totalAffiliateComission' | 'totalAirdroppedAmount' | 'totalRewardsPending' | 'totalTraderDiscount' | 'accountsReferred'>
       & { affiliatedTo?: Maybe<(
         { __typename?: 'Account' }
         & Pick<Account, 'id'>
@@ -5301,6 +5311,7 @@ export const ReferralAccountDocument = `
       totalAirdroppedAmount
       totalRewardsPending
       totalTraderDiscount
+      accountsReferred
     }
   }
 }

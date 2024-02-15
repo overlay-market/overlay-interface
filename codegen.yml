@@ -1,5 +1,5 @@
 overrideExisting: true
-schema: 'https://api.studio.thegraph.com/query/49419/overlay-arb-sepolia/version/latest'
+schema: 'https://api.thegraph.com/subgraphs/name/overlay-market/overlay-sepolia-test'
 documents: 'src/**/**/!(*.d).{ts,tsx}'
 generates:
   ./src/state/data/generated.ts:

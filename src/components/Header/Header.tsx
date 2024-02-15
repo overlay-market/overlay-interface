@@ -223,6 +223,9 @@ export default function Header() {
           </StyledLink>
           <StyledLink to={'/positions'}>
             <TEXT.Menu>Positions</TEXT.Menu>
+          </StyledLink>  
+          <StyledLink to={'/referral'}>
+            <TEXT.Menu>Referral</TEXT.Menu>
           </StyledLink>
           {/* <StyledLink to={'/stake'}>
                <TEXT.Menu>Stake</TEXT.Menu>

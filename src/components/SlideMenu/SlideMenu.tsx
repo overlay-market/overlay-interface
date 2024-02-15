@@ -12,6 +12,7 @@ import ExternalLinks from '../Header/ExternalLinks'
 import {useState} from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {ClaimId} from '../../constants/claims'
+import React from 'react'
 
 const NEW_MOBILE_MENU_FLAG = true
 
@@ -153,6 +154,9 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               </StyledInternalLink>
               <StyledInternalLink tabIndex={tabIndex} to={'/leaderboard'}>
                 <StyledMenuLink displayText={'Leaderboard'} linkDestination={'/leaderboard'} currentLocation={location} />
+              </StyledInternalLink>
+              <StyledInternalLink tabIndex={tabIndex} to={'/referral'}>
+                <StyledMenuLink displayText={'Referral'} linkDestination={'/referrak'} currentLocation={location} />
               </StyledInternalLink>
               {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
             <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />

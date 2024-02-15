@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {Box} from '@material-ui/core'
+import React from 'react'
 
 const Container = styled.div<{isLeaderboardCard?: boolean}>`
   display: flex;
@@ -39,10 +40,11 @@ interface DataProps {
   period?: string
   isOver1000OpenPositions?: boolean
   isLeaderboardCard?: boolean
+  valueTypeLink?: string | null
 }
 
 const OverviewCard = (props: DataProps) => {
-  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions} = props
+  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions, valueTypeLink} = props
 
   return (
     <Container>
@@ -68,12 +70,14 @@ const OverviewCard = (props: DataProps) => {
           {value}
         </BoldHeader1>
       )}
-      <Box display="flex" alignItems="center"> 
+      <Box display="flex" alignItems="center">
         {!valueType ? (
           <Box mt={'18px'}></Box>
         ) : (
           <TEXT.SmallBody fontSize={14} color="#c4c4c4">
-            {valueType}
+            <a href={valueTypeLink ?? undefined} style={valueTypeLink ? {color: colors(false).dark.blue2} : {}}>
+              {valueType}
+            </a>
           </TEXT.SmallBody>
         )}
         <Box display="flex" alignItems="center" marginLeft="auto">

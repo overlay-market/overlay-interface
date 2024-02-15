@@ -29,6 +29,9 @@ import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
 import {ProtectedRoute} from '../routes/ProtectedRoute'
 import {useActiveWeb3React} from '../hooks/web3'
 import {SupportedChainId, DEFAULT_NET} from '../constants/chains'
+import {ReferralPage} from './Referral/ReferralPage'
+import {SubmitReferralCode} from './Referral/SubmitReferralCode'
+import {Referral} from './Referral/Referral'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -119,6 +122,9 @@ const App = () => {
                     <Route exact strict path="/claim-checker" component={ClaimChecker} />
                     <Route exact strict path="/sepolia-faucet" component={SepoliaFaucet} />
                     <Route exact strict path="/leaderboard" component={Leaderboard} />
+                    <Route exact strict path="/referral" component={ReferralPage} />
+                    <Route exact strict path="/trader" component={SubmitReferralCode} />
+                    <Route exact strict path="/trader/:urlReferralCode" component={Referral} />
                   </Switch>
                 </ProtectedRoute>
               }

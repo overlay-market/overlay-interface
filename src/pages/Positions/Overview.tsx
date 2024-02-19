@@ -126,7 +126,7 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   const cardsData = [
     {
       title: 'Open Positions',
-      value: numberOfOpenPositions,
+      value: numberOfOpenPositions > 0 ? numberOfOpenPositions : null,
       valueType: null,
       percentageChange: null,
       period: '24h',

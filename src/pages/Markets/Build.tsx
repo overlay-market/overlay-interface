@@ -409,6 +409,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     !isUninitialized && refetch()
   }, [chainId, marketId, isLoading, isUninitialized, refetch])
 
+  useEffect(() => {
+    !market && refetch()
+  }, [market, refetch])
+
   // const market = marketData?.market
   const ovlBalance = useOvlBalance()
   const parsedOvlBalance = ovlBalance && ovlBalance.toFixed(8)

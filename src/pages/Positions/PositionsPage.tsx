@@ -152,6 +152,10 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
 
+  useEffect(() => {
+    positionsTableData && !positionsTableData.account && refetch()
+  }, [refetch, positionsTableData])
+
   // Show loader only on page change
   useEffect(() => {
     setShowLoader(true)
@@ -339,6 +343,10 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
 
+  useEffect(() => {
+    positionsTableData && !positionsTableData.account && refetch()
+  }, [refetch, positionsTableData])
+
   // Show loader only on page change
   useEffect(() => {
     setShowLoader(true)
@@ -491,7 +499,7 @@ const Positions = () => {
   } = usePositionsTableDetails(account)
   const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
-  const {markets: marketsData} = useCurrentMarketState(marketDetails)
+  const {markets: marketsData, error: currentMarketsError} = useCurrentMarketState(marketDetails)
 
   useEffect(() => {
     !isUninitializedPosTableDetails && refetchPositionsTableDetails()
@@ -500,6 +508,10 @@ const Positions = () => {
   useEffect(() => {
     !isUninitializedMarkets && refetchMarkets()
   }, [chainId, isUninitializedMarkets, refetchMarkets])
+
+  useEffect(() => {
+    currentMarketsError && refetchMarkets()
+  }, [currentMarketsError, refetchMarkets, marketsData])
 
   return (
     <PageContainer>

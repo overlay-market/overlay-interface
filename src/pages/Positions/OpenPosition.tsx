@@ -102,7 +102,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
   // remainingNotionalInitial = notionalInitial * fractionRemaining
   // remainingOiInitial = remainingNotionalInitial / midPriceAtEntry
   // midPriceAtEntry = tickToPrice(midTick)
-  const parsedFounding: string | number | undefined = useMemo(() => {
+  const parsedFunding: string | number | undefined = useMemo(() => {
     const baseFractionRemaining = 10000
     const ONE_BN = BigNumber.from(10).pow(18)
     console.log({info, oiCurrent})
@@ -154,7 +154,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
       'Liq. Price': string
       Created?: string
       'Unrealized PnL': JSX.Element | string
-      founding: string | JSX.Element
+      funding: string | JSX.Element
     }
 
     const values: Values = !isShutdown
@@ -172,7 +172,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
           'Liq. Price': parsedLiquidationPrice ? `${priceCurrency ?? ''} ${toScientificNumber(parsedLiquidationPrice)}` : `-`,
           Created: parsedCreatedTimestamp ?? undefined,
           'Unrealized PnL': unrealizedPnL ? <ProfitLossCell PnL={Number(unrealizedPnL)} /> : '-',
-          founding: parsedFounding ? `${parsedFounding} OVL` : <Loader size="12px" />,
+          funding: parsedFunding ? `${parsedFunding} OVL` : <Loader size="12px" />,
         }
       : {
           Market: marketName,
@@ -188,7 +188,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
           'Liq. Price': `-`,
           Created: parsedCreatedTimestamp ?? undefined,
           'Unrealized PnL': `-`,
-          founding: parsedFounding ? `${parsedFounding} OVL` : <Loader size="12px" />,
+          funding: parsedFunding ? `${parsedFunding} OVL` : <Loader size="12px" />,
         }
     return columns.map(columnName => {
       return values[columnName]

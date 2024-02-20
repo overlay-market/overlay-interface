@@ -13,7 +13,11 @@ import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {Build, Liquidate, Unwind} from '../../state/build/hooks'
 import {toScientificNumber} from '../../utils/toScientificNumber'
-
+import {usePositionInfo} from '../../hooks/usePositionInfo'
+import {BigNumber, ethers} from 'ethers'
+import {TickMath} from '@uniswap/v3-sdk'
+import JSBI from 'jsbi'
+import {usePositionOi} from '../../hooks/usePositionOi'
 export interface PositionProps {
   position: {
     id: string
@@ -70,6 +74,8 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
 
   const value = usePositionValue(marketAddress, positionId)
   const cost = usePositionCost(marketAddress, positionId)
+  const info = usePositionInfo(marketAddress, positionId)
+  const oiCurrent = usePositionOi(marketAddress, positionId, 18, 18, 18).rawOi ?? undefined
   const tradingFee = usePositionTradingFee(marketAddress, positionId)
   const liquidationPrice = useLiquidationPrice(marketAddress, positionId)
 
@@ -79,6 +85,38 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
     if (fullValue === undefined) return '-'
     return +fullValue < 1 ? formatBigNumber(value, 18, 6) : formatBigNumber(value, 18, 2)
   }, [value])
+
+  // inspired from https://github.com/Uniswap/v3-sdk/blob/db69c32e6900c34a257dee1ee293d03729c3ab9b/src/utils/priceTickConversions.ts#L14
+  function tickToPrice(tick: number): BigNumber {
+    const Q96 = JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(96))
+    const Q192 = JSBI.exponentiate(Q96, JSBI.BigInt(2))
+    const ONE_JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18))
+    const sqrtRatio = TickMath.getSqrtRatioAtTick(tick)
+    const ratio = JSBI.multiply(sqrtRatio, sqrtRatio)
+    const ratio18 = JSBI.multiply(ratio, ONE_JSBI)
+    const priceJSBI = JSBI.divide(ratio18, Q192)
+    return BigNumber.from(priceJSBI.toString())
+  }
+
+  // fundingPayments = remainingNotionalInitial * ( remainingOiCurrent / remainingOiInitial - 1 )
+  // remainingNotionalInitial = notionalInitial * fractionRemaining
+  // remainingOiInitial = remainingNotionalInitial / midPriceAtEntry
+  // midPriceAtEntry = tickToPrice(midTick)
+  const parsedFounding: string | number | undefined = useMemo(() => {
+    const baseFractionRemaining = 10000
+    const ONE_BN = BigNumber.from(10).pow(18)
+    console.log({info, oiCurrent})
+    if (info === null || !oiCurrent) return undefined
+    const remainingNotionalInitial = info.notionalInitial.div(baseFractionRemaining).mul(info.fractionRemaining)
+
+    const remainingOiInitial = remainingNotionalInitial.mul(ONE_BN).div(tickToPrice(info.midTick))
+    if (remainingOiInitial.eq(0)) return undefined
+    const fundingPayments = remainingNotionalInitial.mul(oiCurrent.mul(ONE_BN).div(remainingOiInitial).sub(ONE_BN)).div(ONE_BN)
+
+    const fullValue = formatBigNumber(fundingPayments.abs(), 18, 18)
+    if (fullValue === undefined) return '-'
+    return +fullValue < 1 ? formatBigNumber(fundingPayments, 18, 6) : formatBigNumber(fundingPayments, 18, 2)
+  }, [info, oiCurrent])
 
   const parsedLiquidationPrice: string | number | undefined | null = useMemo(() => {
     if (!liquidationPrice && liquidationPrice === undefined) return null
@@ -116,6 +154,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
       'Liq. Price': string
       Created?: string
       'Unrealized PnL': JSX.Element | string
+      founding: string | JSX.Element
     }
 
     const values: Values = !isShutdown
@@ -133,6 +172,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
           'Liq. Price': parsedLiquidationPrice ? `${priceCurrency ?? ''} ${toScientificNumber(parsedLiquidationPrice)}` : `-`,
           Created: parsedCreatedTimestamp ?? undefined,
           'Unrealized PnL': unrealizedPnL ? <ProfitLossCell PnL={Number(unrealizedPnL)} /> : '-',
+          founding: parsedFounding ? `${parsedFounding} OVL` : <Loader size="12px" />,
         }
       : {
           Market: marketName,
@@ -148,6 +188,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
           'Liq. Price': `-`,
           Created: parsedCreatedTimestamp ?? undefined,
           'Unrealized PnL': `-`,
+          founding: parsedFounding ? `${parsedFounding} OVL` : <Loader size="12px" />,
         }
     return columns.map(columnName => {
       return values[columnName]

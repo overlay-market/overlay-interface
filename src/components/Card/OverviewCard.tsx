@@ -41,7 +41,7 @@ interface DataProps {
   period?: string
   isOver1000OpenPositions?: boolean
   isLeaderboardCard?: boolean
-  valueTypeLink?: string | null
+  valueTypeLink?: boolean
   button?: () => void
   showModal?: boolean
 }

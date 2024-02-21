@@ -172,7 +172,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
           'Liq. Price': parsedLiquidationPrice ? `${priceCurrency ?? ''} ${toScientificNumber(parsedLiquidationPrice)}` : `-`,
           Created: parsedCreatedTimestamp ?? undefined,
           'Unrealized PnL': unrealizedPnL ? <ProfitLossCell PnL={Number(unrealizedPnL)} /> : '-',
-          Funding: parsedFunding ? `${parsedFunding} OVL` : <Loader size="12px" />,
+          Funding: parsedFunding ? <ProfitLossCell PnL={Number(parsedFunding)} /> : <Loader size="12px" />,
         }
       : {
           Market: marketName,

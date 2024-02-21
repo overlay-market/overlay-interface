@@ -29,7 +29,7 @@ const Container = styled.div`
 
 const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Liquidated']
 
-const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'funding']
+const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'Funding']
 
 const closedPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Closed', 'PnL']
 
@@ -184,15 +184,15 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     const rows =
       positionStatus === PositionStatus.Open
         ? isOpenPositionsQuery(positionsTableData)
-          ? positionsTableData.account?.positions
+          ? positionsTableData.account?.positions ?? []
           : []
         : positionStatus === PositionStatus.Closed
         ? isUnwindsQuery(positionsTableData)
-          ? positionsTableData.account?.unwinds
+          ? positionsTableData.account?.unwinds ?? []
           : []
         : positionStatus === PositionStatus.Liquidated
         ? isLiquidatesQuery(positionsTableData)
-          ? positionsTableData.account?.liquidates
+          ? positionsTableData.account?.liquidates ?? []
           : []
         : []
 

@@ -52,6 +52,7 @@ import {Icon} from '../../components/Icon/Icon'
 import {AlertCircle} from 'react-feather'
 import React from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
+import {usePositionsActionHandlers} from '../../state/positions/hooks'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -403,6 +404,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
+  const {onBuildPosition} = usePositionsActionHandlers()
 
   // force refetch when refreshing page
   useEffect(() => {
@@ -808,6 +810,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           transactionHash: hash,
         })
         onResetBuildState()
+        onBuildPosition(true)
       })
       .catch(error => {
         setBuildState({

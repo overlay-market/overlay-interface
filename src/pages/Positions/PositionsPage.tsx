@@ -20,6 +20,7 @@ import Pagination from '../../components/Pagination/Pagination'
 import Loader from '../../components/Loaders/Loaders'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useParams} from 'react-router-dom'
+import {usePositionsState, usePositionsActionHandlers} from '../../state/positions/hooks'
 
 const Container = styled.div`
   display: flex;
@@ -330,7 +331,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const params = useParams<{marketId: string}>()
-  const {positionsTableData, isUninitialized, isLoading, numberOfPositions, refetch} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isFetching, isLoading, numberOfPositions, refetch} = usePositionsTableData(
     account,
     1000,
     0,
@@ -338,6 +339,9 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     params?.marketId,
   )
   const [showLoader, setShowLoader] = useState(false)
+  const {isBuiltPosition} = usePositionsState()
+  const {onBuildPosition} = usePositionsActionHandlers()
+  const [initialNumberOfPositions, setInitialNumberOfPositions] = useState(0)
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -355,6 +359,21 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   useEffect(() => {
     setShowLoader(false)
   }, [positionsTableData])
+
+  useEffect(() => {
+    numberOfPositions && setInitialNumberOfPositions(numberOfPositions)
+  }, [numberOfPositions])
+
+  useEffect(() => {
+    isBuiltPosition && refetch()
+  }, [isBuiltPosition, refetch, isFetching])
+
+  useEffect(() => {
+    if (isBuiltPosition && numberOfPositions > initialNumberOfPositions) {
+      setInitialNumberOfPositions(numberOfPositions)
+      onBuildPosition(false)
+    }
+  }, [isBuiltPosition, numberOfPositions, initialNumberOfPositions, setInitialNumberOfPositions])
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen)

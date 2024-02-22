@@ -9,21 +9,31 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {useReferralAccountData} from '../../state/referral/hooks'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {REFERRAL_AFFILIATE_SIGNATURES} from '../../constants/applications'
+import {useReferralCreateAffiliateCallback} from '../../hooks/useReferralCreateAffiliate'
+import {useEffect, useState} from 'react'
 
 export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {isOpen: boolean; onConfirm?: () => void; onDismiss?: () => void}) {
   const {account} = useActiveWeb3React()
   const {referralAccountData} = useReferralAccountData(account)
   const url = `${REFERRAL_AFFILIATE_SIGNATURES}/${account?.toLowerCase()}`
+  const [signature, setSignature] = useState('')
+  const {callback: referralCodeCallback, error, state} = useReferralCreateAffiliateCallback(signature)
 
-  const handleCreateAffiliate = () => {
+  useEffect(() => {
     fetch(url, {method: 'GET'})
       .then(response => response.json())
       .then(data => {
-        console.log({data})
+        setSignature(data.signature ?? '')
       })
       .catch(error => {
         console.error('Error:', error)
       })
+  }, [url])
+
+  const handleCreateAffiliate = () => {
+    console.log({signature})
+    console.log({referralCodeCallback, error, state})
+    referralCodeCallback && referralCodeCallback()
   }
 
   return (

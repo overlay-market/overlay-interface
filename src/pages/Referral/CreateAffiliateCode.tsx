@@ -13,6 +13,19 @@ import {REFERRAL_AFFILIATE_SIGNATURES} from '../../constants/applications'
 export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {isOpen: boolean; onConfirm?: () => void; onDismiss?: () => void}) {
   const {account} = useActiveWeb3React()
   const {referralAccountData} = useReferralAccountData(account)
+  const url = `${REFERRAL_AFFILIATE_SIGNATURES}/${account?.toLowerCase()}`
+
+  const handleCreateAffiliate = () => {
+    fetch(url, {method: 'GET'})
+      .then(response => response.json())
+      .then(data => {
+        console.log({data})
+      })
+      .catch(error => {
+        console.error('Error:', error)
+      })
+  }
+
   return (
     <Modal onDismiss={() => null} width={'350px'} maxWidth="90%" isOpen={isOpen}>
       <ModalContent>
@@ -68,7 +81,7 @@ export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {i
             You will need to sign transaction to become an affiliate.
           </TEXT.StandardBody>
 
-          <TriggerActionButton mt={'32px'} onClick={onConfirm} active={true}>
+          <TriggerActionButton mt={'32px'} onClick={handleCreateAffiliate} active={true}>
             Create code
           </TriggerActionButton>
         </>

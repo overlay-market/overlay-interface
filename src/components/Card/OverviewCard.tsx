@@ -80,7 +80,7 @@ const OverviewCard = (props: DataProps) => {
           ) : (
             <TEXT.SmallBody fontSize={14} color="#c4c4c4">
               {valueTypeLink ? (
-                <a onClick={() => setShowModal(true)} target="_blank" style={{color: colors(false).dark.blue2}}>
+                <a onClick={() => setShowModal(true)} target="_blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
                   {valueType}
                 </a>
               ) : (
@@ -107,6 +107,11 @@ const OverviewCard = (props: DataProps) => {
               <TEXT.Supplemental color="#c4c4c4" ml={1} onClick={button}>
                 {period}
               </TEXT.Supplemental>
+            )}
+            {title === 'Rewards pending' && (
+              <a onClick={() => ''} target="_blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
+                {period}
+              </a>
             )}
           </Box>
         </Box>

@@ -24,6 +24,7 @@ import NodeMonkesLogo from '../assets/images/tokens/node-monkes.png'
 import EthVixLogo from '../assets/images/tokens/eth-vix.png'
 import FlippeningLogo from '../assets/images/tokens/flippening.png'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
+import QuantumCatsLogo from '../assets/images/tokens/quantum-cats.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -35,6 +36,7 @@ const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
   ETH: 'Ξ',
   WETH: 'Ξ',
   AETH: 'Ξ',
+  BTC: '₿',
 }
 
 export type MarketChartData = {
@@ -288,6 +290,33 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   //   descriptionText:
   //     "TL;DR -- The Bitcoin market capitalization divided by the Ethereum market capitalization. \n\nThe Flippening... will it ever happen? Will Ethereum ever take the #1 spot as the biggest blockchain? It's already happened for total transactions and transactions fees. But for the market cap? Obviously that's the only thing that matters. \n\nData is sourced from Chainlink, Coinmarketcap, Cryptocompare, and others.",
   // },
+  '0xc7f3240d983fcab7a571be484d2b4da43b95efee': {
+    marketName: 'Bitcoin Frogs',
+    logo: BtcFrogsLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+  },
+  '0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae': {
+    marketName: 'NodeMonkes',
+    logo: NodeMonkesLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+  },
+  '0x4edfb4057f3a448b2704df1a3665db4ae6371b69': {
+    marketName: 'Quantum Cats',
+    logo: QuantumCatsLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+  },
 }
 
 type ComingSoonMarketsData = MarketDetailsData & {
@@ -312,20 +341,6 @@ export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
   '3335': {
     marketName: 'ETH Burn Rate',
     logo: EthBurnLogo,
-    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
-    disabled: false,
-    isComingSoon: true,
-  },
-  '3336': {
-    marketName: 'Bitcoin Frogs',
-    logo: BtcFrogsLogo,
-    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
-    disabled: false,
-    isComingSoon: true,
-  },
-  '3337': {
-    marketName: 'NodeMonkes',
-    logo: NodeMonkesLogo,
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,

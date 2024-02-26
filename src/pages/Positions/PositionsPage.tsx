@@ -21,6 +21,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useParams} from 'react-router-dom'
 import {usePositionsState, usePositionsActionHandlers} from '../../state/positions/hooks'
+import {StyledTableRow} from '../../components/Table/Table'
 
 const Container = styled.div`
   display: flex;
@@ -131,6 +132,15 @@ const RotatingChevron = styled(ChevronDown)`
 
 const StyledTableCell = styled(TableCell)`
   text-align: center !important;
+`
+
+const StyledTableNewRow = styled(StyledTableRow)`
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+  text-align: center;
+  height: 69px;
+  ${({theme}) => theme.mediaWidth.minMedium`
+    height: 50px;
+  `}
 `
 
 const ROWS_PER_PAGE = [10, 20, 40, 50]
@@ -283,7 +293,16 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                   </StyledTableCell>
                 </TableRow>
               ) : (
-                paginatedRows
+                <>
+                  {isUnwoundPosition && positionStatus === PositionStatus.Closed && (
+                    <StyledTableNewRow>
+                      <td colSpan={10}>
+                        <Loader />
+                      </td>
+                    </StyledTableNewRow>
+                  )}
+                  {paginatedRows}
+                </>
               )}
             </TableBody>
           </StyledTable>
@@ -467,7 +486,16 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
                   </StyledTableCell>
                 </TableRow>
               ) : (
-                paginatedRows
+                <>
+                  {isBuiltPosition && (
+                    <StyledTableNewRow>
+                      <td colSpan={6}>
+                        <Loader />
+                      </td>
+                    </StyledTableNewRow>
+                  )}
+                  {paginatedRows}
+                </>
               )}
             </TableBody>
           </StyledTable>

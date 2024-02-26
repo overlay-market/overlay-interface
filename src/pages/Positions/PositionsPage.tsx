@@ -140,7 +140,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
-  const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isLoading, isFetching, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
     (page - 1) * rowsPerPage,
@@ -148,6 +148,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     undefined,
   )
   const [showLoader, setShowLoader] = useState(false)
+  const {isUnwoundPosition} = usePositionsState()
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -156,6 +157,12 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   useEffect(() => {
     positionsTableData && !positionsTableData.account && refetch()
   }, [refetch, positionsTableData])
+
+  useEffect(() => {
+    if (isUnwoundPosition) {
+      refetch()
+    }
+  }, [isUnwoundPosition, refetch, isFetching])
 
   // Show loader only on page change
   useEffect(() => {
@@ -514,11 +521,15 @@ const Positions = () => {
   const {
     positionsTableDetails,
     isUninitialized: isUninitializedPosTableDetails,
+    isFetching,
     refetch: refetchPositionsTableDetails,
   } = usePositionsTableDetails(account)
   const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData, error: currentMarketsError} = useCurrentMarketState(marketDetails)
+  const {isUnwoundPosition} = usePositionsState()
+  const {onUnwindPosition} = usePositionsActionHandlers()
+  const [initialNumberOfUnwinds, setInitialNumberOfUnwinds] = useState<null | number>(null)
 
   useEffect(() => {
     !isUninitializedPosTableDetails && refetchPositionsTableDetails()
@@ -531,6 +542,38 @@ const Positions = () => {
   useEffect(() => {
     currentMarketsError && refetchMarkets()
   }, [currentMarketsError, refetchMarkets, marketsData])
+
+  useEffect(() => {
+    positionsTableDetails?.numberOfUnwinds && setInitialNumberOfUnwinds(+positionsTableDetails?.numberOfUnwinds)
+  }, [positionsTableDetails?.numberOfUnwinds, setInitialNumberOfUnwinds])
+
+  useEffect(() => {
+    currentMarketsError && refetchPositionsTableDetails()
+  }, [currentMarketsError, refetchPositionsTableDetails, isFetching])
+
+  useEffect(() => {
+    if (isUnwoundPosition) {
+      refetchPositionsTableDetails()
+    }
+  }, [isUnwoundPosition, refetchPositionsTableDetails, isFetching])
+
+  useEffect(() => {
+    if (isUnwoundPosition) {
+      refetchMarkets()
+    }
+  }, [isUnwoundPosition, refetchMarkets, isFetching])
+
+  useEffect(() => {
+    if (
+      isUnwoundPosition &&
+      positionsTableDetails?.numberOfUnwinds &&
+      initialNumberOfUnwinds &&
+      Number(positionsTableDetails?.numberOfUnwinds) > initialNumberOfUnwinds
+    ) {
+      setInitialNumberOfUnwinds(+positionsTableDetails?.numberOfUnwinds)
+      onUnwindPosition(false)
+    }
+  }, [isUnwoundPosition, initialNumberOfUnwinds, setInitialNumberOfUnwinds, positionsTableDetails?.numberOfUnwinds])
 
   return (
     <PageContainer>

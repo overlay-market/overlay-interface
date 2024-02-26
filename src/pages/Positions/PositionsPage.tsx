@@ -170,7 +170,10 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
   useEffect(() => {
     if (isUnwoundPosition) {
-      refetch()
+      const interval = setInterval(() => {
+        refetch()
+      }, 10000)
+      return () => clearInterval(interval)
     }
   }, [isUnwoundPosition, refetch, isFetching])
 
@@ -391,7 +394,12 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   }, [numberOfPositions])
 
   useEffect(() => {
-    isBuiltPosition && refetch()
+    if (isBuiltPosition) {
+      const interval = setInterval(() => {
+        refetch()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
   }, [isBuiltPosition, refetch, isFetching])
 
   useEffect(() => {
@@ -581,13 +589,19 @@ const Positions = () => {
 
   useEffect(() => {
     if (isUnwoundPosition) {
-      refetchPositionsTableDetails()
+      const interval = setInterval(() => {
+        refetchPositionsTableDetails()
+      }, 10000)
+      return () => clearInterval(interval)
     }
   }, [isUnwoundPosition, refetchPositionsTableDetails, isFetching])
 
   useEffect(() => {
     if (isUnwoundPosition) {
-      refetchMarkets()
+      const interval = setInterval(() => {
+        refetchMarkets()
+      }, 10000)
+      return () => clearInterval(interval)
     }
   }, [isUnwoundPosition, refetchMarkets, isFetching])
 

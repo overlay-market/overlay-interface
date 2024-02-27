@@ -302,20 +302,21 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
     sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
     descriptionText: 'The floor (lowest) price of the collection.',
-  '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {
-    marketName: 'Flippening',
-    logo: FlippeningLogo,
-    currency: '',
-    disabled: false,
-    contract: {
-      name: shortenAddress('0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6'),
-      url: 'https://sepolia.arbiscan.io/address/0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6',
-    },
-    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
-    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
-    descriptionText:
-      "TL;DR -- The Bitcoin market capitalization divided by the Ethereum market capitalization. \n\nThe Flippening... will it ever happen? Will Ethereum ever take the #1 spot as the biggest blockchain? It's already happened for total transactions and transactions fees. But for the market cap? Obviously that's the only thing that matters. \n\nData is sourced from Chainlink, Coinmarketcap, Cryptocompare, and others.",
   },
+  // '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {
+  //   marketName: 'Flippening',
+  //   logo: FlippeningLogo,
+  //   currency: '',
+  //   disabled: false,
+  //   contract: {
+  //     name: shortenAddress('0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6'),
+  //     url: 'https://sepolia.arbiscan.io/address/0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6',
+  //   },
+  //   sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+  //   // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+  //   descriptionText:
+  //     "TL;DR -- The Bitcoin market capitalization divided by the Ethereum market capitalization. \n\nThe Flippening... will it ever happen? Will Ethereum ever take the #1 spot as the biggest blockchain? It's already happened for total transactions and transactions fees. But for the market cap? Obviously that's the only thing that matters. \n\nData is sourced from Chainlink, Coinmarketcap, Cryptocompare, and others.",
+  // },
 }
 
 type ComingSoonMarketsData = MarketDetailsData & {

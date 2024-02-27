@@ -10,7 +10,7 @@ import {useEffect, useMemo} from 'react'
 import {colors} from '../../theme/theme'
 import MainOverviewCard from '../../components/Card/MainOverviewCard'
 import OverviewChart from '../../components/Chart/OverviewChart'
-import {usePositionsTableData} from '../../state/build/hooks'
+import {isLiquidatesQuery, isUnwindsQuery, usePositionsTableData} from '../../state/build/hooks'
 import {PositionStatus} from './PositionsPage'
 import {useActiveWeb3React} from '../../hooks/web3'
 
@@ -95,8 +95,8 @@ export const Overview = ({account, marginTop, numberOfOpenPositions, numberOfUnw
   }, [totalValueLocked])
 
   const realizedPnlPercentageChange = useMemo(() => {
-    const unwindRows = unwinds?.account?.unwinds ?? []
-    const liquidatedRows = liquidatedPositions?.account?.liquidates ?? []
+    const unwindRows = isUnwindsQuery(unwinds) ? unwinds.account?.unwinds ?? [] : []
+    const liquidatedRows = isLiquidatesQuery(liquidatedPositions) ? liquidatedPositions?.account?.liquidates ?? [] : []
 
     const now = Math.floor(Date.now() / 1000)
     const oneDayAgo = now - 24 * 60 * 60

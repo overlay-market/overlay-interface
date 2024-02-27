@@ -5,7 +5,7 @@ import {Label} from '@rebass/forms'
 import {MarketCard} from '../../components/Card/MarketCard'
 import {SelectActionButton, TriggerActionButton, ApproveTransactionButton} from '../../components/Button/Button'
 import {TEXT, colors} from '../../theme/theme'
-import {OVL} from '../../constants/tokens'
+import {ONE_BN, OVL} from '../../constants/tokens'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useBuildState} from '../../state/build/hooks'
 import {useDerivedBuildInfo} from '../../state/build/hooks'
@@ -403,6 +403,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
 
   const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
+  const circuitBreakerLevel = marketsData.length > 0 && marketsData[0].circuitBreakerLevel
 
   // force refetch when refreshing page
   useEffect(() => {
@@ -752,6 +753,13 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return isLong ? rawExpectedOi.add(rawOiLong).gt(rawCapOi) : rawExpectedOi.add(rawOiShort).gt(rawCapOi)
   }, [isLong, rawOiLong, rawOiShort, rawCapOi, rawExpectedOi])
 
+  const exceedOiCapCircuitBreaker = useMemo(() => {
+    if (!rawOiLong || !rawOiShort || !rawCapOi || !rawExpectedOi || isLong === undefined || !circuitBreakerLevel || exceedOiCap) return false
+    return isLong
+      ? rawExpectedOi.add(rawOiLong).gt(rawCapOi.mul(circuitBreakerLevel).div(ONE_BN))
+      : rawExpectedOi.add(rawOiShort).gt(rawCapOi.mul(circuitBreakerLevel).div(ONE_BN))
+  }, [isLong, rawOiLong, rawOiShort, rawCapOi, rawExpectedOi])
+
   const {adjustedCollateral} = useEstimatedBuild(
     selectedLeverage,
     Number(typedValue),
@@ -913,6 +921,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 ) : exceedOiCap ? (
                   <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
                     Exceeds OI Cap
+                  </TriggerBuildButton>
+                ) : exceedOiCapCircuitBreaker ? (
+                  <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                    Exceeds Circuit Breaker OI Cap
                   </TriggerBuildButton>
                 ) : showBalanceNotEnoughWarning ? (
                   <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>

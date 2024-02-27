@@ -7,10 +7,10 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {PageContainer} from '../../components/Container/Container'
 import {TEXT} from '../../theme/theme'
 import {FlexRow} from '../../components/Container/Container'
-import {usePositionsTableDetails, usePositionsTableData} from '../../state/build/hooks'
+import {usePositionsTableDetails, usePositionsTableData, isOpenPositionsQuery, isUnwindsQuery, isLiquidatesQuery} from '../../state/build/hooks'
 import {useTotalMarketsData} from '../../state/markets/hooks'
 import {useMarketDetails} from '../../hooks/useMarketDetails'
-import {useCurrentMarketState} from '../../hooks/useCurrentMarketState'
+import {ParsedMarketStateDetails, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {OpenPosition} from './OpenPosition'
 import {UnwindsTransactions} from './UnwindsTransactions'
 import {LiquidatesTransactions} from './LiquidatesTransactions'
@@ -49,7 +49,7 @@ interface PositionsTableProps {
   positionStatus: PositionStatus
   initialCollateral?: string
   rowsCount: number
-  marketsData: any
+  marketsData: ParsedMarketStateDetails[]
 }
 
 export enum PositionStatus {
@@ -183,18 +183,25 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
     const rows =
       positionStatus === PositionStatus.Open
-        ? positionsTableData.account?.positions
+        ? isOpenPositionsQuery(positionsTableData)
+          ? positionsTableData.account?.positions ?? []
+          : []
         : positionStatus === PositionStatus.Closed
-        ? positionsTableData.account?.unwinds
+        ? isUnwindsQuery(positionsTableData)
+          ? positionsTableData.account?.unwinds ?? []
+          : []
         : positionStatus === PositionStatus.Liquidated
-        ? positionsTableData.account?.liquidates
+        ? isLiquidatesQuery(positionsTableData)
+          ? positionsTableData.account?.liquidates ?? []
+          : []
         : []
 
+    console.log({rows, positionsTableData, idOpen: isOpenPositionsQuery(positionsTableData)})
     return account && rows && rows.length > 0 ? (
       <>
         {rows.map((row: any) => {
           const marketAddress = positionStatus === PositionStatus.Open ? row.market.id : row.position.market.id
-          const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
+          const marketState = marketsData.filter((market: ParsedMarketStateDetails) => market.marketAddress === marketAddress)[0]
 
           if (positionStatus === PositionStatus.Open) {
             return (
@@ -362,7 +369,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   }
 
   const pageCount = useMemo(() => {
-    const positionsAmount = positionsTableData && positionsTableData.account ? positionsTableData.account.positions : []
+    const positionsAmount = positionsTableData && isOpenPositionsQuery(positionsTableData) ? positionsTableData.account?.positions ?? [] : []
     return Math.ceil(positionsAmount.length / rowsPerPage)
   }, [positionsTableData, rowsPerPage])
 
@@ -370,7 +377,9 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     if (!positionsTableData) return null
 
     const rows =
-      positionStatus === PositionStatus.Build ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage) : []
+      positionStatus === PositionStatus.Build && isOpenPositionsQuery(positionsTableData)
+        ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+        : []
 
     setShowLoader(false)
 

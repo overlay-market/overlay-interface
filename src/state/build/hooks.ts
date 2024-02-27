@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery } from "../data/generated";
+import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -397,6 +397,18 @@ export function useNumberOfPositionsFromSubgraph(address: string | undefined | n
   })
 }
 
+export function isUnwindsQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is UnwindsQuery {
+  return typeof data === "object" && data !== undefined &&(data.account?.hasOwnProperty("unwinds") ?? false); // Check for specific property of UnwindsQuery
+}
+
+export function isLiquidatesQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is LiquidatedPositionsQuery {
+  return typeof data === "object" && data !== undefined && (data.account?.hasOwnProperty("liquidates") ?? false);
+}
+
+export function isOpenPositionsQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is OpenPositionsQuery {
+  return typeof data === "object" && data !== undefined && (data.account?.hasOwnProperty("positions") ?? false);
+}
+
 export function usePositionsTableData(
   address: string | undefined | null,
   first: number,
@@ -409,8 +421,8 @@ export function usePositionsTableData(
   isUninitialized: boolean
   isError: boolean
   error: unknown
-  positionsTableData: any | undefined
-  numberOfPositions: any | undefined
+  positionsTableData: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined
+  numberOfPositions: number
   refetch: () => void
 } { 
   let query;
@@ -433,7 +445,22 @@ export function usePositionsTableData(
   } else{
     res = query(address ?? undefined, first, skip, undefined)
   }
-  const positionsTableData = res?.data;
+  let positionsTableData:
+    | OpenPositionsQuery
+    | UnwindsQuery
+    | LiquidatedPositionsQuery
+    | MarketOpenPositionsQuery
+    | undefined;
+
+  if (status === PositionStatus.Open) {
+    positionsTableData = res?.data as OpenPositionsQuery;
+  } else if (status === PositionStatus.Build) {
+    positionsTableData = res?.data as MarketOpenPositionsQuery;
+  } else if (status === PositionStatus.Closed) {
+    positionsTableData = res?.data as UnwindsQuery;
+  } else if (status === PositionStatus.Liquidated) {
+    positionsTableData = res?.data as LiquidatedPositionsQuery;
+  }
   const hasPositions = (data: any): data is { account: { positions: any[] } } => {
     return data?.account?.positions !== undefined;
   };

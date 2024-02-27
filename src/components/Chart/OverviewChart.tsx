@@ -3,7 +3,7 @@ import {TEXT, colors} from '../../theme/theme'
 import {LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer} from 'recharts'
 import {Box, Button, ButtonGroup} from '@material-ui/core'
 import {useEffect, useMemo, useState} from 'react'
-import {usePositionsTableData} from '../../state/build/hooks'
+import {isLiquidatesQuery, isUnwindsQuery, usePositionsTableData} from '../../state/build/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {PositionStatus} from '../../pages/Positions/PositionsPage'
 import moment from 'moment'
@@ -166,8 +166,8 @@ const OverviewChart = () => {
   }, [chainId, isUninitializedLiquidates, refetchLiquidatedPositions])
 
   const chartData = useMemo(() => {
-    const unwindRows = unwinds?.account?.unwinds ?? []
-    const liquidateRows = liquidates?.account?.liquidates ?? []
+    const unwindRows = isUnwindsQuery(unwinds) ? unwinds.account?.unwinds ?? [] : []
+    const liquidateRows = isLiquidatesQuery(liquidates) ? liquidates?.account?.liquidates ?? [] : []
 
     const formattedUnwindRows = unwindRows.map((row: {timestamp: string; pnl: string}) => ({
       ...row,

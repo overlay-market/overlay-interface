@@ -19,6 +19,7 @@ import {TickMath} from '@uniswap/v3-sdk'
 import JSBI from 'jsbi'
 import {usePositionOi} from '../../hooks/usePositionOi'
 import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
+import {ONE_BN} from '../../constants/tokens'
 
 interface PositionInterface extends ParsedMarketStateDetails {
   id: string
@@ -106,7 +107,6 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
   const parsedFunding: string | number | undefined = useMemo(() => {
     if (info === null || !oiCurrent || !mid) return undefined
     const baseFractionRemaining = 10000
-    const ONE_BN = BigNumber.from(10).pow(18)
     const remainingNotionalInitial = info.notionalInitial.div(baseFractionRemaining).mul(info.fractionRemaining)
 
     const remainingOiInitial = remainingNotionalInitial.mul(ONE_BN).div(tickToPrice(info.midTick))

@@ -404,6 +404,7 @@ export const api = createApi({
                 currentDebt
                 currentOi
                 fraction
+                fractionOfPosition
                 id
                 isLong
                 mint

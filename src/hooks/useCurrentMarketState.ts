@@ -10,7 +10,7 @@ import {formatFundingRateToAnnual, formatFundingRateToDaily} from '../utils/form
 import {MarketDetails} from '../constants/markets'
 import {getCharactersBeforeSlash, getCharactersAfterSlash} from '../utils/getCharactersBeforeSlash'
 
-export interface MarketStateDetails {
+export interface MarketStateDetails extends AdditionalMarketData {
   id: string
   marketAddress: string
   bid: BigNumber

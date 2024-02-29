@@ -7,48 +7,18 @@ import {checkIsNegative} from '../../utils/checkIsNegative'
 import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
-import {Build, Liquidate, Unwind} from '../../state/build/hooks'
 import {toScientificNumber} from '../../utils/toScientificNumber'
+import {UnwindsQuery} from '../../state/data/generated'
+import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
+
+type UnwindsType = NonNullable<UnwindsQuery['account']>['unwinds'][number]
+type PositiopnType = UnwindsType['position'] & ParsedMarketStateDetails
+interface TransactionInterface extends UnwindsType {
+  position: PositiopnType
+}
 
 export interface PositionProps {
-  transaction: {
-    collateral: string
-    currentDebt: string
-    currentOi: string
-    id: string
-    fraction: string
-    isLong: boolean
-    mint: string
-    price: string
-    timestamp: string
-    value: string
-    unwindNumber: string
-    pnl: string
-    transferAmount: string
-    size: string
-    position: {
-      id: string
-      positionId: string
-      marketName?: string
-      marketAddress: string
-      leverage: string | number
-      createdAtTimestamp: string
-      isLong: boolean
-      initialCollateral?: string
-      entryPrice: string
-      exitPrice?: string
-      priceCurrency?: string
-      parsedMid?: string | number
-      decimals?: string | number
-      isLiquidated: boolean
-      currentOi: string
-      numberOfUniwnds: string
-      positionStatus: string
-      builds: Build[]
-      unwinds: Unwind[]
-      liquidates: Liquidate[]
-    }
-  }
+  transaction: TransactionInterface
   columns: string[]
 }
 

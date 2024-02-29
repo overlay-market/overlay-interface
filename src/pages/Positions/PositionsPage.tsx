@@ -196,7 +196,6 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           : []
         : []
 
-    console.log({rows, positionsTableData, idOpen: isOpenPositionsQuery(positionsTableData)})
     return account && rows && rows.length > 0 ? (
       <>
         {rows.map((row: any) => {

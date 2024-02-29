@@ -26,6 +26,7 @@ export enum TransactionType {
   EMERGENCYWITHDRAW_OVL_POSITION = 9,
   REFERRAL_CODE = 10,
   REFERRAL_CREATE_AFFILIATE = 11,
+  REFERRAL_CLAIM = 12,
 }
 
 export interface BaseTransactionInfo {
@@ -102,6 +103,12 @@ export interface ReferralCreateAffiliateTransactionInfo extends BaseTransactionI
   referralCreateAffiliate: string
 }
 
+export interface ReferralClaimTransactionInfo extends BaseTransactionInfo {
+  type: TransactionType.REFERRAL_CLAIM
+  amount: number
+  account: string
+}
+
 export type TransactionInfo =
   | ApproveTransactionInfo
   | BuildOVLTransactionInfo
@@ -115,6 +122,7 @@ export type TransactionInfo =
   | EmergencyWithdrawOVLTransactionInfo
   | ReferralCodeTransactionInfo
   | ReferralCreateAffiliateTransactionInfo
+  | ReferralClaimTransactionInfo
 
 export const addTransaction = createAction<{
   chainId: ChainId

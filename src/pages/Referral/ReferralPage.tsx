@@ -9,10 +9,10 @@ import ReferralModal from './ReferralModal'
 import {RebatesTable} from './RebatesTable'
 import {useHistory} from 'react-router-dom'
 import {useReferralAccountData, useTokenTransfersReferralData} from '../../state/referral/hooks'
-import {useEffect} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {OVL_TOKEN_ADDRESS, REFERRAL_CLAIM_ADDRESS, REFERRAL_LIST_ADDRESS} from '../../constants/addresses'
-import {DEFAULT_CHAINID} from '../../constants/chains'
+import {useReferralClaimCallback} from '../../hooks/useReferralClaim'
+import ConfirmAffiliateModal from './CreateAffiliateCode'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -33,66 +33,86 @@ const StyledGrid = styled(Grid)<{order?: number}>`
 
 export const ReferralPage = () => {
   const {account, chainId} = useActiveWeb3React()
+  // const account = '0x85f66DBe1ed470A091d338CFC7429AA871720283'
   const history = useHistory()
   const handleTraderLinkClick = () => {
     history.push('/trader')
   }
   const {referralAccountData, isLoading, refetch, isUninitialized} = useReferralAccountData(account)
-  const {
-    tokenTransfersData,
-    isLoading: isLoadingTokenTransers,
-    refetch: refetchTokenTransfers,
-    isUninitialized: isUninitializedTokenTransfers,
-  } = useTokenTransfersReferralData(account, REFERRAL_CLAIM_ADDRESS[chainId ?? DEFAULT_CHAINID], OVL_TOKEN_ADDRESS[chainId ?? DEFAULT_CHAINID])
-  const isAffiliate = referralAccountData?.account?.referralPositions[0]?.affiliatedTo?.id
+  const affiliatedTo = referralAccountData?.account?.referralPositions[0]?.affiliatedTo?.id
   const tier = referralAccountData?.account?.referralPositions[0]?.tier
+  const [affiliateLink, setAffiliateLink] = useState('')
+  const createCodeValue = 500000 - +(formatBigNumber(referralAccountData?.account?.ovlVolumeTraded, 18, 0) ?? 0)
+  const referralPositionsChecker =
+    referralAccountData?.account?.referralPositions !== undefined && referralAccountData?.account?.referralPositions.length > 0
+  const [showModalTrigger, setShowModalTrigger] = useState(false)
 
-  // force refetch when refreshing page
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isLoading, refetch, account, isUninitialized])
 
-  // force refetch when refreshing page
   useEffect(() => {
-    !isUninitializedTokenTransfers && refetchTokenTransfers()
-  }, [chainId, isLoadingTokenTransers, refetchTokenTransfers, account, isUninitializedTokenTransfers])
+    setAffiliateLink(window.location.origin + '/#/trader/' + account)
+  }, [account])
 
-  const cardsData = [
-    {
-      title: 'Create a referral code',
-      value: (500000 - +(formatBigNumber(referralAccountData?.account?.ovlVolumeTraded, 18, 0) ?? 0)).toLocaleString('en-US') + ' $OV',
-      valueType: 'volume left',
-      valueTypeLink: false,
-      percentageChange: null,
-      period: 'Claim ->',
-    },
-    {
-      title: 'Rewards pending',
-      value: formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalRewardsPending) || 0,
-      valueType: 'OVL',
-      percentageChange: null,
-      period: '24h',
-    },
-    {
-      title: 'Total Rewards earned',
-      value: formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalAirdroppedAmount) || 0,
-      valueType: 'OVL',
-      percentageChange: null,
-      period: '24h',
-    },
-    {
-      title: 'Total Referrals',
-      value: referralAccountData?.account?.referralPositions[0]?.accountsReferred.toString() ?? '0',
-      valueType: 'Users',
-      period: '24h',
-    },
-  ]
+  const {
+    callback: referralClaimCallback,
+    error,
+    state,
+  } = useReferralClaimCallback('9803090034464338', [
+    '0xb3cd99d9bc50c7e40111de12a17b6127eec314b90b6904c3f395d5da85e3e4c4',
+    '0x51b58c56e74e1de37212c6f1120a9e528a53a3ceeaebdf8f9e9912763b0d83db',
+  ])
+  // agreagarle el toat para que muestre el error
 
-  cardsData.forEach(cardsData => {
-    if (cardsData.title === 'Create a referral code' && cardsData.value === '0 $OV') {
-      cardsData.value = cardsData.value + ' volume left'
-      cardsData.valueType = 'Create code ->'
-      cardsData.valueTypeLink = true
+  console.log({referralClaimCallback, error, state})
+
+  const cardsData = useMemo(
+    () => [
+      {
+        title: 'Create a referral code',
+        value: createCodeValue.toLocaleString('en-US') + ' $OV',
+        valueType: 'volume left',
+        valueTypeLink: false,
+      },
+      {
+        title: 'Rewards pending',
+        value: (referralPositionsChecker && formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalRewardsPending)) ?? '0',
+        valueType: 'OVL',
+        buttonText: 'Claim ->',
+        button: referralClaimCallback,
+      },
+      {
+        title: 'Total Rewards earned',
+        value: referralPositionsChecker ? formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalAirdroppedAmount) ?? '0' : '0',
+        valueType: 'OVL',
+      },
+      {
+        title: 'Total Referrals',
+        value: referralPositionsChecker && (referralAccountData?.account?.referralPositions[0]?.accountsReferred.toString() ?? '0'),
+        valueType: 'Users',
+      },
+    ],
+    [createCodeValue, referralPositionsChecker, referralAccountData, referralClaimCallback],
+  )
+
+  console.log(
+    {cardsData},
+    (referralPositionsChecker && formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalRewardsPending)) ?? '0',
+  )
+
+  cardsData.forEach(card => {
+    if (card.title === 'Create a referral code') {
+      if (createCodeValue === 0) {
+        card.value += ' volume left'
+        card.valueType = 'Create code ->'
+        card.valueTypeLink = true
+      }
+      if (tier && tier > 0) {
+        card.valueTypeLink = true
+        card.value = affiliateLink
+        card.valueType = 'Copy link ->'
+      }
     }
   })
 
@@ -103,7 +123,7 @@ export const ReferralPage = () => {
           <Box display={'flex'} flexDirection={'row'}>
             <TEXT.BoldHeader1 mb="16px">Referral</TEXT.BoldHeader1>
             <TEXT.SmallBody width={'auto'} ml={'auto'} mt={'5px'}>
-              {!isAffiliate && tier && tier > 0 && (
+              {!affiliatedTo && (!tier || tier === 0) && (
                 <a onClick={handleTraderLinkClick} target="blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
                   Enter a referral code &rarr;
                 </a>
@@ -127,11 +147,12 @@ export const ReferralPage = () => {
                   >
                     <OverviewCard
                       title={card.title}
-                      value={card.value}
+                      value={card.value !== false ? card.value : '0'}
                       valueType={card.valueType}
                       valueTypeLink={card.valueTypeLink}
-                      percentageChange={card.percentageChange}
-                      period={card.period}
+                      buttonText={card.buttonText ?? undefined}
+                      button={card.button ?? undefined}
+                      showModal={(showModalTrigger: boolean) => setShowModalTrigger(showModalTrigger)}
                     />
                   </StyledGrid>
                 )
@@ -150,6 +171,7 @@ export const ReferralPage = () => {
         <Box>
           <RebatesTable />
         </Box>
+        <ConfirmAffiliateModal isOpen={showModalTrigger} onDismiss={() => setShowModalTrigger(false)} />
       </Container>
     </PageContainer>
   )

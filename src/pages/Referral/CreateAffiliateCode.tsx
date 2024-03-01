@@ -18,6 +18,8 @@ export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {i
   const url = `${REFERRAL_AFFILIATE_SIGNATURES}/${account?.toLowerCase()}`
   const [signature, setSignature] = useState('')
   const {callback: referralCodeCallback, error, state} = useReferralCreateAffiliateCallback(signature)
+  const referralPositionsChecker =
+    referralAccountData?.account?.referralPositions !== undefined && referralAccountData?.account?.referralPositions.length > 0
 
   useEffect(() => {
     fetch(url, {method: 'GET'})
@@ -64,7 +66,10 @@ export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {i
                 <TEXT.StandardBody mr={'auto'} color={'#B9BABD'}>
                   Rewards
                 </TEXT.StandardBody>
-                <TEXT.StandardBody>{formatBigNumber(referralAccountData?.account?.referralPositions[0].totalRewardsPending) + '%'}</TEXT.StandardBody>
+                <TEXT.StandardBody>
+                  {formatBigNumber(referralPositionsChecker ? referralAccountData?.account?.referralPositions[0].totalRewardsPending : 0) ??
+                    '0' + '%'}
+                </TEXT.StandardBody>
               </FlexRow>
             </FlexColumn>
 
@@ -73,7 +78,10 @@ export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {i
                 <TEXT.StandardBody mr={'auto'} color={'#B9BABD'}>
                   Discount on trading fees
                 </TEXT.StandardBody>
-                <TEXT.StandardBody>{formatBigNumber(referralAccountData?.account?.referralPositions[0].totalTraderDiscount) + '%'}</TEXT.StandardBody>
+                <TEXT.StandardBody>
+                  {formatBigNumber(referralPositionsChecker ? referralAccountData?.account?.referralPositions[0].totalTraderDiscount : 0) ??
+                    '0' + '%'}
+                </TEXT.StandardBody>
               </FlexRow>
             </FlexColumn>
 

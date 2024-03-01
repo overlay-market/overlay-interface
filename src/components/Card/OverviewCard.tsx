@@ -1,8 +1,9 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {Box} from '@material-ui/core'
+import {Box, Tooltip} from '@material-ui/core'
 import React, {useState} from 'react'
 import ConfirmAffiliateModal from '../../pages/Referral/CreateAffiliateCode'
+import {useReferralClaimCallback} from '../../hooks/useReferralClaim'
 
 const Container = styled.div<{isLeaderboardCard?: boolean}>`
   display: flex;
@@ -43,12 +44,19 @@ interface DataProps {
   isLeaderboardCard?: boolean
   valueTypeLink?: boolean
   button?: () => void
-  showModal?: boolean
+  buttonText?: string
+  showModal?: (showModalTrigger: boolean) => void
 }
 
 const OverviewCard = (props: DataProps) => {
-  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions, valueTypeLink, button} = props
-  const [showModal, setShowModal] = useState(false)
+  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions, valueTypeLink, button, buttonText, showModal} = props
+
+  const copyText = () => {
+    if (navigator.clipboard && value) {
+      navigator.clipboard.writeText(value.toString())
+    }
+  }
+
   return (
     <>
       <Container>
@@ -70,7 +78,7 @@ const OverviewCard = (props: DataProps) => {
             No data
           </TEXT.SmallBody>
         ) : (
-          <BoldHeader1 style={{whiteSpace: 'nowrap', marginTop: '15px'}} mb={12}>
+          <BoldHeader1 style={{whiteSpace: 'nowrap', marginTop: '15px', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '250px'}} mb={12}>
             {value}
           </BoldHeader1>
         )}
@@ -80,7 +88,11 @@ const OverviewCard = (props: DataProps) => {
           ) : (
             <TEXT.SmallBody fontSize={14} color="#c4c4c4">
               {valueTypeLink ? (
-                <a onClick={() => setShowModal(true)} target="_blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
+                <a
+                  onClick={valueType === 'Copy link ->' ? () => copyText() : () => showModal && showModal(true)}
+                  target="_blank"
+                  style={{color: colors(false).dark.blue2, cursor: 'pointer'}}
+                >
                   {valueType}
                 </a>
               ) : (
@@ -103,24 +115,20 @@ const OverviewCard = (props: DataProps) => {
                 {period}
               </TEXT.Supplemental>
             )}
-            {button && (
-              <TEXT.Supplemental color="#c4c4c4" ml={1} onClick={button}>
-                {period}
+            {buttonText && (
+              <TEXT.Supplemental
+                disabled={!button}
+                color="#c4c4c4"
+                ml={1}
+                onClick={button}
+                style={{color: button ? colors(false).dark.blue2 : '#c4c4c4', cursor: button ? 'pointer' : ''}}
+              >
+                {buttonText}
               </TEXT.Supplemental>
-            )}
-            {title === 'Rewards pending' && (
-              <a onClick={() => ''} target="_blank" style={{color: colors(false).dark.blue2, cursor: 'pointer'}}>
-                {period}
-              </a>
             )}
           </Box>
         </Box>
       </Container>
-      <ConfirmAffiliateModal
-        isOpen={showModal}
-        onConfirm={() => {}} // Replace with the actual function
-        onDismiss={() => setShowModal(false)}
-      />
     </>
   )
 }

@@ -105,7 +105,7 @@ export interface ReferralCreateAffiliateTransactionInfo extends BaseTransactionI
 
 export interface ReferralClaimTransactionInfo extends BaseTransactionInfo {
   type: TransactionType.REFERRAL_CLAIM
-  amount: number
+  amount: string
   account: string
 }
 

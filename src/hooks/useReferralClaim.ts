@@ -37,7 +37,7 @@ enum ReferralClaimCallbackState {
   VALID,
 }
 
-function useReferralClaimCallArguments(amount: number, proof: string[]) {
+function useReferralClaimCallArguments(amount: string, proof: string[]) {
   let calldata: any
 
   const {account, chainId} = useActiveWeb3React()
@@ -78,7 +78,7 @@ function useReferralClaimCallArguments(amount: number, proof: string[]) {
 }
 
 export function useReferralClaimCallback(
-  amount: number,
+  amount: string,
   proof: string[],
 ): {
   state: ReferralClaimCallbackState

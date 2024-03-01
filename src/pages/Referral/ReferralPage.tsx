@@ -11,7 +11,7 @@ import {useHistory} from 'react-router-dom'
 import {useReferralAccountData, useTokenTransfersReferralData} from '../../state/referral/hooks'
 import {useEffect} from 'react'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {OVL_TOKEN_ADDRESS, REFERRAL_LIST_ADDRESS} from '../../constants/addresses'
+import {OVL_TOKEN_ADDRESS, REFERRAL_CLAIM_ADDRESS, REFERRAL_LIST_ADDRESS} from '../../constants/addresses'
 import {DEFAULT_CHAINID} from '../../constants/chains'
 
 const Container = styled.div<{mt?: string}>`
@@ -43,7 +43,7 @@ export const ReferralPage = () => {
     isLoading: isLoadingTokenTransers,
     refetch: refetchTokenTransfers,
     isUninitialized: isUninitializedTokenTransfers,
-  } = useTokenTransfersReferralData(account, REFERRAL_LIST_ADDRESS[chainId ?? DEFAULT_CHAINID], OVL_TOKEN_ADDRESS[chainId ?? DEFAULT_CHAINID])
+  } = useTokenTransfersReferralData(account, REFERRAL_CLAIM_ADDRESS[chainId ?? DEFAULT_CHAINID], OVL_TOKEN_ADDRESS[chainId ?? DEFAULT_CHAINID])
   const isAffiliate = referralAccountData?.account?.referralPositions[0]?.affiliatedTo?.id
   const tier = referralAccountData?.account?.referralPositions[0]?.tier
 

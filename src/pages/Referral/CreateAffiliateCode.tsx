@@ -33,8 +33,6 @@ export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {i
   }, [url])
 
   const handleCreateAffiliate = () => {
-    console.log({signature})
-    console.log({referralCodeCallback, error, state})
     referralCodeCallback && referralCodeCallback()
   }
 

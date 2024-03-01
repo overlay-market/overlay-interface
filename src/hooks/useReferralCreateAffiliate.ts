@@ -88,9 +88,7 @@ export function useReferralCreateAffiliateCallback(signature: string): {
   const referralcreateaffiliateCalls = useReferralCreateAffiliateCallArguments(signature)
 
   return useMemo(() => {
-    console.log({signature, library, account, chainId, referralcreateaffiliateCalls})
     if (!signature || !library || !account || !chainId || referralcreateaffiliateCalls.length === 0) {
-      console.log({signature, library, account, chainId, referralcreateaffiliateCalls})
       return {
         state: ReferralCreateAffiliateCallbackState.INVALID,
         callback: null,

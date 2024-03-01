@@ -33,7 +33,6 @@ const StyledGrid = styled(Grid)<{order?: number}>`
 
 export const ReferralPage = () => {
   const {account, chainId} = useActiveWeb3React()
-  // const account = '0x85f66DBe1ed470A091d338CFC7429AA871720283'
   const history = useHistory()
   const handleTraderLinkClick = () => {
     history.push('/trader')
@@ -63,9 +62,6 @@ export const ReferralPage = () => {
     '0xb3cd99d9bc50c7e40111de12a17b6127eec314b90b6904c3f395d5da85e3e4c4',
     '0x51b58c56e74e1de37212c6f1120a9e528a53a3ceeaebdf8f9e9912763b0d83db',
   ])
-  // agreagarle el toat para que muestre el error
-
-  console.log({referralClaimCallback, error, state})
 
   const cardsData = useMemo(
     () => [
@@ -94,11 +90,6 @@ export const ReferralPage = () => {
       },
     ],
     [createCodeValue, referralPositionsChecker, referralAccountData, referralClaimCallback],
-  )
-
-  console.log(
-    {cardsData},
-    (referralPositionsChecker && formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalRewardsPending)) ?? '0',
   )
 
   cardsData.forEach(card => {

@@ -75,7 +75,7 @@ export const AdditionalDetails = ({
   return (
     <ContentContainer>
       <AdditionalDetailRow>
-        <TEXT.SmallBody color={colors(false).dark.grey2}>Fee</TEXT.SmallBody>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Trading Fee</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>{fee === 'loading' ? <Loader stroke="white" size="12px" /> : `${fee}%`}</DetailValue>
       </AdditionalDetailRow>
 

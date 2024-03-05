@@ -15,7 +15,7 @@ import {useToken} from '../../hooks/useToken'
 import {useMarketName} from '../../hooks/useMarketName'
 import {MarketDetails} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -85,6 +85,10 @@ export function ClosedPosition({
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, quoteToken, unwindId])
 
+  const priceCurrency = useMemo(() => {
+    return MarketDetails[unwindId.substring(0, 42)]?.currency
+  }, [unwindId])
+
   const quoteTokenInfo = useToken(quoteTokenAddress)
 
   const quoteTokenDecimals = useMemo(() => {
@@ -143,8 +147,14 @@ export function ClosedPosition({
         </FlexColumn>
 
         <FlexColumn mt="48px">
-          <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
-          <AdditionalDetailRow detail={'Exit Price'} value={exitPrice ? `${toScientificNumber(exitPrice)}` : 'loading'} />
+          <AdditionalDetailRow
+            detail={'Entry Price'}
+            value={entryPrice ? `${priceCurrency === '%' ? toPercentUnit(entryPrice) : toScientificNumber(entryPrice)}` : 'loading'}
+          />
+          <AdditionalDetailRow
+            detail={'Exit Price'}
+            value={exitPrice ? `${priceCurrency === '%' ? toPercentUnit(exitPrice) : toScientificNumber(exitPrice)}` : 'loading'}
+          />
         </FlexColumn>
       </>
     </InterfaceWrapper>

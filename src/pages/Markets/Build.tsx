@@ -998,6 +998,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           transactionHash={transactionHash}
           transactionErrorMessage={transactionErrorMessage}
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+          isDominanceMarket={Dominance_Markets.includes(marketId)}
         />
       </BuildContainer>
       {descriptionText && (

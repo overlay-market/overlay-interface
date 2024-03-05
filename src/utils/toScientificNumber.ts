@@ -81,5 +81,7 @@ export const toScientificNumber = (input: string | BigNumber | EthersBigNumber |
 export const toPercentUnit = (input: string | number | undefined) => {
   const ONE_HUNDRED = 100
 
+  if (Number.isNaN(Number(input))) return 0
+
   return (Number(input) * ONE_HUNDRED).toFixed(2)
 }

@@ -11,7 +11,6 @@ import {MarketChartData} from '../../constants/markets'
 import Chart7dCoin from './Chart7dCoin'
 import Chart7dNft from './Chart7dNft'
 import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
-import {Dominance_Markets} from '../../constants/markets'
 
 export const MarketsStyledTableRow = styled(StyledTableRow)`
   height: unset;
@@ -124,7 +123,7 @@ const MarketsRow = ({
       <StyledTableCellThin align="left" id="marketPrice">
         <TEXT.BoldNumber>
           {priceCurrency}
-          {Dominance_Markets.includes(marketId)
+          {priceCurrency === '%'
             ? toPercentUnit(midPrice)
             : toScientificNumber(
                 Number(midPrice) < 100000 ? Number(midPrice).toLocaleString('en-US') : Math.floor(Number(midPrice)).toLocaleString('en-US'),

@@ -9,7 +9,6 @@ import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentM
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {Dominance_Markets} from '../../constants/markets'
 
 const Container = styled.div`
   width: 100%;
@@ -109,9 +108,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
           <>
             <MarketPriceContainer>
               <TEXT.BoldNumber>{`${marketData?.priceCurrency}${
-                Dominance_Markets.includes(marketData?.marketId)
-                  ? toPercentUnit(marketData?.headerPrice)
-                  : toScientificNumber(marketData?.headerPrice)
+                marketData?.priceCurrency === '%' ? toPercentUnit(marketData?.headerPrice) : toScientificNumber(marketData?.headerPrice)
               }`}</TEXT.BoldNumber>
               {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
               <TEXT.SmallBody>24h</TEXT.SmallBody> */}

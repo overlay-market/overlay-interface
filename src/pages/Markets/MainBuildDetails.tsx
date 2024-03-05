@@ -9,7 +9,6 @@ import SetSlippageModal from '../../components/SetSlippageModal.tsx/SetSlippageM
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
 import {useBuildState} from '../../state/build/hooks'
 import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
-import {Dominance_Markets} from '../../constants/markets'
 
 const ContentContainer = styled(FlexColumn)`
   gap: 16px;
@@ -69,7 +68,6 @@ export const MainDetails = ({
   askPrice,
   minPrice,
   priceCurrency,
-  marketAddress,
 }: {
   isLong?: boolean
   quoteTokenDecimals?: number
@@ -81,7 +79,6 @@ export const MainDetails = ({
   askPrice?: string | number | any
   minPrice?: BigNumber
   priceCurrency?: string
-  marketAddress: string
 }) => {
   const estimatedReceivedPrice: any = useMemo(() => {
     if (isLong === undefined || estimatedBid === undefined || estimatedAsk === undefined) {
@@ -119,9 +116,7 @@ export const MainDetails = ({
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Price</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>
           {estimatedReceivedPrice && minPrice
-            ? `${priceCurrency}${
-                Dominance_Markets.includes(marketAddress) ? toPercentUnit(estimatedReceivedPrice) : toScientificNumber(estimatedReceivedPrice)
-              }`
+            ? `${priceCurrency}${priceCurrency === '%' ? toPercentUnit(estimatedReceivedPrice) : toScientificNumber(estimatedReceivedPrice)}`
             : '-'}
         </DetailValue>
       </AdditionalDetailRow>
@@ -140,7 +135,7 @@ export const MainDetails = ({
         <DetailValue color={colors(false).dark.blue1}>
           {minPrice
             ? `${priceCurrency}${
-                Dominance_Markets.includes(marketAddress)
+                priceCurrency === '%'
                   ? toPercentUnit(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
                   : toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
               }`

@@ -160,7 +160,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
-    currency: '',
+    currency: '%',
     // indexesConstruction: ['Chainlink', 'Coinmarketcap', 'Cryptocompare', 'More'],
     // fullLogo: BtcdFull,
     // proposedBy: {name: '@VitalikButermin', url: 'https://twitter.com/VitalikButermin'},
@@ -180,7 +180,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
-    currency: '',
+    currency: '%',
     proposedBy: {},
   },
   '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
@@ -265,7 +265,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     marketName: 'ETH Dominance',
     logo: EthDominanceLogo,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
-    currency: '',
+    currency: '%',
     disabled: false,
     contract: {
       name: shortenAddress('0x3a204d03e9b1fee01b8989333665b6c46cc1f79e'),
@@ -353,3 +353,9 @@ export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
     isComingSoon: true,
   },
 }
+
+export const Dominance_Markets = [
+  '0x553de578e68a4faa55d4522665cb2d2d53390d22',
+  '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e',
+  '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b',
+]

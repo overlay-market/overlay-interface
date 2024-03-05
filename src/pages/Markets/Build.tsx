@@ -42,7 +42,7 @@ import {MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
 import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
@@ -52,6 +52,7 @@ import {Icon} from '../../components/Icon/Icon'
 import {AlertCircle} from 'react-feather'
 import React from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
+import {Dominance_Markets} from '../../constants/markets'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -848,8 +849,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
                 <TEXT.Number color={colors(false).dark.blue1}>
                   {isLong
-                    ? `Long Price: ${priceCurrency}${toScientificNumber(longPrice)}`
-                    : `Short Price: ${priceCurrency}${toScientificNumber(shortPrice)}`}
+                    ? `Long Price: ${priceCurrency}${Dominance_Markets.includes(marketId) ? toPercentUnit(longPrice) : toScientificNumber(longPrice)}`
+                    : `Short Price: ${priceCurrency}${
+                        Dominance_Markets.includes(marketId) ? toPercentUnit(shortPrice) : toScientificNumber(shortPrice)
+                      }`}
                 </TEXT.Number>
               </ControlInterfaceHeadContainer>
               <PositionsButtonContainer>
@@ -904,6 +907,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 bidPrice={prices.bid}
                 askPrice={prices.ask}
                 minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+                marketAddress={marketId}
               />
             </ControlInterfaceContainer>
 
@@ -963,7 +967,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               fundingRate={fundingRate}
               expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
               estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
-              marketAddress={market?.id}
+              marketAddress={marketId}
               feedAddress={market?.feedAddress}
             />
           </MarketCard>

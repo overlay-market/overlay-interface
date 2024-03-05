@@ -8,7 +8,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {Build, Liquidate, Unwind} from '../../state/build/hooks'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 
 export interface PositionProps {
   transaction: {
@@ -120,8 +120,12 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
           <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
         </FlexRow>
       ),
-      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
-      'Exit Price': `${priceCurrency ? priceCurrency : ''}${parsedExitPrice ? toScientificNumber(parsedExitPrice) : '-'}`,
+      'Entry Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+      }`,
+      'Exit Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(parsedExitPrice)) : '-'
+      }`,
       Closed: parsedClosedTimestamp,
       Created: parsedCreatedTimestamp,
       PnL: parsedPnl ? <ProfitLossCell PnL={Number(parsedPnl)} /> : '-',

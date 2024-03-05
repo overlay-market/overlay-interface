@@ -78,7 +78,7 @@ export const toScientificNumber = (input: string | BigNumber | EthersBigNumber |
   return `${toPrecisionTrim(value.div(TRILLION), 6)} T`
 }
 
-export const toPercentUnit = (input: string | number | undefined) => {
+export const toPercentUnit = (input: string | number | null | undefined) => {
   const ONE_HUNDRED = 100
 
   if (Number.isNaN(Number(input))) return 0

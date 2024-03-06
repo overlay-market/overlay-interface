@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery } from "../data/generated";
+import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -194,7 +194,6 @@ export function useWalletPositionsFromSubgraph(address: string | undefined | nul
   const accountAddress = address ? address.toLowerCase() : undefined;
 
   return useAccountQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -204,10 +203,8 @@ export function useWalletPositionsFromSubgraph(address: string | undefined | nul
 
 export function useWalletPositionsFromSubgraphV2(address: string | undefined | null) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
-  return useAccountV2Query(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
+  return useAccountV2Query(accountAddress ? { account: accountAddress } : skipToken, { 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -391,10 +388,8 @@ export function usePositionsTableDetails(
 
 export function useNumberOfPositionsFromSubgraph(address: string | undefined | null) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useNumberOfPositionsQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 10000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -402,20 +397,32 @@ export function useNumberOfPositionsFromSubgraph(address: string | undefined | n
   })
 }
 
+export function isUnwindsQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is UnwindsQuery {
+  return typeof data === "object" && data !== undefined &&(data.account?.hasOwnProperty("unwinds") ?? false); // Check for specific property of UnwindsQuery
+}
+
+export function isLiquidatesQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is LiquidatedPositionsQuery {
+  return typeof data === "object" && data !== undefined && (data.account?.hasOwnProperty("liquidates") ?? false);
+}
+
+export function isOpenPositionsQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is OpenPositionsQuery {
+  return typeof data === "object" && data !== undefined && (data.account?.hasOwnProperty("positions") ?? false);
+}
+
 export function usePositionsTableData(
   address: string | undefined | null,
   first: number,
   skip: number,
   status: PositionStatus,
-  marketId: string | undefined,
+  marketId?: string | undefined,
 ): {
   isLoading: boolean
   isFetching: boolean
   isUninitialized: boolean
   isError: boolean
   error: unknown
-  positionsTableData: any | undefined
-  numberOfPositions: any | undefined
+  positionsTableData: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined
+  numberOfPositions: number
   refetch: () => void
 } { 
   let query;
@@ -438,7 +445,22 @@ export function usePositionsTableData(
   } else{
     res = query(address ?? undefined, first, skip, undefined)
   }
-  const positionsTableData = res?.data;
+  let positionsTableData:
+    | OpenPositionsQuery
+    | UnwindsQuery
+    | LiquidatedPositionsQuery
+    | MarketOpenPositionsQuery
+    | undefined;
+
+  if (status === PositionStatus.Open) {
+    positionsTableData = res?.data as OpenPositionsQuery;
+  } else if (status === PositionStatus.Build) {
+    positionsTableData = res?.data as MarketOpenPositionsQuery;
+  } else if (status === PositionStatus.Closed) {
+    positionsTableData = res?.data as UnwindsQuery;
+  } else if (status === PositionStatus.Liquidated) {
+    positionsTableData = res?.data as LiquidatedPositionsQuery;
+  }
   const hasPositions = (data: any): data is { account: { positions: any[] } } => {
     return data?.account?.positions !== undefined;
   };
@@ -447,8 +469,6 @@ export function usePositionsTableData(
   const numberOfPositions = hasPositions(positionsTableData)
   ? positionsTableData.account.positions.length
   : null!;
-
-  console.log({positionsTableData})
 
   return {
     isLoading: res?.isLoading,
@@ -464,10 +484,8 @@ export function usePositionsTableData(
 
 export function useOpenPositionsFromSubgraph(address: string | undefined | null, first: number, skip: number) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   return useOpenPositionsQuery(accountAddress ? { account: accountAddress, first, skip } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -477,10 +495,8 @@ export function useOpenPositionsFromSubgraph(address: string | undefined | null,
 
 export function useMarketOpenPositionsFromSubgraph(address: string | undefined | null, first: number, skip: number, marketId: string | undefined) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useMarketOpenPositionsQuery(accountAddress ? { account: accountAddress, first, skip, marketId } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -490,10 +506,8 @@ export function useMarketOpenPositionsFromSubgraph(address: string | undefined |
 
 export function useUnwindsFromSubgraph(address: string | undefined | null, first: number, skip: number) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useUnwindsQuery(accountAddress ? { account: accountAddress, first, skip } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -503,10 +517,8 @@ export function useUnwindsFromSubgraph(address: string | undefined | null, first
 
 export function useLiquidatedPositionsFromSubgraph(address: string | undefined | null, first: number, skip: number) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
-
+  
   return useLiquidatedPositionsQuery(accountAddress ? { account: accountAddress, first, skip } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 1000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -545,10 +557,8 @@ export function useOpenPositionsOverview(
 
 export function useOpenPositionsOverviewFromSubgraph(address: string | undefined | null) {
   const accountAddress = address ? address.toLowerCase() : undefined;
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
 
   return useOpenPositionsOverviewQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    pollingInterval: chainId === 42161 ? 30000 : 10000, 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,

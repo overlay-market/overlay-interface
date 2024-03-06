@@ -6,7 +6,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import Modal from '../Modal/Modal'
 import {CardText, IconWrapper} from './WalletOptions'
 import {NETWORK_LOGO} from '../../constants/tokens'
-import {SupportedChainId} from '../../constants/chains'
+import {DEFAULT_CHAINID, SupportedChainId} from '../../constants/chains'
 import {NETWORK_LABELS} from '../Web3Status/Web3Status'
 import {ArrowRight} from 'react-feather'
 import {switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
@@ -68,23 +68,30 @@ export const OptionCardClickable = styled(OptionCard as any)<{clickable?: boolea
   opacity: ${({disabled}) => (disabled ? '0.5' : '1')};
 `
 
-export default function ChangeNetworkModal() {
+export interface Props {
+  setOpenModal?: Function
+}
+
+export default function ChangeNetworkModal({setOpenModal}: Props) {
   const [walletModalOpen, setWalletModalOpen] = useState(true)
   const {chainId} = useActiveWeb3React()
-  if (chainId !== 1) return <></>
+  // if (chainId !== 1) return <></>
 
-  const toggleWalletModal = () => setWalletModalOpen(false)
+  const toggleWalletModal = () => {
+    setWalletModalOpen(false)
+    setOpenModal && setOpenModal(false)
+  }
 
   const onClick = () => {
     switchNetworkToArbitrum()
   }
 
   return (
-    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} width='375px'>
+    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90}>
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>
-            Change Network to {NETWORK_LABELS[SupportedChainId.ARBITRUM]}
+            Change Network to {NETWORK_LABELS[DEFAULT_CHAINID]}
           </TEXT.StandardBody>
           {/* <CurrencyLogo src={NETWORK_LOGO[SupportedChainId.ARBITRUM]} /> */}
           <CloseIcon onClick={toggleWalletModal}>
@@ -95,11 +102,11 @@ export default function ChangeNetworkModal() {
           <CardHeader>
             <CardText>
               <IconWrapper size={40}>
-                <img src={NETWORK_LOGO[SupportedChainId.MAINNET]} alt={'Icon'} />
+                <img src={NETWORK_LOGO[chainId ?? SupportedChainId.MAINNET]} alt={'Icon'} />
               </IconWrapper>
               <ArrowRight color="white" size={40} />
               <IconWrapper size={40}>
-                <img src={NETWORK_LOGO[SupportedChainId.ARBITRUM]} alt={'Icon'} />
+                <img src={NETWORK_LOGO[DEFAULT_CHAINID]} alt={'Icon'} />
               </IconWrapper>
             </CardText>
             {/* <SubHeader>subheader</SubHeader> */}

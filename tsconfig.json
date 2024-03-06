@@ -17,5 +17,5 @@
     "jsx": "react-jsx"
   },
   "include": ["src", "custom-types.d.ts"],
-  "exclude": ["src/charting_library"]
+  "exclude": ["src/charting_library", "**/*.test.ts", "**/*.test.js"]
 }

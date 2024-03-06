@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import {TEXT} from '../../theme/theme'
 import {NavLink, useLocation} from 'react-router-dom'
 import {bool} from 'prop-types'
-import {LanguageMenuItem} from '../More/More'
 import {SUPPORTED_LOCALES} from '../../constants/locales'
 import {useActiveLocale} from '../../hooks/useActiveLocale'
 import {useWindowDimensions} from '../../hooks/useWindowDimensions'
@@ -123,10 +122,11 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
   const tabIndex = isHidden ? 0 : -1
 
   let location = useLocation().pathname
+  const HIDE_MENU_ITEMS = location === '/network-checker'
 
   return (
     <StyledMenu onClick={() => setOpen(!open)} open={open} aria-hidden={!isHidden} height={height} width={width} {...props}>
-      {NEW_MOBILE_MENU_FLAG ? (
+      {
         <Content onClick={e => e.stopPropagation()}>
           {account && chainId ? (
             <NetworkLabelContainer>
@@ -142,47 +142,34 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               </NetworkLabel>
             </NetworkLabelContainer>
           )}
-          <StyledInternalLink tabIndex={tabIndex} to={'/markets'}>
-            <StyledMenuLink displayText={'Markets'} linkDestination={'/markets'} currentLocation={location} />
-          </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
-            <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
-          </StyledInternalLink>
-          {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
+
+          {HIDE_MENU_ITEMS ? null : (
+            <>
+              <StyledInternalLink tabIndex={tabIndex} to={'/markets'}>
+                <StyledMenuLink displayText={'Markets'} linkDestination={'/markets'} currentLocation={location} />
+              </StyledInternalLink>
+              <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
+                <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
+              </StyledInternalLink>
+              <StyledInternalLink tabIndex={tabIndex} to={'/leaderboard'}>
+                <StyledMenuLink displayText={'Leaderboard'} linkDestination={'/leaderboard'} currentLocation={location} />
+              </StyledInternalLink>
+              {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
             <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />
           </StyledInternalLink> */}
-          {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
+              {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
             <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
           </StyledInternalLink> */}
-          {/* <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.LB4}`}>
+              {/* <StyledInternalLink tabIndex={tabIndex} to={`/claim/${ClaimId.LB4}`}>
             <StyledMenuLink displayText={'Claim'} linkDestination={'/claimpage'} currentLocation={location} />
           </StyledInternalLink> */}
+            </>
+          )}
+
           <Separator />
           <ExternalLinks mobile isSubMenuOpen={isSubMenuOpen} setIsSubMenuOpen={setIsSubMenuOpen} />
         </Content>
-      ) : (
-        <Content onClick={e => e.stopPropagation()}>
-          <StyledInternalLink tabIndex={tabIndex} to={'/markets'}>
-            <StyledMenuLink displayText={'Markets'} linkDestination={'/markets'} currentLocation={location} />
-          </StyledInternalLink>
-          <StyledInternalLink tabIndex={tabIndex} to={'/positions'}>
-            <StyledMenuLink displayText={'Positions'} linkDestination={'/positions'} currentLocation={location} />
-          </StyledInternalLink>
-          {/* <StyledInternalLink tabIndex={tabIndex} to={'/bridge'}>
-            <StyledMenuLink displayText={'Bridge'} linkDestination={'/bridge'} currentLocation={location} />
-          </StyledInternalLink> */}
-          <Separator />
-
-          <StyledExternalLink href="https://overlay.market">Risks</StyledExternalLink>
-          <Accordion activeAccordionText={'Language'} inactiveAccordionText={'Language'}>
-            {SUPPORTED_LOCALES.map((locale, key) => (
-              <AccordionSelection key={key.toString()}>
-                <LanguageMenuItem locale={locale} active={activeLocale === locale} componentKey={key.toString()} />
-              </AccordionSelection>
-            ))}
-          </Accordion>
-        </Content>
-      )}
+      }
     </StyledMenu>
   )
 }

@@ -2,7 +2,7 @@ import React, {useEffect, useCallback, useMemo, useState} from 'react'
 import {useHistory} from 'react-router-dom'
 import styled from 'styled-components'
 import {BigNumber, BigNumberish} from 'ethers'
-import {RouteComponentProps} from 'react-router'
+import {RouteComponentProps} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
@@ -41,6 +41,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {formatDecimalToPercentage} from '../../utils/formatDecimal'
 import {toScientificNumber} from '../../utils/toScientificNumber'
 import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCallback'
+import {useSetSlippageModalToggle} from '../../state/application/hooks'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -87,8 +88,12 @@ export function Unwind({
   const history = useHistory()
   const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
-  const {account} = useActiveWeb3React()
-  const {positions} = useCurrentWalletPositionsV2(account)
+  const {account, chainId} = useActiveWeb3React()
+  const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
+
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   const {typedValue, setSlippageValue, txnDeadline} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onSetSlippage, onSetTxnDeadline, onResetUnwindState} = useUnwindActionHandlers()
@@ -319,10 +324,12 @@ export function Unwind({
     return false
   }, [customInput, currentValue])
 
+  const toggleSetSlippageModal = useSetSlippageModalToggle()
+
   return !isMarketShutDown ? (
     <InterfaceWrapper>
       <>
-        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <Back arrowSize={16} fontSize={16} />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>
@@ -335,7 +342,7 @@ export function Unwind({
               {isLong !== undefined ? isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice) : <Loader stroke="white" size="12px" />}
             </TEXT.StandardHeader1>
             <Icon
-              onClick={() => setTxnSettingsOpen(!isTxnSettingsOpen)}
+              onClick={toggleSetSlippageModal}
               size={24}
               top={'18px'}
               right={'0px'}
@@ -347,15 +354,6 @@ export function Unwind({
               {isTxnSettingsOpen ? <X color={'#12B4FF'} /> : <Sliders color={'#B9BABD'} />}
             </Icon>
           </ControlInterfaceHeadContainer>
-          <TransactionSettingsModal
-            isTxnSettingsOpen={isTxnSettingsOpen}
-            setSlippageValue={setSlippageValue}
-            isTxnSettingsAuto={isTxnSettingsAuto}
-            txnDeadline={txnDeadline}
-            onSetSlippage={onSetSlippage}
-            handleResetTxnSettings={handleResetTxnSettings}
-            onSetTxnDeadline={onSetTxnDeadline}
-          />
 
           <FlexRow mb="4px" width="100%">
             <TEXT.StandardBody margin={'0 auto 4px 0'} color={'white'}>
@@ -463,7 +461,7 @@ export function Unwind({
   ) : (
     <InterfaceWrapper>
       <>
-        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <Back arrowSize={16} fontSize={16} />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>

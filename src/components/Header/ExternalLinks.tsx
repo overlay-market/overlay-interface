@@ -1,4 +1,5 @@
 import styled from 'styled-components/macro'
+import {useLocation} from 'react-router-dom'
 import {FlexRow} from '../Container/Container'
 import {TEXT, colors} from '../../theme/theme'
 import {ChevronLeft, ChevronRight, Settings} from 'react-feather'
@@ -7,6 +8,7 @@ import {useBuildState} from '../../state/build/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useSetSlippageModalToggle, useWalletModalToggle} from '../../state/application/hooks'
 import {NETWORK_ICONS, NETWORK_LABELS} from './WalletMenu'
+import {DEFAULT_CHAINID} from '../../constants/chains'
 
 export const PlatformLogo = styled.div<{src: string; open?: boolean}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -18,14 +20,14 @@ export const PlatformLogo = styled.div<{src: string; open?: boolean}>`
   transition: all 0.2s linear;
 `
 
-const MenuTitle = styled.div<{open?: boolean}>`
+const MenuTitle = styled.div<{open?: boolean; mobile?: boolean}>`
   opacity: ${({open}) => (open ? '1' : '0')};
   cursor: ${({open}) => (open ? 'pointer' : 'default')};
   font-family: Inter;
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
-  padding: 8px 16px;
+  padding: ${({mobile}) => (mobile ? '12px 16px' : '8px 16px')};
   display: flex;
   align-items: center;
 `
@@ -105,11 +107,12 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
   const {setSlippageValue} = useBuildState()
   const toggleWalletModal = useWalletModalToggle()
   const toggleSetSlippageModal = useSetSlippageModalToggle()
+  let location = useLocation().pathname
+  const HIDE_MENU_ITEMS = location === '/network-checker'
 
   const disconnectWallet = () => {
-    deactivate()
     localStorage.setItem('disconnected', 'true')
-    window.location.reload()
+    deactivate()
   }
 
   const addTokenToMM = async () => {
@@ -174,10 +177,72 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
     }
   }
 
+  const addSepoliaTokenToMM = async () => {
+    const {ethereum} = window
+    if (ethereum && ethereum.request) {
+      let networkSwitched = false
+
+      const chainId = '0x66eee' // Arbitrum Sepolia chain ID
+      const networkAdded = await ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId,
+            chainName: 'Arbitrum Sepolia', // Arbitrum Sepolia network name
+            nativeCurrency: {
+              name: 'ETH',
+              symbol: 'ETH',
+              decimals: 18,
+            },
+            rpcUrls: ['https://arbitrum-sepolia.blockpi.network/v1/rpc/public'], // Arbitrum Sepolia RPC endpoint
+            blockExplorerUrls: ['https://sepolia.arbiscan.io/'], // Arbitrum Sepolia block explorer URL
+          },
+        ],
+      })
+
+      if (!networkAdded) {
+        try {
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{chainId: '0x66eee'}], // Arbitrum Sepolia chain ID
+          })
+          networkSwitched = true
+        } catch (error) {
+          if ((error as any).code === 4902) {
+            console.error('User rejected network switch.')
+          } else {
+            console.error(error)
+          }
+        }
+
+        if (networkSwitched) {
+          try {
+            await ethereum.request({
+              method: 'wallet_watchAsset',
+              params: {
+                // params is expecting an array, even though the correct type is an object.
+                // @ts-ignore
+                type: 'ERC20',
+                options: {
+                  address: '0x3E27fAe625f25291bFda517f74bf41DC40721dA2',
+                  symbol: 'OVL',
+                  decimals: 18,
+                  image: 'https://raw.githubusercontent.com/overlay-market/overlay-interface/staging/public/overlay-logo-white.png',
+                },
+              },
+            })
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+    }
+  }
+
   return (
     <>
       {(!mobile || isSubMenuOpen) && (
-        <MenuTitle open={isSubMenuOpen} onClick={() => (isSubMenuOpen ? setIsSubMenuOpen(false) : null)}>
+        <MenuTitle mobile={mobile} open={isSubMenuOpen} onClick={() => (isSubMenuOpen ? setIsSubMenuOpen(false) : null)}>
           <ChevronLeft size={16} />
           <TEXT.SmallBody ml="4px">Menu</TEXT.SmallBody>
         </MenuTitle>
@@ -244,18 +309,24 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
           <MenuLink mobile={mobile} link={LINKS.GOVERNANCE}>
             <TEXT.SmallBody>Governance</TEXT.SmallBody>
           </MenuLink>
-          <MenuLink mobile={mobile} onClick={addTokenToMM}>
-            <TEXT.SmallBody color={colors(false).dark.tan2}>Add OVL to Wallet</TEXT.SmallBody>
-          </MenuLink>
 
-          <SlippageItem mobile={mobile} onClick={toggleSetSlippageModal}>
-            <SlippageContainer>
-              <Settings size={16} />
-              <TEXT.SmallBody>Slippage</TEXT.SmallBody>
+          {HIDE_MENU_ITEMS ? null : (
+            <>
+              <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addSepoliaTokenToMM : addTokenToMM}>
+                <TEXT.SmallBody color={colors(false).dark.tan2}>Add OVL to Wallet</TEXT.SmallBody>
+              </MenuLink>
 
-              <TEXT.SmallBody marginLeft="8px">{setSlippageValue}%</TEXT.SmallBody>
-            </SlippageContainer>
-          </SlippageItem>
+              <SlippageItem mobile={mobile} onClick={toggleSetSlippageModal}>
+                <SlippageContainer>
+                  <Settings size={16} />
+                  <TEXT.SmallBody>Slippage</TEXT.SmallBody>
+
+                  <TEXT.SmallBody marginLeft="8px">{setSlippageValue}%</TEXT.SmallBody>
+                </SlippageContainer>
+              </SlippageItem>
+            </>
+          )}
+
           {account && (
             <MenuLink mobile={mobile} onClick={disconnectWallet}>
               <TEXT.SmallBody>Disconnect Wallet</TEXT.SmallBody>

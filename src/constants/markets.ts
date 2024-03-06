@@ -16,6 +16,17 @@ import CVIXLogo from '../assets/images/tokens/Crypto-VIX-logo.png'
 import csgoLogo from '../assets/images/tokens/csgo-logo.svg'
 import BtcdLogo from '../assets/images/tokens/bitcoin-dominance-logo.png'
 import OVSupplyLogo from '../assets/images/tokens/ov-supply-logo.png'
+import EthBurnLogo from '../assets/images/tokens/eth-burn.png'
+import EthDominanceLogo from '../assets/images/tokens/eth-dominance.png'
+import MiladyNewLogo from '../assets/images/tokens/milady.png'
+import BtcFrogsLogo from '../assets/images/tokens/btc-frogs.png'
+import NodeMonkesLogo from '../assets/images/tokens/node-monkes.png'
+import EthVixLogo from '../assets/images/tokens/eth-vix.png'
+import FlippeningLogo from '../assets/images/tokens/flippening.png'
+import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
+import QuantumCatsLogo from '../assets/images/tokens/quantum-cats.png'
+import {shortenAddress} from '../utils/web3'
+import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
 type CurrencyMap = {[marketQuoteToken: string]: string}
 const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
@@ -25,6 +36,7 @@ const PRICE_CURRENCY_FROM_QUOTE: CurrencyMap = {
   ETH: 'Ξ',
   WETH: 'Ξ',
   AETH: 'Ξ',
+  BTC: '₿',
 }
 
 export type MarketChartData = {
@@ -88,25 +100,56 @@ export const MarketChartMap: {[name: string]: MarketChartData} = {
 export type MarketDetailsData = {
   marketName: string
   logo: string
-  currency?: string
+  currency: string
   disabled?: boolean
+  descriptionText?: string
+  indexesConstruction?: Array<string>
+  fullLogo?: string
+  oracleLogo?: string
+  proposedBy?: {
+    name?: string
+    url?: string
+  }
+  approved?: {
+    name?: string
+    url?: string
+  }
+  contract?: {
+    name?: string
+    url?: string
+  }
+  sources?: Array<{name?: string; url?: string}>
+  additionalInfo?: {
+    name?: string
+    url?: string
+  }
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9': {
-    marketName: 'CSGO Sepolia / USD',
+    marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    descriptionText:
+      "TL;DR -- The market cap of the top 5000 most commonly traded Counter Strike skins.\n\nThe source of data is the API provided by several skin aggregators. \n\nIn order to be robust, yet representative, the methodology relies on a set of criteria to select the items that will be included in the index. The criteria are as follows:\n\nHighly Traded: The index is limited to the top 5000 most traded items. The most traded item is the one that has the most number of unique minimum listing prices in the analysis period.\n\nMinimum Number of Listings: The current version of the index is restricted to items with at least 100 listings on all days of the analysis period. This ensures that the items are not too concentrated in the hands of a few traders. Further, the number of listings per item is set to the minimum number of listings observed for that item in the analysis period.\n\nDetermining the Value of Each Item: The value for each item is derived using two key metrics from the API. Number of Listings, and Minimum Price.\n\nNumber of Listings: This represents the total number listings across all tracked exchanges. It captures the supply of that item in the market.\n\nMinimum Price: Among all the listings for an item, this is the lowest price at which the item is being offered.\n\nThe 'Market Capitalization' for each item is then calculated as: MCap = Number of Listings * Minimum Price. The sum of all these MCaps at a point in time is the index value for that point in time. However, to restrict manipulability and ensure robustness of the index over time, some further safety measures are imposed that may force the index value to diverge from the pure sum of all MCaps.",
+    indexesConstruction: ['Most traded Counter Strike 2 skins'],
+    contract: {
+      name: shortenAddress('0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9'),
+      url: 'https://sepolia.arbiscan.io/address/0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9',
+    },
   },
   '0x6bd76270a8e8e0c3c030f050134389777a3a7d7e': {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    proposedBy: {},
   },
   '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b': {
     marketName: 'Crypto Volatility Index',
     logo: CVIXLogo,
     disabled: true,
+    currency: '',
   },
   '0xf2ddf700fc481be8ce1f228da5c913f1a25a2d2d': {
     marketName: 'ETH Burn Rate',
@@ -115,7 +158,30 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   },
   '0x553de578e68a4faa55d4522665cb2d2d53390d22': {
     marketName: 'BTC Dominance',
-    logo: BitcoinLogo,
+    logo: BtcdLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    // indexesConstruction: ['Chainlink', 'Coinmarketcap', 'Cryptocompare', 'More'],
+    // fullLogo: BtcdFull,
+    // proposedBy: {name: '@VitalikButermin', url: 'https://twitter.com/VitalikButermin'},
+    // approved: {
+    //   name: '11.5.24 - OGP 28',
+    //   url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
+    // },
+    contract: {
+      name: shortenAddress('0x553de578e68a4faa55d4522665cb2d2d53390d22'),
+      url: 'https://sepolia.arbiscan.io/address/0x553de578e68a4faa55d4522665cb2d2d53390d22',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
+  },
+  '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
+    marketName: 'BTC Dominance',
+    logo: BtcdLogo,
+    currency: '',
+    proposedBy: {},
   },
   '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
     marketName: 'BAYC / WETH',
@@ -195,6 +261,62 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
     disabled: true,
   },
+  '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e': {
+    marketName: 'ETH Dominance',
+    logo: EthDominanceLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    disabled: false,
+    contract: {
+      name: shortenAddress('0x3a204d03e9b1fee01b8989333665b6c46cc1f79e'),
+      url: 'https://sepolia.arbiscan.io/address/0x3a204d03e9b1fee01b8989333665b6c46cc1f79e',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
+  },
+  '0xc7f3240d983fcab7a571be484d2b4da43b95efee': {
+    marketName: 'Bitcoin Frogs',
+    logo: BtcFrogsLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+  },
+  '0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae': {
+    marketName: 'NodeMonkes',
+    logo: NodeMonkesLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+  },
+  '0x4edfb4057f3a448b2704df1a3665db4ae6371b69': {
+    marketName: 'Quantum Cats',
+    logo: QuantumCatsLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+  },
+  // '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {
+  //   marketName: 'Flippening',
+  //   logo: FlippeningLogo,
+  //   currency: '',
+  //   disabled: false,
+  //   contract: {
+  //     name: shortenAddress('0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6'),
+  //     url: 'https://sepolia.arbiscan.io/address/0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6',
+  //   },
+  //   sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+  //   // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+  //   descriptionText:
+  //     "TL;DR -- The Bitcoin market capitalization divided by the Ethereum market capitalization. \n\nThe Flippening... will it ever happen? Will Ethereum ever take the #1 spot as the biggest blockchain? It's already happened for total transactions and transactions fees. But for the market cap? Obviously that's the only thing that matters. \n\nData is sourced from Chainlink, Coinmarketcap, Cryptocompare, and others.",
+  // },
 }
 
 type ComingSoonMarketsData = MarketDetailsData & {
@@ -202,16 +324,30 @@ type ComingSoonMarketsData = MarketDetailsData & {
 }
 
 export const ComingSoonMarkets: {[address: string]: ComingSoonMarketsData} = {
-  '222': {
-    marketName: 'BTC Dominance',
-    logo: BtcdLogo,
+  '3331': {
+    marketName: 'OV Supply',
+    logo: OVSupplyLogo,
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,
   },
-  '333': {
-    marketName: 'OV Supply',
-    logo: OVSupplyLogo,
+  '3332': {
+    marketName: 'Milady Floor Price',
+    logo: MiladyLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3335': {
+    marketName: 'ETH Burn Rate',
+    logo: EthBurnLogo,
+    currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    disabled: false,
+    isComingSoon: true,
+  },
+  '3338': {
+    marketName: 'Eth Volatility Index',
+    logo: EthVixLogo,
     currency: '', // currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
     disabled: false,
     isComingSoon: true,

@@ -7,8 +7,6 @@ import {useDarkModeManager} from '../../state/user/hooks'
 import {FlexRow} from '../Container/Container'
 import {enableLock, disableLock} from '../../utils/scrollLock'
 import {TEXT, colors} from '../../theme/theme'
-import More from '../More/More'
-import Burger from '../Hamburger/Hamburger'
 import SlideMenu from '../SlideMenu/SlideMenu'
 import Web3Status from '../Web3Status/Web3Status'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
@@ -23,15 +21,20 @@ export const HeaderContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: auto;
-  max-width: 1200px;
+  max-width: 1440px;
+  box-sizing: border-box;
   margin: auto;
-  padding: 24px 16px 24px;
+  padding: 24px 8px 24px;
   position: sticky;
   z-index: 420;
 
   ${({theme}) => theme.mediaWidth.minSmall`
     width: auto;
-    padding: 24px 16px;
+    padding: 24px 24px;
+  `};
+  ${({theme}) => theme.mediaWidth.minMedium`
+    width: auto;
+    padding: 24px 32px;
   `};
 `
 
@@ -174,15 +177,14 @@ const SoonTag = styled.div`
 export default function Header() {
   const [darkMode] = useDarkModeManager()
   const [open, setOpen] = useState<boolean>(false)
+  let location = useLocation().pathname
 
   const menuId = 'main-menu'
 
-  const NEW_HEADER_FLAG = true
   const HIDE_POWER_CARDS = true
   const HIDE_BUY_OVL = true
   const HIDE_EARN_DROPDOWN_FLAG = true
-
-  let location = useLocation().pathname
+  const HIDE_MENU_ITEMS = location === '/network-checker'
 
   // close menu when at new route
   useEffect(() => {
@@ -214,22 +216,26 @@ export default function Header() {
           )}
         </IconButton>
       </LogoContainer>
-      <StyledLink to={'/markets'}>
-        <TEXT.Menu>Markets</TEXT.Menu>
-      </StyledLink>
-      <StyledLink to={'/positions'}>
-        <TEXT.Menu>Positions</TEXT.Menu>
-      </StyledLink>
-      {/* <StyledLink to={'/stake'}>
-        <TEXT.Menu>Stake</TEXT.Menu>
-      </StyledLink> */}
-      {/* <StyledLink to={'/bridge'}>
-        <TEXT.Menu>Bridge</TEXT.Menu>
-      </StyledLink> */}
+      {HIDE_MENU_ITEMS ? null : (
+        <>
+          <StyledLink to={'/markets'}>
+            <TEXT.Menu>Markets</TEXT.Menu>
+          </StyledLink>
+          <StyledLink to={'/positions'}>
+            <TEXT.Menu>Positions</TEXT.Menu>
+          </StyledLink>
+          {/* <StyledLink to={'/stake'}>
+               <TEXT.Menu>Stake</TEXT.Menu>
+            </StyledLink> */}
+          {/* <StyledLink to={'/bridge'}>
+                <TEXT.Menu>Bridge</TEXT.Menu>
+              </StyledLink> */}
 
-      {/* <StyledLink to={`/claim/${ClaimId.LB4}`}>
-        <TEXT.Menu>Claim</TEXT.Menu>
-      </StyledLink> */}
+          {/* <StyledLink to={`/claim/${ClaimId.LB4}`}>
+                <TEXT.Menu>Claim</TEXT.Menu>
+              </StyledLink> */}
+        </>
+      )}
 
       {HIDE_POWER_CARDS ? null : (
         <PowerCardLink to={'/powercards'}>
@@ -238,13 +244,15 @@ export default function Header() {
       )}
 
       {HIDE_EARN_DROPDOWN_FLAG ? (
-        <>
-          {/* <StyledLink to={'/leaderboard'}>
-            <Trans>
+        HIDE_MENU_ITEMS ? null : (
+          <>
+            <StyledLink to={'/leaderboard'}>
+              {/* <Trans> */}
               <TEXT.Menu>Leaderboard</TEXT.Menu>
-            </Trans>
-          </StyledLink> */}
-        </>
+              {/* </Trans> */}
+            </StyledLink>
+          </>
+        )
       ) : (
         <Dropdown active={location === '/stake' || location === '/leaderboard' || location === '/referrals'}>
           <DropdownContent>
@@ -279,8 +287,8 @@ export default function Header() {
           </UnstyledLink>
         )}
         <Web3Status />
-        {NEW_HEADER_FLAG ? <WalletMenu /> : <More />}
-        {NEW_HEADER_FLAG ? <MobileWalletMenu open={open} setOpen={setOpen} /> : <Burger open={open} setOpen={setOpen} aria-controls={menuId} />}
+        <WalletMenu />
+        <MobileWalletMenu open={open} setOpen={setOpen} />
       </AccountContainer>
       <SlideMenu open={open} setOpen={setOpen} />
       <SetSlippageModal />

@@ -40,18 +40,7 @@ export function usePositionOi(
     return difference
   }, [baseTokenDecimals, quoteTokenDecimals])
 
-  const parsedOi = useMemo(() => {
-    if (!oi && !ethers.BigNumber.isBigNumber(oi)) return null
-    return oi.div(ethers.constants.WeiPerEther)
-  }, [oi])
-
   return useMemo(() => {
-    if (!parsedOi) {
-      return {
-        formattedOi: undefined,
-        rawOi: undefined,
-      }
-    }
     if (decimals) {
       return {
         formattedOi: formatBigNumberUsingDecimalsToNumber(oi, 18, 4),
@@ -71,9 +60,8 @@ export function usePositionOi(
       }
     }
     return {
-      formattedOi: formatBigNumberUsingDecimalsToNumber(parsedOi, marketTokensDecimalsDifference, 4),
+      formattedOi: formatBigNumberUsingDecimalsToNumber(oi, marketTokensDecimalsDifference, 4),
       rawOi: oi,
     }
-
-  }, [parsedOi, marketTokensDecimalsDifference, oi, baseTokenDecimals, decimals])
+  }, [marketTokensDecimalsDifference, oi, baseTokenDecimals, decimals])
 }

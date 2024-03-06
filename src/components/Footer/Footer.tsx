@@ -4,6 +4,7 @@ import {Image} from 'rebass'
 import OverlayLogoDark from '../../assets/images/overlay-logo-dark.png'
 import {LINKS} from '../../constants/links'
 import {TEXT, colors} from '../../theme/theme'
+import {useLocation} from 'react-router-dom'
 
 const StyledFooter = styled.footer`
   position: absolute;
@@ -21,10 +22,10 @@ const FooterContainer = styled.div`
   display: flex;
   flex-direction: column;
 
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
+  ${({theme}) => theme.mediaWidth.minSmall`
     flex-direction: row;
     justify-content: space-between;
-    padding: 40px 24px;
+    padding: 40px 50px 40px 24px;
   `}
 
   ${({theme}) => theme.mediaWidth.minLarge`
@@ -50,7 +51,7 @@ const CopyrightText = styled(TEXT.SmallBody)`
   margin-bottom: 32px !important;
   color: ${colors(false).dark.grey1} !important;
 
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
+  ${({theme}) => theme.mediaWidth.minSmall`
     margin-bottom: 0px !important;
     color: ${colors(true).dark.white} !important;
   `}
@@ -140,6 +141,11 @@ const SOCIAL_LINKS: Array<LinkAsset> = [
   },
 ]
 
+const CHECKCLAIM_LINK = {
+  label: 'Check Claim',
+  href: './#/claim-checker',
+}
+
 const LinkSection = ({title, links}: {title: string; links: Array<LinkAsset>}) => {
   return (
     <LinkColumn>
@@ -157,6 +163,8 @@ const LinkSection = ({title, links}: {title: string; links: Array<LinkAsset>}) =
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+  let location = useLocation().pathname
+  if (location === '/network-checker') return null
 
   return (
     <StyledFooter>
@@ -177,6 +185,9 @@ const Footer = () => {
           {/* About */}
           <AboutContainer>
             <LinkSection title="About" links={ABOUT_LINKS} />
+            <StyledLink key={CHECKCLAIM_LINK.label} href={CHECKCLAIM_LINK.href} underline="none">
+              <TEXT.SmallBody lineHeight={'160%'}>{CHECKCLAIM_LINK.label}</TEXT.SmallBody>
+            </StyledLink>
           </AboutContainer>
 
           {/* Socials */}

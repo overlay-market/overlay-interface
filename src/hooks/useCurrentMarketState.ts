@@ -45,10 +45,10 @@ export interface ParsedMarketStateDetails extends MarketStateDetails {
 export interface MarketStateResults {
   loading: boolean
   error: boolean
-  markets: ParsedMarketStateDetails[] | []
+  markets: ParsedMarketStateDetails[]
 }
 
-export function useCurrentMarketState(marketsData: AdditionalMarketData[] | undefined, sigFigs: number = 18) {
+export function useCurrentMarketState(marketsData: AdditionalMarketData[] | undefined, sigFigs: number = 18): MarketStateResults {
   const peripheryContract = useV1PeripheryContract()
   const inputs = useMemo(() => (marketsData ? marketsData.map(market => [market.id]) : []), [marketsData])
   const results = useSingleContractMultipleData(peripheryContract, 'marketState', inputs)

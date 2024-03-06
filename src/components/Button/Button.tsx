@@ -1,5 +1,6 @@
 import styled from 'styled-components/macro'
 import {Button as RebassButton, ButtonProps as ButtonPropsOriginal} from 'rebass/styled-components'
+import {colors} from '../../theme/theme'
 
 type ButtonProps = Omit<ButtonPropsOriginal, 'css'>
 
@@ -60,7 +61,7 @@ export const ApproveTransactionButton = ({attemptingTransaction, onClick}: {atte
     {attemptingTransaction ? (
       <PendingActionButton>Pending Confirmation...</PendingActionButton>
     ) : (
-      <PendingActionButton onClick={onClick}>Approve</PendingActionButton>
+      <PendingActionButton onClick={onClick}>Approve OV</PendingActionButton>
     )}
   </>
 )
@@ -94,3 +95,24 @@ export const MenuButton = styled(BaseTemplateButton)`
 
 // @TO-DO: Refactor Green/Red Buttons from TermsOfServiceModal
 export const SolidColorButton = styled(BaseTemplateButton)``
+
+export const LoadMoreButton = styled(RebassButton)<
+  {
+    isDisabled?: boolean
+  } & ButtonProps
+>`
+  width: 135px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: ${({isDisabled}) => (isDisabled ? `${colors(true).dark.grey3} !important` : `${colors(true).dark.blue2}`)};
+  background: ${({isDisabled}) => (isDisabled ? `rgba(46, 51, 67, 0.2) !important` : `${colors(true).dark.grey4}`)};
+  padding: 12px 20px;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: Inter;
+`

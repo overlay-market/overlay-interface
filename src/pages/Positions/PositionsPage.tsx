@@ -7,10 +7,10 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {PageContainer} from '../../components/Container/Container'
 import {TEXT} from '../../theme/theme'
 import {FlexRow} from '../../components/Container/Container'
-import {usePositionsTableDetails, usePositionsTableData} from '../../state/build/hooks'
+import {usePositionsTableDetails, usePositionsTableData, isOpenPositionsQuery, isUnwindsQuery, isLiquidatesQuery} from '../../state/build/hooks'
 import {useTotalMarketsData} from '../../state/markets/hooks'
 import {useMarketDetails} from '../../hooks/useMarketDetails'
-import {useCurrentMarketState} from '../../hooks/useCurrentMarketState'
+import {ParsedMarketStateDetails, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {OpenPosition} from './OpenPosition'
 import {UnwindsTransactions} from './UnwindsTransactions'
 import {LiquidatesTransactions} from './LiquidatesTransactions'
@@ -49,7 +49,7 @@ interface PositionsTableProps {
   positionStatus: PositionStatus
   initialCollateral?: string
   rowsCount: number
-  marketsData: any
+  marketsData: ParsedMarketStateDetails[]
 }
 
 export enum PositionStatus {
@@ -135,11 +135,11 @@ const StyledTableCell = styled(TableCell)`
 const ROWS_PER_PAGE = [10, 20, 40, 50]
 
 const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
-  const {account} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
-  const {positionsTableData, isUninitialized, isLoading} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
     (page - 1) * rowsPerPage,
@@ -147,6 +147,10 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     undefined,
   )
   const [showLoader, setShowLoader] = useState(false)
+
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   // Show loader only on page change
   useEffect(() => {
@@ -179,18 +183,25 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
     const rows =
       positionStatus === PositionStatus.Open
-        ? positionsTableData.account?.positions
+        ? isOpenPositionsQuery(positionsTableData)
+          ? positionsTableData.account?.positions ?? []
+          : []
         : positionStatus === PositionStatus.Closed
-        ? positionsTableData.account?.unwinds
+        ? isUnwindsQuery(positionsTableData)
+          ? positionsTableData.account?.unwinds ?? []
+          : []
         : positionStatus === PositionStatus.Liquidated
-        ? positionsTableData.account?.liquidates
+        ? isLiquidatesQuery(positionsTableData)
+          ? positionsTableData.account?.liquidates ?? []
+          : []
         : []
 
-    return rows && rows.length > 0 ? (
+    console.log({rows, positionsTableData, idOpen: isOpenPositionsQuery(positionsTableData)})
+    return account && rows && rows.length > 0 ? (
       <>
         {rows.map((row: any) => {
           const marketAddress = positionStatus === PositionStatus.Open ? row.market.id : row.position.market.id
-          const marketState = marketsData.filter((market: any) => market.marketAddress === marketAddress)[0]
+          const marketState = marketsData.filter((market: ParsedMarketStateDetails) => market.marketAddress === marketAddress)[0]
 
           if (positionStatus === PositionStatus.Open) {
             return (
@@ -235,7 +246,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
         })}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData])
+  }, [positionStatus, marketsData, positionsTableData, account])
 
   return (
     <Container>
@@ -317,12 +328,12 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 }
 
 export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, marketsData}: PositionsTableProps) => {
-  const {account} = useActiveWeb3React()
+  const {account, chainId} = useActiveWeb3React()
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const params = useParams<{marketId: string}>()
-  const {positionsTableData, isUninitialized, isLoading, numberOfPositions} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isLoading, numberOfPositions, refetch} = usePositionsTableData(
     account,
     1000,
     0,
@@ -330,6 +341,10 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     params?.marketId,
   )
   const [showLoader, setShowLoader] = useState(false)
+
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   // Show loader only on page change
   useEffect(() => {
@@ -354,7 +369,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   }
 
   const pageCount = useMemo(() => {
-    const positionsAmount = positionsTableData && positionsTableData.account ? positionsTableData.account.positions : []
+    const positionsAmount = positionsTableData && isOpenPositionsQuery(positionsTableData) ? positionsTableData.account?.positions ?? [] : []
     return Math.ceil(positionsAmount.length / rowsPerPage)
   }, [positionsTableData, rowsPerPage])
 
@@ -362,16 +377,18 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     if (!positionsTableData) return null
 
     const rows =
-      positionStatus === PositionStatus.Build ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage) : []
+      positionStatus === PositionStatus.Build && isOpenPositionsQuery(positionsTableData)
+        ? positionsTableData.account?.positions.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+        : []
 
     setShowLoader(false)
 
-    return rows && rows.length > 0 ? (
+    return account && rows && rows.length > 0 ? (
       <>
         {rows
           .map((row: any) => {
             const marketAddress = positionStatus === PositionStatus.Build ? row.market?.id : row.position?.market?.id
-            const marketState = marketsData.find((market: any) => market.marketAddress === marketAddress)
+            const marketState = marketsData[0]
 
             if (positionStatus === PositionStatus.Build) {
               if (marketAddress === params?.marketId) {
@@ -393,7 +410,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
           .filter((position: any) => position !== null)}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData, params, page, rowsPerPage])
+  }, [positionStatus, marketsData, positionsTableData, params, page, rowsPerPage, account])
 
   return (
     <Container>
@@ -475,11 +492,23 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
 }
 
 const Positions = () => {
-  const {account} = useActiveWeb3React()
-  const {positionsTableDetails} = usePositionsTableDetails(account)
-  const {markets} = useTotalMarketsData()
+  const {account, chainId} = useActiveWeb3React()
+  const {
+    positionsTableDetails,
+    isUninitialized: isUninitializedPosTableDetails,
+    refetch: refetchPositionsTableDetails,
+  } = usePositionsTableDetails(account)
+  const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData} = useCurrentMarketState(marketDetails)
+
+  useEffect(() => {
+    !isUninitializedPosTableDetails && refetchPositionsTableDetails()
+  }, [chainId, isUninitializedPosTableDetails, refetchPositionsTableDetails])
+
+  useEffect(() => {
+    !isUninitializedMarkets && refetchMarkets()
+  }, [chainId, isUninitializedMarkets, refetchMarkets])
 
   return (
     <PageContainer>

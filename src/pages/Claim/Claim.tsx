@@ -184,7 +184,7 @@ const Claim = ({
                     <FlexColumn padding="16px 16px 32px">
                       <TEXT.SmallBody marginRight="auto">
                         Wrong network, switch to{' '}
-                        {MERKLE_DISTRIBUTOR_CHAINID[claimId] === SupportedChainId.ARBITRUM_SEPOLIA ? 'Arbitrum-Sepolia' : 'Arbitrum-One'}
+                        {MERKLE_DISTRIBUTOR_CHAINID[claimId] === SupportedChainId.ARBITRUM_SEPOLIA ? 'Arbitrum-Sepolia' : 'Arbitrum Mainnet'}
                       </TEXT.SmallBody>
                     </FlexColumn>
                   </ClaimModalContainer>

@@ -1,7 +1,7 @@
 import {useEffect, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {BigNumber} from 'ethers'
-import {RouteComponentProps} from 'react-router'
+import {RouteComponentProps} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
@@ -54,8 +54,12 @@ export function ClosedPosition({
     params: {unwindId, positionId},
   },
 }: RouteComponentProps<{unwindId: string; positionId: string}>) {
-  const {account} = useActiveWeb3React()
-  const {positions} = useCurrentWalletPositionsV2(account)
+  const {account, chainId} = useActiveWeb3React()
+  const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
+
+  useEffect(() => {
+    !isUninitialized && refetch()
+  }, [chainId, isUninitialized, refetch])
 
   const {onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
 
@@ -118,7 +122,7 @@ export function ClosedPosition({
   return (
     <InterfaceWrapper>
       <>
-        <Back arrowSize={16} textSize={16} margin="0 auto 64px 0" />
+        <Back arrowSize={16} fontSize={16} />
         <ControlInterfaceContainer onSubmit={(e: any) => e.preventDefault()} as={'form'}>
           <ControlInterfaceHeadContainer>
             <TEXT.StandardHeader1 fontWeight={700} m={'0 4px 4px 4px'}>

@@ -7,7 +7,7 @@ import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
 import HeaderHamburger from '../HeaderHamburger/HeaderHamburger'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {SupportedChainId} from '../../constants/chains'
+import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
 import ExternalLinks from './ExternalLinks'
 
 export const PlatformLogo = styled.div<{src: string; open?: boolean}>`
@@ -29,7 +29,7 @@ const RelativeContainer = styled.div`
   `};
 `
 
-const WalletMenuButton = styled.button`
+const WalletMenuButton = styled.div`
   display: flex;
   align-items: center;
   padding: 8px;
@@ -154,7 +154,7 @@ export default function WalletMenu() {
             {account && chainId && supportedChainId ? (
               <PlatformLogo open={isMenuOpen} src={NETWORK_ICONS[chainId]} />
             ) : (
-              supportedChainId && <PlatformLogo open={isMenuOpen} src={ArbitrumLogo} />
+              supportedChainId && <PlatformLogo open={isMenuOpen} src={NETWORK_ICONS[DEFAULT_CHAINID]} />
             )}
             <HeaderHamburger
               open={isMenuOpen}

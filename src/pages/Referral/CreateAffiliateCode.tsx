@@ -8,14 +8,14 @@ import {TriggerActionButton} from '../../components/Button/Button'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useReferralAccountData} from '../../state/referral/hooks'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {REFERRAL_AFFILIATE_SIGNATURES} from '../../constants/applications'
+import {REWARDS_API} from '../../constants/applications'
 import {useReferralCreateAffiliateCallback} from '../../hooks/useReferralCreateAffiliate'
 import {useEffect, useState} from 'react'
 
 export default function ConfirmAffiliateModal({isOpen, onConfirm, onDismiss}: {isOpen: boolean; onConfirm?: () => void; onDismiss?: () => void}) {
   const {account} = useActiveWeb3React()
   const {referralAccountData} = useReferralAccountData(account)
-  const url = `${REFERRAL_AFFILIATE_SIGNATURES}/${account?.toLowerCase()}`
+  const url = `${REWARDS_API}/signatures/${account?.toLowerCase()}`
   const [signature, setSignature] = useState('')
   const {callback: referralCodeCallback, error, state} = useReferralCreateAffiliateCallback(signature)
   const referralPositionsChecker =

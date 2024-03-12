@@ -1,9 +1,6 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
 import {Box, Tooltip} from '@material-ui/core'
-import React, {useState} from 'react'
-import ConfirmAffiliateModal from '../../pages/Referral/CreateAffiliateCode'
-import {useReferralClaimCallback} from '../../hooks/useReferralClaim'
 
 const Container = styled.div<{isLeaderboardCard?: boolean}>`
   display: flex;
@@ -23,15 +20,18 @@ const PercentageChangeBox = styled.div<{positive: boolean}>`
 
 const BoldHeader1 = styled(TEXT.BoldHeader1)`
   font-size: 16px !important;
-
-  ${({theme}) => theme.mediaWidth.minMedium`
+  white-space: 'nowrap';
+  margin-top: '15px';
+  overflow: 'hidden';
+  text-overflow: 'ellipsis';
+  max-width: '250px'
+    ${({theme}) => theme.mediaWidth.minMedium`
     font-size: 20px !important;
   `}
-
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
+    ${({theme}) => theme.mediaWidth.minExtraSmall`
     padding: 4px 0px;
     flex-direction: row;
-  `}
+  `};
 `
 
 interface DataProps {
@@ -46,10 +46,25 @@ interface DataProps {
   button?: () => void
   buttonText?: string
   showModal?: (showModalTrigger: boolean) => void
+  tootip?: string
+  hasClaimableReward?: boolean
 }
 
 const OverviewCard = (props: DataProps) => {
-  const {title, value, valueType, percentageChange, period, isOver1000OpenPositions, valueTypeLink, button, buttonText, showModal} = props
+  const {
+    title,
+    value,
+    valueType,
+    percentageChange,
+    period,
+    isOver1000OpenPositions,
+    valueTypeLink,
+    button,
+    buttonText,
+    showModal,
+    tootip,
+    hasClaimableReward,
+  } = props
 
   const copyText = () => {
     if (navigator.clipboard && value) {
@@ -116,15 +131,15 @@ const OverviewCard = (props: DataProps) => {
               </TEXT.Supplemental>
             )}
             {buttonText && (
-              <TEXT.Supplemental
-                disabled={!button}
-                color="#c4c4c4"
-                ml={1}
-                onClick={button}
-                style={{color: button ? colors(false).dark.blue2 : '#c4c4c4', cursor: button ? 'pointer' : ''}}
-              >
-                {buttonText}
-              </TEXT.Supplemental>
+              <Tooltip title="Add" placement="top">
+                <TEXT.Supplemental
+                  ml={1}
+                  onClick={hasClaimableReward ? button : undefined}
+                  style={{color: hasClaimableReward ? colors(false).dark.blue2 : '#c4c4c4', cursor: hasClaimableReward ? 'pointer' : ''}}
+                >
+                  {buttonText}
+                </TEXT.Supplemental>
+              </Tooltip>
             )}
           </Box>
         </Box>

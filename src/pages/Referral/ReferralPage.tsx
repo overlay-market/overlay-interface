@@ -8,11 +8,12 @@ import {PageContainer} from '../../components/Container/Container'
 import ReferralModal from './ReferralModal'
 import {RebatesTable} from './RebatesTable'
 import {useHistory} from 'react-router-dom'
-import {useReferralAccountData, useTokenTransfersReferralData} from '../../state/referral/hooks'
+import {useReferralAccountData} from '../../state/referral/hooks'
 import {useEffect, useMemo, useState} from 'react'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useReferralClaimCallback} from '../../hooks/useReferralClaim'
 import ConfirmAffiliateModal from './CreateAffiliateCode'
+import {REWARDS_API} from '../../constants/applications'
 
 const Container = styled.div<{mt?: string}>`
   display: flex;
@@ -45,7 +46,27 @@ export const ReferralPage = () => {
   const referralPositionsChecker =
     referralAccountData?.account?.referralPositions !== undefined && referralAccountData?.account?.referralPositions.length > 0
   const [showModalTrigger, setShowModalTrigger] = useState(false)
+  const [reward, setReward] = useState('')
+  const [proof, setProof] = useState([''])
+  const rewardsUrl = `${REWARDS_API}/rewards/${account?.toLowerCase() + '?campaign=referral'}`
 
+  const {callback: referralClaimCallback, error, state} = useReferralClaimCallback(reward, proof)
+
+  console.log({referralClaimCallback, error, state})
+
+  useEffect(() => {
+    fetch(rewardsUrl, {method: 'GET'})
+      .then(response => response.json())
+      .then(data => {
+        setReward((data.reward ?? ['']).toString())
+        setProof(data.proof ?? [''])
+      })
+      .catch(error => {
+        console.error('Error:', error)
+      })
+  }, [rewardsUrl])
+
+  console.log({reward, proof})
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isLoading, refetch, account, isUninitialized])
@@ -53,15 +74,6 @@ export const ReferralPage = () => {
   useEffect(() => {
     setAffiliateLink(window.location.origin + '/#/trader/' + account)
   }, [account])
-
-  const {
-    callback: referralClaimCallback,
-    error,
-    state,
-  } = useReferralClaimCallback('9803090034464338', [
-    '0xb3cd99d9bc50c7e40111de12a17b6127eec314b90b6904c3f395d5da85e3e4c4',
-    '0x51b58c56e74e1de37212c6f1120a9e528a53a3ceeaebdf8f9e9912763b0d83db',
-  ])
 
   const cardsData = useMemo(
     () => [
@@ -77,6 +89,8 @@ export const ReferralPage = () => {
         valueType: 'OVL',
         buttonText: 'Claim ->',
         button: referralClaimCallback,
+        hasClaimableReward: Number(reward) > 0,
+        tootip: reward + ' available for claiming.',
       },
       {
         title: 'Total Rewards earned',
@@ -144,6 +158,8 @@ export const ReferralPage = () => {
                       buttonText={card.buttonText ?? undefined}
                       button={card.button ?? undefined}
                       showModal={(showModalTrigger: boolean) => setShowModalTrigger(showModalTrigger)}
+                      tootip={card.tootip}
+                      hasClaimableReward={card.hasClaimableReward}
                     />
                   </StyledGrid>
                 )

@@ -31,22 +31,7 @@ export const RebatesTable = () => {
     !isUninitializedTokenTransfers && refetchTokenTransfers()
   }, [chainId, isLoadingTokenTransers, refetchTokenTransfers, account, isUninitializedTokenTransfers])
 
-  console.log({tokenTransfersData})
-
   const sortedValues = useMemo(() => {
-    interface Values {
-      Date: string
-      Amount: number
-      Arbiscan: string
-      [key: string]: string | number
-    }
-
-    const values: Values = {
-      Date: '01/01/2021',
-      Amount: 0,
-      Arbiscan: 'https://arbiscan.io',
-    }
-
     return tokenTransfersData?.tokenTransfers?.map(transfer => {
       return referralPositionsColumns.map(column => {
         switch (column) {
@@ -70,8 +55,6 @@ export const RebatesTable = () => {
       })
     })
   }, [tokenTransfersData])
-
-  console.log({sortedValues})
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen)
@@ -114,11 +97,12 @@ export const RebatesTable = () => {
                     </TableRow>
                   )
                 })}
-              {!sortedValues && (
-                <TEXT.StandardBody mt={'16px'} color="#858585">
-                  No rebate distribution yet.
-                </TEXT.StandardBody>
-              )}
+              {!sortedValues ||
+                (sortedValues.length === 0 && (
+                  <TEXT.StandardBody mt={'16px'} color="#858585">
+                    No rebate distribution yet.
+                  </TEXT.StandardBody>
+                ))}
             </TableBody>
           </RebatesStyledTable>
         </TableContainer>

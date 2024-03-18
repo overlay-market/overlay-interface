@@ -10,6 +10,7 @@ import {ethers} from 'ethers'
 import styled from 'styled-components'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useWalletModalToggle} from '../../state/application/hooks'
+import ReferralModal from './ReferralModal'
 
 const useStyles = makeStyles(theme => ({
   toggleButton: {
@@ -111,7 +112,7 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
     ethers.utils.isAddress(referralLink) || referralLink.length === 0 ? setValidAddress(false) : setValidAddress(true)
   }, [referralLink])
 
-  const {callback: referralCodeCallback} = useReferralCodeCallback(referralLink)
+  const {callback: referralCodeCallback, error: errorMessage} = useReferralCodeCallback(referralLink)
 
   const toggleWalletModal = useWalletModalToggle()
 
@@ -128,12 +129,6 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
         setReferralCodeState({
           showConfirm: true,
           attemptingTransaction: true,
-          transactionErrorMessage: undefined,
-          transactionHash: hash,
-        })
-        setReferralCodeState({
-          showConfirm: false,
-          attemptingTransaction: false,
           transactionErrorMessage: undefined,
           transactionHash: hash,
         })
@@ -164,34 +159,20 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
       </Box>
       <Box className={classes.lightBox}>
         <TEXT.BoldStandardBody>Rebates. Fee discounts.</TEXT.BoldStandardBody>
-        <TEXT.StandardBody>
-          Need mor info?{' '}
-          <a href="/" style={{color: colors(false).dark.blue2}}>
-            Overlay Referral Program &rarr;{' '}
-          </a>
-        </TEXT.StandardBody>
+        <ReferralModal tier="affiliate" />
         <OutlinedInput
-          error={validAddress}
+          error={validAddress || transactionErrorMessage != undefined}
           className={classes.referralInput}
-          placeholder="Enter referral link"
+          placeholder="Enter referral wallet address"
           onChange={e => setReferralLink(e.target.value)}
           value={referralLink}
         />
-        {/* <Box
-          sx={{
-            marginTop: 20,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        > */}
         {!account && <ConnectWalletButton onClick={toggleWalletModal}>Connect wallet</ConnectWalletButton>}
         {account && (
           <TriggerActionButton onClick={() => handleReferralCodeButton()} className={classes.referralButton}>
-            Submit link
+            Submit address
           </TriggerActionButton>
         )}
-        {/* </Box> */}
       </Box>
     </Container>
   )

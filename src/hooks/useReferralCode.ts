@@ -109,7 +109,6 @@ export function useReferralCodeCallback(referralCode: string): {
               value: value,
             }
 
-            console.log('tx: ', tx)
             return library
               .estimateGas(tx)
               .then(gasEstimate => {

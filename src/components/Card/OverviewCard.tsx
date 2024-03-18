@@ -5,6 +5,7 @@ import {Box, Tooltip} from '@material-ui/core'
 const Container = styled.div<{isLeaderboardCard?: boolean}>`
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   justify-content: space-between;
   width: 100%;
   background: #171926;
@@ -20,15 +21,10 @@ const PercentageChangeBox = styled.div<{positive: boolean}>`
 
 const BoldHeader1 = styled(TEXT.BoldHeader1)`
   font-size: 16px !important;
-  white-space: 'nowrap';
-  margin-top: '15px';
-  overflow: 'hidden';
-  text-overflow: 'ellipsis';
-  max-width: '250px'
-    ${({theme}) => theme.mediaWidth.minMedium`
+  ${({theme}) => theme.mediaWidth.minMedium`
     font-size: 20px !important;
   `}
-    ${({theme}) => theme.mediaWidth.minExtraSmall`
+  ${({theme}) => theme.mediaWidth.minExtraSmall`
     padding: 4px 0px;
     flex-direction: row;
   `};
@@ -93,7 +89,7 @@ const OverviewCard = (props: DataProps) => {
             No data
           </TEXT.SmallBody>
         ) : (
-          <BoldHeader1 style={{whiteSpace: 'nowrap', marginTop: '15px', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '250px'}} mb={12}>
+          <BoldHeader1 style={{whiteSpace: 'nowrap', marginTop: '15px', overflow: 'hidden', textOverflow: 'ellipsis'}} mb={12}>
             {value}
           </BoldHeader1>
         )}

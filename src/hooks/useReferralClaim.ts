@@ -114,7 +114,6 @@ export function useReferralClaimCallback(
               value: value,
             }
 
-            console.log('tx: ', tx)
             return library
               .estimateGas(tx)
               .then(gasEstimate => {

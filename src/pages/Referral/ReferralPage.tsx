@@ -7,7 +7,7 @@ import OverviewCard from '../../components/Card/OverviewCard'
 import {PageContainer} from '../../components/Container/Container'
 import ReferralModal from './ReferralModal'
 import {RebatesTable} from './RebatesTable'
-import {useHistory} from 'react-router-dom'
+import {Link, useHistory} from 'react-router-dom'
 import {useReferralAccountData} from '../../state/referral/hooks'
 import {useEffect, useMemo, useState} from 'react'
 import {formatBigNumber} from '../../utils/formatBigNumber'
@@ -52,8 +52,6 @@ export const ReferralPage = () => {
 
   const {callback: referralClaimCallback, error, state} = useReferralClaimCallback(reward, proof)
 
-  console.log({referralClaimCallback, error, state})
-
   useEffect(() => {
     fetch(rewardsUrl, {method: 'GET'})
       .then(response => response.json())
@@ -66,7 +64,6 @@ export const ReferralPage = () => {
       })
   }, [rewardsUrl])
 
-  console.log({reward, proof})
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isLoading, refetch, account, isUninitialized])
@@ -135,7 +132,7 @@ export const ReferralPage = () => {
               )}
             </TEXT.SmallBody>
           </Box>
-          <ReferralModal />
+          <ReferralModal tier="ambassador" />
         </Box>
         <Box>
           {account ? (
@@ -168,9 +165,9 @@ export const ReferralPage = () => {
           ) : (
             <TEXT.SupplementalHeader fontSize={14}>
               Nothing here yet. Open a position on the{' '}
-              <a href="/" style={{color: colors(false).dark.blue2}}>
+              <Link to="/markets" style={{color: colors(false).dark.blue2}}>
                 Markets
-              </a>{' '}
+              </Link>{' '}
               page to begin.
             </TEXT.SupplementalHeader>
           )}

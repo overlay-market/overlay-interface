@@ -12,7 +12,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
 import {Build, Liquidate, Unwind} from '../../state/build/hooks'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {usePositionInfo} from '../../hooks/usePositionInfo'
 import {BigNumber, ethers} from 'ethers'
 import {TickMath} from '@uniswap/v3-sdk'
@@ -167,9 +167,15 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
               <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
             </FlexRow>
           ),
-          'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
-          'Current Price': `${priceCurrency ? priceCurrency : ''}${parsedMid ? toScientificNumber(parsedMid) : '-'}`,
-          'Liq. Price': parsedLiquidationPrice ? `${priceCurrency ?? ''} ${toScientificNumber(parsedLiquidationPrice)}` : `-`,
+          'Entry Price': `${priceCurrency ? priceCurrency : ''}${
+            parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+          }`,
+          'Current Price': `${priceCurrency ? priceCurrency : ''}${
+            parsedMid ? (priceCurrency === '%' ? toPercentUnit(parsedMid) : toScientificNumber(parsedMid)) : '-'
+          }`,
+          'Liq. Price': parsedLiquidationPrice
+            ? `${priceCurrency ?? ''} ${priceCurrency === '%' ? toPercentUnit(parsedLiquidationPrice) : toScientificNumber(parsedLiquidationPrice)}`
+            : `-`,
           Created: parsedCreatedTimestamp ?? undefined,
           'Unrealized PnL': unrealizedPnL ? <ProfitLossCell PnL={Number(unrealizedPnL)} /> : '-',
           Funding: parsedFunding ? <ProfitLossCell PnL={Number(parsedFunding)} /> : <Loader size="12px" />,
@@ -183,7 +189,9 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
               <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
             </FlexRow>
           ),
-          'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
+          'Entry Price': `${priceCurrency ? priceCurrency : ''}${
+            parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+          }`,
           'Current Price': `Shut Down Market`,
           'Liq. Price': `-`,
           Created: parsedCreatedTimestamp ?? undefined,

@@ -77,3 +77,11 @@ export const toScientificNumber = (input: string | BigNumber | EthersBigNumber |
   // Value is greater than or equal to 1 trillion
   return `${toPrecisionTrim(value.div(TRILLION), 6)} T`
 }
+
+export const toPercentUnit = (input: string | number | null | undefined) => {
+  const ONE_HUNDRED = 100
+
+  if (Number.isNaN(Number(input))) return 0
+
+  return (Number(input) * ONE_HUNDRED).toFixed(2)
+}

@@ -124,7 +124,11 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
                     return `${(price / 1000).toFixed(3)}K`
                   }
                   if (price < 1) {
-                    return price.toFixed(4)
+                    if (MarketDetails[marketId].currency === '%') {
+                      return (price * 100).toFixed(2)
+                    } else {
+                      return price.toFixed(4)
+                    }
                   }
                   return price.toFixed(2)
                 },

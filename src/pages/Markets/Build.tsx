@@ -42,7 +42,7 @@ import {MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
 import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
@@ -848,8 +848,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
                 <TEXT.Number color={colors(false).dark.blue1}>
                   {isLong
-                    ? `Long Price: ${priceCurrency}${toScientificNumber(longPrice)}`
-                    : `Short Price: ${priceCurrency}${toScientificNumber(shortPrice)}`}
+                    ? `Long Price: ${priceCurrency}${priceCurrency === '%' ? toPercentUnit(longPrice) : toScientificNumber(longPrice)}`
+                    : `Short Price: ${priceCurrency}${priceCurrency === '%' ? toPercentUnit(shortPrice) : toScientificNumber(shortPrice)}`}
                 </TEXT.Number>
               </ControlInterfaceHeadContainer>
               <PositionsButtonContainer>
@@ -963,7 +963,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               fundingRate={fundingRate}
               expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
               estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
-              marketAddress={market?.id}
               feedAddress={market?.feedAddress}
             />
           </MarketCard>
@@ -994,6 +993,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           transactionHash={transactionHash}
           transactionErrorMessage={transactionErrorMessage}
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+          isDominanceMarket={priceCurrency === '%'}
         />
       </BuildContainer>
       {descriptionText && (

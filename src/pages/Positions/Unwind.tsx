@@ -39,7 +39,7 @@ import {useBid} from '../../hooks/useBid'
 import {useAsk} from '../../hooks/useAsk'
 import Loader from '../../components/Loaders/Loaders'
 import {formatDecimalToPercentage} from '../../utils/formatDecimal'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCallback'
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
 
@@ -112,6 +112,10 @@ export function Unwind({
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, marketPositionId, quoteToken])
 
+  const priceCurrency = useMemo(() => {
+    return MarketDetails[marketPositionId.substring(0, 42)]?.currency
+  }, [marketPositionId])
+
   const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
 
@@ -138,7 +142,8 @@ export function Unwind({
   const maintenanceMargin = useMaintenanceMargin(position?.market.id, positionId)
   const liquidationPriceResult = useLiquidationPrice(position?.market.id, positionId)
   const liquidationPrice =
-    liquidationPriceResult && formatBigNumberUsingDecimalsToNumber(liquidationPriceResult, decimals ? 18 : quoteTokenDecimals, 2)
+    liquidationPriceResult &&
+    formatBigNumberUsingDecimalsToNumber(liquidationPriceResult, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
 
   const fractionOfCapOi = useFractionOfCapOi(position?.market.id, oi?.rawOi)
   const estimatedBid = useBid(position?.market.id, fractionOfCapOi)
@@ -151,8 +156,8 @@ export function Unwind({
     if (!decimals && !quoteTokenDecimals) return null
     if (estimatedBid === undefined || estimatedAsk === undefined) return null
     return isLong
-      ? formatBigNumberUsingDecimalsToNumber(estimatedBid, decimals ? 18 : quoteTokenDecimals, 2)
-      : formatBigNumberUsingDecimalsToNumber(estimatedAsk, decimals ? 18 : quoteTokenDecimals, 2)
+      ? formatBigNumberUsingDecimalsToNumber(estimatedBid, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+      : formatBigNumberUsingDecimalsToNumber(estimatedAsk, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
   }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals])
 
   const fetchPrices = useMarketPrice(position?.market.id)
@@ -185,8 +190,12 @@ export function Unwind({
     }
   }, [fetchPrices])
 
-  const bidPrice = fetchPrices ? formatBigNumberUsingDecimalsToNumber(fetchPrices.bid_, decimals ? 18 : quoteTokenDecimals, 2) : null
-  const askPrice = fetchPrices ? formatBigNumberUsingDecimalsToNumber(fetchPrices.ask_, decimals ? 18 : quoteTokenDecimals, 2) : null
+  const bidPrice = fetchPrices
+    ? formatBigNumberUsingDecimalsToNumber(fetchPrices.bid_, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+    : null
+  const askPrice = fetchPrices
+    ? formatBigNumberUsingDecimalsToNumber(fetchPrices.ask_, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+    : null
 
   const priceImpact = useMemo(() => {
     if (!estimatedReceivedPrice) return null
@@ -202,7 +211,7 @@ export function Unwind({
   const PnL = cost && value ? value.sub(cost) : null
   const parsedPnL = PnL ? formatWeiToParsedNumber(PnL, 18, 2) : 0
   const entryPrice: number | string | null | undefined =
-    position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, 2)
+    position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
 
   const showUnderwaterFlow =
     liquidationPriceResult && prices._mid ? (isLong ? liquidationPriceResult.gt(prices._mid) : liquidationPriceResult.lt(prices._mid)) : false
@@ -339,7 +348,21 @@ export function Unwind({
               {marketName}
             </TEXT.StandardHeader1>
             <TEXT.StandardHeader1 minHeight={'30px'}>
-              {isLong !== undefined ? isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice) : <Loader stroke="white" size="12px" />}
+              {isLong !== undefined ? (
+                isLong ? (
+                  priceCurrency === '%' ? (
+                    toPercentUnit(bidPrice)
+                  ) : (
+                    toScientificNumber(bidPrice)
+                  )
+                ) : priceCurrency === '%' ? (
+                  toPercentUnit(askPrice)
+                ) : (
+                  toScientificNumber(askPrice)
+                )
+              ) : (
+                <Loader stroke="white" size="12px" />
+              )}{' '}
             </TEXT.StandardHeader1>
             <Icon
               onClick={toggleSetSlippageModal}
@@ -444,17 +467,39 @@ export function Unwind({
         </FlexColumn>
 
         <FlexColumn mt="48px" padding="0 16px">
-          <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
+          <AdditionalDetailRow
+            detail={'Entry Price'}
+            value={entryPrice ? `${priceCurrency === '%' ? toPercentUnit(entryPrice) : toScientificNumber(entryPrice)}` : 'loading'}
+          />
           <AdditionalDetailRow
             detail={'Current Price'}
-            value={bidPrice && askPrice ? (isLong ? toScientificNumber(bidPrice) : toScientificNumber(askPrice)) : 'loading'}
+            value={
+              bidPrice && askPrice
+                ? isLong
+                  ? priceCurrency === '%'
+                    ? toPercentUnit(bidPrice)
+                    : toScientificNumber(bidPrice)
+                  : priceCurrency === '%'
+                  ? toPercentUnit(askPrice)
+                  : toScientificNumber(askPrice)
+                : 'loading'
+            }
           />
           <AdditionalDetailRow
             detail={'Est. Received Price'}
-            value={estimatedReceivedPrice ? toScientificNumber(estimatedReceivedPrice) : 'loading'}
+            value={
+              estimatedReceivedPrice
+                ? priceCurrency === '%'
+                  ? toPercentUnit(estimatedReceivedPrice)
+                  : toScientificNumber(estimatedReceivedPrice)
+                : 'loading'
+            }
           />
           <AdditionalDetailRow detail={'Price Impact'} value={priceImpact ? `${priceImpact}%` : '-'} />
-          <AdditionalDetailRow detail={'Liquidation Price (est)'} value={liquidationPrice ? toScientificNumber(liquidationPrice) : 'loading'} />
+          <AdditionalDetailRow
+            detail={'Liquidation Price (est)'}
+            value={liquidationPrice ? (priceCurrency === '%' ? toPercentUnit(liquidationPrice) : toScientificNumber(liquidationPrice)) : 'loading'}
+          />
         </FlexColumn>
       </>
     </InterfaceWrapper>

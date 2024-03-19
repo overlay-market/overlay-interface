@@ -4719,10 +4719,7 @@ export type TotalMarketsQuery = (
     & { factory: (
       { __typename?: 'Factory' }
       & Pick<Factory, 'id'>
-    ), positions: Array<(
-      { __typename?: 'Position' }
-      & Pick<Position, 'id'>
-    )> }
+    ) }
   )> }
 );
 
@@ -5068,9 +5065,6 @@ export const TotalMarketsDocument = `
     priceDriftUpperLimit
     averageBlockTime
     isShutdown
-    positions {
-      id
-    }
   }
 }
     `;

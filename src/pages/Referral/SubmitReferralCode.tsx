@@ -161,12 +161,15 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
         <TEXT.BoldStandardBody>Rebates. Fee discounts.</TEXT.BoldStandardBody>
         <ReferralModal tier="affiliate" />
         <OutlinedInput
-          error={validAddress || transactionErrorMessage != undefined}
+          error={validAddress || (transactionErrorMessage != undefined && !transactionErrorMessage.toString().includes('Transaction rejected'))}
           className={classes.referralInput}
           placeholder="Enter referral wallet address"
           onChange={e => setReferralLink(e.target.value)}
           value={referralLink}
         />
+        {transactionErrorMessage != undefined && !transactionErrorMessage.toString().includes('Transaction rejected') && (
+          <TEXT.Supplemental color={colors(false).dark.red}>Invalid wallet address</TEXT.Supplemental>
+        )}
         {!account && <ConnectWalletButton onClick={toggleWalletModal}>Connect wallet</ConnectWalletButton>}
         {account && (
           <TriggerActionButton onClick={() => handleReferralCodeButton()} className={classes.referralButton}>

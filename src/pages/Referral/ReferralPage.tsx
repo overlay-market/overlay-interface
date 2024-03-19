@@ -83,16 +83,16 @@ export const ReferralPage = () => {
       {
         title: 'Rewards pending',
         value: (referralPositionsChecker && formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalRewardsPending)) ?? '0',
-        valueType: 'OVL',
+        valueType: 'OV',
         buttonText: 'Claim ->',
         button: referralClaimCallback,
         hasClaimableReward: Number(reward) > 0,
-        tootip: reward + ' available for claiming.',
+        tooltip: (reward && formatBigNumber(reward)) + ' OV available for claiming.',
       },
       {
         title: 'Total Rewards earned',
         value: referralPositionsChecker ? formatBigNumber(referralAccountData?.account?.referralPositions[0]?.totalAirdroppedAmount) ?? '0' : '0',
-        valueType: 'OVL',
+        valueType: 'OV',
       },
       {
         title: 'Total Referrals',
@@ -155,7 +155,7 @@ export const ReferralPage = () => {
                       buttonText={card.buttonText ?? undefined}
                       button={card.button ?? undefined}
                       showModal={(showModalTrigger: boolean) => setShowModalTrigger(showModalTrigger)}
-                      tootip={card.tootip}
+                      tooltip={card.tooltip}
                       hasClaimableReward={card.hasClaimableReward}
                     />
                   </StyledGrid>

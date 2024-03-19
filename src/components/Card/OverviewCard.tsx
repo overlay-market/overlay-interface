@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import {TEXT, colors} from '../../theme/theme'
-import {Box, Tooltip} from '@material-ui/core'
+import {Box} from '@material-ui/core'
+import Tooltip from '@material-ui/core/Tooltip'
 
 const Container = styled.div<{isLeaderboardCard?: boolean}>`
   display: flex;
@@ -42,7 +43,7 @@ interface DataProps {
   button?: () => void
   buttonText?: string
   showModal?: (showModalTrigger: boolean) => void
-  tootip?: string
+  tooltip?: string
   hasClaimableReward?: boolean
 }
 
@@ -58,7 +59,7 @@ const OverviewCard = (props: DataProps) => {
     button,
     buttonText,
     showModal,
-    tootip,
+    tooltip,
     hasClaimableReward,
   } = props
 
@@ -127,15 +128,21 @@ const OverviewCard = (props: DataProps) => {
               </TEXT.Supplemental>
             )}
             {buttonText && (
-              <Tooltip title="Add" placement="top">
-                <TEXT.Supplemental
-                  ml={1}
-                  onClick={hasClaimableReward ? button : undefined}
-                  style={{color: hasClaimableReward ? colors(false).dark.blue2 : '#c4c4c4', cursor: hasClaimableReward ? 'pointer' : ''}}
-                >
-                  {buttonText}
-                </TEXT.Supplemental>
-              </Tooltip>
+              <div>
+                <Tooltip title={tooltip || 'hola'} placement="top">
+                  <Box
+                    ml={1}
+                    onClick={hasClaimableReward ? button : undefined}
+                    style={{color: hasClaimableReward ? colors(false).dark.blue2 : '#c4c4c4', cursor: hasClaimableReward ? 'pointer' : ''}}
+                    fontFamily="Inter, sans-serif"
+                    fontSize={12}
+                    fontWeight={400}
+                    color={colors(false).dark.white}
+                  >
+                    {buttonText}
+                  </Box>
+                </Tooltip>
+              </div>
             )}
           </Box>
         </Box>

@@ -4602,6 +4602,8 @@ export type _Block_ = {
   number: Scalars['Int'];
   /** Integer representation of the timestamp stored in blocks for the chain */
   timestamp?: Maybe<Scalars['Int']>;
+  /** The hash of the parent block */
+  parentHash?: Maybe<Scalars['Bytes']>;
 };
 
 /** The type for the top-level _meta field */
@@ -4717,10 +4719,7 @@ export type TotalMarketsQuery = (
     & { factory: (
       { __typename?: 'Factory' }
       & Pick<Factory, 'id'>
-    ), positions: Array<(
-      { __typename?: 'Position' }
-      & Pick<Position, 'id'>
-    )> }
+    ) }
   )> }
 );
 
@@ -4952,7 +4951,7 @@ export const AccountDocument = `
 export const AccountV2Document = `
     query accountV2($account: ID!) {
   account(id: $account) {
-    positions(orderBy: createdAtTimestamp, orderDirection: desc) {
+    positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc) {
       id
       positionId
       market {
@@ -5066,9 +5065,6 @@ export const TotalMarketsDocument = `
     priceDriftUpperLimit
     averageBlockTime
     isShutdown
-    positions {
-      id
-    }
   }
 }
     `;

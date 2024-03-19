@@ -8,7 +8,7 @@ import {TEXT, colors} from '../../theme/theme'
 import SetSlippageModal from '../../components/SetSlippageModal.tsx/SetSlippageModal'
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
 import {useBuildState} from '../../state/build/hooks'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 
 const ContentContainer = styled(FlexColumn)`
   gap: 16px;
@@ -115,7 +115,9 @@ export const MainDetails = ({
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Price</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>
-          {estimatedReceivedPrice && minPrice ? `${priceCurrency}${toScientificNumber(estimatedReceivedPrice)}` : '-'}
+          {estimatedReceivedPrice && minPrice
+            ? `${priceCurrency}${priceCurrency === '%' ? toPercentUnit(estimatedReceivedPrice) : toScientificNumber(estimatedReceivedPrice)}`
+            : '-'}
         </DetailValue>
       </AdditionalDetailRow>
 
@@ -131,7 +133,13 @@ export const MainDetails = ({
           </TEXT.Supplemental>
         </SlippageValueContainer>
         <DetailValue color={colors(false).dark.blue1}>
-          {minPrice ? `${priceCurrency}${toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))}` : '-'}
+          {minPrice
+            ? `${priceCurrency}${
+                priceCurrency === '%'
+                  ? toPercentUnit(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
+                  : toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
+              }`
+            : '-'}
         </DetailValue>
       </AdditionalDetailRow>
 

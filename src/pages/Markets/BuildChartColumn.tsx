@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {TEXT, colors} from '../../theme/theme'
 import {ProgressBar} from '../../components/ProgressBar/ProgressBar'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 import {useTotalMarketsData} from '../../state/markets/hooks'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
@@ -107,7 +107,9 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
         ) : (
           <>
             <MarketPriceContainer>
-              <TEXT.BoldNumber>{`${marketData?.priceCurrency}${toScientificNumber(marketData?.headerPrice)}`}</TEXT.BoldNumber>
+              <TEXT.BoldNumber>{`${marketData?.priceCurrency}${
+                marketData?.priceCurrency === '%' ? toPercentUnit(marketData?.headerPrice) : toScientificNumber(marketData?.headerPrice)
+              }`}</TEXT.BoldNumber>
               {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
               <TEXT.SmallBody>24h</TEXT.SmallBody> */}
             </MarketPriceContainer>

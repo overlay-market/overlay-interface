@@ -16,6 +16,7 @@ type PositiopnType = UnwindsType['position'] & ParsedMarketStateDetails
 interface TransactionInterface extends UnwindsType {
   position: PositiopnType
 }
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 
 export interface PositionProps {
   transaction: TransactionInterface
@@ -108,8 +109,12 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
           <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
         </FlexRow>
       ),
-      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
-      'Exit Price': `${priceCurrency ? priceCurrency : ''}${parsedExitPrice ? toScientificNumber(parsedExitPrice) : '-'}`,
+      'Entry Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+      }`,
+      'Exit Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(parsedExitPrice)) : '-'
+      }`,
       Closed: parsedClosedTimestamp,
       Created: parsedCreatedTimestamp,
       PnL: parsedPnl ? <ProfitLossCell PnL={Number(parsedPnl)} /> : '-',

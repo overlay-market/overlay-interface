@@ -92,7 +92,7 @@ export const api = createApi({
         document: gql`
           query accountV2($account: ID!) {
             account(id: $account) {
-              positions(orderBy: createdAtTimestamp, orderDirection: desc) {
+              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc) {
                 id
                 positionId
                 market {
@@ -220,9 +220,6 @@ export const api = createApi({
               priceDriftUpperLimit
               averageBlockTime
               isShutdown
-              positions {
-                id
-              }
             }
           }
         `,

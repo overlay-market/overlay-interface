@@ -15,6 +15,7 @@ type PositiopnType = LiquidatesType['position'] & ParsedMarketStateDetails
 interface TransactionInterface extends LiquidatesType {
   position: PositiopnType
 }
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 
 export interface PositionProps {
   transaction: TransactionInterface
@@ -69,8 +70,12 @@ export const LiquidatesTransactions = ({transaction, columns}: PositionProps) =>
           <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
         </FlexRow>
       ),
-      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
-      'Exit Price': `${priceCurrency ? priceCurrency : ''}${parsedExitPrice ? toScientificNumber(parsedExitPrice) : '-'}`,
+      'Entry Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+      }`,
+      'Exit Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(parsedExitPrice)) : '-'
+      }`,
       Liquidated: parsedClosedTimestamp,
       Created: parsedCreatedTimestamp,
     }

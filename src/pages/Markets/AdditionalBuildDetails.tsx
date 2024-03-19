@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import Loader from '../../components/Loaders/Loaders'
 import {TEXT, colors} from '../../theme/theme'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 import {BigNumber} from 'ethers'
 
 const ContentContainer = styled(FlexColumn)`
@@ -53,7 +53,6 @@ export const AdditionalDetails = ({
   slippageTolerance,
   expectedOi,
   estLiquidationPrice,
-  marketAddress,
   feedAddress,
   priceCurrency,
 }: {
@@ -68,14 +67,13 @@ export const AdditionalDetails = ({
   expectedOi?: BigNumber | string | number | null
   fundingRate?: string | number
   estLiquidationPrice?: string | number
-  marketAddress?: string
   feedAddress?: string
   priceCurrency?: string
 }) => {
   return (
     <ContentContainer>
       <AdditionalDetailRow>
-        <TEXT.SmallBody color={colors(false).dark.grey2}>Fee</TEXT.SmallBody>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>Trading Fee</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>{fee === 'loading' ? <Loader stroke="white" size="12px" /> : `${fee}%`}</DetailValue>
       </AdditionalDetailRow>
 
@@ -86,7 +84,9 @@ export const AdditionalDetails = ({
 
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Liquidation Price</TEXT.SmallBody>
-        <DetailValue color={colors(false).dark.blue1}>{`${priceCurrency}${toScientificNumber(estLiquidationPrice)}`}</DetailValue>
+        <DetailValue color={colors(false).dark.blue1}>{`${priceCurrency}${
+          priceCurrency === '%' ? toPercentUnit(estLiquidationPrice) : toScientificNumber(estLiquidationPrice)
+        }`}</DetailValue>
       </AdditionalDetailRow>
 
       <AdditionalDetailRow>

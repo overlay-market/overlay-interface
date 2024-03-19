@@ -5,7 +5,7 @@ import {Label} from '@rebass/forms'
 import {MarketCard} from '../../components/Card/MarketCard'
 import {SelectActionButton, TriggerActionButton, ApproveTransactionButton} from '../../components/Button/Button'
 import {TEXT, colors} from '../../theme/theme'
-import {OVL} from '../../constants/tokens'
+import {ONE_BN, OVL} from '../../constants/tokens'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useBuildState} from '../../state/build/hooks'
 import {useDerivedBuildInfo} from '../../state/build/hooks'
@@ -42,7 +42,7 @@ import {MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
 import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
@@ -405,6 +405,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   const {onBuildPosition} = usePositionsActionHandlers()
+  const circuitBreakerLevel = marketsData.length > 0 && marketsData[0].circuitBreakerLevel
 
   // force refetch when refreshing page
   useEffect(() => {
@@ -758,6 +759,13 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return isLong ? rawExpectedOi.add(rawOiLong).gt(rawCapOi) : rawExpectedOi.add(rawOiShort).gt(rawCapOi)
   }, [isLong, rawOiLong, rawOiShort, rawCapOi, rawExpectedOi])
 
+  const exceedOiCapCircuitBreaker = useMemo(() => {
+    if (!rawOiLong || !rawOiShort || !rawCapOi || !rawExpectedOi || isLong === undefined || !circuitBreakerLevel || exceedOiCap) return false
+    return isLong
+      ? rawExpectedOi.add(rawOiLong).gt(rawCapOi.mul(circuitBreakerLevel).div(ONE_BN))
+      : rawExpectedOi.add(rawOiShort).gt(rawCapOi.mul(circuitBreakerLevel).div(ONE_BN))
+  }, [isLong, rawOiLong, rawOiShort, rawCapOi, rawExpectedOi])
+
   const {adjustedCollateral} = useEstimatedBuild(
     selectedLeverage,
     Number(typedValue),
@@ -847,8 +855,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
                 <TEXT.Number color={colors(false).dark.blue1}>
                   {isLong
-                    ? `Long Price: ${priceCurrency}${toScientificNumber(longPrice)}`
-                    : `Short Price: ${priceCurrency}${toScientificNumber(shortPrice)}`}
+                    ? `Long Price: ${priceCurrency}${priceCurrency === '%' ? toPercentUnit(longPrice) : toScientificNumber(longPrice)}`
+                    : `Short Price: ${priceCurrency}${priceCurrency === '%' ? toPercentUnit(shortPrice) : toScientificNumber(shortPrice)}`}
                 </TEXT.Number>
               </ControlInterfaceHeadContainer>
               <PositionsButtonContainer>
@@ -921,6 +929,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                   <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
                     Exceeds OI Cap
                   </TriggerBuildButton>
+                ) : exceedOiCapCircuitBreaker ? (
+                  <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                    Exceeds Circuit Breaker OI Cap
+                  </TriggerBuildButton>
                 ) : showBalanceNotEnoughWarning ? (
                   <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
                     OVL Balance Below Minimum
@@ -958,7 +970,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               fundingRate={fundingRate}
               expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
               estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
-              marketAddress={market?.id}
               feedAddress={market?.feedAddress}
             />
           </MarketCard>
@@ -989,6 +1000,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           transactionHash={transactionHash}
           transactionErrorMessage={transactionErrorMessage}
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+          isDominanceMarket={priceCurrency === '%'}
         />
       </BuildContainer>
       {descriptionText && (

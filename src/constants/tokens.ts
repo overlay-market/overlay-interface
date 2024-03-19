@@ -4,6 +4,9 @@ import {SupportedChainId} from './chains'
 import ETHEREUM_LOGO from '../assets/images/ethereum-logo.png'
 import ARBITRUM_LOGO from '../assets/images/arbitrum-logo.png'
 import ARBITRUM_TESTNET_LOGO from '../assets/images/arbitrum-testnet-logo.png'
+import {BigNumber} from 'ethers'
+
+export const ONE_BN = BigNumber.from(10).pow(18)
 
 export const OVL: {[chainId: number]: Token} = {
   [SupportedChainId.MAINNET]: new Token(SupportedChainId.MAINNET, OVL_TOKEN_ADDRESS[1], 18, 'OVL', 'Overlay'),

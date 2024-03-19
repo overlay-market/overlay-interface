@@ -220,9 +220,6 @@ export const api = createApi({
               priceDriftUpperLimit
               averageBlockTime
               isShutdown
-              positions {
-                id
-              }
             }
           }
         `,

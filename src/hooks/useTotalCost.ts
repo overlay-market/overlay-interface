@@ -23,7 +23,7 @@ export function useTotalCost(account: string | null | undefined): BigNumber | un
         }
         setValue(totalValue)
       } catch (error) {
-        console.error('market inside useTotalValueLocked: ', positions)
+        console.error('market inside useTotalValueLocked: ', positions, error)
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps

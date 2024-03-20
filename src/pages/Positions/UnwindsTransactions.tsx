@@ -7,7 +7,7 @@ import {checkIsNegative} from '../../utils/checkIsNegative'
 import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {UnwindsQuery} from '../../state/data/generated'
 import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 
@@ -16,7 +16,6 @@ type PositiopnType = UnwindsType['position'] & ParsedMarketStateDetails
 interface TransactionInterface extends UnwindsType {
   position: PositiopnType
 }
-import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 
 export interface PositionProps {
   transaction: TransactionInterface

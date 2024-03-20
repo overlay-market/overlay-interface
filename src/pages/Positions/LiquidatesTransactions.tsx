@@ -6,7 +6,7 @@ import {formatBigNumber} from '../../utils/formatBigNumber'
 import Loader from '../../components/Loaders/Loaders'
 import {TEXT} from '../../theme/theme'
 import {Build, Liquidate, Unwind} from '../../state/build/hooks'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {LiquidatedPositionsQuery} from '../../state/data/generated'
 import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 
@@ -15,7 +15,6 @@ type PositiopnType = LiquidatesType['position'] & ParsedMarketStateDetails
 interface TransactionInterface extends LiquidatesType {
   position: PositiopnType
 }
-import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 
 export interface PositionProps {
   transaction: TransactionInterface

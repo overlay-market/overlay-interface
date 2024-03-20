@@ -53,24 +53,6 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
     return +size / 10 ** 18 < 1 ? (+size / 10 ** 18).toFixed(6) : (+size / 10 ** 18).toFixed(2)
   }, [size])
 
-  // fundingPayments = exitPrice * ( unwindOi - OiInitial * fractionUnwindOfPosition )
-  // OiInitial = notionalInitial / midPriceAtEntry
-  // midPriceAtEntry = tickToPrice(midTick)
-  // unwindOi =
-  // const parsedFunding: string | number | undefined = useMemo(() => {
-  //   if (info === null || !oiCurrent || !mid) return undefined
-  //   const baseFractionRemaining = 10000
-  //   const remainingNotionalInitial = info.notionalInitial.div(baseFractionRemaining).mul(info.fractionRemaining)
-
-  //   const remainingOiInitial = remainingNotionalInitial.mul(ONE_BN).div(tickToPrice(info.midTick))
-  //   if (remainingOiInitial.eq(0)) return undefined
-  //   const fundingPayments = mid.mul(oiCurrent.sub(remainingOiInitial)).div(ONE_BN)
-
-  //   const fullValue = formatBigNumber(fundingPayments.abs(), 18, 18)
-  //   if (fullValue === undefined) return '-'
-  //   return +fullValue < 1 ? formatBigNumber(fundingPayments, 18, 6) : formatBigNumber(fundingPayments, 18, 2)
-  // }, [info, oiCurrent, mid])
-
   let history = useHistory()
 
   function handleNavigate(location: string | undefined) {

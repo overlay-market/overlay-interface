@@ -20,27 +20,10 @@ import JSBI from 'jsbi'
 import {usePositionOi} from '../../hooks/usePositionOi'
 import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 import {ONE_BN} from '../../constants/tokens'
+import {OpenPositionsQuery} from '../../state/data/generated'
 
-interface PositionInterface extends ParsedMarketStateDetails {
-  id: string
-  positionId: string
-  marketAddress: string
-  leverage: string | number
-  createdAtTimestamp: string
-  isLong: boolean
-  initialCollateral?: string
-  entryPrice: string
-  exitPrice?: string
-  decimals?: string | number
-  isLiquidated: boolean
-  currentOi: string
-  numberOfUniwnds: string
-  positionStatus: string
-  builds: Build[]
-  unwinds: Unwind[]
-  liquidates: Liquidate[]
-  isShutdown: boolean
-}
+type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
+interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
 export interface PositionProps {
   position: PositionInterface
   columns: string[]
@@ -107,7 +90,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
   const parsedFunding: string | number | undefined = useMemo(() => {
     if (info === null || !oiCurrent || !mid) return undefined
     const baseFractionRemaining = 10000
-    const remainingNotionalInitial = info.notionalInitial.div(baseFractionRemaining).mul(info.fractionRemaining)
+    const remainingNotionalInitial = info.notionalInitial.mul(info.fractionRemaining).div(baseFractionRemaining)
 
     const remainingOiInitial = remainingNotionalInitial.mul(ONE_BN).div(tickToPrice(info.midTick))
     if (remainingOiInitial.eq(0)) return undefined

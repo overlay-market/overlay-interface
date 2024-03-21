@@ -1,4 +1,3 @@
-import {Result} from './../state/multicall/hooks'
 import {useMemo} from 'react'
 import {BigNumber} from 'ethers'
 import {useV1PeripheryContract} from './useContract'
@@ -9,6 +8,7 @@ import {formatBigNumber} from '../utils/formatBigNumber'
 import {formatFundingRateToAnnual, formatFundingRateToDaily} from '../utils/formatWei'
 import {MarketDetails} from '../constants/markets'
 import {getCharactersBeforeSlash, getCharactersAfterSlash} from '../utils/getCharactersBeforeSlash'
+import {Result} from '@ethersproject/abi'
 
 export interface MarketStateDetails extends AdditionalMarketData {
   id: string

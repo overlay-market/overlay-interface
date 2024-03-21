@@ -3,24 +3,18 @@ import {StyledTableRow, StyledTableCell} from '../../components/Table/Table'
 import formatUnixTimestampToDate from '../../utils/formatUnixTimestampToDate'
 import {FlexRow} from '../../components/Container/Container'
 import {formatBigNumber} from '../../utils/formatBigNumber'
-import {usePositionCost} from '../../hooks/usePositionCost'
-import {usePositionValue} from '../../hooks/usePositionValue'
-import {usePositionTradingFee} from '../../hooks/usePositionTradingFee'
-import {useLiquidationPrice} from '../../hooks/useLiquidationPrice'
 import {checkIsNegative} from '../../utils/checkIsNegative'
 import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
-import {Build, Liquidate, Unwind} from '../../state/build/hooks'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
-import {usePositionInfo} from '../../hooks/usePositionInfo'
 import {BigNumber, ethers} from 'ethers'
 import {TickMath} from '@uniswap/v3-sdk'
 import JSBI from 'jsbi'
-import {usePositionOi} from '../../hooks/usePositionOi'
 import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 import {ONE_BN} from '../../constants/tokens'
 import {OpenPositionsQuery} from '../../state/data/generated'
+import {usePositionMulticall} from '../../hooks/usePositionMulticall'
 
 type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
 interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
@@ -57,12 +51,8 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
     return formatBigNumber(entryPrice, Number(decimals))
   }, [entryPrice, decimals])
 
-  const value = usePositionValue(marketAddress, positionId)
-  const cost = usePositionCost(marketAddress, positionId)
-  const info = usePositionInfo(marketAddress, positionId)
-  const oiCurrent = usePositionOi(marketAddress, positionId, 18, 18, 18).rawOi ?? undefined
-  const tradingFee = usePositionTradingFee(marketAddress, positionId)
-  const liquidationPrice = useLiquidationPrice(marketAddress, positionId)
+  const multicallRes = usePositionMulticall(marketAddress, positionId)
+  const {value, cost, info, oiCurrent, tradingFee, liquidationPrice} = multicallRes
 
   const parsedValue: string | number | undefined = useMemo(() => {
     if (!value && value === undefined) return undefined
@@ -88,7 +78,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
   // remainingOiInitial = remainingNotionalInitial / midPriceAtEntry
   // midPriceAtEntry = tickToPrice(midTick)
   const parsedFunding: string | number | undefined = useMemo(() => {
-    if (info === null || !oiCurrent || !mid) return undefined
+    if (info === undefined || !oiCurrent || !mid) return undefined
     const baseFractionRemaining = 10000
     const remainingNotionalInitial = info.notionalInitial.mul(info.fractionRemaining).div(baseFractionRemaining)
 

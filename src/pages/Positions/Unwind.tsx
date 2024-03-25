@@ -1,4 +1,4 @@
-import React, {useEffect, useCallback, useMemo, useState} from 'react'
+import {useEffect, useCallback, useMemo, useState} from 'react'
 import {useHistory} from 'react-router-dom'
 import styled from 'styled-components'
 import {BigNumber, BigNumberish} from 'ethers'
@@ -7,30 +7,22 @@ import {TEXT} from '../../theme/theme'
 import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {usePositionInfo} from '../../hooks/usePositionInfo'
 import {useUnwindCallback} from '../../hooks/useUnwindCallback'
 import {useCurrentWalletPositionsV2} from '../../state/build/hooks'
 import {NumericalInputBottomText, NumericalInputContainer, NumericalInputDescriptor} from '../Markets/Build'
-import {useLiquidationPrice} from '../../hooks/useLiquidationPrice'
 import {NumericalInput} from '../../components/NumericalInput/NumericalInput'
 import {useUnwindState, useUnwindActionHandlers, useDerivedUnwindInfo} from '../../state/unwind/hooks'
 import {formatWeiToParsedNumber, formatBigNumberUsingDecimalsToString, formatBigNumberUsingDecimalsToNumber} from '../../utils/formatWei'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {TransparentUnderlineButton, TriggerActionButton} from '../../components/Button/Button'
 import {useToken} from '../../hooks/useToken'
-import {usePositionValue} from '../../hooks/usePositionValue'
-import {usePositionOi} from '../../hooks/usePositionOi'
 import {usePositionDebt} from '../../hooks/usePositionDebt'
 import {usePositionNotional} from '../../hooks/usePositionNotional'
 import {useMaintenanceMargin} from '../../hooks/useMaintenanceMargin'
 import {usePositionCollateral} from '../../hooks/usePositionCollateral'
-import {usePositionCost} from '../../hooks/usePositionCost'
 import {useMarketPrice} from '../../hooks/useMarketPrices'
 import {Icon} from '../../components/Icon/Icon'
 import {Sliders, X} from 'react-feather'
-import {TransactionSettingsModal} from '../Markets/TransactionSettingsModal'
-import {DefaultTxnSettings} from '../../state/build/actions'
-import {useIsTxnSettingsAuto} from '../../state/build/hooks'
 import {PercentageSlider} from '../../components/PercentageSlider/PercentageSlider'
 import {useMarketName} from '../../hooks/useMarketName'
 import {MarketDetails} from '../../constants/markets'
@@ -43,6 +35,7 @@ import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCallback'
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
 import {usePositionsActionHandlers} from '../../state/positions/hooks'
+import {usePositionMulticall} from '../../hooks/usePositionMulticall'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -87,7 +80,7 @@ export function Unwind({
   },
 }: RouteComponentProps<{marketPositionId: string; positionId: string}>) {
   const history = useHistory()
-  const [isTxnSettingsOpen, setTxnSettingsOpen] = useState<boolean>(false)
+  const [isTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
   const {account, chainId} = useActiveWeb3React()
   const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
@@ -96,9 +89,8 @@ export function Unwind({
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
 
-  const {typedValue, setSlippageValue, txnDeadline} = useUnwindState()
-  const {onAmountInput, onSelectPositionId, onSetSlippage, onSetTxnDeadline, onResetUnwindState} = useUnwindActionHandlers()
-  const isTxnSettingsAuto = useIsTxnSettingsAuto()
+  const {typedValue} = useUnwindState()
+  const {onAmountInput, onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
   const {onUnwindPosition} = usePositionsActionHandlers()
 
   const filtered = positions?.filter((index, key) => index.id === marketPositionId)
@@ -106,7 +98,7 @@ export function Unwind({
   const position = filtered ? filtered[0] : null
   const isMarketShutDown = position?.market.isShutdown
 
-  const {baseToken, quoteToken, baseTokenAddress, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
+  const {baseToken, quoteToken, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
 
   const marketName = useMemo(() => {
     if (description) return MarketDetails[marketPositionId.substring(0, 42)]?.marketName
@@ -118,13 +110,7 @@ export function Unwind({
     return MarketDetails[marketPositionId.substring(0, 42)]?.currency
   }, [marketPositionId])
 
-  const baseTokenInfo = useToken(baseTokenAddress)
   const quoteTokenInfo = useToken(quoteTokenAddress)
-
-  const baseTokenDecimals = useMemo(() => {
-    if (!baseTokenInfo) return undefined
-    return baseTokenInfo.decimals
-  }, [baseTokenInfo])
 
   const quoteTokenDecimals = useMemo(() => {
     if (!quoteTokenInfo) return undefined
@@ -133,21 +119,19 @@ export function Unwind({
 
   const positionIdConverted = BigNumber.from(positionId).toString()
 
-  const positionInfo = usePositionInfo(position?.market.id, positionId)
+  const multicallRes = usePositionMulticall(position?.market.id, positionId)
+  const {value, cost, info: positionInfo, oiCurrent: oi, liquidationPrice: liquidationPriceResult} = multicallRes
+
   const isLong = positionInfo ? positionInfo.isLong : undefined
   const collateral = usePositionCollateral(position?.market.id, positionId)
-  const cost = usePositionCost(position?.market.id, positionId)
-  const value = usePositionValue(position?.market.id, positionId)
-  const oi = usePositionOi(position?.market.id, positionId, baseTokenDecimals, quoteTokenDecimals, decimals)
   const debt = usePositionDebt(position?.market.id, positionId)
   const notional = usePositionNotional(position?.market.id, positionId)
   const maintenanceMargin = useMaintenanceMargin(position?.market.id, positionId)
-  const liquidationPriceResult = useLiquidationPrice(position?.market.id, positionId)
   const liquidationPrice =
     liquidationPriceResult &&
     formatBigNumberUsingDecimalsToNumber(liquidationPriceResult, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
 
-  const fractionOfCapOi = useFractionOfCapOi(position?.market.id, oi?.rawOi)
+  const fractionOfCapOi = useFractionOfCapOi(position?.market.id, oi)
   const estimatedBid = useBid(position?.market.id, fractionOfCapOi)
   const estimatedAsk = useAsk(position?.market.id, fractionOfCapOi)
 
@@ -160,7 +144,7 @@ export function Unwind({
     return isLong
       ? formatBigNumberUsingDecimalsToNumber(estimatedBid, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
       : formatBigNumberUsingDecimalsToNumber(estimatedAsk, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
-  }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals])
+  }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals, priceCurrency])
 
   const fetchPrices = useMarketPrice(position?.market.id)
 
@@ -224,14 +208,6 @@ export function Unwind({
   useEffect(() => {
     onResetUnwindState()
   }, [positionId, onResetUnwindState])
-
-  const handleResetTxnSettings = useCallback(
-    (e: any) => {
-      onSetSlippage(DefaultTxnSettings.DEFAULT_SLIPPAGE)
-      onSetTxnDeadline(DefaultTxnSettings.DEFAULT_DEADLINE)
-    },
-    [onSetSlippage, onSetTxnDeadline],
-  )
 
   const handleUserAmount = useCallback(
     (e: any, maxAmount: number) => {
@@ -449,7 +425,7 @@ export function Unwind({
         </FlexColumn>
         <FlexColumn mt="48px" padding="0 16px">
           <AdditionalDetailRow detail={'Value'} value={value ? `${formatWeiToParsedNumber(value, 18, 4)} OVL` : 'loading'} />
-          <AdditionalDetailRow detail={'Open Interest'} value={oi.formattedOi || oi.formattedOi === 0 ? oi.formattedOi : 'loading'} />
+          <AdditionalDetailRow detail={'Open Interest'} value={oi ? `${formatWeiToParsedNumber(oi, 18, 4)}` : 'loading'} />
           <AdditionalDetailRow detail={'Leverage'} value={position?.leverage ? `${Number(position.leverage).toFixed(1)}x` : 'loading'} />
           <AdditionalDetailRow detail={'Debt'} value={debt ? `${formatWeiToParsedNumber(debt, 18, 4)} OVL` : 'loading'} />
           <AdditionalDetailRow detail={'Cost'} value={cost ? `${formatWeiToParsedNumber(cost, 18, 4)} OVL` : 'loading'} />

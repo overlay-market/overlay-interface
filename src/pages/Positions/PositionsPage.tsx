@@ -31,7 +31,7 @@ const Container = styled.div`
 
 const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Liquidated']
 
-const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL']
+const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'Funding']
 
 const closedPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Closed', 'PnL']
 
@@ -221,7 +221,6 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           : []
         : []
 
-    console.log({rows, positionsTableData, idOpen: isOpenPositionsQuery(positionsTableData)})
     return account && rows && rows.length > 0 ? (
       <>
         {rows.map((row: any) => {

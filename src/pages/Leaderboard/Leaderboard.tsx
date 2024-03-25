@@ -165,6 +165,8 @@ const Leaderboard = () => {
   const [loadedNumberOfRows, setLoadedNumberOfRows] = useState(initialNumberOfRows)
   const [isDisabledLoadMoreBtn, setIsDisabledLoadMoreBtn] = useState(false)
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
+  const [usersCounter, setUsersCounter] = useState(0)
+  const [profilesCounter, setProfilesCounter] = useState(0)
 
   const [{data: pointsData, loading: dataLoading}, getPointsData] = useAxios(
     {
@@ -236,15 +238,19 @@ const Leaderboard = () => {
     const processedRanks = leaderboardPointsData && getProcessedRanks(leaderboardPointsData)
 
     setRanks(processedRanks as unknown as [ILeaderboardUserRank])
+    setUsersCounter(processedRanks?.length)
   }, [leaderboardPointsData])
 
   useEffect(() => {
+    setIsLoadingProfiles(true)
     const processedRanks = leaderboardPointsMoreData && getProcessedRanks(leaderboardPointsMoreData)
 
     if (ranks && processedRanks) {
       const tempRanks = [...ranks, ...processedRanks]
       setRanks(tempRanks)
+      setUsersCounter(tempRanks?.length)
     }
+    setIsLoadingProfiles(false)
   }, [leaderboardPointsMoreData])
 
   const initialUserData = useMemo<ILeaderboardRank>(() => {
@@ -302,49 +308,44 @@ const Leaderboard = () => {
   }, [account, initialUserData, curUserData, setUserData])
 
   // get final ranks with usernames and avatars
-  const getFinalRanks = async (passedData: ILeaderboardRank[], firstCall: boolean) => {
-    setIsLoadingProfiles(true)
-    const processedRanks = await Promise.all(
+  const getProfiles = async (passedData: ILeaderboardRank[]) => {
+    const profilesIds: string[] = []
+    const profilesMap = new Map()
+
+    await Promise.all(
       passedData.map(async data => {
         const username = await getWeb3Username(data._id)
         const avatar = username && (await getWeb3Avatar(username))
 
-        return {
-          ...data,
-          username: username ?? undefined,
-          avatar: avatar ?? undefined,
-          totalPoints: Number.isInteger(data.totalPoints) ? data.totalPoints : parseInt(data.totalPoints.toString()),
-          previousWeekPoints: Number.isInteger(data.previousWeekPoints) ? data.previousWeekPoints : parseInt(data.previousWeekPoints.toString()),
+        if (username) {
+          profilesIds.push(data._id)
+          profilesMap.set(data._id, {
+            username: username,
+            avatar: avatar ?? undefined,
+          })
         }
       }),
     )
-
-    if (processedRanks) {
-      let tempRanks: ILeaderboardUserRank[] = []
-
-      if (firstCall) {
-        tempRanks = [...(processedRanks as unknown as [ILeaderboardUserRank])]
-      } else {
-        if (ranks) {
-          tempRanks = [...ranks, ...(processedRanks as unknown as [ILeaderboardUserRank])]
+    setIsLoadingProfiles(true)
+    if (ranks) {
+      ranks.slice(profilesCounter, profilesCounter + 10).forEach(el => {
+        if (profilesIds.includes(el._id)) {
+          el.username = profilesMap.get(el._id).username
+          el.avatar = profilesMap.get(el._id).avatar
         }
-      }
-      setRanks(tempRanks)
-      setIsLoadingProfiles(false)
+      })
     }
+    setIsLoadingProfiles(false)
   }
 
   useEffect(() => {
-    if (leaderboardPointsData && leaderboardPointsData?.length > 0) {
-      getFinalRanks(leaderboardPointsData, true)
+    if (profilesCounter < usersCounter) {
+      if (ranks) {
+        getProfiles(ranks.slice(profilesCounter, profilesCounter + 10))
+        setProfilesCounter(prev => prev + 10)
+      }
     }
-  }, [leaderboardPointsData])
-
-  useEffect(() => {
-    if (leaderboardPointsMoreData?.length > 0) {
-      getFinalRanks(leaderboardPointsMoreData, false)
-    }
-  }, [leaderboardPointsMoreData])
+  }, [profilesCounter, usersCounter, ranks])
 
   useEffect(() => {
     setIsDisabledLoadMoreBtn(loadedNumberOfRows >= totalUsers)

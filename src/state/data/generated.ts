@@ -4850,7 +4850,7 @@ export type UnwindsQuery = (
     { __typename?: 'Account' }
     & { unwinds: Array<(
       { __typename?: 'Unwind' }
-      & Pick<Unwind, 'collateral' | 'currentDebt' | 'currentOi' | 'fraction' | 'id' | 'isLong' | 'mint' | 'pnl' | 'price' | 'size' | 'timestamp' | 'transferAmount' | 'unwindNumber' | 'value'>
+      & Pick<Unwind, 'collateral' | 'currentDebt' | 'currentOi' | 'fraction' | 'fractionOfPosition' | 'id' | 'isLong' | 'mint' | 'pnl' | 'price' | 'size' | 'timestamp' | 'transferAmount' | 'unwindNumber' | 'value'>
       & { position: (
         { __typename?: 'Position' }
         & Pick<Position, 'createdAtTimestamp' | 'currentOi' | 'entryPrice' | 'id' | 'initialCollateral' | 'isLong' | 'leverage' | 'numberOfUniwnds' | 'positionId'>
@@ -5205,6 +5205,7 @@ export const UnwindsDocument = `
       currentDebt
       currentOi
       fraction
+      fractionOfPosition
       id
       isLong
       mint

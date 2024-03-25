@@ -1,36 +1,41 @@
 import {useEffect, useState, useMemo} from 'react'
 import {useV1PeripheryContract} from './useContract'
 import {ethers, BigNumber} from 'ethers'
-import {useBlockNumber} from '../state/application/hooks'
 import {useOpenPositionsFromSubgraph} from '../state/build/hooks'
+import {useSingleContractMultipleData} from '../state/multicall/hooks'
 
 export function useTotalValueLocked(account: string | null | undefined): BigNumber | undefined {
   const peripheryContract = useV1PeripheryContract()
-  const blockNumber = useBlockNumber()
-  const [value, setValue] = useState<BigNumber>()
   const {data} = useOpenPositionsFromSubgraph(account, 1000, 0)
+  const [callInputs, setCallInputs] = useState<string[][]>([])
+
   useEffect(() => {
     let positions = data?.account?.positions
-    if (!peripheryContract || !account || !blockNumber || !positions) return
+    if (!peripheryContract || !account || !positions) return
     ;(async () => {
       try {
-        const totalValue = await positions.reduce(async (accumulatorPromise: any, position) => {
-          await accumulatorPromise
-          if (!position.market.id) return accumulatorPromise
-
-          const _value = await peripheryContract.value(position.market.id, account, position.positionId)
-          return Promise.resolve(accumulatorPromise.then((accumulator: any) => accumulator.add(_value)))
-        }, Promise.resolve(ethers.constants.Zero))
-
-        setValue(totalValue)
+        let _callInputs: string[][] = []
+        for (let position of positions) {
+          if (!position.market.id) continue
+          _callInputs.push([position.market.id, account, position.positionId])
+        }
+        setCallInputs(_callInputs)
       } catch (error) {
         console.error('market inside useTotalValueLocked: ', positions)
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [peripheryContract, JSON.stringify(data), blockNumber, account])
+  }, [peripheryContract, JSON.stringify(data), account])
+
+  const valueResults = useSingleContractMultipleData(peripheryContract, 'value', callInputs)
 
   return useMemo(() => {
-    return value
-  }, [value])
+    let _totalValue = ethers.constants.Zero
+    valueResults.map(position => {
+      const _value = position?.result && position.result[0]
+      if (!_value) return
+      _totalValue = _totalValue.add(_value)
+    })
+    return _totalValue
+  }, [valueResults])
 }

@@ -7,7 +7,7 @@ import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {usePositionInfo} from '../../hooks/usePositionInfo'
-import {PositionDataV2, Unwind, useCurrentWalletPositionsV2} from '../../state/build/hooks'
+import {PositionDataV2, Unwind, useQueryPosition} from '../../state/build/hooks'
 import {useUnwindActionHandlers} from '../../state/unwind/hooks'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
@@ -49,13 +49,18 @@ export const AdditionalDetailRow = ({
   )
 }
 
+function getMarketPositionId(unwindId: string) {
+  return unwindId.split('-').slice(0, 2).join('-')
+}
+
 export function ClosedPosition({
   match: {
     params: {unwindId, positionId},
   },
 }: RouteComponentProps<{unwindId: string; positionId: string}>) {
   const {account, chainId} = useActiveWeb3React()
-  const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
+  const marketPositionId = getMarketPositionId(unwindId)
+  const {positions, isUninitialized, refetch} = useQueryPosition(account, marketPositionId)
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -63,19 +68,15 @@ export function ClosedPosition({
 
   const {onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
 
+  const position = positions ? positions[0] : null
   let filteredUnwind: Unwind | undefined = undefined
-  let filteredPosition: PositionDataV2 | undefined = undefined
-  if (positions) {
-    for (let position of positions) {
-      let selectedUnwind = position.unwinds.filter(transaction => transaction.id === unwindId)
-      if (selectedUnwind.length > 0) {
-        filteredUnwind = selectedUnwind[0]
-        filteredPosition = position
-      }
+
+  if (position) {
+    let selectedUnwind = position.unwinds.filter(transaction => transaction.id === unwindId)
+    if (selectedUnwind.length > 0) {
+      filteredUnwind = selectedUnwind[0]
     }
   }
-
-  const position = filteredPosition
 
   const {baseToken, quoteToken, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
 

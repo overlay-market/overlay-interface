@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
+import { useAccountQuery, useAccountV2Query, useQueryPositionQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -212,6 +212,17 @@ export function useWalletPositionsFromSubgraphV2(address: string | undefined | n
   })
 }
 
+export function useQueryPositionFromSubgraph(address: string | undefined | null, marketPositionId: string) {
+  const accountAddress = address ? address.toLowerCase() : undefined;
+
+  return useQueryPositionQuery(accountAddress ? { account: accountAddress, marketPositionId } : skipToken, { 
+    refetchOnMountOrArgChange: true, 
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    skip: false
+  })
+}
+
 interface PositionMarketData {
   id: string
   feedAddress: string
@@ -353,6 +364,30 @@ export function useCurrentWalletPositionsV2(
     error: walletPositionsData.error,
     positions: walletPositionsData.data?.account?.positions,
     refetch: walletPositionsData.refetch
+  }
+}
+
+export function useQueryPosition(
+  address: string | undefined | null,
+  marketPositionId: string
+):{
+  isLoading: boolean
+  isFetching: boolean
+  isUninitialized: boolean
+  isError: boolean
+  error: unknown
+  positions: PositionDataV2[] | undefined
+  refetch: () => void
+} {
+  const walletPositionData = useQueryPositionFromSubgraph(address ? address : undefined, marketPositionId)
+  return {
+    isLoading: walletPositionData.isLoading,
+    isFetching: walletPositionData.isFetching,
+    isUninitialized: walletPositionData.isUninitialized,
+    isError: walletPositionData.isError, 
+    error: walletPositionData.error,
+    positions: walletPositionData.data?.account?.positions,
+    refetch: walletPositionData.refetch
   }
 }
 

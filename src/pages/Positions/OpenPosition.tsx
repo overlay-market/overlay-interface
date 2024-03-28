@@ -19,11 +19,12 @@ import {usePositionMulticall} from '../../hooks/usePositionMulticall'
 type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
 interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
 export interface PositionProps {
+  page?: number
   position: PositionInterface
   columns: string[]
 }
 
-export const OpenPosition = ({position, columns}: PositionProps) => {
+export const OpenPosition = ({page, position, columns}: PositionProps) => {
   const {
     id,
     positionId,
@@ -108,6 +109,7 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
   function handleNavigate(location: string | undefined) {
     const string = `/positions/${location}`
     history.push(string)
+    page && sessionStorage.setItem(`openPage`, `${page}`)
   }
 
   const positionUrl = useMemo(() => {

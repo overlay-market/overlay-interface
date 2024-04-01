@@ -150,7 +150,20 @@ const StyledTableCell = styled(TableCell)`
 
 const SelectPositionsButton = styled(TriggerActionButton)`
   width: 240px;
+  padding: 10px;
   background: ${colors(true).dark.grey4};
+  border: 1px solid ${colors(true).dark.blue2};
+`
+const CancelButton = styled(TriggerActionButton)`
+  color: ${colors(true).dark.red};
+  border: 1px solid ${colors(true).dark.red};
+  width: 100px;
+  padding: 10px;
+  background: ${colors(true).dark.grey4};
+  :hover {
+    box-shadow: 0px 0px 10px 0px ${colors(true).dark.red};
+    border: 1px solid ${colors(true).dark.red};
+  }
 `
 
 const ROWS_PER_PAGE = [10, 20, 40, 50]
@@ -198,6 +211,14 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
   const openClosePositionsOption = () => {
     setIsOpenCloseAllPositionsOption(true)
+  }
+
+  const handleCancel = () => {
+    setIsOpenCloseAllPositionsOption(false)
+  }
+
+  const handleClosePositions = () => {
+    console.log('close selected positions')
   }
 
   const pageCount = useMemo(() => {
@@ -288,14 +309,20 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   return (
     <Container>
       <FlexRow justify="space-between" align="baseline">
-        <TEXT.BoldStandardBody mt={marginTop} mb="16px">
+        <TEXT.BoldStandardBody mt={marginTop} mb="16px" style={{width: '200px'}}>
           {`${title}`}
           <TriangleButton onClick={handleToggle}>
             <RotatingTriangle color={'white'} fill={'white'} height={10} width={10} open={open} />
           </TriangleButton>
         </TEXT.BoldStandardBody>
-        {positionStatus === PositionStatus.Open && (
+        {positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption && (
           <SelectPositionsButton onClick={openClosePositionsOption}>Select positions to close</SelectPositionsButton>
+        )}
+        {positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption && (
+          <FlexRow justify="end" align="baseline" style={{gap: '10px'}}>
+            <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+            <SelectPositionsButton onClick={handleClosePositions}>Close {3} selected positions</SelectPositionsButton>
+          </FlexRow>
         )}
       </FlexRow>
       <Collapse in={open} timeout="auto" unmountOnExit>

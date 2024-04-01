@@ -25,6 +25,7 @@ import EthVixLogo from '../assets/images/tokens/eth-vix.png'
 import FlippeningLogo from '../assets/images/tokens/flippening.png'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 import QuantumCatsLogo from '../assets/images/tokens/quantum-cats.png'
+import InkLogo from '../assets/images/tokens/ink.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -314,6 +315,19 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     contract: {
       name: shortenAddress('0x4edfb4057f3a448b2704df1a3665db4ae6371b69'),
       url: 'https://sepolia.arbiscan.io/address/0x4edfb4057f3a448b2704df1a3665db4ae6371b69',
+    },
+  },
+  '0xe060ea13b2e710cefc5124bb790db4823b0f602a': {
+    marketName: 'Ink',
+    logo: InkLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+    contract: {
+      name: shortenAddress('0xe060ea13b2e710cefc5124bb790db4823b0f602a'),
+      url: 'https://sepolia.arbiscan.io/address/0xe060ea13b2e710cefc5124bb790db4823b0f602a',
     },
   },
   // '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {

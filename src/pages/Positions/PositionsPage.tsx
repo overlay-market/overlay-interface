@@ -20,6 +20,7 @@ import Pagination from '../../components/Pagination/Pagination'
 import Loader from '../../components/Loaders/Loaders'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useParams} from 'react-router-dom'
+import {TriggerActionButton} from '../../components/Button/Button'
 
 const Container = styled.div`
   display: flex;
@@ -132,6 +133,11 @@ const StyledTableCell = styled(TableCell)`
   text-align: center !important;
 `
 
+const SelectPositionsButton = styled(TriggerActionButton)`
+  width: 240px;
+  background: ${colors(true).dark.grey4};
+`
+
 const ROWS_PER_PAGE = [10, 20, 40, 50]
 
 const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
@@ -139,6 +145,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
+  const [isOpenCloseAllPositionsOption, setIsOpenCloseAllPositionsOption] = useState(false)
   const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
@@ -172,6 +179,10 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const handleRowsPerPageChange = (newValue: number) => {
     setRowsPerPage(newValue)
     setPage(1)
+  }
+
+  const openClosePositionsOption = () => {
+    setIsOpenCloseAllPositionsOption(true)
   }
 
   const pageCount = useMemo(() => {
@@ -249,12 +260,17 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
   return (
     <Container>
-      <TEXT.BoldStandardBody mt={marginTop} mb="16px">
-        {`${title}`}
-        <TriangleButton onClick={handleToggle}>
-          <RotatingTriangle color={'white'} fill={'white'} height={10} width={10} open={open} />
-        </TriangleButton>
-      </TEXT.BoldStandardBody>
+      <FlexRow justify="space-between" align="baseline">
+        <TEXT.BoldStandardBody mt={marginTop} mb="16px">
+          {`${title}`}
+          <TriangleButton onClick={handleToggle}>
+            <RotatingTriangle color={'white'} fill={'white'} height={10} width={10} open={open} />
+          </TriangleButton>
+        </TEXT.BoldStandardBody>
+        {positionStatus === PositionStatus.Open && (
+          <SelectPositionsButton onClick={openClosePositionsOption}>Select positions to close</SelectPositionsButton>
+        )}
+      </FlexRow>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <TableContainer>
           <StyledTable minWidth={PositionStatus.Build && !PositionStatus.Open ? 'unset' : PositionStatus.Open ? '100%' : ''}>

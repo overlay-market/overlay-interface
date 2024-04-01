@@ -32,6 +32,19 @@ const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Pr
 
 const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'Funding']
 
+const selectOpenPositionsColumns = [
+  '',
+  'Market',
+  'Size',
+  'Position',
+  'Entry Price',
+  'Current Price',
+  'Liq. Price',
+  'Created',
+  'Unrealized PnL',
+  'Funding',
+]
+
 const closedPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Closed', 'PnL']
 
 const buildPositionsColumns = ['Size', 'Position', 'Entry Price', 'Liq. Price', 'Unrealized PnL']
@@ -41,6 +54,7 @@ const positionColumns = {
   closed: closedPositionsColumns,
   liquidated: liquidatedColumns,
   build: buildPositionsColumns,
+  selectOpen: selectOpenPositionsColumns,
 }
 
 interface PositionsTableProps {
@@ -58,6 +72,7 @@ export enum PositionStatus {
   Closed = 'closed',
   Liquidated = 'liquidated',
   Build = 'build',
+  SelectOpen = 'selectOpen',
 }
 
 export const TriangleButton = styled(Button)`
@@ -213,7 +228,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           const marketAddress = positionStatus === PositionStatus.Open ? row.market.id : row.position.market.id
           const marketState = marketsData.filter((market: ParsedMarketStateDetails) => market.marketAddress === marketAddress)[0]
 
-          if (positionStatus === PositionStatus.Open) {
+          if (positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption) {
             return (
               <OpenPosition
                 key={row.id}
@@ -222,6 +237,18 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                   ...row,
                 }}
                 columns={positionColumns[PositionStatus.Open]}
+              />
+            )
+          } else if (positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption) {
+            return (
+              <OpenPosition
+                key={row.id}
+                position={{
+                  ...marketState,
+                  ...row,
+                }}
+                columns={positionColumns[PositionStatus.SelectOpen]}
+                isOpenCloseAllPositionsOption={isOpenCloseAllPositionsOption}
               />
             )
           } else if (positionStatus === PositionStatus.Closed) {
@@ -256,7 +283,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
         })}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData, account])
+  }, [positionStatus, marketsData, positionsTableData, account, isOpenCloseAllPositionsOption])
 
   return (
     <Container>
@@ -276,13 +303,21 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           <StyledTable minWidth={PositionStatus.Build && !PositionStatus.Open ? 'unset' : PositionStatus.Open ? '100%' : ''}>
             <TableHead>
               <StyledTableHeaderRow>
-                {positionColumns[positionStatus].map((column: string) => {
-                  return (
-                    <StyledHeaderCell key={column} width={20}>
-                      <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
-                    </StyledHeaderCell>
-                  )
-                })}
+                {isOpenCloseAllPositionsOption
+                  ? positionColumns['selectOpen'].map((column: string) => {
+                      return (
+                        <StyledHeaderCell key={column} width={20}>
+                          <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                        </StyledHeaderCell>
+                      )
+                    })
+                  : positionColumns[positionStatus].map((column: string) => {
+                      return (
+                        <StyledHeaderCell key={column} width={20}>
+                          <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                        </StyledHeaderCell>
+                      )
+                    })}
               </StyledTableHeaderRow>
             </TableHead>
             <TableBody>

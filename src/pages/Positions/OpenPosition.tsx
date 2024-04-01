@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import {StyledTableRow, StyledTableCell} from '../../components/Table/Table'
 import formatUnixTimestampToDate from '../../utils/formatUnixTimestampToDate'
 import {FlexRow} from '../../components/Container/Container'
@@ -6,7 +6,7 @@ import {formatBigNumber} from '../../utils/formatBigNumber'
 import {checkIsNegative} from '../../utils/checkIsNegative'
 import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
-import {TEXT} from '../../theme/theme'
+import {colors, TEXT} from '../../theme/theme'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {BigNumber, ethers} from 'ethers'
 import {TickMath} from '@uniswap/v3-sdk'
@@ -15,15 +15,17 @@ import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 import {ONE_BN} from '../../constants/tokens'
 import {OpenPositionsQuery} from '../../state/data/generated'
 import {usePositionMulticall} from '../../hooks/usePositionMulticall'
+import {Checkbox} from '@material-ui/core'
 
 type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
 interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
 export interface PositionProps {
   position: PositionInterface
   columns: string[]
+  isOpenCloseAllPositionsOption?: boolean
 }
 
-export const OpenPosition = ({position, columns}: PositionProps) => {
+export const OpenPosition = ({position, columns, isOpenCloseAllPositionsOption}: PositionProps) => {
   const {
     id,
     positionId,
@@ -102,6 +104,11 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
     const diff = (+value - +cost - +tradingFee) / 10 ** 18
     return diff < 1 ? diff.toFixed(6) : diff.toFixed(2)
   }, [value, cost, tradingFee])
+
+  const [checked, setChecked] = useState(false)
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked)
+  }
 
   let history = useHistory()
 
@@ -192,7 +199,12 @@ export const OpenPosition = ({position, columns}: PositionProps) => {
 
   return (
     <>
-      <StyledTableRow onClick={() => handleNavigate(positionUrl)}>
+      {isOpenCloseAllPositionsOption && (
+        <div style={{position: 'relative', top: '4px', height: '0px'}}>
+          <Checkbox checked={checked} onChange={handleChange} color="primary" />
+        </div>
+      )}
+      <StyledTableRow onClick={() => handleNavigate(positionUrl)} style={{background: checked ? colors(true).dark.grey4 : ''}}>
         {sortedValues.map((value, index) => {
           return (
             <StyledTableCell key={index}>

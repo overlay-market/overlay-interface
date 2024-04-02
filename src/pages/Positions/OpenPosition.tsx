@@ -23,9 +23,11 @@ export interface PositionProps {
   position: PositionInterface
   columns: string[]
   isOpenCloseAllPositionsOption?: boolean
+  setSelectedPositionsList?: Function
+  isChecked?: boolean
 }
 
-export const OpenPosition = ({position, columns, isOpenCloseAllPositionsOption}: PositionProps) => {
+export const OpenPosition = ({position, columns, isOpenCloseAllPositionsOption, setSelectedPositionsList, isChecked}: PositionProps) => {
   const {
     id,
     positionId,
@@ -105,9 +107,13 @@ export const OpenPosition = ({position, columns, isOpenCloseAllPositionsOption}:
     return diff < 1 ? diff.toFixed(6) : diff.toFixed(2)
   }, [value, cost, tradingFee])
 
-  const [checked, setChecked] = useState(false)
+  const [checked, setChecked] = useState(isChecked ? isChecked : false)
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked)
+    setSelectedPositionsList &&
+      setSelectedPositionsList((prev: string[]) => {
+        return event.target.checked ? [...prev, id] : prev.filter(el => el !== id)
+      })
   }
 
   let history = useHistory()
@@ -204,7 +210,10 @@ export const OpenPosition = ({position, columns, isOpenCloseAllPositionsOption}:
           <Checkbox checked={checked} onChange={handleChange} color="primary" />
         </div>
       )}
-      <StyledTableRow onClick={() => handleNavigate(positionUrl)} style={{background: checked ? colors(true).dark.grey4 : ''}}>
+      <StyledTableRow
+        onClick={() => handleNavigate(positionUrl)}
+        style={{background: checked && isOpenCloseAllPositionsOption ? colors(true).dark.grey4 : ''}}
+      >
         {sortedValues.map((value, index) => {
           return (
             <StyledTableCell key={index}>

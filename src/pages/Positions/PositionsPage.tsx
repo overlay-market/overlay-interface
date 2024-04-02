@@ -148,11 +148,17 @@ const StyledTableCell = styled(TableCell)`
   text-align: center !important;
 `
 
-const SelectPositionsButton = styled(TriggerActionButton)`
+const SelectPositionsButton = styled(TriggerActionButton)<{disabled?: boolean}>`
   width: 240px;
   padding: 10px;
   background: ${colors(true).dark.grey4};
-  border: 1px solid ${colors(true).dark.blue2};
+  border: 1px solid ${({disabled}) => (disabled ? colors(true).dark.grey2 : colors(true).dark.blue2)};
+  cursor: ${({disabled}) => (disabled ? 'default' : 'pointer')};
+  color: ${({disabled}) => (disabled ? colors(true).dark.grey2 : '')};
+  :hover {
+    box-shadow: ${({disabled}) => (disabled ? 'none' : '')};
+    border-color: ${({disabled}) => (disabled ? colors(true).dark.grey2 : '')};
+  }
 `
 const CancelButton = styled(TriggerActionButton)`
   color: ${colors(true).dark.red};
@@ -174,6 +180,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const [isOpenCloseAllPositionsOption, setIsOpenCloseAllPositionsOption] = useState(false)
+  const [selectedPositionsList, setSelectedPositionsList] = useState<string[]>([])
   const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
@@ -270,6 +277,8 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                 }}
                 columns={positionColumns[PositionStatus.SelectOpen]}
                 isOpenCloseAllPositionsOption={isOpenCloseAllPositionsOption}
+                setSelectedPositionsList={setSelectedPositionsList}
+                isChecked={selectedPositionsList.includes(row.id)}
               />
             )
           } else if (positionStatus === PositionStatus.Closed) {
@@ -321,7 +330,9 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
         {positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption && (
           <FlexRow justify="end" align="baseline" style={{gap: '10px'}}>
             <CancelButton onClick={handleCancel}>Cancel</CancelButton>
-            <SelectPositionsButton onClick={handleClosePositions}>Close {3} selected positions</SelectPositionsButton>
+            <SelectPositionsButton disabled={selectedPositionsList.length === 0} onClick={handleClosePositions}>
+              Close {selectedPositionsList.length} selected positions
+            </SelectPositionsButton>
           </FlexRow>
         )}
       </FlexRow>

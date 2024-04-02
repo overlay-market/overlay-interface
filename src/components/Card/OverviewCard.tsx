@@ -129,7 +129,7 @@ const OverviewCard = (props: DataProps) => {
             )}
             {buttonText && (
               <div>
-                <Tooltip title={tooltip || 'hola'} placement="top">
+                <Tooltip title={tooltip || ''} placement="top">
                   <Box
                     ml={1}
                     onClick={hasClaimableReward ? button : undefined}

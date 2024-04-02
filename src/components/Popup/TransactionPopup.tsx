@@ -44,6 +44,7 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
           {info?.type === TransactionType.LIQUIDATE_OVL_POSITION && 'Liquidation Successful'}
           {info?.type === TransactionType.BRIDGE_OVL && 'Bridge Successful'}
           {info?.type === TransactionType.CLAIM_OVL && 'Claim Successful'}
+          {info?.type === TransactionType.REFERRAL_CLAIM && 'Claim Successful'}
           {/* {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)} */}
           {info?.code === 4001 && 'Transaction Rejected'}
           {info?.code === 'ACTION_REJECTED' && 'Transaction Rejected'}

@@ -82,6 +82,10 @@ const useStyles = makeStyles(theme => ({
     marginBottom: '20px',
     textAlign: 'center',
   },
+  errorMessage: {
+    alignSelf: 'flex-start',
+    margin: '-15px 0 0 24px !important',
+  },
 }))
 
 const ConnectWalletButton = styled(TriggerActionButton)`
@@ -127,8 +131,8 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
     referralCodeCallback()
       .then(hash => {
         setReferralCodeState({
-          showConfirm: true,
-          attemptingTransaction: true,
+          showConfirm: false,
+          attemptingTransaction: false,
           transactionErrorMessage: undefined,
           transactionHash: hash,
         })
@@ -168,7 +172,9 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
           value={referralLink}
         />
         {transactionErrorMessage != undefined && !transactionErrorMessage.toString().includes('Transaction rejected') && (
-          <TEXT.Supplemental color={colors(false).dark.red}>Invalid wallet address</TEXT.Supplemental>
+          <TEXT.Supplemental className={classes.errorMessage} color={colors(false).dark.red}>
+            Invalid wallet address
+          </TEXT.Supplemental>
         )}
         {!account && <ConnectWalletButton onClick={toggleWalletModal}>Connect wallet</ConnectWalletButton>}
         {account && (

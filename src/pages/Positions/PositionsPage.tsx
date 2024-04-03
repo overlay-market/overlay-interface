@@ -21,6 +21,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useParams} from 'react-router-dom'
 import {TriggerActionButton} from '../../components/Button/Button'
+import {CloseSelectedPositionsModal} from './CloseSelectedPositionsModal'
 
 const Container = styled.div`
   display: flex;
@@ -180,6 +181,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const [isOpenCloseAllPositionsOption, setIsOpenCloseAllPositionsOption] = useState(false)
+  const [showCloseSelPositionsModal, setShowSelPositionsModal] = useState(false)
   const [selectedPositionsList, setSelectedPositionsList] = useState<string[]>([])
   const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
@@ -226,6 +228,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
   const handleClosePositions = () => {
     console.log('close selected positions')
+    setShowSelPositionsModal(true)
   }
 
   const pageCount = useMemo(() => {
@@ -411,6 +414,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           <TEXT.StandardBody color="#858585">You have no {positionStatus} positions.</TEXT.StandardBody>
         </FlexRow>
       ) : null}
+      {showCloseSelPositionsModal && <CloseSelectedPositionsModal open={showCloseSelPositionsModal} onClose={setShowSelPositionsModal} />}
     </Container>
   )
 }

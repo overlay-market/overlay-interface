@@ -49,27 +49,30 @@ const CancelButton = styled(TriggerActionButton)`
 `
 
 interface ModalProps {
-  open: boolean
   onClose: Function
+  selectedPositionsList: string[]
 }
 
-export function CloseSelectedPositionsModal({open, onClose}: ModalProps) {
+export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: ModalProps) {
   const marketPositionId = '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e-0x1d02f'
   const positionId = '0x1d02f'
   const {account, chainId} = useActiveWeb3React()
   const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
-
+  console.log(selectedPositionsList)
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
 
   const {typedValue} = useUnwindState()
   const {onResetUnwindState} = useUnwindActionHandlers()
-  console.log(typedValue, 'typedValue')
-  const filtered = positions?.filter((index, key) => index.id === marketPositionId)
 
+  const filtered = positions?.filter((index, key) => selectedPositionsList.includes(index.id))
+
+  const selPositions = filtered ? filtered : null
+
+  const areMarketsShutDown = selPositions?.some(position => position?.market.isShutdown)
+  console.log(selPositions)
   const position = filtered ? filtered[0] : null
-
   const multicallRes = usePositionMulticall(position?.market.id, positionId)
   const {value, cost, info: positionInfo, oiCurrent: oi, liquidationPrice: liquidationPriceResult} = multicallRes
 
@@ -131,11 +134,24 @@ export function CloseSelectedPositionsModal({open, onClose}: ModalProps) {
   return (
     <PageWrapper>
       <MessageBox>
-        <TEXT.BoldHeader1 color={'white'}>You are going to close selected positions</TEXT.BoldHeader1>
-        <FlexRow>
-          <CancelButton onClick={handleClose}>Cancel</CancelButton>
-          <UnwindButton onClick={handleUnwind}>Close selected positions</UnwindButton>
-        </FlexRow>
+        {areMarketsShutDown ? (
+          <>
+            <TEXT.BoldHeader1 fontSize={16} color={'white'}>
+              Sorry for not being able to close all selected positions at the moment. Some positions can't be closed at the time.
+            </TEXT.BoldHeader1>
+            <FlexRow justify={'end'}>
+              <CancelButton onClick={handleClose}>OK</CancelButton>
+            </FlexRow>
+          </>
+        ) : (
+          <>
+            <TEXT.BoldHeader1 color={'white'}>You are going to close selected positions</TEXT.BoldHeader1>
+            <FlexRow>
+              <CancelButton onClick={handleClose}>Cancel</CancelButton>
+              <UnwindButton onClick={handleUnwind}>Close selected positions</UnwindButton>
+            </FlexRow>
+          </>
+        )}
       </MessageBox>
     </PageWrapper>
   )

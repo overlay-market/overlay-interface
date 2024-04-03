@@ -414,7 +414,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           <TEXT.StandardBody color="#858585">You have no {positionStatus} positions.</TEXT.StandardBody>
         </FlexRow>
       ) : null}
-      {showCloseSelPositionsModal && <CloseSelectedPositionsModal open={showCloseSelPositionsModal} onClose={setShowSelPositionsModal} />}
+      {showCloseSelPositionsModal && <CloseSelectedPositionsModal onClose={setShowSelPositionsModal} selectedPositionsList={selectedPositionsList} />}
     </Container>
   )
 }

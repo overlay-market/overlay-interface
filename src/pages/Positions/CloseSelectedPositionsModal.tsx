@@ -1,6 +1,6 @@
 import {useEffect, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import {BigNumberish} from 'ethers'
+import {BigNumberish, BigNumber} from 'ethers'
 import {colors, TEXT} from '../../theme/theme'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useUnwindCallback} from '../../hooks/useUnwindCallback'
@@ -10,7 +10,7 @@ import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {FlexRow} from '../../components/Container/Container'
 import {TriggerActionButton} from '../../components/Button/Button'
 import {useMarketPrice} from '../../hooks/useMarketPrices'
-import {usePositionMulticall} from '../../hooks/usePositionMulticall'
+import {useMultiplePositionsMulticall} from '../../hooks/useMultiplePositionsMulticall'
 
 const PageWrapper = styled.div`
   width: 100vw;
@@ -53,17 +53,32 @@ interface ModalProps {
   selectedPositionsList: string[]
 }
 
+type selPositionsIds = {
+  [id: string]: {
+    marketPositionId: string
+    positionId: string
+  }
+}
+
+interface MulticallResults {
+  [marketPositionId: string]: {
+    [callMethod: string]: BigNumber | undefined
+  }
+}
+
 export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: ModalProps) {
   const marketPositionId = '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e-0x1d02f'
   const positionId = '0x1d02f'
   const {account, chainId} = useActiveWeb3React()
   const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
   console.log(selectedPositionsList)
+
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
 
   const {typedValue} = useUnwindState()
+
   const {onResetUnwindState} = useUnwindActionHandlers()
 
   const filtered = positions?.filter((index, key) => selectedPositionsList.includes(index.id))
@@ -71,12 +86,24 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
   const selPositions = filtered ? filtered : null
 
   const areMarketsShutDown = selPositions?.some(position => position?.market.isShutdown)
-  console.log(selPositions)
-  const position = filtered ? filtered[0] : null
-  const multicallRes = usePositionMulticall(position?.market.id, positionId)
-  const {value, cost, info: positionInfo, oiCurrent: oi, liquidationPrice: liquidationPriceResult} = multicallRes
 
-  const isLong = positionInfo ? positionInfo.isLong : undefined
+  let selPositionsIds: selPositionsIds = {}
+  selPositions &&
+    selPositions.forEach(position => {
+      selPositionsIds[position.id] = {
+        marketPositionId: position.market.id,
+        positionId: position.positionId,
+      }
+    })
+
+  const position = filtered ? filtered[0] : null
+  const callMethods = ['value', 'liquidationPrice']
+  const multicallResults = useMultiplePositionsMulticall(selPositionsIds, callMethods)
+  console.log(multicallResults)
+
+  // const {value, cost, info: positionInfo, oiCurrent: oi, liquidationPrice: liquidationPriceResult} = multicallRes
+
+  // const isLong = positionInfo ? positionInfo.isLong : undefined
 
   const fetchPrices = useMarketPrice(position?.market.id)
 
@@ -109,7 +136,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
   }, [fetchPrices])
 
   const {unwindData} = useDerivedUnwindInfo()
-  const {callback: unwindCallback} = useUnwindCallback(unwindData, position?.market.id, typedValue, value, positionId, isLong, prices)
+  // const {callback: unwindCallback} = useUnwindCallback(unwindData, position?.market.id, typedValue, value, positionId, isLong, prices)
   useEffect(() => {
     onResetUnwindState()
   }, [positionId, onResetUnwindState])
@@ -125,7 +152,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
 
   const handleUnwind = useCallback(() => {
     console.log('UUUUUNNNNWWWWIIINNNDD')
-  }, [unwindCallback, onResetUnwindState])
+  }, [onResetUnwindState])
 
   const handleClose = () => {
     onClose(false)
@@ -145,7 +172,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
           </>
         ) : (
           <>
-            <TEXT.BoldHeader1 color={'white'}>You are going to close selected positions</TEXT.BoldHeader1>
+            <TEXT.BoldHeader1 color={'white'}>You are going to close {selectedPositionsList.length} selected positions</TEXT.BoldHeader1>
             <FlexRow>
               <CancelButton onClick={handleClose}>Cancel</CancelButton>
               <UnwindButton onClick={handleUnwind}>Close selected positions</UnwindButton>

@@ -334,7 +334,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           <FlexRow justify="end" align="baseline" style={{gap: '10px'}}>
             <CancelButton onClick={handleCancel}>Cancel</CancelButton>
             <SelectPositionsButton disabled={selectedPositionsList.length === 0} onClick={handleClosePositions}>
-              Close {selectedPositionsList.length} selected positions
+              Close selected positions
             </SelectPositionsButton>
           </FlexRow>
         )}

@@ -9,7 +9,7 @@ import {useUnwindState, useUnwindActionHandlers, useDerivedUnwindInfo} from '../
 import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {FlexRow} from '../../components/Container/Container'
 import {TriggerActionButton} from '../../components/Button/Button'
-import {useMarketPrice} from '../../hooks/useMarketPrices'
+import {useMarketListPrices, useMarketPrice} from '../../hooks/useMarketPrices'
 import {useMultiplePositionsMulticall} from '../../hooks/useMultiplePositionsMulticall'
 
 const PageWrapper = styled.div`
@@ -71,7 +71,6 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
   const positionId = '0x1d02f'
   const {account, chainId} = useActiveWeb3React()
   const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
-  console.log(selectedPositionsList)
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -98,13 +97,23 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
 
   const position = filtered ? filtered[0] : null
   const callMethods = ['value', 'liquidationPrice']
-  const multicallResults = useMultiplePositionsMulticall(selPositionsIds, callMethods)
+  const multicallResults: MulticallResults = useMultiplePositionsMulticall(selPositionsIds, callMethods)
   console.log(multicallResults)
 
   // const {value, cost, info: positionInfo, oiCurrent: oi, liquidationPrice: liquidationPriceResult} = multicallRes
 
   // const isLong = positionInfo ? positionInfo.isLong : undefined
 
+  const marketList: string[] = useMemo(() => {
+    let tempSet = new Set<string>()
+    selectedPositionsList.forEach(id => {
+      tempSet.add(id.slice(0, 42))
+    })
+    return Array.from(tempSet)
+  }, [selectedPositionsList])
+
+  const fetchPrices1 = useMarketListPrices(marketList)
+  console.log(fetchPrices1)
   const fetchPrices = useMarketPrice(position?.market.id)
 
   const prices: {

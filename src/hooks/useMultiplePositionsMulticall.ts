@@ -72,7 +72,6 @@ export function useMultiplePositionsMulticall(selPositionsIds: selPositionsIds, 
   }
 
   return useMemo(() => {
-    let res: any = {}
     let positionsIds: string[] = []
     Object.keys(selPositionsIds).forEach(id => {
       positionsIds.push(id)

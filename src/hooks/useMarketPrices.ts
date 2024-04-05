@@ -3,6 +3,10 @@ import {useV1PeripheryContract} from './useContract'
 import {useBlockNumber} from '../state/application/hooks'
 import {useActiveWeb3React} from './web3'
 
+type marketsPrices = {
+  [marketAddress: string]: any[]
+}
+
 export function useMarketPrice(marketAddress?: string): any | undefined {
   const peripheryContract = useV1PeripheryContract()
   const blockNumber = useBlockNumber()
@@ -56,4 +60,40 @@ export function useMarketMidPrices(marketAddresses?: string[][], blockNumber?: n
   return useMemo(() => {
     return midPrices
   }, [midPrices])
+}
+
+export function useMarketListPrices(marketList: string[]): any | undefined {
+  const peripheryContract = useV1PeripheryContract()
+  const blockNumber = useBlockNumber()
+  const {account} = useActiveWeb3React()
+  const [prices, setPrices] = useState<any[]>([])
+  let marketsPrices: marketsPrices = {}
+
+  useEffect(() => {
+    if (!peripheryContract || !marketList || !blockNumber) return
+
+    const getPrices = async (marketAddress: string) => {
+      return await peripheryContract.prices(marketAddress)
+    }
+
+    const requestPromises = marketList.map(marketAddress => {
+      const request = getPrices(marketAddress).then(result => {
+        return result
+      })
+      return request
+    })
+
+    Promise.all(requestPromises).then(results => {
+      console.log('Promise returned from useMarketListPrice', results)
+      setPrices(results)
+    })
+  }, [peripheryContract, marketList, blockNumber, account])
+
+  marketList.forEach((id, index) => {
+    marketsPrices[id] = prices[index]
+  })
+
+  return useMemo(() => {
+    return marketsPrices
+  }, [marketsPrices])
 }

@@ -9,7 +9,7 @@ import {useUnwindState, useUnwindActionHandlers, useDerivedUnwindInfo} from '../
 import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {FlexRow} from '../../components/Container/Container'
 import {TriggerActionButton} from '../../components/Button/Button'
-import {useMarketListPrices, useMarketPrice} from '../../hooks/useMarketPrices'
+import {useMarketListPrices} from '../../hooks/useMarketPrices'
 import {useMultiplePositionsMulticall} from '../../hooks/useMultiplePositionsMulticall'
 
 const PageWrapper = styled.div`
@@ -127,7 +127,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
 
   const prices: marketListPrices = useMemo(() => {
     let marketsPrices: marketListPrices = {}
-    const arePricesUndefined = Object.keys(fetchPrices).reduce((ac, id) => ac && fetchPrices[id] === undefined, true)
+    const arePricesUndefined = Object.keys(fetchPrices).reduce((ac, id) => ac || fetchPrices[id] === undefined, false)
 
     if (arePricesUndefined) {
       Object.keys(fetchPrices).forEach((id: string) => {
@@ -156,6 +156,22 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
     return marketsPrices
   }, [fetchPrices])
 
+  let positionsUnderwaterList: any[] = []
+
+  selPositions &&
+    multicallResults &&
+    prices &&
+    Object.keys(multicallResults).forEach((id: string) => {
+      positionsUnderwaterList.push(
+        selPositions.find(pos => pos.id === id)!.isLong
+          ? multicallResults[id]['liquidationPrice']?.gt(prices[id.slice(0, 42)]._mid!)
+          : multicallResults[id]['liquidationPrice']?.lt(prices[id.slice(0, 42)]._mid!),
+      )
+    })
+
+  const arePositionsUnderwater =
+    multicallResults && prices ? positionsUnderwaterList.reduce((acc, booleanValue) => acc || booleanValue, false) : false
+
   const {unwindData} = useDerivedUnwindInfo()
   // const {callback: unwindCallback} = useUnwindCallback(unwindData, position?.market.id, typedValue, value, positionId, isLong, prices)
   useEffect(() => {
@@ -182,7 +198,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
   return (
     <PageWrapper>
       <MessageBox>
-        {areMarketsShutDown ? (
+        {areMarketsShutDown || arePositionsUnderwater ? (
           <>
             <TEXT.BoldHeader1 fontSize={16} color={'white'}>
               Sorry for not being able to close all selected positions at the moment. Some positions can't be closed at the time.

@@ -66,6 +66,17 @@ interface MulticallResults {
   }
 }
 
+type marketListPrices = {
+  [marketAddress: string]: {
+    bid?: string | number | any
+    ask?: string | number | any
+    mid?: string | number | any
+    _bid?: BigNumberish
+    _ask?: BigNumberish
+    _mid?: BigNumberish
+  }
+}
+
 export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: ModalProps) {
   const marketPositionId = '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e-0x1d02f'
   const positionId = '0x1d02f'
@@ -112,36 +123,37 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
     return Array.from(tempSet)
   }, [selectedPositionsList])
 
-  const fetchPrices1 = useMarketListPrices(marketList)
-  console.log(fetchPrices1)
-  const fetchPrices = useMarketPrice(position?.market.id)
+  const fetchPrices = useMarketListPrices(marketList)
 
-  const prices: {
-    bid?: string | number | any
-    ask?: string | number | any
-    mid?: string | number | any
-    _bid?: BigNumberish
-    _ask?: BigNumberish
-    _mid?: BigNumberish
-  } = useMemo(() => {
-    if (fetchPrices === undefined || !fetchPrices)
-      return {
-        bid: 'loading',
-        ask: 'loading',
-        mid: 'loading',
-        _bid: undefined,
-        _ask: undefined,
-        _mid: undefined,
-      }
+  const prices: marketListPrices = useMemo(() => {
+    let marketsPrices: marketListPrices = {}
+    const arePricesUndefined = Object.keys(fetchPrices).reduce((ac, id) => ac && fetchPrices[id] === undefined, true)
 
-    return {
-      bid: formatWeiToParsedNumber(fetchPrices[0], 18, 2)?.toString(),
-      ask: formatWeiToParsedNumber(fetchPrices[1], 18, 2)?.toString(),
-      mid: formatWeiToParsedNumber(fetchPrices[2], 18, 2)?.toString(),
-      _bid: fetchPrices.bid_,
-      _ask: fetchPrices.ask_,
-      _mid: fetchPrices.mid_,
+    if (arePricesUndefined) {
+      Object.keys(fetchPrices).forEach((id: string) => {
+        marketsPrices[id] = {
+          bid: 'loading',
+          ask: 'loading',
+          mid: 'loading',
+          _bid: undefined,
+          _ask: undefined,
+          _mid: undefined,
+        }
+      })
+      return marketsPrices
     }
+
+    Object.keys(fetchPrices).forEach((id: string) => {
+      marketsPrices[id] = {
+        bid: formatWeiToParsedNumber(fetchPrices[id][0], 18, 2)?.toString(),
+        ask: formatWeiToParsedNumber(fetchPrices[id][1], 18, 2)?.toString(),
+        mid: formatWeiToParsedNumber(fetchPrices[id][2], 18, 2)?.toString(),
+        _bid: fetchPrices[id].bid_,
+        _ask: fetchPrices[id].ask_,
+        _mid: fetchPrices[id].mid_,
+      }
+    })
+    return marketsPrices
   }, [fetchPrices])
 
   const {unwindData} = useDerivedUnwindInfo()

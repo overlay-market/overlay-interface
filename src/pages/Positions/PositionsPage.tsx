@@ -22,6 +22,7 @@ import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useParams} from 'react-router-dom'
 import {TriggerActionButton} from '../../components/Button/Button'
 import {CloseSelectedPositionsModal} from './CloseSelectedPositionsModal'
+import {useUnwindActionHandlers} from '../../state/unwind/hooks'
 
 const Container = styled.div`
   display: flex;
@@ -180,6 +181,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [open, setOpen] = useState<boolean>(true)
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
+  const {onAmountInput} = useUnwindActionHandlers()
   const [isOpenCloseAllPositionsOption, setIsOpenCloseAllPositionsOption] = useState(false)
   const [showCloseSelPositionsModal, setShowSelPositionsModal] = useState(false)
   const [selectedPositionsList, setSelectedPositionsList] = useState<string[]>([])
@@ -228,6 +230,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
   const handleClosePositions = () => {
     console.log('close selected positions')
+    onAmountInput('100')
     setShowSelPositionsModal(true)
   }
 

@@ -137,7 +137,8 @@ const ROWS_PER_PAGE = [10, 20, 40, 50]
 const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
   const {account, chainId} = useActiveWeb3React()
   const [open, setOpen] = useState<boolean>(true)
-  const [page, setPage] = useState<number>(1)
+  const curPage = sessionStorage.getItem(`${positionStatus}Page`)
+  const [page, setPage] = useState<number>(curPage ? +curPage : 1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
@@ -172,6 +173,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const handleRowsPerPageChange = (newValue: number) => {
     setRowsPerPage(newValue)
     setPage(1)
+    sessionStorage.setItem(`${positionStatus}Page`, '1')
   }
 
   const pageCount = useMemo(() => {
@@ -206,6 +208,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
             return (
               <OpenPosition
                 key={row.id}
+                page={page}
                 position={{
                   ...marketState,
                   ...row,
@@ -217,6 +220,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
             return (
               <UnwindsTransactions
                 key={row.id}
+                page={page}
                 transaction={{
                   ...row,
                   position: {
@@ -246,6 +250,10 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
       </>
     ) : null
   }, [positionStatus, marketsData, positionsTableData, account])
+
+  setTimeout(() => {
+    sessionStorage.setItem(`${positionStatus}Page`, '1')
+  }, 200)
 
   return (
     <Container>

@@ -18,11 +18,12 @@ interface TransactionInterface extends UnwindsType {
 }
 
 export interface PositionProps {
+  page: number
   transaction: TransactionInterface
   columns: string[]
 }
 
-export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
+export const UnwindsTransactions = ({page, transaction, columns}: PositionProps) => {
   const {positionId, marketName, leverage, createdAtTimestamp, isLong, entryPrice, priceCurrency, decimals} = transaction.position
   const {id, price, timestamp, pnl, size} = transaction
 
@@ -59,6 +60,7 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
     if (location) {
       const string = `/closed-positions/${location}`
       history.push(string)
+      sessionStorage.setItem(`closedPage`, `${page}`)
     }
   }
 

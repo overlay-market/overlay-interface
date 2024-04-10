@@ -257,67 +257,78 @@ export function useUnwindCallback(
 }
 
 function useMultipleUnwindsCallArguments(unwindDataList: unwindDataType) {
-  let calldata: any
-
   const {account, chainId} = useActiveWeb3React()
 
-  const marketAddressList: string[] = useMemo(() => {
-    let tempSet = new Set<string>()
+  const marketAddressList: (string | undefined)[] = useMemo(() => {
+    let tempSet = new Set<string | undefined>()
     Object.keys(unwindDataList).forEach(id => {
-      tempSet.add(unwindDataList[id]['marketAddress']!)
+      tempSet.add(unwindDataList[id]['marketAddress'])
     })
     return Array.from(tempSet)
   }, [unwindDataList])
 
   const multipleMarketsContract = useMultipleMarketsContract(marketAddressList)
 
-  console.log(multipleMarketsContract, ' - - --multipleMarketsContract')
-  // if (
-  //   !unwindData ||
-  //   !marketContract ||
-  //   unwindValue === '' ||
-  //   unwindValue === '.' ||
-  //   positionCurrentValue === undefined ||
-  //   positionId === null ||
-  //   !account ||
-  //   isLong === undefined ||
-  //   prices._bid === undefined ||
-  //   prices._ask === undefined
-  // )
-  //   calldata = undefined
-  // else {
-  //   let increasePercentage = Number(unwindData.setSlippageValue) + 100
-  //   let decreasePercentage = 100 - Number(unwindData.setSlippageValue)
-  //   let increaseNumerator = BigNumber.from(increasePercentage).toHexString()
-  //   let decreaseNumerator = BigNumber.from(decreasePercentage).toHexString()
-  //   let base = BigNumber.from(100).toHexString()
+  return useMemo(() => {
+    let fullCalldata: any[] = []
 
-  //   let fraction = Number(unwindValue) / 100
+    Object.keys(unwindDataList).forEach(id => {
+      let calldata: any
 
-  //   calldata = marketContract.interface.encodeFunctionData('unwind', [
-  //     BigNumber.from(positionId),
-  //     utils.parseUnits(fraction.toFixed(18), 18),
-  //     isLong ? prices._bid.mul(decreaseNumerator).div(base) : prices._ask.mul(increaseNumerator).div(base),
-  //   ])
-  // }
-  // console.log(calldata, '- - -calldata - - -')
-  // return useMemo(() => {
-  //   if (!marketAddress || unwindValue === '' || !positionCurrentValue || !positionId || !account || !chainId) return []
+      if (
+        !unwindDataList[id]['unwindData'] ||
+        !multipleMarketsContract.find(contract => contract?.address === unwindDataList[id]['marketAddress']) ||
+        unwindDataList[id]['positionCurrentValue'] === undefined ||
+        unwindDataList[id]['positionId'] === null ||
+        !account ||
+        unwindDataList[id]['isLong'] === undefined ||
+        unwindDataList[id]['prices']['_bid'] === undefined ||
+        unwindDataList[id]['prices']['_ask'] === undefined
+      ) {
+        calldata = undefined
+      } else {
+        let increasePercentage = Number(unwindDataList[id]['unwindData'].setSlippageValue) + 100
+        let decreasePercentage = 100 - Number(unwindDataList[id]['unwindData'].setSlippageValue)
+        let increaseNumerator = BigNumber.from(increasePercentage).toHexString()
+        let decreaseNumerator = BigNumber.from(decreasePercentage).toHexString()
+        let base = BigNumber.from(100).toHexString()
 
-  //   const txn: {address: string; calldata: string; value: string} = {
-  //     address: marketAddress,
-  //     calldata: calldata,
-  //     value: utils.parseEther('0').toHexString(),
-  //   }
-  //   console.log(calldata, '- - -calldata - - -')
-  //   return [
-  //     {
-  //       address: txn.address,
-  //       calldata: calldata,
-  //       value: txn.value,
-  //     },
-  //   ]
-  // }, [calldata, chainId, account, marketAddress, positionCurrentValue, positionId, unwindValue])
+        let fraction = Number(unwindDataList[id]['unwindValue']) / 100
+        let marketContract = multipleMarketsContract.find(contract => contract?.address === unwindDataList[id]['marketAddress'])!
+
+        calldata = marketContract.interface.encodeFunctionData('unwind', [
+          BigNumber.from(unwindDataList[id]['positionId']),
+          utils.parseUnits(fraction.toFixed(18), 18),
+          unwindDataList[id]['isLong']
+            ? unwindDataList[id]['prices']._bid.mul(decreaseNumerator).div(base)
+            : unwindDataList[id]['prices']._ask.mul(increaseNumerator).div(base),
+        ])
+      }
+
+      if (
+        !unwindDataList[id]['marketAddress'] ||
+        unwindDataList[id]['unwindValue'] === '' ||
+        !unwindDataList[id]['positionCurrentValue'] ||
+        !unwindDataList[id]['positionId'] ||
+        !account ||
+        !chainId
+      )
+        return
+
+      const txn: {address: string; calldata: string; value: string} = {
+        address: unwindDataList[id]['marketAddress']!,
+        calldata: calldata,
+        value: utils.parseEther('0').toHexString(),
+      }
+      fullCalldata.push({
+        address: txn.address,
+        calldata: calldata,
+        value: txn.value,
+      })
+    })
+
+    return fullCalldata
+  }, [unwindDataList, chainId, account])
 }
 
 export function useMultipleUnwindsCallback(unwindDataList: unwindDataType): {

@@ -116,11 +116,11 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
         positionId: position.positionId,
       }
     })
-  console.log(selPositionsIds, ' - -- selPositionsId')
+  // console.log(selPositionsIds, ' - -- selPositionsId')
   const position = filtered ? filtered[0] : null
   const callMethods = ['value', 'liquidationPrice']
   const multicallResults: MulticallResults = useMultiplePositionsMulticall(selPositionsIds, callMethods)
-  console.log(multicallResults)
+  // console.log(multicallResults, ' - - -multicall results')
 
   // const {value, cost, info: positionInfo, oiCurrent: oi, liquidationPrice: liquidationPriceResult} = multicallRes
 
@@ -186,8 +186,8 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
   const {unwindData} = useDerivedUnwindInfo()
 
   const unwindDataList: unwindDataType = {}
-  console.log(prices, '- - -prices')
-  console.log(selPositions, ' - - - selPositions')
+  // console.log(prices, '- - -prices')
+  // console.log(selPositions, ' - - - selPositions')
 
   selPositions &&
     multicallResults &&
@@ -204,10 +204,8 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
       }
     })
 
-  // const {callback: unwindCallback} = useMultipleUnwindsCallback(unwindDataList)
-  useMultipleUnwindsCallback(unwindDataList)
-  console.log(unwindData)
-  console.log(prices, '- - -prices')
+  const {callback: unwindCallback} = useMultipleUnwindsCallback(unwindDataList)
+  // console.log(prices, '- - -prices')
   console.log(unwindDataList, ' - -- -unwindDataList')
 
   const marketAddressList: (string | undefined)[] = useMemo(() => {
@@ -218,9 +216,9 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
     return Array.from(tempSet)
   }, [unwindDataList])
 
-  console.log(marketAddressList.reduce((ac, el) => ac || el === undefined, false))
+  // console.log(marketAddressList.reduce((ac, el) => ac || el === undefined, false))
 
-  console.log(marketAddressList, ' + + + +marketAddressList')
+  // console.log(marketAddressList, ' + + + +marketAddressList')
 
   // const handleUnwind = useCallback(() => {
   //   if (!unwindCallback) return
@@ -233,6 +231,10 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
 
   const handleUnwind = useCallback(() => {
     console.log('UUUUUNNNNWWWWIIINNNDD')
+    if (!unwindCallback) return
+    unwindCallback().then((success: any) => {
+      console.log(success, ' + + + + succceeessss')
+    })
   }, [onResetUnwindState])
 
   const handleClose = () => {

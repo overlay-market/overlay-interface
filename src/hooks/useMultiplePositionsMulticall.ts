@@ -39,22 +39,16 @@ export function useMultiplePositionsMulticall(selPositionsIds: selPositionsIds, 
 
   useEffect(() => {
     if (!peripheryContract || !selPositionsIds || !account) return
-    ;(async () => {
-      try {
-        let _callInputs: string[][] = []
+    let _callInputs: string[][] = []
 
-        Object.keys(selPositionsIds).forEach(id => {
-          if (!selPositionsIds[id].marketPositionId) return
+    Object.keys(selPositionsIds).forEach(id => {
+      if (!selPositionsIds[id].marketPositionId) return
 
-          _callInputs.push([selPositionsIds[id].marketPositionId, account, selPositionsIds[id].positionId])
-        })
-        setCallInputs(_callInputs)
-      } catch (error) {
-        console.error('market inside useTotalValueLocked: ', selPositionsIds, error)
-      }
-    })()
-  }, [selPositionsIds, account])
-
+      _callInputs.push([selPositionsIds[id].marketPositionId, account, selPositionsIds[id].positionId])
+    })
+    setCallInputs(_callInputs)
+  }, [])
+  // }, [selPositionsIds])
   const valueResults = useSingleContractMultipleData(peripheryContract, 'value', callInputs)
   const costResults = useSingleContractMultipleData(peripheryContract, 'cost', callInputs)
   const positionResults = useSingleContractMultipleData(peripheryContract, 'position', callInputs)

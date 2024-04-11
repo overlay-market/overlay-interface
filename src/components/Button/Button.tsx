@@ -127,6 +127,7 @@ export const ColorButton = styled(BaseTemplateButton)<{width?: string; bgColor?:
   padding: 12px 24px;
   font-size: 14px;
   font-weight: 700;
+  border-radius: 8px;
   :hover {
     opacity: ${({disabled}) => (disabled ? '0.5' : '0.9')};
   }

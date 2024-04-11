@@ -7,8 +7,8 @@ import {useMultipleUnwindsCallback, useUnwindCallback} from '../../hooks/useUnwi
 import {useCurrentWalletPositionsV2} from '../../state/build/hooks'
 import {useUnwindState, useUnwindActionHandlers, useDerivedUnwindInfo} from '../../state/unwind/hooks'
 import {formatWeiToParsedNumber} from '../../utils/formatWei'
-import {FlexRow} from '../../components/Container/Container'
-import {TriggerActionButton} from '../../components/Button/Button'
+import {FlexRow, FlexContainer} from '../../components/Container/Container'
+import {ColorButton} from '../../components/Button/Button'
 import {useMarketListPrices} from '../../hooks/useMarketPrices'
 import {useMultiplePositionsMulticall} from '../../hooks/useMultiplePositionsMulticall'
 
@@ -16,36 +16,33 @@ const PageWrapper = styled.div`
   width: 100vw;
   height: 100vh;
   position: fixed;
-  top: 10px;
-  z-index: 100;
-  overflow: hidden;
+  top: 0;
+  left: 0;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(32, 36, 49, 0.5) !important;
+  background: rgba(32, 36, 49, 0.4) !important;
+  backdrop-filter: blur(8px);
 `
 
-const MessageBox = styled.div`
-  border-radius: 8px;
-  padding: 20px;
-  width: 300px;
-  height: 150px;
-  display: flex;
+const MessageBox = styled(FlexContainer)`
+  width: 385px;
   flex-direction: column;
-  justify-content: space-between;
-  background: ${colors(true).dark.grey4};
+  align-items: start;
+  gap: 21px;
+  padding: 24px;
+  background: #171926;
+  border-radius: 8px;
 `
-const UnwindButton = styled(TriggerActionButton)`
-  margin: 24px 0;
-  border: 1px solid #f2f2f2;
-  padding: 10px;
-`
-const CancelButton = styled(TriggerActionButton)`
-  color: ${colors(true).dark.red};
-  border: 1px solid ${colors(true).dark.red};
-  width: 100px;
-  padding: 10px;
-  margin-right: 10px;
+const CloseButton = styled.div`
+  position: absolute;
+  top: 0px;
+  right: 8px;
+  font-size: 32px;
+  font-weight: 200;
+  color: #f0f0f0;
+  cursor: pointer;
 `
 
 interface ModalProps {
@@ -244,21 +241,34 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
   return (
     <PageWrapper>
       <MessageBox>
+        <CloseButton onClick={handleClose}>&times;</CloseButton>
+
         {areMarketsShutDown || arePositionsUnderwater ? (
           <>
-            <TEXT.BoldHeader1 fontSize={16} color={'white'}>
+            <TEXT.BoldHeader1 fontSize={14} color={'#f2f2f2'}>
               Sorry for not being able to close all selected positions at the moment. Some positions can't be closed at the time.
             </TEXT.BoldHeader1>
             <FlexRow justify={'end'}>
-              <CancelButton onClick={handleClose}>OK</CancelButton>
+              <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} width={'100%'} onClick={handleClose}>
+                OK
+              </ColorButton>
             </FlexRow>
           </>
         ) : (
           <>
-            <TEXT.BoldHeader1 color={'white'}>You are going to close {selectedPositionsList.length} selected positions</TEXT.BoldHeader1>
-            <FlexRow>
-              <CancelButton onClick={handleClose}>Cancel</CancelButton>
-              <UnwindButton onClick={handleUnwind}>Close selected positions</UnwindButton>
+            <TEXT.BoldHeader1 fontSize={18} color={'#f2f2f2'}>
+              You're about you unwind {selectedPositionsList.length} positions
+            </TEXT.BoldHeader1>
+            <TEXT.SmallBody color={colors(false).dark.grey2}>
+              {selectedPositionsList.length} transactions approvals will be triggered in Metamask, one after the other.
+            </TEXT.SmallBody>
+            <FlexRow gap={'8px'}>
+              <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} width={'100%'} onClick={handleClose}>
+                Cancel
+              </ColorButton>
+              <ColorButton width={'100%'} onClick={handleUnwind}>
+                Close positions
+              </ColorButton>
             </FlexRow>
           </>
         )}

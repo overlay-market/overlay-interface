@@ -20,7 +20,7 @@ import Pagination from '../../components/Pagination/Pagination'
 import Loader from '../../components/Loaders/Loaders'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useParams} from 'react-router-dom'
-import {TriggerActionButton} from '../../components/Button/Button'
+import {ColorButton} from '../../components/Button/Button'
 import {CloseSelectedPositionsModal} from './CloseSelectedPositionsModal'
 import {useUnwindActionHandlers} from '../../state/unwind/hooks'
 
@@ -148,30 +148,6 @@ const RotatingChevron = styled(ChevronDown)`
 
 const StyledTableCell = styled(TableCell)`
   text-align: center !important;
-`
-
-const SelectPositionsButton = styled(TriggerActionButton)<{disabled?: boolean}>`
-  width: 240px;
-  padding: 10px;
-  background: ${colors(true).dark.grey4};
-  border: 1px solid ${({disabled}) => (disabled ? colors(true).dark.grey2 : colors(true).dark.blue2)};
-  cursor: ${({disabled}) => (disabled ? 'default' : 'pointer')};
-  color: ${({disabled}) => (disabled ? colors(true).dark.grey2 : '')};
-  :hover {
-    box-shadow: ${({disabled}) => (disabled ? 'none' : '')};
-    border-color: ${({disabled}) => (disabled ? colors(true).dark.grey2 : '')};
-  }
-`
-const CancelButton = styled(TriggerActionButton)`
-  color: ${colors(true).dark.red};
-  border: 1px solid ${colors(true).dark.red};
-  width: 100px;
-  padding: 10px;
-  background: ${colors(true).dark.grey4};
-  :hover {
-    box-shadow: 0px 0px 10px 0px ${colors(true).dark.red};
-    border: 1px solid ${colors(true).dark.red};
-  }
 `
 
 const ROWS_PER_PAGE = [10, 20, 40, 50]
@@ -331,14 +307,18 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           </TriangleButton>
         </TEXT.BoldStandardBody>
         {positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption && (
-          <SelectPositionsButton onClick={openClosePositionsOption}>Select positions to close</SelectPositionsButton>
+          <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={openClosePositionsOption}>
+            Select position to close
+          </ColorButton>
         )}
         {positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption && (
           <FlexRow justify="end" align="baseline" style={{gap: '10px'}}>
-            <CancelButton onClick={handleCancel}>Cancel</CancelButton>
-            <SelectPositionsButton disabled={selectedPositionsList.length === 0} onClick={handleClosePositions}>
-              Close selected positions
-            </SelectPositionsButton>
+            <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={handleCancel}>
+              Cancel
+            </ColorButton>
+            <ColorButton disabled={selectedPositionsList.length === 0} onClick={handleClosePositions}>
+              Close selected positions {selectedPositionsList.length > 0 ? `(${selectedPositionsList.length})` : null}
+            </ColorButton>
           </FlexRow>
         )}
       </FlexRow>

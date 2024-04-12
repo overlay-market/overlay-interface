@@ -6,7 +6,7 @@ import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../compone
 import {useActiveWeb3React} from '../../hooks/web3'
 import {PageContainer} from '../../components/Container/Container'
 import {TEXT} from '../../theme/theme'
-import {FlexRow} from '../../components/Container/Container'
+import {FlexRow, FlexContainer} from '../../components/Container/Container'
 import {usePositionsTableDetails, usePositionsTableData, isOpenPositionsQuery, isUnwindsQuery, isLiquidatesQuery} from '../../state/build/hooks'
 import {useTotalMarketsData} from '../../state/markets/hooks'
 import {useMarketDetails} from '../../hooks/useMarketDetails'
@@ -23,6 +23,8 @@ import {useParams} from 'react-router-dom'
 import {ColorButton} from '../../components/Button/Button'
 import {CloseSelectedPositionsModal} from './CloseSelectedPositionsModal'
 import {useUnwindActionHandlers} from '../../state/unwind/hooks'
+import {Checkbox} from '@material-ui/core'
+import {CheckboxIcon, CheckedIcon} from './OpenPosition'
 
 const Container = styled.div`
   display: flex;
@@ -30,12 +32,29 @@ const Container = styled.div`
   width: 100%;
 `
 
+const CustomFlexContainer = styled(FlexContainer)`
+  justify-content: flex-end;
+  align-items: baseline;
+  flex-direction: column;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    flex-direction: row;
+    justify-content: space-between;
+  `}
+`
+
+const CustomFlexRow = styled(FlexRow)`
+  justify-content: flex-start;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    justify-content: flex-end;
+  `}
+`
+
 const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Liquidated']
 
 const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'Funding']
 
 const selectOpenPositionsColumns = [
-  '',
+  'checkbox',
   'Market',
   'Size',
   'Position',
@@ -161,6 +180,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [isOpenCloseAllPositionsOption, setIsOpenCloseAllPositionsOption] = useState(false)
   const [showCloseSelPositionsModal, setShowSelPositionsModal] = useState(false)
   const [selectedPositionsList, setSelectedPositionsList] = useState<string[]>([])
+  const [marketColumnChecked, setMarketColumnChecked] = useState(false)
   const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
@@ -208,6 +228,24 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     console.log('close selected positions')
     onAmountInput('100')
     setShowSelPositionsModal(true)
+  }
+
+  useEffect(() => {
+    const allIdsList =
+      marketColumnChecked &&
+      positionsTableData &&
+      positionStatus === PositionStatus.Open &&
+      isOpenPositionsQuery(positionsTableData) &&
+      positionsTableData?.account?.positions!.map((el: any) => el.id)
+
+    marketColumnChecked && setSelectedPositionsList && allIdsList && setSelectedPositionsList(allIdsList)
+  }, [marketColumnChecked, setMarketColumnChecked, positionsTableData, setRowsPerPage, positionStatus])
+
+  const handleChangeMarketCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(rowsCount > 10 ? rowsCount : rowsPerPage)
+    !event.target.checked && setSelectedPositionsList([])
+
+    setMarketColumnChecked(event.target.checked)
   }
 
   const pageCount = useMemo(() => {
@@ -261,6 +299,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                 isOpenCloseAllPositionsOption={isOpenCloseAllPositionsOption}
                 setSelectedPositionsList={setSelectedPositionsList}
                 isChecked={selectedPositionsList.includes(row.id)}
+                setMarketColumnChecked={setMarketColumnChecked}
               />
             )
           } else if (positionStatus === PositionStatus.Closed) {
@@ -295,11 +334,11 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
         })}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData, account, isOpenCloseAllPositionsOption])
+  }, [positionStatus, marketsData, positionsTableData, account, isOpenCloseAllPositionsOption, selectedPositionsList])
 
   return (
     <Container>
-      <FlexRow justify="space-between" align="baseline">
+      <CustomFlexContainer>
         <TEXT.BoldStandardBody mt={marginTop} mb="16px" style={{width: '200px'}}>
           {`${title}`}
           <TriangleButton onClick={handleToggle}>
@@ -312,16 +351,17 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           </ColorButton>
         )}
         {positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption && (
-          <FlexRow justify="end" align="baseline" style={{gap: '10px'}}>
+          <CustomFlexRow align="baseline" style={{gap: '10px'}}>
             <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={handleCancel}>
               Cancel
             </ColorButton>
             <ColorButton disabled={selectedPositionsList.length === 0} onClick={handleClosePositions}>
               Close selected positions {selectedPositionsList.length > 0 ? `(${selectedPositionsList.length})` : null}
             </ColorButton>
-          </FlexRow>
+          </CustomFlexRow>
         )}
-      </FlexRow>
+      </CustomFlexContainer>
+
       <Collapse in={open} timeout="auto" unmountOnExit>
         <TableContainer>
           <StyledTable minWidth={PositionStatus.Build && !PositionStatus.Open ? 'unset' : PositionStatus.Open ? '100%' : ''}>
@@ -330,8 +370,18 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                 {isOpenCloseAllPositionsOption
                   ? positionColumns['selectOpen'].map((column: string) => {
                       return (
-                        <StyledHeaderCell key={column} width={20}>
-                          <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                        <StyledHeaderCell key={column} width={column === 'checkbox' ? 0 : 20}>
+                          {column === 'checkbox' ? (
+                            <Checkbox
+                              checked={marketColumnChecked}
+                              onChange={handleChangeMarketCheckbox}
+                              checkedIcon={<CheckedIcon />}
+                              icon={<CheckboxIcon />}
+                              disableRipple
+                            />
+                          ) : (
+                            <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                          )}
                         </StyledHeaderCell>
                       )
                     })

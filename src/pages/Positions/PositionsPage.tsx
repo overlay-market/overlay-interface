@@ -244,6 +244,8 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
   const handleChangeMarketCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(rowsCount > 10 ? rowsCount : rowsPerPage)
+    page > 1 && setPage(1)
+
     !event.target.checked && setSelectedPositionsList([])
 
     setMarketColumnChecked(event.target.checked)

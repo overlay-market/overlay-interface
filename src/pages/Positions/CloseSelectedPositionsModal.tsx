@@ -3,9 +3,9 @@ import styled from 'styled-components'
 import {BigNumberish, BigNumber} from 'ethers'
 import {colors, TEXT} from '../../theme/theme'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {useMultipleUnwindsCallback, useUnwindCallback} from '../../hooks/useUnwindCallback'
+import {useMultipleUnwindsCallback, UnwindDataType} from '../../hooks/useUnwindCallback'
 import {useCurrentWalletPositionsV2} from '../../state/build/hooks'
-import {useUnwindState, useUnwindActionHandlers, useDerivedUnwindInfo} from '../../state/unwind/hooks'
+import {useUnwindActionHandlers, useDerivedUnwindInfo} from '../../state/unwind/hooks'
 import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {FlexRow, FlexContainer} from '../../components/Container/Container'
 import {ColorButton} from '../../components/Button/Button'
@@ -48,9 +48,10 @@ const CloseButton = styled.div`
 interface ModalProps {
   onClose: Function
   selectedPositionsList: string[]
+  onCloseCheckboxes: Function
 }
 
-type selPositionsIds = {
+type SelPositionsIds = {
   [id: string]: {
     marketPositionId: string
     positionId: string
@@ -63,7 +64,7 @@ interface MulticallResults {
   }
 }
 
-type marketListPrices = {
+type MarketListPrices = {
   [marketAddress: string]: {
     bid?: string | number | any
     ask?: string | number | any
@@ -74,29 +75,13 @@ type marketListPrices = {
   }
 }
 
-type unwindDataType = {
-  [id: string]: {
-    unwindData: any
-    marketAddress: string | undefined
-    unwindValue: string
-    positionCurrentValue: BigNumber | undefined
-    positionId: string | null
-    isLong: boolean | undefined
-    prices: any | undefined
-  }
-}
-
-export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: ModalProps) {
-  const marketPositionId = '0x3a204d03e9b1fee01b8989333665b6c46cc1f79e-0x1d02f'
-  const positionId = '0x1d02f'
+export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onCloseCheckboxes}: ModalProps) {
   const {account, chainId} = useActiveWeb3React()
   const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
 
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
-
-  // const {typedValue} = useUnwindState()
 
   const {onResetUnwindState} = useUnwindActionHandlers()
   const filtered = positions?.filter((index, key) => selectedPositionsList.includes(index.id))
@@ -105,7 +90,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
 
   const areMarketsShutDown = selPositions?.some(position => position?.market.isShutdown)
 
-  let selPositionsIds: selPositionsIds = {}
+  let selPositionsIds: SelPositionsIds = {}
   selPositions &&
     selPositions.forEach(position => {
       selPositionsIds[position.id] = {
@@ -113,15 +98,9 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
         positionId: position.positionId,
       }
     })
-  // console.log(selPositionsIds, ' - -- selPositionsId')
-  const position = filtered ? filtered[0] : null
+
   const callMethods = ['value', 'liquidationPrice']
   const multicallResults: MulticallResults = useMultiplePositionsMulticall(selPositionsIds, callMethods)
-  // console.log(multicallResults, ' - - -multicall results')
-
-  // const {value, cost, info: positionInfo, oiCurrent: oi, liquidationPrice: liquidationPriceResult} = multicallRes
-
-  // const isLong = positionInfo ? positionInfo.isLong : undefined
 
   const marketList: string[] = useMemo(() => {
     let tempSet = new Set<string>()
@@ -133,8 +112,8 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
 
   const fetchPrices = useMarketListPrices(marketList)
 
-  const prices: marketListPrices = useMemo(() => {
-    let marketsPrices: marketListPrices = {}
+  const prices: MarketListPrices = useMemo(() => {
+    let marketsPrices: MarketListPrices = {}
     const arePricesUndefined = Object.keys(fetchPrices).reduce((ac, id) => ac || fetchPrices[id] === undefined, false)
 
     if (arePricesUndefined) {
@@ -182,9 +161,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
 
   const {unwindData} = useDerivedUnwindInfo()
 
-  const unwindDataList: unwindDataType = {}
-  // console.log(prices, '- - -prices')
-  // console.log(selPositions, ' - - - selPositions')
+  const unwindDataList: UnwindDataType = {}
 
   selPositions &&
     multicallResults &&
@@ -202,37 +179,17 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList}: Mo
     })
 
   const {callback: unwindCallback} = useMultipleUnwindsCallback(unwindDataList)
-  // console.log(prices, '- - -prices')
-  console.log(unwindDataList, ' - -- -unwindDataList')
-
-  const marketAddressList: (string | undefined)[] = useMemo(() => {
-    let tempSet = new Set<string | undefined>()
-    Object.keys(unwindDataList).forEach(id => {
-      tempSet.add(unwindDataList[id]['marketAddress'])
-    })
-    return Array.from(tempSet)
-  }, [unwindDataList])
-
-  // console.log(marketAddressList.reduce((ac, el) => ac || el === undefined, false))
-
-  // console.log(marketAddressList, ' + + + +marketAddressList')
-
-  // const handleUnwind = useCallback(() => {
-  //   if (!unwindCallback) return
-  //   unwindCallback()
-  //     .then(success => {
-  //       onResetUnwindState()
-  //     })
-  //     .catch(err => console.error('Error from handleUnwind: ', err))
-  // }, [unwindCallback, onResetUnwindState])
 
   const handleUnwind = useCallback(() => {
-    console.log('UUUUUNNNNWWWWIIINNNDD')
+    onClose(false)
     if (!unwindCallback) return
-    unwindCallback().then((success: any) => {
-      console.log(success, ' + + + + succceeessss')
-    })
-  }, [onResetUnwindState])
+    unwindCallback()
+      .then(() => {
+        onCloseCheckboxes(false)
+        onResetUnwindState()
+      })
+      .catch(err => console.error('Error from handleUnwind: ', err))
+  }, [unwindCallback, onResetUnwindState])
 
   const handleClose = () => {
     onClose(false)

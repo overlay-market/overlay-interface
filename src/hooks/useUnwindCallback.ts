@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {utils} from 'ethers'
 import {BigNumber} from '@ethersproject/bignumber'
 import {useActiveWeb3React} from './web3'
@@ -10,6 +10,7 @@ import {TransactionType} from './../state/transactions/actions'
 import {useAddPopup} from '../state/application/hooks'
 import {currentTimeParsed} from '../utils/currentTime'
 import {useMarketContract, useMultipleMarketsContract} from './useContract'
+
 interface UnwindCall {
   address: string
   calldata: string
@@ -18,6 +19,11 @@ interface UnwindCall {
 
 interface UnwindCallEstimate {
   call: UnwindCall
+}
+
+interface UnwindMultipleCall extends UnwindCall {
+  positionId: string
+  unwindValue: string
 }
 
 interface SuccessfulCall extends UnwindCallEstimate {
@@ -36,16 +42,18 @@ enum UnwindCallbackState {
   VALID,
 }
 
-type unwindDataType = {
-  [id: string]: {
-    unwindData: any
-    marketAddress: string | undefined
-    unwindValue: string
-    positionCurrentValue: BigNumber | undefined
-    positionId: string | null
-    isLong: boolean | undefined
-    prices: any | undefined
-  }
+type CallArguments = {
+  unwindData: any | undefined
+  marketAddress: string | undefined
+  unwindValue: string
+  positionCurrentValue: BigNumber | undefined
+  positionId: string | null
+  isLong: boolean | undefined
+  prices: any | undefined
+}
+
+export type UnwindDataType = {
+  [id: string]: CallArguments
 }
 
 function useUnwindCallArguments(
@@ -61,7 +69,7 @@ function useUnwindCallArguments(
 
   const {account, chainId} = useActiveWeb3React()
   const marketContract = useMarketContract(marketAddress)
-  console.log(marketContract, ' - - --marketContract')
+
   if (
     !unwindData ||
     !marketContract ||
@@ -90,7 +98,7 @@ function useUnwindCallArguments(
       isLong ? prices._bid.mul(decreaseNumerator).div(base) : prices._ask.mul(increaseNumerator).div(base),
     ])
   }
-  console.log(calldata, '- - -calldata - - -')
+
   return useMemo(() => {
     if (!marketAddress || unwindValue === '' || !positionCurrentValue || !positionId || !account || !chainId) return []
 
@@ -128,7 +136,6 @@ export function useUnwindCallback(
   const currentTimeForId = currentTimeParsed()
   const addTransaction = useTransactionAdder()
   const unwindCalls = useUnwindCallArguments(unwindData, marketAddress, unwindValue, positionCurrentValue, positionId, isLong, prices)
-  console.log(unwindCalls, ' - -- unwindCalls - - --')
 
   return useMemo(() => {
     if (!unwindData || !unwindValue || unwindValue === '.' || positionId === null || !library || !account || !chainId) {
@@ -142,7 +149,6 @@ export function useUnwindCallback(
     return {
       state: UnwindCallbackState.VALID,
       callback: async function onBuild(): Promise<string> {
-        console.log(unwindCalls)
         const estimatedCalls: UnwindCallEstimate[] = await Promise.all(
           unwindCalls.map(call => {
             const {address, calldata, value} = call
@@ -191,12 +197,11 @@ export function useUnwindCallback(
               })
           }),
         )
-        console.log(estimatedCalls, '- -  - -estimatedCalls - - -')
+
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         let bestCallOption: SuccessfulCall | UnwindCallEstimate | undefined = estimatedCalls.find(
           (el, ix, list): el is SuccessfulCall => 'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
         )
-        console.log(bestCallOption, 'bestCallOption')
         // check if any calls errored with a recognizable error
         if (!bestCallOption) {
           const errorCalls = estimatedCalls.filter((call): call is FailedCall => 'error' in call)
@@ -209,57 +214,55 @@ export function useUnwindCallback(
         const {
           call: {address, calldata, value},
         } = bestCallOption
-        return '22'
-        // return library
-        //   .getSigner()
-        //   .sendTransaction({
-        //     from: account,
-        //     to: address,
-        //     data: calldata,
-        //     // let the wallet try if we can't estimate the gas
-        //     ...('gasEstimate' in bestCallOption ? {gasLimit: calculateGasMargin(bestCallOption.gasEstimate)} : {}),
-        //     ...(value && !isZero(value) ? {value} : {}),
-        //   })
-        //   .then((response: TransactionResponse) => {
-        //     addTransaction(response, {
-        //       type: TransactionType.UNWIND_OVL_POSITION,
-        //       positionId: positionId.toString(),
-        //       shares: unwindValue,
-        //     })
 
-        //     return response.hash
-        //   })
-        //   .catch(error => {
-        //     // if the user rejected the tx, pass this along
-        //     console.log('error from useUnwindCallback: ', error)
-        //     if (error?.code === 4001) {
-        //       addPopup(
-        //         {
-        //           txn: {
-        //             hash: currentTimeForId,
-        //             success: false,
-        //             info: error,
-        //           },
-        //         },
-        //         currentTimeForId,
-        //       )
-        //       throw new Error('Transaction rejected.')
-        //     } else {
-        //       // otherwise, the error was unexpected and we need to convey that
-        //       console.error(`Unwind failed`, error, address, calldata, value)
-        //       throw new Error(`Unwind failed: ${error}`)
-        //     }
-        //   })
+        return library
+          .getSigner()
+          .sendTransaction({
+            from: account,
+            to: address,
+            data: calldata,
+            // let the wallet try if we can't estimate the gas
+            ...('gasEstimate' in bestCallOption ? {gasLimit: calculateGasMargin(bestCallOption.gasEstimate)} : {}),
+            ...(value && !isZero(value) ? {value} : {}),
+          })
+          .then((response: TransactionResponse) => {
+            addTransaction(response, {
+              type: TransactionType.UNWIND_OVL_POSITION,
+              positionId: positionId.toString(),
+              shares: unwindValue,
+            })
+
+            return response.hash
+          })
+          .catch(error => {
+            // if the user rejected the tx, pass this along
+            console.log('error from useUnwindCallback: ', error)
+            if (error?.code === 4001) {
+              addPopup(
+                {
+                  txn: {
+                    hash: currentTimeForId,
+                    success: false,
+                    info: error,
+                  },
+                },
+                currentTimeForId,
+              )
+              throw new Error('Transaction rejected.')
+            } else {
+              // otherwise, the error was unexpected and we need to convey that
+              console.error(`Unwind failed`, error, address, calldata, value)
+              throw new Error(`Unwind failed: ${error}`)
+            }
+          })
       },
       error: null,
     }
   }, [unwindData, unwindValue, positionId, library, account, chainId, unwindCalls, addTransaction, addPopup, currentTimeForId])
 }
-// [unwindDataList, library, account, chainId, unwindCalls, addTransaction, addPopup, currentTimeForId])
 
-function useMultipleUnwindsCallArguments(unwindDataList: unwindDataType) {
+function useMultipleUnwindsCallArguments(unwindDataList: UnwindDataType) {
   const {account, chainId} = useActiveWeb3React()
-  // console.log(unwindDataList, '  - -unwind - Data -  List')
   const marketAddressList: (string | undefined)[] = useMemo(() => {
     let tempSet = new Set<string | undefined>()
     Object.keys(unwindDataList).forEach(id => {
@@ -269,9 +272,9 @@ function useMultipleUnwindsCallArguments(unwindDataList: unwindDataType) {
   }, [unwindDataList])
 
   const multipleMarketsContract = useMultipleMarketsContract(marketAddressList)
-  // console.log(multipleMarketsContract, '- - multipleMarketsContract-')
+
   return useMemo(() => {
-    let multipleCalldata: any[] = []
+    let multipleCalldata: UnwindMultipleCall[] = []
 
     Object.keys(unwindDataList).forEach(id => {
       let calldata: any
@@ -315,8 +318,8 @@ function useMultipleUnwindsCallArguments(unwindDataList: unwindDataType) {
         !chainId
       )
         return
-      // console.log(calldata, 'calldata')
-      const txn: {address: string; calldata: string; value: string} = {
+
+      const txn: UnwindCall = {
         address: unwindDataList[id]['marketAddress']!,
         calldata: calldata,
         value: utils.parseEther('0').toHexString(),
@@ -325,53 +328,44 @@ function useMultipleUnwindsCallArguments(unwindDataList: unwindDataType) {
         address: txn.address,
         calldata: calldata,
         value: txn.value,
+        positionId: unwindDataList[id]['positionId']!,
+        unwindValue: unwindDataList[id]['unwindValue'],
       })
     })
-    // console.log(multipleCalldata)
+
     return multipleCalldata
   }, [unwindDataList, chainId, account])
 }
 
-export function useMultipleUnwindsCallback(unwindDataList: unwindDataType): {
+export function useMultipleUnwindsCallback(unwindDataList: UnwindDataType): {
   state: UnwindCallbackState
-  callback: null | (() => Promise<string>)
+  callback: null | (() => Promise<PromiseSettledResult<string>[]>)
   error: string | null
 } {
   const {account, chainId, library} = useActiveWeb3React()
   const addPopup = useAddPopup()
   const currentTimeForId = currentTimeParsed()
   const addTransaction = useTransactionAdder()
-  console.log(unwindDataList, '  - -unwind - Data -  List')
   const unwindCalls = useMultipleUnwindsCallArguments(unwindDataList)
-  console.log(unwindCalls, ' +  ++  +unwindCalls')
 
   return useMemo(() => {
-    // if (!unwindData || !unwindValue || unwindValue === '.' || positionId === null || !library || !account || !chainId) {
-    //   return {
-    //     state: UnwindCallbackState.INVALID,
-    //     callback: null,
-    //     error: 'Missing Dependencies',
-    //   }
-    // }
+    const areUnwindDataUndefined = Object.keys(unwindDataList).reduce((ac, id) => ac || unwindDataList[id]['unwindData'] === undefined, false)
+    const arePositionIdNull = Object.keys(unwindDataList).reduce((ac, id) => ac || unwindDataList[id]['positionId'] === null, false)
 
-    if (!library || !account || !chainId) {
+    if (areUnwindDataUndefined || arePositionIdNull || !library || !account || !chainId) {
       return {
         state: UnwindCallbackState.INVALID,
         callback: null,
         error: 'Missing Dependencies',
       }
     }
-    console.log(unwindCalls, ' +  ++  +unwindCalls')
 
     return {
       state: UnwindCallbackState.VALID,
-      callback: async function onBuild(): Promise<string> {
-        console.log(unwindDataList)
-        console.log({unwindCalls})
-        const estimatedCalls: UnwindCallEstimate[] = await Promise.all(
+      callback: async function onBuild(): Promise<PromiseSettledResult<string>[]> {
+        const estimatedCalls = await Promise.allSettled(
           unwindCalls.map(async call => {
             const {address, calldata, value} = call
-            console.log(call, '- - -call')
             const tx = {
               from: account,
               to: address,
@@ -416,69 +410,60 @@ export function useMultipleUnwindsCallback(unwindDataList: unwindDataType): {
               })
           }),
         )
-        console.log(estimatedCalls, ' - -- - Estimated calls - -')
-        // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
-        // let bestCallOption: SuccessfulCall | UnwindCallEstimate | undefined = estimatedCalls.find(
-        //   (el, ix, list): el is SuccessfulCall => 'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
-        // )
-        // console.log(bestCallOption, '  - - best call option')
-        // check if any calls errored with a recognizable error
-        // if (!bestCallOption) {
-        //   const errorCalls = estimatedCalls.filter((call): call is FailedCall => 'error' in call)
-        //   if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
-        //   const firstNoErrorCall = estimatedCalls.find<UnwindCallEstimate>((call): call is UnwindCallEstimate => !('error' in call))
-        //   if (!firstNoErrorCall) throw new Error('Unexpected error. Could not estimate gas for unwinding position.')
-        //   bestCallOption = firstNoErrorCall
-        // }
 
-        // const {
-        //   call: {address, calldata, value},
-        // } = bestCallOption
+        const estimatedCallsRes = estimatedCalls.map(el => (el.status === 'fulfilled' ? el.value : el.reason))
 
-        return '11'
+        const transactionResponseList = await Promise.allSettled(
+          estimatedCallsRes.map(async estimatedCall => {
+            const {
+              call: {address, calldata, value, positionId, unwindValue},
+            } = estimatedCall
 
-        // return library
-        //   .getSigner()
-        //   .sendTransaction({
-        //     from: account,
-        //     to: address,
-        //     data: calldata,
-        //     // let the wallet try if we can't estimate the gas
-        //     ...('gasEstimate' in bestCallOption ? {gasLimit: calculateGasMargin(bestCallOption.gasEstimate)} : {}),
-        //     ...(value && !isZero(value) ? {value} : {}),
-        //   })
-        //   .then((response: TransactionResponse) => {
-        //     addTransaction(response, {
-        //       type: TransactionType.UNWIND_OVL_POSITION,
-        //       positionId: positionId.toString(),
-        //       shares: unwindValue,
-        //     })
+            return library
+              .getSigner()
+              .sendTransaction({
+                from: account,
+                to: address,
+                data: calldata,
+                // let the wallet try if we can't estimate the gas
+                ...('gasEstimate' in estimatedCall ? {gasLimit: calculateGasMargin(estimatedCall.gasEstimate)} : {}),
+                ...(value && !isZero(value) ? {value} : {}),
+              })
+              .then((response: TransactionResponse) => {
+                addTransaction(response, {
+                  type: TransactionType.UNWIND_OVL_POSITION,
+                  positionId: positionId.toString(),
+                  shares: unwindValue,
+                })
 
-        //     return response.hash
-        //   })
-        //   .catch(error => {
-        //     // if the user rejected the tx, pass this along
-        //     console.log('error from useUnwindCallback: ', error)
-        //     if (error?.code === 4001) {
-        //       addPopup(
-        //         {
-        //           txn: {
-        //             hash: currentTimeForId,
-        //             success: false,
-        //             info: error,
-        //           },
-        //         },
-        //         currentTimeForId,
-        //       )
-        //       throw new Error('Transaction rejected.')
-        //     } else {
-        //       // otherwise, the error was unexpected and we need to convey that
-        //       console.error(`Unwind failed`, error, address, calldata, value)
-        //       throw new Error(`Unwind failed: ${error}`)
-        //     }
-        //   })
+                return response.hash
+              })
+              .catch(error => {
+                // if the user rejected the tx, pass this along
+                console.log('error from useUnwindCallback: ', error)
+                if (error?.code === 4001) {
+                  addPopup(
+                    {
+                      txn: {
+                        hash: currentTimeForId,
+                        success: false,
+                        info: error,
+                      },
+                    },
+                    currentTimeForId,
+                  )
+                  throw new Error('Transaction rejected.')
+                } else {
+                  // otherwise, the error was unexpected and we need to convey that
+                  console.error(`Unwind failed`, error, address, calldata, value)
+                  throw new Error(`Unwind failed: ${error}`)
+                }
+              })
+          }),
+        )
+        return transactionResponseList
       },
       error: null,
     }
-  }, [JSON.stringify(unwindDataList), library, account, chainId, JSON.stringify(unwindCalls), addTransaction, addPopup, currentTimeForId])
+  }, [unwindDataList, library, account, chainId, unwindCalls, addTransaction, addPopup, currentTimeForId])
 }

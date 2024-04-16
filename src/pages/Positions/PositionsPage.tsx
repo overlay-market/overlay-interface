@@ -217,6 +217,8 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   }
 
   const openClosePositionsOption = () => {
+    setSelectedPositionsList([])
+    setMarketColumnChecked(false)
     setIsOpenCloseAllPositionsOption(true)
   }
 
@@ -225,7 +227,6 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   }
 
   const handleClosePositions = () => {
-    console.log('close selected positions')
     onAmountInput('100')
     setShowSelPositionsModal(true)
   }
@@ -238,7 +239,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
       isOpenPositionsQuery(positionsTableData) &&
       positionsTableData?.account?.positions!.map((el: any) => el.id)
 
-    marketColumnChecked && setSelectedPositionsList && allIdsList && setSelectedPositionsList(allIdsList)
+    marketColumnChecked && allIdsList && setSelectedPositionsList(allIdsList)
   }, [marketColumnChecked, setMarketColumnChecked, positionsTableData, setRowsPerPage, positionStatus])
 
   const handleChangeMarketCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -447,7 +448,13 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           <TEXT.StandardBody color="#858585">You have no {positionStatus} positions.</TEXT.StandardBody>
         </FlexRow>
       ) : null}
-      {showCloseSelPositionsModal && <CloseSelectedPositionsModal onClose={setShowSelPositionsModal} selectedPositionsList={selectedPositionsList} />}
+      {showCloseSelPositionsModal && (
+        <CloseSelectedPositionsModal
+          onClose={setShowSelPositionsModal}
+          selectedPositionsList={selectedPositionsList}
+          onCloseCheckboxes={setIsOpenCloseAllPositionsOption}
+        />
+      )}
     </Container>
   )
 }

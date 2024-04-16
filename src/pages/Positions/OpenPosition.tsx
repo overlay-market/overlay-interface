@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react'
+import {ReactNode, useEffect, useMemo, useState} from 'react'
 import {StyledTableRow, StyledTableCell} from '../../components/Table/Table'
 import formatUnixTimestampToDate from '../../utils/formatUnixTimestampToDate'
 import {FlexRow} from '../../components/Container/Container'
@@ -39,6 +39,16 @@ export const CheckedIcon = styled(CheckboxIcon)({
     content: '""',
   },
 })
+
+const CheckboxPosition = styled.div`
+  position: absolute;
+  top: 16px;
+  left: 16px;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    top: 5px;
+  `}
+`
 
 type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
 interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
@@ -243,16 +253,14 @@ export const OpenPosition = ({
   return (
     <>
       {isOpenCloseAllPositionsOption && (
-        <div style={{position: 'relative'}}>
-          <div style={{position: 'absolute', top: '4px', height: '0px'}}>
-            <Checkbox checked={checked} onChange={handleChange} checkedIcon={<CheckedIcon />} icon={<CheckboxIcon />} disableRipple />
-          </div>
-        </div>
+        <CheckboxWrapper>
+          <Checkbox checked={checked} onChange={handleChange} checkedIcon={<CheckedIcon />} icon={<CheckboxIcon />} disableRipple />
+        </CheckboxWrapper>
       )}
       <StyledTableRow onClick={() => handleNavigate(positionUrl)}>
         {sortedValues.map((value, index) => {
           return (
-            <StyledTableCell key={index}>
+            <StyledTableCell key={index} style={{paddingLeft: `${index === 1 ? `0` : '16px'}`}}>
               <TEXT.Supplemental>{value}</TEXT.Supplemental>
             </StyledTableCell>
           )
@@ -267,5 +275,13 @@ const ProfitLossCell = ({PnL}: {PnL: number}) => {
     <FlexRow justify="left">
       {PnL ? <TEXT.Supplemental color={checkIsNegative(PnL) ? '#FF648A' : '#5FD0AB'}>{PnL} OVL</TEXT.Supplemental> : '0.00'}
     </FlexRow>
+  )
+}
+
+const CheckboxWrapper = ({children}: {children: ReactNode}) => {
+  return (
+    <div style={{position: 'relative'}}>
+      <CheckboxPosition>{children}</CheckboxPosition>
+    </div>
   )
 }

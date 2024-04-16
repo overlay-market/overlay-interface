@@ -49,12 +49,21 @@ const CustomFlexRow = styled(FlexRow)`
   `}
 `
 
+const CustomHeaderCell = styled(StyledHeaderCell)`
+  padding-right: 16px !important;
+  padding-left: 16px !important;
+`
+const MarketHeaderCell = styled(StyledHeaderCell)`
+  padding-left: 0 !important;
+  padding-right: 16px !important;
+`
+
 const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Liquidated']
 
 const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'Funding']
 
 const selectOpenPositionsColumns = [
-  'checkbox',
+  'Checkbox',
   'Market',
   'Size',
   'Position',
@@ -373,26 +382,34 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                 {isOpenCloseAllPositionsOption
                   ? positionColumns['selectOpen'].map((column: string) => {
                       return (
-                        <StyledHeaderCell key={column} width={column === 'checkbox' ? 0 : 20}>
-                          {column === 'checkbox' ? (
-                            <Checkbox
-                              checked={marketColumnChecked}
-                              onChange={handleChangeMarketCheckbox}
-                              checkedIcon={<CheckedIcon />}
-                              icon={<CheckboxIcon />}
-                              disableRipple
-                            />
+                        <>
+                          {column === 'Market' ? (
+                            <MarketHeaderCell key={column}>
+                              <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                            </MarketHeaderCell>
                           ) : (
-                            <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                            <CustomHeaderCell key={column}>
+                              {column === 'Checkbox' ? (
+                                <Checkbox
+                                  checked={marketColumnChecked}
+                                  onChange={handleChangeMarketCheckbox}
+                                  checkedIcon={<CheckedIcon />}
+                                  icon={<CheckboxIcon />}
+                                  disableRipple
+                                />
+                              ) : (
+                                <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                              )}
+                            </CustomHeaderCell>
                           )}
-                        </StyledHeaderCell>
+                        </>
                       )
                     })
                   : positionColumns[positionStatus].map((column: string) => {
                       return (
-                        <StyledHeaderCell key={column} width={20}>
+                        <CustomHeaderCell key={column} width={20}>
                           <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
-                        </StyledHeaderCell>
+                        </CustomHeaderCell>
                       )
                     })}
               </StyledTableHeaderRow>

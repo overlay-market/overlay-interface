@@ -70,6 +70,7 @@ export function useMarketListPrices(marketList: string[]): any | undefined {
   let marketsPrices: marketsPrices = {}
 
   useEffect(() => {
+    if (prices.length > 0) return
     if (!peripheryContract || !marketList || !blockNumber) return
 
     const getPrices = async (marketAddress: string) => {
@@ -87,7 +88,7 @@ export function useMarketListPrices(marketList: string[]): any | undefined {
       console.log('Promise returned from useMarketListPrice', results)
       setPrices(results)
     })
-  }, [peripheryContract, marketList, blockNumber, account])
+  }, [peripheryContract, marketList, blockNumber, account, prices])
 
   marketList.forEach((id, index) => {
     marketsPrices[id] = prices[index]

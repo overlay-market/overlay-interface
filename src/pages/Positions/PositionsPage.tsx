@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {Fragment, useEffect, useMemo, useState} from 'react'
 import {ChevronDown, Play} from 'react-feather'
 import styled from 'styled-components'
 import {Box, Button, Collapse, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@material-ui/core'
@@ -382,13 +382,13 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                 {isOpenCloseAllPositionsOption
                   ? positionColumns['selectOpen'].map((column: string) => {
                       return (
-                        <>
+                        <Fragment key={column}>
                           {column === 'Market' ? (
-                            <MarketHeaderCell key={column}>
+                            <MarketHeaderCell>
                               <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
                             </MarketHeaderCell>
                           ) : (
-                            <CustomHeaderCell key={column}>
+                            <CustomHeaderCell>
                               {column === 'Checkbox' ? (
                                 <Checkbox
                                   checked={marketColumnChecked}
@@ -402,7 +402,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                               )}
                             </CustomHeaderCell>
                           )}
-                        </>
+                        </Fragment>
                       )
                     })
                   : positionColumns[positionStatus].map((column: string) => {

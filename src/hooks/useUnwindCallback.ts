@@ -282,7 +282,7 @@ function useMultipleUnwindsCallArguments(unwindDataList: UnwindDataType) {
       if (
         !unwindDataList[id]['unwindData'] ||
         !multipleMarketsContract.find(contract => contract?.address === unwindDataList[id]['marketAddress']) ||
-        // unwindDataList[id]['positionCurrentValue'] === undefined ||
+        unwindDataList[id]['positionCurrentValue'] === undefined ||
         unwindDataList[id]['positionId'] === null ||
         !account ||
         unwindDataList[id]['isLong'] === undefined ||
@@ -312,7 +312,7 @@ function useMultipleUnwindsCallArguments(unwindDataList: UnwindDataType) {
       if (
         !unwindDataList[id]['marketAddress'] ||
         unwindDataList[id]['unwindValue'] === '' ||
-        // !unwindDataList[id]['positionCurrentValue'] ||
+        !unwindDataList[id]['positionCurrentValue'] ||
         !unwindDataList[id]['positionId'] ||
         !account ||
         !chainId

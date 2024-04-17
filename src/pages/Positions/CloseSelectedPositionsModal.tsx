@@ -111,10 +111,10 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
   }, [selectedPositionsList])
 
   const fetchPrices = useMarketListPrices(marketList)
+  const arePricesUndefined = Object.keys(fetchPrices).reduce((ac, id) => ac || fetchPrices[id] === undefined, false)
 
   const prices: MarketListPrices = useMemo(() => {
     let marketsPrices: MarketListPrices = {}
-    const arePricesUndefined = Object.keys(fetchPrices).reduce((ac, id) => ac || fetchPrices[id] === undefined, false)
 
     if (arePricesUndefined) {
       Object.keys(fetchPrices).forEach((id: string) => {
@@ -147,13 +147,16 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
 
   selPositions &&
     multicallResults &&
+    !arePricesUndefined &&
     prices &&
     Object.keys(multicallResults).forEach((id: string) => {
-      positionsUnderwaterList.push(
-        selPositions.find(pos => pos.id === id)!.isLong
-          ? multicallResults[id]['liquidationPrice']?.gt(prices[id.slice(0, 42)]._mid!)
-          : multicallResults[id]['liquidationPrice']?.lt(prices[id.slice(0, 42)]._mid!),
-      )
+      const position = selPositions.find(pos => pos.id === id)
+      position &&
+        positionsUnderwaterList.push(
+          position.isLong
+            ? multicallResults[id]['liquidationPrice']?.gt(prices[id.slice(0, 42)]._mid!)
+            : multicallResults[id]['liquidationPrice']?.lt(prices[id.slice(0, 42)]._mid!),
+        )
     })
 
   const arePositionsUnderwater =

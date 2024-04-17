@@ -4,7 +4,7 @@ import {BigNumberish, BigNumber} from 'ethers'
 import {colors, TEXT} from '../../theme/theme'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useMultipleUnwindsCallback, UnwindDataType} from '../../hooks/useUnwindCallback'
-import {useCurrentWalletPositionsV2} from '../../state/build/hooks'
+import {usePositionList} from '../../state/build/hooks'
 import {useUnwindActionHandlers, useDerivedUnwindInfo} from '../../state/unwind/hooks'
 import {formatWeiToParsedNumber} from '../../utils/formatWei'
 import {FlexRow, FlexContainer} from '../../components/Container/Container'
@@ -77,16 +77,14 @@ type MarketListPrices = {
 
 export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onCloseCheckboxes}: ModalProps) {
   const {account, chainId} = useActiveWeb3React()
-  const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
+
+  const {positions: selPositions, isUninitialized, refetch} = usePositionList(account, selectedPositionsList)
 
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
 
   const {onResetUnwindState} = useUnwindActionHandlers()
-  const filtered = positions?.filter((index, key) => selectedPositionsList.includes(index.id))
-
-  const selPositions = filtered ? filtered : null
 
   const areMarketsShutDown = selPositions?.some(position => position?.market.isShutdown)
 

@@ -160,7 +160,7 @@ export const api = createApi({
         },
       }),
     }),
-    queryPositionQuery: builder.query({
+    positionListQuery: builder.query({
       query: ({account, marketPositionIdList}) => ({
         document: gql`
           query queryPosition($account: ID!, $marketPositionId: [ID]) {

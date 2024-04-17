@@ -4541,7 +4541,7 @@ export type AccountQuery = {__typename?: 'Query'} & {
   >
 }
 
-export type QueryPositionQueryVariables = Exact<{
+export type PositionListQueryVariables = Exact<{
   account: Scalars['ID']
   marketPositionIdList: Maybe<Array<Scalars['ID']>>
 }>
@@ -4979,7 +4979,7 @@ export const AccountV2Document = `
   }
 }
     `
-export const QueryPositionDocument = `
+export const PositionListDocument = `
     query accountV2($account: ID!, $marketPositionIdList: [ID]) {
   account(id: $account) {
     positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id_in: $marketPositionIdList}) {
@@ -5307,8 +5307,8 @@ const injectedRtkApi = api.injectEndpoints({
     accountV2: build.query<AccountV2Query, AccountV2QueryVariables>({
       query: variables => ({document: AccountV2Document, variables}),
     }),
-    queryPosition: build.query<AccountV2Query, QueryPositionQueryVariables>({
-      query: variables => ({document: QueryPositionDocument, variables}),
+    positionList: build.query<AccountV2Query, PositionListQueryVariables>({
+      query: variables => ({document: PositionListDocument, variables}),
     }),
     market: build.query<MarketQuery, MarketQueryVariables>({
       query: variables => ({document: MarketDocument, variables}),
@@ -5349,8 +5349,8 @@ export const {
   useLazyAccountQuery,
   useAccountV2Query,
   useLazyAccountV2Query,
-  useQueryPositionQuery,
-  useLazyQueryPositionQuery,
+  usePositionListQuery,
+  useLazyPositionListQuery,
   useMarketQuery,
   useLazyMarketQuery,
   useTotalMarketsQuery,

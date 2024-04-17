@@ -8,7 +8,7 @@ import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useUnwindCallback} from '../../hooks/useUnwindCallback'
-import {useQueryPosition} from '../../state/build/hooks'
+import {usePositionList} from '../../state/build/hooks'
 import {NumericalInputBottomText, NumericalInputContainer, NumericalInputDescriptor} from '../Markets/Build'
 import {NumericalInput} from '../../components/NumericalInput/NumericalInput'
 import {useUnwindState, useUnwindActionHandlers, useDerivedUnwindInfo} from '../../state/unwind/hooks'
@@ -82,7 +82,7 @@ export function Unwind({
   const [isTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
   const {account, chainId} = useActiveWeb3React()
-  const {positions, isUninitialized, refetch} = useQueryPosition(account, [marketPositionId])
+  const {positions, isUninitialized, refetch} = usePositionList(account, [marketPositionId])
 
   useEffect(() => {
     !isUninitialized && refetch()

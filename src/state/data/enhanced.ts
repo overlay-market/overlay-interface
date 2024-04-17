@@ -11,7 +11,7 @@ export const api = generatedApi.enhanceEndpoints({
     accountV2Query: {
       providesTags: [CHAIN_TAG],
     },
-    queryPositionQuery: {
+    positionListQuery: {
       providesTags: [CHAIN_TAG],
     },
     marketQuery: {
@@ -31,7 +31,7 @@ export const {
   useTotalMarketsQuery,
   useAccountQuery,
   useAccountV2Query,
-  useQueryPositionQuery,
+  usePositionListQuery,
   usePositionsQuery,
   useActiveMarketsQuery,
 } = api

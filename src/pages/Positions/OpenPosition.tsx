@@ -53,6 +53,7 @@ const CheckboxPosition = styled.div`
 type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
 interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
 export interface PositionProps {
+  page?: number
   position: PositionInterface
   columns: string[]
   isOpenCloseAllPositionsOption?: boolean
@@ -62,6 +63,7 @@ export interface PositionProps {
 }
 
 export const OpenPosition = ({
+  page,
   position,
   columns,
   isOpenCloseAllPositionsOption,
@@ -168,6 +170,7 @@ export const OpenPosition = ({
   function handleNavigate(location: string | undefined) {
     const string = `/positions/${location}`
     history.push(string)
+    page && sessionStorage.setItem(`openPage`, `${page}`)
   }
 
   const positionUrl = useMemo(() => {

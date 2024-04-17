@@ -8,7 +8,7 @@ import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useUnwindCallback} from '../../hooks/useUnwindCallback'
-import {useCurrentWalletPositionsV2} from '../../state/build/hooks'
+import {useQueryPosition} from '../../state/build/hooks'
 import {NumericalInputBottomText, NumericalInputContainer, NumericalInputDescriptor} from '../Markets/Build'
 import {NumericalInput} from '../../components/NumericalInput/NumericalInput'
 import {useUnwindState, useUnwindActionHandlers, useDerivedUnwindInfo} from '../../state/unwind/hooks'
@@ -82,7 +82,7 @@ export function Unwind({
   const [isTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
   const {account, chainId} = useActiveWeb3React()
-  const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
+  const {positions, isUninitialized, refetch} = useQueryPosition(account, marketPositionId)
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -91,9 +91,7 @@ export function Unwind({
   const {typedValue} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
 
-  const filtered = positions?.filter((index, key) => index.id === marketPositionId)
-
-  const position = filtered ? filtered[0] : null
+  const position = positions ? positions[0] : null
   const isMarketShutDown = position?.market.isShutdown
 
   const {baseToken, quoteToken, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)

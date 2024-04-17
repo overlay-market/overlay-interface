@@ -160,6 +160,80 @@ export const api = createApi({
         },
       }),
     }),
+    queryPositionQuery: builder.query({
+      query: ({account, marketPositionId}) => ({
+        document: gql`
+          query queryPosition($account: ID!, $marketPositionId: ID) {
+            account(id: $account) {
+              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id: $marketPositionId}}) {
+                id
+                positionId
+                market {
+                  id
+                  feedAddress
+                  isShutdown
+                }
+                initialOi
+                initialDebt
+                initialCollateral
+                initialNotional
+                leverage
+                isLong
+                entryPrice
+                isLiquidated
+                currentOi
+                currentDebt
+                mint
+                createdAtTimestamp
+                createdAtBlockNumber
+                numberOfUniwnds
+                fractionUnwound
+                builds {
+                  collateral
+                  currentDebt
+                  currentOi
+                  id
+                  price
+                  timestamp
+                  value
+                }
+                liquidates {
+                  collateral
+                  currentDebt
+                  id
+                  currentOi
+                  isLong
+                  mint
+                  price
+                  timestamp
+                  value
+                }
+                unwinds(orderBy: unwindNumber, orderDirection: asc) {
+                  collateral
+                  currentDebt
+                  currentOi
+                  fraction
+                  id
+                  isLong
+                  mint
+                  timestamp
+                  price
+                  unwindNumber
+                  value
+                  transferAmount
+                  pnl
+                  size
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          account,
+          marketPositionId,
+        },
+      }),
+    }),
     marketQuery: builder.query({
       query: ({market}) => ({
         document: gql`

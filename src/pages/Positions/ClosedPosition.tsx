@@ -60,7 +60,7 @@ export function ClosedPosition({
 }: RouteComponentProps<{unwindId: string; positionId: string}>) {
   const {account, chainId} = useActiveWeb3React()
   const marketPositionId = getMarketPositionId(unwindId)
-  const {positions, isUninitialized, refetch} = useQueryPosition(account, marketPositionId)
+  const {positions, isUninitialized, refetch} = useQueryPosition(account, [marketPositionId])
 
   useEffect(() => {
     !isUninitialized && refetch()

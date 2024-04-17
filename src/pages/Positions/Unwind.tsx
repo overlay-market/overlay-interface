@@ -82,7 +82,7 @@ export function Unwind({
   const [isTxnSettingsOpen] = useState<boolean>(false)
   const [customInput, setCustomInput] = useState<string>('')
   const {account, chainId} = useActiveWeb3React()
-  const {positions, isUninitialized, refetch} = useQueryPosition(account, marketPositionId)
+  const {positions, isUninitialized, refetch} = useQueryPosition(account, [marketPositionId])
 
   useEffect(() => {
     !isUninitialized && refetch()

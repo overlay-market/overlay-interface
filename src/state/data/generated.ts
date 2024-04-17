@@ -4543,7 +4543,7 @@ export type AccountQuery = {__typename?: 'Query'} & {
 
 export type QueryPositionQueryVariables = Exact<{
   account: Scalars['ID']
-  marketPositionId: Maybe<Scalars['ID']>
+  marketPositionIdList: Maybe<Array<Scalars['ID']>>
 }>
 
 export type AccountV2QueryVariables = Exact<{
@@ -4980,9 +4980,9 @@ export const AccountV2Document = `
 }
     `
 export const QueryPositionDocument = `
-    query accountV2($account: ID!, $marketPositionId: ID) {
+    query accountV2($account: ID!, $marketPositionIdList: [ID]) {
   account(id: $account) {
-    positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id: $marketPositionId}) {
+    positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id_in: $marketPositionIdList}) {
       id
       positionId
       market {

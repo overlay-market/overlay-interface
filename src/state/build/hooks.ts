@@ -212,10 +212,10 @@ export function useWalletPositionsFromSubgraphV2(address: string | undefined | n
   })
 }
 
-export function useQueryPositionFromSubgraph(address: string | undefined | null, marketPositionId: string) {
+export function useQueryPositionFromSubgraph(address: string | undefined | null, marketPositionIdList: string[]) {
   const accountAddress = address ? address.toLowerCase() : undefined;
 
-  return useQueryPositionQuery(accountAddress ? { account: accountAddress, marketPositionId } : skipToken, { 
+  return useQueryPositionQuery(accountAddress ? { account: accountAddress, marketPositionIdList } : skipToken, { 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -369,7 +369,7 @@ export function useCurrentWalletPositionsV2(
 
 export function useQueryPosition(
   address: string | undefined | null,
-  marketPositionId: string
+  marketPositionIdList: string[]
 ):{
   isLoading: boolean
   isFetching: boolean
@@ -379,7 +379,7 @@ export function useQueryPosition(
   positions: PositionDataV2[] | undefined
   refetch: () => void
 } {
-  const walletPositionData = useQueryPositionFromSubgraph(address ? address : undefined, marketPositionId)
+  const walletPositionData = useQueryPositionFromSubgraph(address ? address : undefined, marketPositionIdList)
   return {
     isLoading: walletPositionData.isLoading,
     isFetching: walletPositionData.isFetching,

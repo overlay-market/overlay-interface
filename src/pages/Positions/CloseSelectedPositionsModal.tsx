@@ -215,10 +215,10 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
         ) : (
           <>
             <TEXT.BoldHeader1 fontSize={18} color={'#f2f2f2'}>
-              You're about you unwind {selectedPositionsList.length} positions
+              You're about to unwind {selectedPositionsList.length} positions
             </TEXT.BoldHeader1>
             <TEXT.SmallBody color={colors(false).dark.grey2}>
-              {selectedPositionsList.length} transactions approvals will be triggered in Metamask, one after the other.
+              {selectedPositionsList.length} approvals will be triggered in your wallet, one after another.
             </TEXT.SmallBody>
             <FlexRow gap={'8px'}>
               <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} width={'100%'} onClick={handleClose}>

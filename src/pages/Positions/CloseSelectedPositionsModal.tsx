@@ -58,12 +58,6 @@ type SelPositionsIds = {
   }
 }
 
-interface MulticallResults {
-  [marketPositionId: string]: {
-    [callMethod: string]: BigNumber | undefined
-  }
-}
-
 type MarketListPrices = {
   [marketAddress: string]: {
     bid?: string | number | any
@@ -98,7 +92,7 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
     })
 
   const callMethods = ['value', 'liquidationPrice']
-  const multicallResults: MulticallResults = useMultiplePositionsMulticall(selPositionsIds, callMethods)
+  const multicallResults = useMultiplePositionsMulticall(selPositionsIds, callMethods)
 
   const marketList: string[] = useMemo(() => {
     let tempSet = new Set<string>()
@@ -130,12 +124,12 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
 
     Object.keys(fetchPrices).forEach((id: string) => {
       marketsPrices[id] = {
-        bid: formatWeiToParsedNumber(fetchPrices[id][0], 18, 2)?.toString(),
-        ask: formatWeiToParsedNumber(fetchPrices[id][1], 18, 2)?.toString(),
-        mid: formatWeiToParsedNumber(fetchPrices[id][2], 18, 2)?.toString(),
-        _bid: fetchPrices[id].bid_,
-        _ask: fetchPrices[id].ask_,
-        _mid: fetchPrices[id].mid_,
+        bid: formatWeiToParsedNumber(fetchPrices[id]['bid'], 18, 2)?.toString(),
+        ask: formatWeiToParsedNumber(fetchPrices[id]['ask'], 18, 2)?.toString(),
+        mid: formatWeiToParsedNumber(fetchPrices[id]['mid'], 18, 2)?.toString(),
+        _bid: fetchPrices[id]['_bid'],
+        _ask: fetchPrices[id]['_ask'],
+        _mid: fetchPrices[id]['_mid'],
       }
     })
     return marketsPrices

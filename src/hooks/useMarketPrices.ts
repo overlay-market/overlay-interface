@@ -2,9 +2,17 @@ import {useEffect, useState, useMemo} from 'react'
 import {useV1PeripheryContract} from './useContract'
 import {useBlockNumber} from '../state/application/hooks'
 import {useActiveWeb3React} from './web3'
+import {BigNumberish} from 'ethers'
 
-type marketsPrices = {
-  [marketAddress: string]: any[]
+type MarketListPrices = {
+  [marketAddress: string]: {
+    bid?: string | number | any
+    ask?: string | number | any
+    mid?: string | number | any
+    _bid?: BigNumberish
+    _ask?: BigNumberish
+    _mid?: BigNumberish
+  }
 }
 
 export function useMarketPrice(marketAddress?: string): any | undefined {
@@ -62,12 +70,12 @@ export function useMarketMidPrices(marketAddresses?: string[][], blockNumber?: n
   }, [midPrices])
 }
 
-export function useMarketListPrices(marketList: string[]): any | undefined {
+export function useMarketListPrices(marketList: string[]): MarketListPrices {
   const peripheryContract = useV1PeripheryContract()
   const blockNumber = useBlockNumber()
   const {account} = useActiveWeb3React()
-  const [prices, setPrices] = useState<any[]>([])
-  let marketsPrices: marketsPrices = {}
+  const [prices, setPrices] = useState<(string | number | any)[]>([])
+  let marketsPrices: MarketListPrices = {}
 
   useEffect(() => {
     if (prices.length > 0) return
@@ -90,11 +98,19 @@ export function useMarketListPrices(marketList: string[]): any | undefined {
     })
   }, [peripheryContract, marketList, blockNumber, account, prices])
 
-  marketList.forEach((id, index) => {
-    marketsPrices[id] = prices[index]
-  })
-
   return useMemo(() => {
+    prices.length > 0 &&
+      marketList.forEach((id, index) => {
+        marketsPrices[id] = {
+          bid: prices[index][0],
+          ask: prices[index][1],
+          mid: prices[index][2],
+          _bid: prices[index]['bid_'],
+          _ask: prices[index]['ask_'],
+          _mid: prices[index]['mid_'],
+        }
+      })
+
     return marketsPrices
-  }, [marketsPrices])
+  }, [marketsPrices, prices])
 }

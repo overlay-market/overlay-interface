@@ -50,7 +50,7 @@ const CheckboxPosition = styled.div`
   `}
 `
 
-type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
+export type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
 interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
 export interface PositionProps {
   page?: number

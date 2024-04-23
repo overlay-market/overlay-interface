@@ -25,13 +25,13 @@ type callMethodsResults = {
   [key: string]: CallState[]
 }
 
-type positionsResults = {
+type MulticallResults = {
   [id: string]: {
     [method: string]: BigNumber | undefined
   }
 }
 
-export function useMultiplePositionsMulticall(selPositionsIds: selPositionsIds, callMethods: string[]): any {
+export function useMultiplePositionsMulticall(selPositionsIds: selPositionsIds, callMethods: string[]): MulticallResults {
   const peripheryContract = useV1PeripheryContract()
   const {account} = useActiveWeb3React()
 
@@ -76,7 +76,7 @@ export function useMultiplePositionsMulticall(selPositionsIds: selPositionsIds, 
       positionsIds.push(id)
     })
 
-    let positionsResults: positionsResults = {}
+    let positionsResults: MulticallResults = {}
 
     positionsIds &&
       positionsIds.forEach(id => {
@@ -100,7 +100,7 @@ export function useMultiplePositionsMulticall(selPositionsIds: selPositionsIds, 
 
       positionsIds &&
         positionsIds.forEach((id, index) => {
-          positionsResults[id][method as keyof positionsResults] = tempRes[index]
+          positionsResults[id][method as keyof MulticallResults] = tempRes[index]
         })
     })
 

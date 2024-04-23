@@ -24,7 +24,7 @@ import {ColorButton} from '../../components/Button/Button'
 import {CloseSelectedPositionsModal} from './CloseSelectedPositionsModal'
 import {useUnwindActionHandlers} from '../../state/unwind/hooks'
 import {Checkbox} from '@material-ui/core'
-import {CheckboxIcon, CheckedIcon} from './OpenPosition'
+import {CheckboxIcon, CheckedIcon, PositionType} from './OpenPosition'
 
 const Container = styled.div`
   display: flex;
@@ -248,7 +248,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
       positionsTableData &&
       positionStatus === PositionStatus.Open &&
       isOpenPositionsQuery(positionsTableData) &&
-      positionsTableData?.account?.positions!.map((el: any) => el.id)
+      positionsTableData?.account?.positions!.map((el: PositionType) => el.id)
 
     marketColumnChecked && allIdsList && setSelectedPositionsList(allIdsList)
   }, [marketColumnChecked, setMarketColumnChecked, positionsTableData, setRowsPerPage, positionStatus])

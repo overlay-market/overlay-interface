@@ -80,8 +80,6 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
 
   const {onResetUnwindState} = useUnwindActionHandlers()
 
-  const areMarketsShutDown = selPositions?.some(position => position?.market.isShutdown)
-
   let selPositionsIds: SelPositionsIds = {}
   selPositions &&
     selPositions.forEach(position => {
@@ -135,25 +133,6 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
     return marketsPrices
   }, [fetchPrices])
 
-  let positionsUnderwaterList: any[] = []
-
-  selPositions &&
-    multicallResults &&
-    !arePricesUndefined &&
-    prices &&
-    Object.keys(multicallResults).forEach((id: string) => {
-      const position = selPositions.find(pos => pos.id === id)
-      position &&
-        positionsUnderwaterList.push(
-          position.isLong
-            ? multicallResults[id]['liquidationPrice']?.gt(prices[id.slice(0, 42)]._mid!)
-            : multicallResults[id]['liquidationPrice']?.lt(prices[id.slice(0, 42)]._mid!),
-        )
-    })
-
-  const arePositionsUnderwater =
-    multicallResults && prices ? positionsUnderwaterList.reduce((acc, booleanValue) => acc || booleanValue, false) : false
-
   const {unwindData} = useDerivedUnwindInfo()
 
   const unwindDataList: UnwindDataType = {}
@@ -194,36 +173,20 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
     <PageWrapper>
       <MessageBox>
         <CloseButton onClick={handleClose}>&times;</CloseButton>
-
-        {areMarketsShutDown || arePositionsUnderwater ? (
-          <>
-            <TEXT.BoldHeader1 fontSize={14} color={'#f2f2f2'}>
-              Sorry for not being able to close all selected positions at the moment. Some positions can't be closed at the time.
-            </TEXT.BoldHeader1>
-            <FlexRow justify={'end'}>
-              <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} width={'100%'} onClick={handleClose}>
-                OK
-              </ColorButton>
-            </FlexRow>
-          </>
-        ) : (
-          <>
-            <TEXT.BoldHeader1 fontSize={18} color={'#f2f2f2'}>
-              You're about to unwind {selectedPositionsList.length} positions
-            </TEXT.BoldHeader1>
-            <TEXT.SmallBody color={colors(false).dark.grey2}>
-              {selectedPositionsList.length} approvals will be triggered in your wallet, one after another.
-            </TEXT.SmallBody>
-            <FlexRow gap={'8px'}>
-              <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} width={'100%'} onClick={handleClose}>
-                Cancel
-              </ColorButton>
-              <ColorButton width={'100%'} onClick={handleUnwind}>
-                Close positions
-              </ColorButton>
-            </FlexRow>
-          </>
-        )}
+        <TEXT.BoldHeader1 fontSize={18} color={'#f2f2f2'}>
+          You're about to unwind {selectedPositionsList.length} positions
+        </TEXT.BoldHeader1>
+        <TEXT.SmallBody color={colors(false).dark.grey2}>
+          {selectedPositionsList.length} approvals will be triggered in your wallet, one after another.
+        </TEXT.SmallBody>
+        <FlexRow gap={'8px'}>
+          <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} width={'100%'} onClick={handleClose}>
+            Cancel
+          </ColorButton>
+          <ColorButton width={'100%'} onClick={handleUnwind}>
+            Close positions
+          </ColorButton>
+        </FlexRow>
       </MessageBox>
     </PageWrapper>
   )

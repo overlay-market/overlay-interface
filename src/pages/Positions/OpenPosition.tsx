@@ -150,6 +150,7 @@ export const OpenPosition = ({
     return diff < 1 ? diff.toFixed(6) : diff.toFixed(2)
   }, [value, cost, tradingFee])
 
+  const isPositionUnderwater = liquidationPrice && mid ? (isLong ? liquidationPrice.gt(mid) : liquidationPrice.lt(mid)) : false
   const [checked, setChecked] = useState(isChecked === undefined ? false : isChecked)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -257,7 +258,14 @@ export const OpenPosition = ({
     <>
       {isOpenCloseAllPositionsOption && (
         <CheckboxWrapper>
-          <Checkbox checked={checked} onChange={handleChange} checkedIcon={<CheckedIcon />} icon={<CheckboxIcon />} disableRipple />
+          <Checkbox
+            checked={checked}
+            onChange={handleChange}
+            checkedIcon={<CheckedIcon />}
+            icon={<CheckboxIcon style={{boxShadow: isPositionUnderwater || isShutdown ? 'inset 0 0 0 1px grey' : ''}} />}
+            disableRipple
+            disabled={isPositionUnderwater || isShutdown}
+          />
         </CheckboxWrapper>
       )}
       <StyledTableRow onClick={() => handleNavigate(positionUrl)}>

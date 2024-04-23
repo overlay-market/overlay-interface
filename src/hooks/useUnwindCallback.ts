@@ -286,6 +286,7 @@ function useMultipleUnwindsCallArguments(unwindDataList: UnwindDataType) {
         unwindDataList[id]['positionId'] === null ||
         !account ||
         unwindDataList[id]['isLong'] === undefined ||
+        unwindDataList[id]['prices'] === undefined ||
         unwindDataList[id]['prices']['_bid'] === undefined ||
         unwindDataList[id]['prices']['_ask'] === undefined
       ) {

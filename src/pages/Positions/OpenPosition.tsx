@@ -60,6 +60,8 @@ export interface PositionProps {
   setSelectedPositionsList?: Function
   isChecked?: boolean
   setMarketColumnChecked?: Function
+  setDisabledPositionsList?: Function
+  disabledPositionsList?: string[]
 }
 
 export const OpenPosition = ({
@@ -70,6 +72,8 @@ export const OpenPosition = ({
   setSelectedPositionsList,
   isChecked,
   setMarketColumnChecked,
+  setDisabledPositionsList,
+  disabledPositionsList,
 }: PositionProps) => {
   const {
     id,
@@ -149,8 +153,18 @@ export const OpenPosition = ({
     const diff = (+value - +cost - +tradingFee) / 10 ** 18
     return diff < 1 ? diff.toFixed(6) : diff.toFixed(2)
   }, [value, cost, tradingFee])
-
   const isPositionUnderwater = liquidationPrice && mid ? (isLong ? liquidationPrice.gt(mid) : liquidationPrice.lt(mid)) : false
+
+  useEffect(() => {
+    if (isOpenCloseAllPositionsOption) {
+      if (isPositionUnderwater || isShutdown) {
+        let tempArr = disabledPositionsList
+        tempArr && tempArr.push(id)
+        setDisabledPositionsList && setDisabledPositionsList(tempArr)
+      }
+    }
+  }, [isPositionUnderwater, isShutdown, setDisabledPositionsList, disabledPositionsList, isOpenCloseAllPositionsOption])
+
   const [checked, setChecked] = useState(isChecked === undefined ? false : isChecked)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,7 +273,7 @@ export const OpenPosition = ({
       {isOpenCloseAllPositionsOption && (
         <CheckboxWrapper>
           <Checkbox
-            checked={checked}
+            checked={!isPositionUnderwater && !isShutdown && checked}
             onChange={handleChange}
             checkedIcon={<CheckedIcon />}
             icon={<CheckboxIcon style={{boxShadow: isPositionUnderwater || isShutdown ? 'inset 0 0 0 1px grey' : ''}} />}

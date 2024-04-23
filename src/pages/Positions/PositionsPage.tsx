@@ -190,6 +190,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [isOpenCloseAllPositionsOption, setIsOpenCloseAllPositionsOption] = useState(false)
   const [showCloseSelPositionsModal, setShowSelPositionsModal] = useState(false)
   const [selectedPositionsList, setSelectedPositionsList] = useState<string[]>([])
+  const [disabledPositionsList, setDisabledPositionsList] = useState<string[]>([])
   const [marketColumnChecked, setMarketColumnChecked] = useState(false)
   const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
     account,
@@ -248,7 +249,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
       positionsTableData &&
       positionStatus === PositionStatus.Open &&
       isOpenPositionsQuery(positionsTableData) &&
-      positionsTableData?.account?.positions!.map((el: PositionType) => el.id)
+      positionsTableData?.account?.positions!.map((el: PositionType) => el.id).filter(id => !disabledPositionsList.includes(id))
 
     marketColumnChecked && allIdsList && setSelectedPositionsList(allIdsList)
   }, [marketColumnChecked, setMarketColumnChecked, positionsTableData, setRowsPerPage, positionStatus])
@@ -315,6 +316,8 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                 setSelectedPositionsList={setSelectedPositionsList}
                 isChecked={selectedPositionsList.includes(row.id)}
                 setMarketColumnChecked={setMarketColumnChecked}
+                setDisabledPositionsList={setDisabledPositionsList}
+                disabledPositionsList={disabledPositionsList}
               />
             )
           } else if (positionStatus === PositionStatus.Closed) {

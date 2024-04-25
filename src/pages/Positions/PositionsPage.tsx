@@ -58,6 +58,13 @@ const MarketHeaderCell = styled(StyledHeaderCell)`
   padding-right: 16px !important;
 `
 
+const DesktopColorButton = styled(ColorButton)`
+  display: none;
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: block;
+  `}
+`
+
 const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Liquidated']
 
 const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'Funding']
@@ -369,9 +376,9 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           </TriangleButton>
         </TEXT.BoldStandardBody>
         {positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption && (
-          <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={openClosePositionsOption}>
+          <DesktopColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={openClosePositionsOption}>
             Select position to close
-          </ColorButton>
+          </DesktopColorButton>
         )}
         {positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption && (
           <CustomFlexRow align="baseline" style={{gap: '10px'}}>

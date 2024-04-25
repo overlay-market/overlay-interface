@@ -207,6 +207,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     undefined,
   )
   const [showLoader, setShowLoader] = useState(false)
+  const isMetamask = window?.ethereum?.isMetaMask
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -375,7 +376,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
             <RotatingTriangle color={'white'} fill={'white'} height={10} width={10} open={open} />
           </TriangleButton>
         </TEXT.BoldStandardBody>
-        {positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption && (
+        {positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption && account && isMetamask && paginatedRows && (
           <DesktopColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={openClosePositionsOption}>
             Select position to close
           </DesktopColorButton>

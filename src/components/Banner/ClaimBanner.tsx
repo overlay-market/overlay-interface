@@ -11,10 +11,9 @@ export const BannerContainer = styled.div`
   width: 100vw;
   box-sizing: border-box;
   background: linear-gradient(to right, #ffa5cf, #cd11ff, #7017ff);
-  margin: 10px auto auto;
+  margin: auto auto;
   padding: 8px 32px;
   position: sticky;
-  top: 10px;
   z-index: 500;
   :hover {
     opacity: 0.96;

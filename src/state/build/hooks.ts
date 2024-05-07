@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useAccountQuery, useAccountV2Query, useQueryPositionQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
+import { useAccountQuery, useAccountV2Query, useQueryPositionQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -623,23 +623,3 @@ export function useCurrentWalletUnwinds(
     refetch: walletPositionsData.refetch
   }
 }
-
-export function useAllPositions() {
-  const {
-    isLoading,
-    isError,
-    error,
-    isUninitialized,
-    data
-  } = usePositionsQuery({}, { pollingInterval: 1000 })
-
-  return useMemo(() => {
-    return {
-      isLoading,
-      isError,
-      error,
-      isUninitialized,
-      positions: data?.positions
-    } 
-  }, [ isLoading, isError, error, isUninitialized, data ])
-};

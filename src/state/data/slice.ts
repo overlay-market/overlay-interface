@@ -165,7 +165,7 @@ export const api = createApi({
         document: gql`
           query queryPosition($account: ID!, $marketPositionId: ID) {
             account(id: $account) {
-              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id: $marketPositionId}}) {
+              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id: $marketPositionId}) {
                 id
                 positionId
                 market {

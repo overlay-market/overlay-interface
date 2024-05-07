@@ -4635,68 +4635,6 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type AccountQueryVariables = Exact<{
-  account: Scalars['ID'];
-}>;
-
-
-export type AccountQuery = (
-  { __typename?: 'Query' }
-  & { account?: Maybe<(
-    { __typename?: 'Account' }
-    & { positions: Array<(
-      { __typename?: 'Position' }
-      & Pick<Position, 'id' | 'positionId' | 'initialOi' | 'initialDebt' | 'initialCollateral' | 'initialNotional' | 'leverage' | 'isLong' | 'entryPrice' | 'isLiquidated' | 'currentOi' | 'currentDebt' | 'mint' | 'createdAtTimestamp' | 'createdAtBlockNumber' | 'numberOfUniwnds'>
-      & { market: (
-        { __typename?: 'Market' }
-        & Pick<Market, 'id' | 'feedAddress'>
-      ) }
-    )>, builds: Array<(
-      { __typename?: 'Build' }
-      & Pick<Build, 'id' | 'isLong' | 'price' | 'timestamp' | 'value' | 'collateral'>
-    )>, unwinds: Array<(
-      { __typename?: 'Unwind' }
-      & Pick<Unwind, 'id' | 'value' | 'unwindNumber' | 'timestamp' | 'price' | 'mint' | 'fraction' | 'currentOi' | 'currentDebt' | 'collateral'>
-      & { position: (
-        { __typename?: 'Position' }
-        & Pick<Position, 'id'>
-      ) }
-    )>, liquidates: Array<(
-      { __typename?: 'Liquidate' }
-      & Pick<Liquidate, 'id' | 'value' | 'timestamp' | 'price' | 'mint'>
-    )> }
-  )> }
-);
-
-export type AccountV2QueryVariables = Exact<{
-  account: Scalars['ID'];
-}>;
-
-
-export type AccountV2Query = (
-  { __typename?: 'Query' }
-  & { account?: Maybe<(
-    { __typename?: 'Account' }
-    & { positions: Array<(
-      { __typename?: 'Position' }
-      & Pick<Position, 'id' | 'positionId' | 'initialOi' | 'initialDebt' | 'initialCollateral' | 'initialNotional' | 'leverage' | 'isLong' | 'entryPrice' | 'isLiquidated' | 'currentOi' | 'currentDebt' | 'mint' | 'createdAtTimestamp' | 'createdAtBlockNumber' | 'numberOfUniwnds' | 'fractionUnwound'>
-      & { market: (
-        { __typename?: 'Market' }
-        & Pick<Market, 'id' | 'feedAddress' | 'isShutdown'>
-      ), builds: Array<(
-        { __typename?: 'Build' }
-        & Pick<Build, 'collateral' | 'currentDebt' | 'currentOi' | 'id' | 'price' | 'timestamp' | 'value'>
-      )>, liquidates: Array<(
-        { __typename?: 'Liquidate' }
-        & Pick<Liquidate, 'collateral' | 'currentDebt' | 'id' | 'currentOi' | 'isLong' | 'mint' | 'price' | 'timestamp' | 'value'>
-      )>, unwinds: Array<(
-        { __typename?: 'Unwind' }
-        & Pick<Unwind, 'collateral' | 'currentDebt' | 'currentOi' | 'fraction' | 'id' | 'isLong' | 'mint' | 'timestamp' | 'price' | 'unwindNumber' | 'value' | 'transferAmount' | 'pnl' | 'size'>
-      )> }
-    )> }
-  )> }
-);
-
 export type QueryPositionQueryVariables = Exact<{
   account: Scalars['ID'];
   marketPositionId?: Maybe<Scalars['ID']>;
@@ -4832,26 +4770,6 @@ export type MarketOpenPositionsQuery = (
   )> }
 );
 
-export type OpenPositionsOverviewQueryVariables = Exact<{
-  account: Scalars['ID'];
-}>;
-
-
-export type OpenPositionsOverviewQuery = (
-  { __typename?: 'Query' }
-  & { account?: Maybe<(
-    { __typename?: 'Account' }
-    & { positions: Array<(
-      { __typename?: 'Position' }
-      & Pick<Position, 'id' | 'positionId'>
-      & { market: (
-        { __typename?: 'Market' }
-        & Pick<Market, 'feedAddress' | 'id'>
-      ) }
-    )> }
-  )> }
-);
-
 export type UnwindsQueryVariables = Exact<{
   account: Scalars['ID'];
   first?: Maybe<Scalars['Int']>;
@@ -4905,130 +4823,6 @@ export type LiquidatedPositionsQuery = (
 );
 
 
-export const AccountDocument = `
-    query account($account: ID!) {
-  account(id: $account) {
-    positions {
-      id
-      positionId
-      market {
-        id
-        feedAddress
-      }
-      initialOi
-      initialDebt
-      initialCollateral
-      initialNotional
-      leverage
-      isLong
-      entryPrice
-      isLiquidated
-      currentOi
-      currentDebt
-      mint
-      createdAtTimestamp
-      createdAtBlockNumber
-      numberOfUniwnds
-    }
-    builds {
-      id
-      isLong
-      price
-      timestamp
-      value
-      collateral
-    }
-    unwinds {
-      id
-      value
-      unwindNumber
-      timestamp
-      price
-      mint
-      fraction
-      currentOi
-      currentDebt
-      collateral
-      position {
-        id
-      }
-    }
-    liquidates {
-      id
-      value
-      timestamp
-      price
-      mint
-    }
-  }
-}
-    `;
-export const AccountV2Document = `
-    query accountV2($account: ID!) {
-  account(id: $account) {
-    positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc) {
-      id
-      positionId
-      market {
-        id
-        feedAddress
-        isShutdown
-      }
-      initialOi
-      initialDebt
-      initialCollateral
-      initialNotional
-      leverage
-      isLong
-      entryPrice
-      isLiquidated
-      currentOi
-      currentDebt
-      mint
-      createdAtTimestamp
-      createdAtBlockNumber
-      numberOfUniwnds
-      fractionUnwound
-      builds {
-        collateral
-        currentDebt
-        currentOi
-        id
-        price
-        timestamp
-        value
-      }
-      liquidates {
-        collateral
-        currentDebt
-        id
-        currentOi
-        isLong
-        mint
-        price
-        timestamp
-        value
-      }
-      unwinds(orderBy: unwindNumber, orderDirection: asc) {
-        collateral
-        currentDebt
-        currentOi
-        fraction
-        id
-        isLong
-        mint
-        timestamp
-        price
-        unwindNumber
-        value
-        transferAmount
-        pnl
-        size
-      }
-    }
-  }
-}
-    `;
 export const QueryPositionDocument = `
     query queryPosition($account: ID!, $marketPositionId: ID) {
   account(id: $account) {
@@ -5247,24 +5041,6 @@ export const MarketOpenPositionsDocument = `
   }
 }
     `;
-export const OpenPositionsOverviewDocument = `
-    query openPositionsOverview($account: ID!) {
-  account(id: $account) {
-    positions(
-      where: {isLiquidated: false, currentOi_gt: "0"}
-      orderBy: createdAtTimestamp
-      orderDirection: desc
-    ) {
-      id
-      positionId
-      market {
-        feedAddress
-        id
-      }
-    }
-  }
-}
-    `;
 export const UnwindsDocument = `
     query unwinds($account: ID!, $first: Int, $skip: Int) {
   account(id: $account) {
@@ -5338,12 +5114,6 @@ export const LiquidatedPositionsDocument = `
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    account: build.query<AccountQuery, AccountQueryVariables>({
-      query: (variables) => ({ document: AccountDocument, variables })
-    }),
-    accountV2: build.query<AccountV2Query, AccountV2QueryVariables>({
-      query: (variables) => ({ document: AccountV2Document, variables })
-    }),
     queryPosition: build.query<QueryPositionQuery, QueryPositionQueryVariables>({
       query: (variables) => ({ document: QueryPositionDocument, variables })
     }),
@@ -5365,9 +5135,6 @@ const injectedRtkApi = api.injectEndpoints({
     marketOpenPositions: build.query<MarketOpenPositionsQuery, MarketOpenPositionsQueryVariables>({
       query: (variables) => ({ document: MarketOpenPositionsDocument, variables })
     }),
-    openPositionsOverview: build.query<OpenPositionsOverviewQuery, OpenPositionsOverviewQueryVariables>({
-      query: (variables) => ({ document: OpenPositionsOverviewDocument, variables })
-    }),
     unwinds: build.query<UnwindsQuery, UnwindsQueryVariables>({
       query: (variables) => ({ document: UnwindsDocument, variables })
     }),
@@ -5378,5 +5145,5 @@ const injectedRtkApi = api.injectEndpoints({
 });
 
 export { injectedRtkApi as api };
-export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useQueryPositionQuery, useLazyQueryPositionQuery, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useMarketOpenPositionsQuery, useLazyMarketOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
+export const { useQueryPositionQuery, useLazyQueryPositionQuery, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useMarketOpenPositionsQuery, useLazyMarketOpenPositionsQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
 

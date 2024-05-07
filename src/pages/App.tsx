@@ -10,7 +10,6 @@ import Markets from './Markets/Markets'
 import {Market} from './Markets/Market'
 import {Unwind} from './Positions/Unwind'
 import Positions from './Positions/PositionsPage'
-import Liquidate from './Liquidate/Liquidate'
 import styled from 'styled-components/macro'
 import Bridge from './Bridge/Bridge'
 import Claim from './Claim/Claim'
@@ -114,7 +113,6 @@ const App = () => {
                     <Route exact strict path="/claimpage" component={ClaimPage} />
                     <Route exact strict path="/stake" component={Pools} />
                     <Route exact strict path="/stake/:poolAddress" component={Pool} />
-                    <Route exact strict path="/liquidate" component={Liquidate} />
                     <Route exact strict path="/bridge" component={Bridge} />
                     <Route exact strict path="/claim-checker" component={ClaimChecker} />
                     <Route exact strict path="/sepolia-faucet" component={SepoliaFaucet} />

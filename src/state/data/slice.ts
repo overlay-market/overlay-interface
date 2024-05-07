@@ -325,28 +325,6 @@ export const api = createApi({
               priceDriftUpperLimit
               averageBlockTime
               isShutdown
-              positions {
-                id
-              }
-            }
-          }
-        `,
-      }),
-    }),
-    positionsQuery: builder.query({
-      query: () => ({
-        document: gql`
-          query positions {
-            positions {
-              id
-              positionId
-              owner {
-                id
-              }
-              market {
-                id
-              }
-              isLiquidated
             }
           }
         `,

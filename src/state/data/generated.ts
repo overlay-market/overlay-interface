@@ -4770,27 +4770,6 @@ export type ActiveMarketsQuery = (
     & { factory: (
       { __typename?: 'Factory' }
       & Pick<Factory, 'id'>
-    ), positions: Array<(
-      { __typename?: 'Position' }
-      & Pick<Position, 'id'>
-    )> }
-  )> }
-);
-
-export type PositionsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type PositionsQuery = (
-  { __typename?: 'Query' }
-  & { positions: Array<(
-    { __typename?: 'Position' }
-    & Pick<Position, 'id' | 'positionId' | 'isLiquidated'>
-    & { owner: (
-      { __typename?: 'Account' }
-      & Pick<Account, 'id'>
-    ), market: (
-      { __typename?: 'Market' }
-      & Pick<Market, 'id'>
     ) }
   )> }
 );
@@ -5199,24 +5178,6 @@ export const ActiveMarketsDocument = `
     priceDriftUpperLimit
     averageBlockTime
     isShutdown
-    positions {
-      id
-    }
-  }
-}
-    `;
-export const PositionsDocument = `
-    query positions {
-  positions {
-    id
-    positionId
-    owner {
-      id
-    }
-    market {
-      id
-    }
-    isLiquidated
   }
 }
     `;
@@ -5395,9 +5356,6 @@ const injectedRtkApi = api.injectEndpoints({
     activeMarkets: build.query<ActiveMarketsQuery, ActiveMarketsQueryVariables | void>({
       query: (variables) => ({ document: ActiveMarketsDocument, variables })
     }),
-    positions: build.query<PositionsQuery, PositionsQueryVariables | void>({
-      query: (variables) => ({ document: PositionsDocument, variables })
-    }),
     numberOfPositions: build.query<NumberOfPositionsQuery, NumberOfPositionsQueryVariables>({
       query: (variables) => ({ document: NumberOfPositionsDocument, variables })
     }),
@@ -5420,5 +5378,5 @@ const injectedRtkApi = api.injectEndpoints({
 });
 
 export { injectedRtkApi as api };
-export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useQueryPositionQuery, useLazyQueryPositionQuery, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, usePositionsQuery, useLazyPositionsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useMarketOpenPositionsQuery, useLazyMarketOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
+export const { useAccountQuery, useLazyAccountQuery, useAccountV2Query, useLazyAccountV2Query, useQueryPositionQuery, useLazyQueryPositionQuery, useMarketQuery, useLazyMarketQuery, useTotalMarketsQuery, useLazyTotalMarketsQuery, useActiveMarketsQuery, useLazyActiveMarketsQuery, useNumberOfPositionsQuery, useLazyNumberOfPositionsQuery, useOpenPositionsQuery, useLazyOpenPositionsQuery, useMarketOpenPositionsQuery, useLazyMarketOpenPositionsQuery, useOpenPositionsOverviewQuery, useLazyOpenPositionsOverviewQuery, useUnwindsQuery, useLazyUnwindsQuery, useLiquidatedPositionsQuery, useLazyLiquidatedPositionsQuery } = injectedRtkApi;
 

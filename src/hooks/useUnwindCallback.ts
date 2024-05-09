@@ -237,7 +237,7 @@ export function useUnwindCallback(
           .catch(error => {
             // if the user rejected the tx, pass this along
             console.log('error from useUnwindCallback: ', error)
-            if (error?.code === 4001) {
+            if (error?.code === 4001 || error?.code === 'ACTION_REJECTED') {
               addPopup(
                 {
                   txn: {
@@ -252,6 +252,16 @@ export function useUnwindCallback(
             } else {
               // otherwise, the error was unexpected and we need to convey that
               console.error(`Unwind failed`, error, address, calldata, value)
+              addPopup(
+                {
+                  txn: {
+                    hash: currentTimeForId,
+                    success: false,
+                    info: error,
+                  },
+                },
+                currentTimeForId,
+              )
               throw new Error(`Unwind failed: ${error}`)
             }
           })
@@ -442,7 +452,7 @@ export function useMultipleUnwindsCallback(unwindDataList: UnwindDataType): {
               .catch(error => {
                 // if the user rejected the tx, pass this along
                 console.log('error from useUnwindCallback: ', error)
-                if (error?.code === 4001) {
+                if (error?.code === 4001 || error?.code === 'ACTION_REJECTED') {
                   addPopup(
                     {
                       txn: {
@@ -457,6 +467,16 @@ export function useMultipleUnwindsCallback(unwindDataList: UnwindDataType): {
                 } else {
                   // otherwise, the error was unexpected and we need to convey that
                   console.error(`Unwind failed`, error, address, calldata, value)
+                  addPopup(
+                    {
+                      txn: {
+                        hash: currentTimeForId,
+                        success: false,
+                        info: error,
+                      },
+                    },
+                    currentTimeForId,
+                  )
                   throw new Error(`Unwind failed: ${error}`)
                 }
               })

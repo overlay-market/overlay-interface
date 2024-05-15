@@ -25,6 +25,8 @@ import {CloseSelectedPositionsModal} from './CloseSelectedPositionsModal'
 import {useUnwindActionHandlers} from '../../state/unwind/hooks'
 import {Checkbox} from '@material-ui/core'
 import {CheckboxIcon, CheckedIcon, PositionType} from './OpenPosition'
+import {usePositionsState, usePositionsActionHandlers} from '../../state/positions/hooks'
+import {StyledTableRow} from '../../components/Table/Table'
 
 const Container = styled.div`
   display: flex;
@@ -185,6 +187,15 @@ const StyledTableCell = styled(TableCell)`
   text-align: center !important;
 `
 
+const StyledTableNewRow = styled(StyledTableRow)`
+  border-bottom: 1px solid rgba(224, 224, 224, 1);
+  text-align: center;
+  height: 69px;
+  ${({theme}) => theme.mediaWidth.minMedium`
+    height: 50px;
+  `}
+`
+
 const ROWS_PER_PAGE = [10, 20, 40, 50]
 
 const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsData}: PositionsTableProps) => {
@@ -199,7 +210,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [selectedPositionsList, setSelectedPositionsList] = useState<string[]>([])
   const [disabledPositionsList, setDisabledPositionsList] = useState<string[]>([])
   const [marketColumnChecked, setMarketColumnChecked] = useState(false)
-  const {positionsTableData, isUninitialized, isLoading, refetch} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isLoading, isFetching, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
     (page - 1) * rowsPerPage,
@@ -208,10 +219,24 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   )
   const [showLoader, setShowLoader] = useState(false)
   const isMetamask = window?.ethereum?.isMetaMask
+  const {isUnwoundPosition} = usePositionsState()
 
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
+
+  useEffect(() => {
+    positionsTableData && !positionsTableData.account && refetch()
+  }, [refetch, positionsTableData])
+
+  useEffect(() => {
+    if (isUnwoundPosition) {
+      const interval = setInterval(() => {
+        refetch()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [isUnwoundPosition, refetch, isFetching])
 
   // Show loader only on page change
   useEffect(() => {
@@ -441,7 +466,16 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                   </StyledTableCell>
                 </TableRow>
               ) : (
-                paginatedRows
+                <>
+                  {isUnwoundPosition && positionStatus === PositionStatus.Closed && (
+                    <StyledTableNewRow>
+                      <td colSpan={10}>
+                        <Loader />
+                      </td>
+                    </StyledTableNewRow>
+                  )}
+                  {paginatedRows}
+                </>
               )}
             </TableBody>
           </StyledTable>
@@ -503,7 +537,7 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   const [page, setPage] = useState<number>(1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
   const params = useParams<{marketId: string}>()
-  const {positionsTableData, isUninitialized, isLoading, numberOfPositions, refetch} = usePositionsTableData(
+  const {positionsTableData, isUninitialized, isFetching, isLoading, numberOfPositions, refetch} = usePositionsTableData(
     account,
     1000,
     0,
@@ -511,10 +545,17 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
     params?.marketId,
   )
   const [showLoader, setShowLoader] = useState(false)
+  const {isBuiltPosition} = usePositionsState()
+  const {onBuildPosition} = usePositionsActionHandlers()
+  const [initialNumberOfPositions, setInitialNumberOfPositions] = useState(0)
 
   useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
+
+  useEffect(() => {
+    positionsTableData && !positionsTableData.account && refetch()
+  }, [refetch, positionsTableData])
 
   // Show loader only on page change
   useEffect(() => {
@@ -524,6 +565,26 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
   useEffect(() => {
     setShowLoader(false)
   }, [positionsTableData])
+
+  useEffect(() => {
+    numberOfPositions && setInitialNumberOfPositions(numberOfPositions)
+  }, [numberOfPositions])
+
+  useEffect(() => {
+    if (isBuiltPosition) {
+      const interval = setInterval(() => {
+        refetch()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [isBuiltPosition, refetch, isFetching])
+
+  useEffect(() => {
+    if (isBuiltPosition && numberOfPositions > initialNumberOfPositions) {
+      setInitialNumberOfPositions(numberOfPositions)
+      onBuildPosition(false)
+    }
+  }, [isBuiltPosition, numberOfPositions, initialNumberOfPositions, setInitialNumberOfPositions])
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen)
@@ -612,7 +673,16 @@ export const PositionsTableForBuildPage = ({title, marginTop, positionStatus, ma
                   </StyledTableCell>
                 </TableRow>
               ) : (
-                paginatedRows
+                <>
+                  {isBuiltPosition && (
+                    <StyledTableNewRow>
+                      <td colSpan={6}>
+                        <Loader />
+                      </td>
+                    </StyledTableNewRow>
+                  )}
+                  {paginatedRows}
+                </>
               )}
             </TableBody>
           </StyledTable>
@@ -666,11 +736,15 @@ const Positions = () => {
   const {
     positionsTableDetails,
     isUninitialized: isUninitializedPosTableDetails,
+    isFetching,
     refetch: refetchPositionsTableDetails,
   } = usePositionsTableDetails(account)
   const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
-  const {markets: marketsData} = useCurrentMarketState(marketDetails)
+  const {markets: marketsData, error: currentMarketsError} = useCurrentMarketState(marketDetails)
+  const {isUnwoundPosition} = usePositionsState()
+  const {onUnwindPosition} = usePositionsActionHandlers()
+  const [initialNumberOfUnwinds, setInitialNumberOfUnwinds] = useState<null | number>(null)
 
   useEffect(() => {
     !isUninitializedPosTableDetails && refetchPositionsTableDetails()
@@ -679,6 +753,48 @@ const Positions = () => {
   useEffect(() => {
     !isUninitializedMarkets && refetchMarkets()
   }, [chainId, isUninitializedMarkets, refetchMarkets])
+
+  useEffect(() => {
+    currentMarketsError && refetchMarkets()
+  }, [currentMarketsError, refetchMarkets, marketsData])
+
+  useEffect(() => {
+    positionsTableDetails?.numberOfUnwinds && setInitialNumberOfUnwinds(+positionsTableDetails?.numberOfUnwinds)
+  }, [positionsTableDetails?.numberOfUnwinds, setInitialNumberOfUnwinds])
+
+  useEffect(() => {
+    currentMarketsError && refetchPositionsTableDetails()
+  }, [currentMarketsError, refetchPositionsTableDetails, isFetching])
+
+  useEffect(() => {
+    if (isUnwoundPosition) {
+      const interval = setInterval(() => {
+        refetchPositionsTableDetails()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [isUnwoundPosition, refetchPositionsTableDetails, isFetching])
+
+  useEffect(() => {
+    if (isUnwoundPosition) {
+      const interval = setInterval(() => {
+        refetchMarkets()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [isUnwoundPosition, refetchMarkets, isFetching])
+
+  useEffect(() => {
+    if (
+      isUnwoundPosition &&
+      positionsTableDetails?.numberOfUnwinds &&
+      initialNumberOfUnwinds &&
+      Number(positionsTableDetails?.numberOfUnwinds) > initialNumberOfUnwinds
+    ) {
+      setInitialNumberOfUnwinds(+positionsTableDetails?.numberOfUnwinds)
+      onUnwindPosition(false)
+    }
+  }, [isUnwoundPosition, initialNumberOfUnwinds, setInitialNumberOfUnwinds, positionsTableDetails?.numberOfUnwinds])
 
   return (
     <PageContainer>

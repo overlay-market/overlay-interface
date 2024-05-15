@@ -34,6 +34,7 @@ import {formatDecimalToPercentage} from '../../utils/formatDecimal'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCallback'
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
+import {usePositionsActionHandlers} from '../../state/positions/hooks'
 import {usePositionMulticall} from '../../hooks/usePositionMulticall'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
@@ -90,6 +91,7 @@ export function Unwind({
 
   const {typedValue} = useUnwindState()
   const {onAmountInput, onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
+  const {onUnwindPosition} = usePositionsActionHandlers()
 
   const position = positions ? positions[0] : null
   const isMarketShutDown = position?.market.isShutdown
@@ -279,6 +281,7 @@ export function Unwind({
       .then(success => {
         console.log(success, ' - - - success')
         onResetUnwindState()
+        onUnwindPosition(true)
         history.push(`/positions`)
       })
       .catch(err => console.error('Error from handleUnwind: ', err))

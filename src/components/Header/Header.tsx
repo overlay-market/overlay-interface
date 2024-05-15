@@ -251,6 +251,10 @@ export default function Header() {
               <TEXT.Menu>Leaderboard</TEXT.Menu>
               {/* </Trans> */}
             </StyledLink>
+
+            <PowerCardLink to={'/sepolia-faucet'}>
+              <TEXT.Menu>Claim Test Token</TEXT.Menu>
+            </PowerCardLink>
           </>
         )
       ) : (

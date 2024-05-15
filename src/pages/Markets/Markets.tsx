@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import styled from 'styled-components/macro'
-import {NavLink, useHistory} from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
 import {useActiveMarketsData} from '../../state/markets/hooks'
 import {PageContainer} from '../../components/Container/Container'
@@ -90,11 +90,10 @@ const infoTipDescriptions = {
 }
 
 const Markets = () => {
-  const {markets, isUninitialized, refetch, isError} = useActiveMarketsData()
+  const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
-  const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
+  const {markets: marketsData, error: currentMarketsError}: MarketStateResults = useCurrentMarketState(marketDetails)
   let chainId = useAppSelector((state: AppState) => state.application.chainId)
-  let history = useHistory()
 
   // toggle to hide 7d chart if data unavailable
   const hide7dChart = true
@@ -104,10 +103,8 @@ const Markets = () => {
   }, [chainId, isUninitialized, refetch])
 
   useEffect(() => {
-    if (markets === undefined && isError) {
-      history.push('/')
-    }
-  }, [markets, isError])
+    currentMarketsError && refetch()
+  }, [currentMarketsError, refetch])
 
   // list of hidden markets from Markets page
 

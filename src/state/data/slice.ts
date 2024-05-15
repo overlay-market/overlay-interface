@@ -22,150 +22,12 @@ export const api = createApi({
   reducerPath: 'dataApi',
   baseQuery: graphqlRequestBaseQuery(),
   endpoints: builder => ({
-    accountQuery: builder.query({
-      query: ({account}) => ({
-        document: gql`
-          query account($account: ID!) {
-            account(id: $account) {
-              positions {
-                id
-                positionId
-                market {
-                  id
-                  feedAddress
-                }
-                initialOi
-                initialDebt
-                initialCollateral
-                initialNotional
-                leverage
-                isLong
-                entryPrice
-                isLiquidated
-                currentOi
-                currentDebt
-                mint
-                createdAtTimestamp
-                createdAtBlockNumber
-                numberOfUniwnds
-              }
-              builds {
-                id
-                isLong
-                price
-                timestamp
-                value
-                collateral
-              }
-              unwinds {
-                id
-                value
-                unwindNumber
-                timestamp
-                price
-                mint
-                fraction
-                currentOi
-                currentDebt
-                collateral
-                position {
-                  id
-                }
-              }
-              liquidates {
-                id
-                value
-                timestamp
-                price
-                mint
-              }
-            }
-          }
-        `,
-        variables: {
-          account,
-        },
-      }),
-    }),
-    accountV2Query: builder.query({
-      query: ({account}) => ({
-        document: gql`
-          query accountV2($account: ID!) {
-            account(id: $account) {
-              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc) {
-                id
-                positionId
-                market {
-                  id
-                  feedAddress
-                  isShutdown
-                }
-                initialOi
-                initialDebt
-                initialCollateral
-                initialNotional
-                leverage
-                isLong
-                entryPrice
-                isLiquidated
-                currentOi
-                currentDebt
-                mint
-                createdAtTimestamp
-                createdAtBlockNumber
-                numberOfUniwnds
-                fractionUnwound
-                builds {
-                  collateral
-                  currentDebt
-                  currentOi
-                  id
-                  price
-                  timestamp
-                  value
-                }
-                liquidates {
-                  collateral
-                  currentDebt
-                  id
-                  currentOi
-                  isLong
-                  mint
-                  price
-                  timestamp
-                  value
-                }
-                unwinds(orderBy: unwindNumber, orderDirection: asc) {
-                  collateral
-                  currentDebt
-                  currentOi
-                  fraction
-                  id
-                  isLong
-                  mint
-                  timestamp
-                  price
-                  unwindNumber
-                  value
-                  transferAmount
-                  pnl
-                  size
-                }
-              }
-            }
-          }
-        `,
-        variables: {
-          account,
-        },
-      }),
-    }),
     queryPositionQuery: builder.query({
       query: ({account, marketPositionId}) => ({
         document: gql`
           query queryPosition($account: ID!, $marketPositionId: ID) {
             account(id: $account) {
-              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id: $marketPositionId}}) {
+              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id: $marketPositionId}) {
                 id
                 positionId
                 market {
@@ -325,28 +187,6 @@ export const api = createApi({
               priceDriftUpperLimit
               averageBlockTime
               isShutdown
-              positions {
-                id
-              }
-            }
-          }
-        `,
-      }),
-    }),
-    positionsQuery: builder.query({
-      query: () => ({
-        document: gql`
-          query positions {
-            positions {
-              id
-              positionId
-              owner {
-                id
-              }
-              market {
-                id
-              }
-              isLiquidated
             }
           }
         `,
@@ -441,27 +281,6 @@ export const api = createApi({
           first,
           skip,
           marketId,
-        },
-      }),
-    }),
-    openPositionsOverviewQuery: builder.query({
-      query: ({account}) => ({
-        document: gql`
-          query openPositionsOverview($account: ID!) {
-            account(id: $account) {
-              positions(where: {isLiquidated: false, currentOi_gt: "0"}, orderBy: createdAtTimestamp, orderDirection: desc) {
-                id
-                positionId
-                market {
-                  feedAddress
-                  id
-                }
-              }
-            }
-          }
-        `,
-        variables: {
-          account,
         },
       }),
     }),

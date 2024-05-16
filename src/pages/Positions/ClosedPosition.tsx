@@ -7,7 +7,7 @@ import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {usePositionInfo} from '../../hooks/usePositionInfo'
-import {PositionDataV2, Unwind, useQueryPosition} from '../../state/build/hooks'
+import {PositionDataV2, Unwind, usePositionList} from '../../state/build/hooks'
 import {useUnwindActionHandlers} from '../../state/unwind/hooks'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
@@ -60,7 +60,7 @@ export function ClosedPosition({
 }: RouteComponentProps<{unwindId: string; positionId: string}>) {
   const {account, chainId} = useActiveWeb3React()
   const marketPositionId = getMarketPositionId(unwindId)
-  const {positions, isUninitialized, refetch} = useQueryPosition(account, marketPositionId)
+  const {positions, isUninitialized, refetch} = usePositionList(account, [marketPositionId])
 
   useEffect(() => {
     !isUninitialized && refetch()

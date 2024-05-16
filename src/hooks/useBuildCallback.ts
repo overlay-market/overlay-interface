@@ -239,7 +239,16 @@ export function useBuildCallback(
             } else {
               // otherwise, the error was unexpected and we need to convey that
               console.error(`Build failed`, error, address, calldata, value)
-
+              addPopup(
+                {
+                  txn: {
+                    hash: currentTimeForId,
+                    success: false,
+                    info: error,
+                  },
+                },
+                currentTimeForId,
+              )
               throw new Error(`Build failed: ${error}`)
             }
           })

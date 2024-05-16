@@ -22,12 +22,12 @@ export const api = createApi({
   reducerPath: 'dataApi',
   baseQuery: graphqlRequestBaseQuery(),
   endpoints: builder => ({
-    queryPositionQuery: builder.query({
-      query: ({account, marketPositionId}) => ({
+    positionListQuery: builder.query({
+      query: ({account, marketPositionIdList}) => ({
         document: gql`
-          query queryPosition($account: ID!, $marketPositionId: ID) {
+          query queryPosition($account: ID!, $marketPositionId: [ID]) {
             account(id: $account) {
-              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id: $marketPositionId}) {
+              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id_in: $marketPositionIdList}) {
                 id
                 positionId
                 market {
@@ -92,7 +92,7 @@ export const api = createApi({
         `,
         variables: {
           account,
-          marketPositionId,
+          marketPositionIdList,
         },
       }),
     }),

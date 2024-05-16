@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {ReactNode, useEffect, useMemo, useState} from 'react'
 import {StyledTableRow, StyledTableCell} from '../../components/Table/Table'
 import formatUnixTimestampToDate from '../../utils/formatUnixTimestampToDate'
 import {FlexRow} from '../../components/Container/Container'
@@ -6,7 +6,7 @@ import {formatBigNumber} from '../../utils/formatBigNumber'
 import {checkIsNegative} from '../../utils/checkIsNegative'
 import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
-import {TEXT} from '../../theme/theme'
+import {colors, TEXT} from '../../theme/theme'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {BigNumber, ethers} from 'ethers'
 import {TickMath} from '@uniswap/v3-sdk'
@@ -15,16 +15,66 @@ import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 import {ONE_BN} from '../../constants/tokens'
 import {OpenPositionsQuery} from '../../state/data/generated'
 import {usePositionMulticall} from '../../hooks/usePositionMulticall'
+import {Checkbox} from '@material-ui/core'
+import styled from 'styled-components'
 
-type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
+export const CheckboxIcon = styled('span')(() => ({
+  borderRadius: 3,
+  width: 18,
+  height: 18,
+  boxShadow: 'inset 0 0 0 1px white',
+}))
+
+export const CheckedIcon = styled(CheckboxIcon)({
+  backgroundColor: colors(true).dark.blue2,
+  boxShadow: 'none',
+  '&::before': {
+    display: 'block',
+    width: 18,
+    height: 18,
+    backgroundImage:
+      "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+      " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+      "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+    content: '""',
+  },
+})
+
+const CheckboxPosition = styled.div`
+  position: absolute;
+  top: 16px;
+  left: 16px;
+
+  ${({theme}) => theme.mediaWidth.minMedium`
+    top: 5px;
+  `}
+`
+
+export type PositionType = NonNullable<OpenPositionsQuery['account']>['positions'][number]
 interface PositionInterface extends ParsedMarketStateDetails, PositionType {}
 export interface PositionProps {
   page?: number
   position: PositionInterface
   columns: string[]
+  isOpenCloseAllPositionsOption?: boolean
+  setSelectedPositionsList?: Function
+  isChecked?: boolean
+  setMarketColumnChecked?: Function
+  setDisabledPositionsList?: Function
+  disabledPositionsList?: string[]
 }
 
-export const OpenPosition = ({page, position, columns}: PositionProps) => {
+export const OpenPosition = ({
+  page,
+  position,
+  columns,
+  isOpenCloseAllPositionsOption,
+  setSelectedPositionsList,
+  isChecked,
+  setMarketColumnChecked,
+  setDisabledPositionsList,
+  disabledPositionsList,
+}: PositionProps) => {
   const {
     id,
     positionId,
@@ -103,6 +153,32 @@ export const OpenPosition = ({page, position, columns}: PositionProps) => {
     const diff = (+value - +cost - +tradingFee) / 10 ** 18
     return diff < 1 ? diff.toFixed(6) : diff.toFixed(2)
   }, [value, cost, tradingFee])
+  const isPositionUnderwater = liquidationPrice && mid ? (isLong ? liquidationPrice.gt(mid) : liquidationPrice.lt(mid)) : false
+
+  useEffect(() => {
+    if (isOpenCloseAllPositionsOption) {
+      if (isPositionUnderwater || isShutdown) {
+        let tempArr = disabledPositionsList
+        tempArr && tempArr.push(id)
+        setDisabledPositionsList && setDisabledPositionsList(tempArr)
+      }
+    }
+  }, [isPositionUnderwater, isShutdown, setDisabledPositionsList, disabledPositionsList, isOpenCloseAllPositionsOption])
+
+  const [checked, setChecked] = useState(isChecked === undefined ? false : isChecked)
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked)
+    !event.target.checked && setMarketColumnChecked && setMarketColumnChecked(false)
+    setSelectedPositionsList &&
+      setSelectedPositionsList((prev: string[]) => {
+        return event.target.checked ? [...prev, id] : prev.filter(el => el !== id)
+      })
+  }
+
+  useEffect(() => {
+    isChecked !== undefined && setChecked(isChecked)
+  }, [isChecked])
 
   let history = useHistory()
 
@@ -194,10 +270,22 @@ export const OpenPosition = ({page, position, columns}: PositionProps) => {
 
   return (
     <>
+      {isOpenCloseAllPositionsOption && (
+        <CheckboxWrapper>
+          <Checkbox
+            checked={!isPositionUnderwater && !isShutdown && checked}
+            onChange={handleChange}
+            checkedIcon={<CheckedIcon />}
+            icon={<CheckboxIcon style={{boxShadow: isPositionUnderwater || isShutdown ? 'inset 0 0 0 1px grey' : ''}} />}
+            disableRipple
+            disabled={isPositionUnderwater || isShutdown}
+          />
+        </CheckboxWrapper>
+      )}
       <StyledTableRow onClick={() => handleNavigate(positionUrl)}>
         {sortedValues.map((value, index) => {
           return (
-            <StyledTableCell key={index}>
+            <StyledTableCell key={index} style={{paddingLeft: `${index === 1 ? `0` : '16px'}`}}>
               <TEXT.Supplemental>{value}</TEXT.Supplemental>
             </StyledTableCell>
           )
@@ -212,5 +300,13 @@ const ProfitLossCell = ({PnL}: {PnL: number}) => {
     <FlexRow justify="left">
       {PnL ? <TEXT.Supplemental color={checkIsNegative(PnL) ? '#FF648A' : '#5FD0AB'}>{PnL} OVL</TEXT.Supplemental> : '0.00'}
     </FlexRow>
+  )
+}
+
+const CheckboxWrapper = ({children}: {children: ReactNode}) => {
+  return (
+    <div style={{position: 'relative'}}>
+      <CheckboxPosition>{children}</CheckboxPosition>
+    </div>
   )
 }

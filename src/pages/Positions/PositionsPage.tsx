@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {Fragment, useEffect, useMemo, useState} from 'react'
 import {ChevronDown, Play} from 'react-feather'
 import styled from 'styled-components'
 import {Box, Button, Collapse, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@material-ui/core'
@@ -6,7 +6,7 @@ import {StyledTable, StyledHeaderCell, StyledTableHeaderRow} from '../../compone
 import {useActiveWeb3React} from '../../hooks/web3'
 import {PageContainer} from '../../components/Container/Container'
 import {TEXT} from '../../theme/theme'
-import {FlexRow} from '../../components/Container/Container'
+import {FlexRow, FlexContainer} from '../../components/Container/Container'
 import {usePositionsTableDetails, usePositionsTableData, isOpenPositionsQuery, isUnwindsQuery, isLiquidatesQuery} from '../../state/build/hooks'
 import {useTotalMarketsData} from '../../state/markets/hooks'
 import {useMarketDetails} from '../../hooks/useMarketDetails'
@@ -20,6 +20,11 @@ import Pagination from '../../components/Pagination/Pagination'
 import Loader from '../../components/Loaders/Loaders'
 import {formatBigNumber} from '../../utils/formatBigNumber'
 import {useParams} from 'react-router-dom'
+import {ColorButton} from '../../components/Button/Button'
+import {CloseSelectedPositionsModal} from './CloseSelectedPositionsModal'
+import {useUnwindActionHandlers} from '../../state/unwind/hooks'
+import {Checkbox} from '@material-ui/core'
+import {CheckboxIcon, CheckedIcon, PositionType} from './OpenPosition'
 import {usePositionsState, usePositionsActionHandlers} from '../../state/positions/hooks'
 import {StyledTableRow} from '../../components/Table/Table'
 
@@ -29,9 +34,55 @@ const Container = styled.div`
   width: 100%;
 `
 
+const CustomFlexContainer = styled(FlexContainer)`
+  justify-content: flex-end;
+  align-items: baseline;
+  flex-direction: column;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    flex-direction: row;
+    justify-content: space-between;
+  `}
+`
+
+const CustomFlexRow = styled(FlexRow)`
+  justify-content: flex-start;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    justify-content: flex-end;
+  `}
+`
+
+const CustomHeaderCell = styled(StyledHeaderCell)`
+  padding-right: 16px !important;
+  padding-left: 16px !important;
+`
+const MarketHeaderCell = styled(StyledHeaderCell)`
+  padding-left: 0 !important;
+  padding-right: 16px !important;
+`
+
+const DesktopColorButton = styled(ColorButton)`
+  display: none;
+  ${({theme}) => theme.mediaWidth.minMedium`
+    display: block;
+  `}
+`
+
 const liquidatedColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Liquidated']
 
 const openPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Current Price', 'Liq. Price', 'Created', 'Unrealized PnL', 'Funding']
+
+const selectOpenPositionsColumns = [
+  'Checkbox',
+  'Market',
+  'Size',
+  'Position',
+  'Entry Price',
+  'Current Price',
+  'Liq. Price',
+  'Created',
+  'Unrealized PnL',
+  'Funding',
+]
 
 const closedPositionsColumns = ['Market', 'Size', 'Position', 'Entry Price', 'Exit Price', 'Created', 'Closed', 'PnL']
 
@@ -42,6 +93,7 @@ const positionColumns = {
   closed: closedPositionsColumns,
   liquidated: liquidatedColumns,
   build: buildPositionsColumns,
+  selectOpen: selectOpenPositionsColumns,
 }
 
 interface PositionsTableProps {
@@ -59,6 +111,7 @@ export enum PositionStatus {
   Closed = 'closed',
   Liquidated = 'liquidated',
   Build = 'build',
+  SelectOpen = 'selectOpen',
 }
 
 export const TriangleButton = styled(Button)`
@@ -151,6 +204,12 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const curPage = sessionStorage.getItem(`${positionStatus}Page`)
   const [page, setPage] = useState<number>(curPage ? +curPage : 1)
   const [rowsPerPage, setRowsPerPage] = useState<number>(ROWS_PER_PAGE[0])
+  const {onAmountInput} = useUnwindActionHandlers()
+  const [isOpenCloseAllPositionsOption, setIsOpenCloseAllPositionsOption] = useState(false)
+  const [showCloseSelPositionsModal, setShowSelPositionsModal] = useState(false)
+  const [selectedPositionsList, setSelectedPositionsList] = useState<string[]>([])
+  const [disabledPositionsList, setDisabledPositionsList] = useState<string[]>([])
+  const [marketColumnChecked, setMarketColumnChecked] = useState(false)
   const {positionsTableData, isUninitialized, isLoading, isFetching, refetch} = usePositionsTableData(
     account,
     rowsPerPage,
@@ -159,6 +218,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     undefined,
   )
   const [showLoader, setShowLoader] = useState(false)
+  const isMetamask = window?.ethereum?.isMetaMask
   const {isUnwoundPosition} = usePositionsState()
 
   useEffect(() => {
@@ -201,6 +261,41 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
     sessionStorage.setItem(`${positionStatus}Page`, '1')
   }
 
+  const openClosePositionsOption = () => {
+    setSelectedPositionsList([])
+    setMarketColumnChecked(false)
+    setIsOpenCloseAllPositionsOption(true)
+  }
+
+  const handleCancel = () => {
+    setIsOpenCloseAllPositionsOption(false)
+  }
+
+  const handleClosePositions = () => {
+    onAmountInput('100')
+    setShowSelPositionsModal(true)
+  }
+
+  useEffect(() => {
+    const allIdsList =
+      marketColumnChecked &&
+      positionsTableData &&
+      positionStatus === PositionStatus.Open &&
+      isOpenPositionsQuery(positionsTableData) &&
+      positionsTableData?.account?.positions!.map((el: PositionType) => el.id).filter(id => !disabledPositionsList.includes(id))
+
+    marketColumnChecked && allIdsList && setSelectedPositionsList(allIdsList)
+  }, [marketColumnChecked, setMarketColumnChecked, positionsTableData, setRowsPerPage, positionStatus])
+
+  const handleChangeMarketCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(rowsCount > 10 ? rowsCount : rowsPerPage)
+    page > 1 && setPage(1)
+
+    !event.target.checked && setSelectedPositionsList([])
+
+    setMarketColumnChecked(event.target.checked)
+  }
+
   const pageCount = useMemo(() => {
     return Math.ceil(rowsCount / rowsPerPage)
   }, [rowsCount, rowsPerPage])
@@ -229,7 +324,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           const marketAddress = positionStatus === PositionStatus.Open ? row.market.id : row.position.market.id
           const marketState = marketsData.filter((market: ParsedMarketStateDetails) => market.marketAddress === marketAddress)[0]
 
-          if (positionStatus === PositionStatus.Open) {
+          if (positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption) {
             return (
               <OpenPosition
                 key={row.id}
@@ -239,6 +334,23 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
                   ...row,
                 }}
                 columns={positionColumns[PositionStatus.Open]}
+              />
+            )
+          } else if (positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption) {
+            return (
+              <OpenPosition
+                key={row.id}
+                position={{
+                  ...marketState,
+                  ...row,
+                }}
+                columns={positionColumns[PositionStatus.SelectOpen]}
+                isOpenCloseAllPositionsOption={isOpenCloseAllPositionsOption}
+                setSelectedPositionsList={setSelectedPositionsList}
+                isChecked={selectedPositionsList.includes(row.id)}
+                setMarketColumnChecked={setMarketColumnChecked}
+                setDisabledPositionsList={setDisabledPositionsList}
+                disabledPositionsList={disabledPositionsList}
               />
             )
           } else if (positionStatus === PositionStatus.Closed) {
@@ -274,7 +386,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
         })}
       </>
     ) : null
-  }, [positionStatus, marketsData, positionsTableData, account])
+  }, [positionStatus, marketsData, positionsTableData, account, isOpenCloseAllPositionsOption, selectedPositionsList])
 
   setTimeout(() => {
     sessionStorage.setItem(`${positionStatus}Page`, '1')
@@ -282,24 +394,68 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
 
   return (
     <Container>
-      <TEXT.BoldStandardBody mt={marginTop} mb="16px">
-        {`${title}`}
-        <TriangleButton onClick={handleToggle}>
-          <RotatingTriangle color={'white'} fill={'white'} height={10} width={10} open={open} />
-        </TriangleButton>
-      </TEXT.BoldStandardBody>
+      <CustomFlexContainer>
+        <TEXT.BoldStandardBody mt={marginTop} mb="16px" style={{width: '200px'}}>
+          {`${title}`}
+          <TriangleButton onClick={handleToggle}>
+            <RotatingTriangle color={'white'} fill={'white'} height={10} width={10} open={open} />
+          </TriangleButton>
+        </TEXT.BoldStandardBody>
+        {positionStatus === PositionStatus.Open && !isOpenCloseAllPositionsOption && account && isMetamask && paginatedRows && (
+          <DesktopColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={openClosePositionsOption}>
+            Select position to close
+          </DesktopColorButton>
+        )}
+        {positionStatus === PositionStatus.Open && isOpenCloseAllPositionsOption && (
+          <CustomFlexRow align="baseline" style={{gap: '10px'}}>
+            <ColorButton color={'#e5f6ff'} bgColor={'#353b4f'} onClick={handleCancel}>
+              Cancel
+            </ColorButton>
+            <ColorButton disabled={selectedPositionsList.length === 0} onClick={handleClosePositions}>
+              Close selected positions {selectedPositionsList.length > 0 ? `(${selectedPositionsList.length})` : null}
+            </ColorButton>
+          </CustomFlexRow>
+        )}
+      </CustomFlexContainer>
+
       <Collapse in={open} timeout="auto" unmountOnExit>
         <TableContainer>
           <StyledTable minWidth={PositionStatus.Build && !PositionStatus.Open ? 'unset' : PositionStatus.Open ? '100%' : ''}>
             <TableHead>
               <StyledTableHeaderRow>
-                {positionColumns[positionStatus].map((column: string) => {
-                  return (
-                    <StyledHeaderCell key={column} width={20}>
-                      <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
-                    </StyledHeaderCell>
-                  )
-                })}
+                {isOpenCloseAllPositionsOption
+                  ? positionColumns['selectOpen'].map((column: string) => {
+                      return (
+                        <Fragment key={column}>
+                          {column === 'Market' ? (
+                            <MarketHeaderCell>
+                              <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                            </MarketHeaderCell>
+                          ) : (
+                            <CustomHeaderCell>
+                              {column === 'Checkbox' ? (
+                                <Checkbox
+                                  checked={marketColumnChecked}
+                                  onChange={handleChangeMarketCheckbox}
+                                  checkedIcon={<CheckedIcon />}
+                                  icon={<CheckboxIcon />}
+                                  disableRipple
+                                />
+                              ) : (
+                                <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                              )}
+                            </CustomHeaderCell>
+                          )}
+                        </Fragment>
+                      )
+                    })
+                  : positionColumns[positionStatus].map((column: string) => {
+                      return (
+                        <CustomHeaderCell key={column} width={20}>
+                          <TEXT.SupplementalHeader>{column}</TEXT.SupplementalHeader>
+                        </CustomHeaderCell>
+                      )
+                    })}
               </StyledTableHeaderRow>
             </TableHead>
             <TableBody>
@@ -364,6 +520,13 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           <TEXT.StandardBody color="#858585">You have no {positionStatus} positions.</TEXT.StandardBody>
         </FlexRow>
       ) : null}
+      {showCloseSelPositionsModal && (
+        <CloseSelectedPositionsModal
+          onClose={setShowSelPositionsModal}
+          selectedPositionsList={selectedPositionsList}
+          onCloseCheckboxes={setIsOpenCloseAllPositionsOption}
+        />
+      )}
     </Container>
   )
 }

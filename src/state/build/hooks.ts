@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { parseUnits } from '@ethersproject/units';
 import { CurrencyAmount, Currency } from "@uniswap/sdk-core";
 import JSBI from 'jsbi';
@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useQueryPositionQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
+import { usePositionListQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -190,10 +190,10 @@ export function useTxnSettingsManager(): [boolean, (default_slippage: DefaultTxn
   return [isAuto, toggleSetTxnSettingsAuto];
 };
 
-export function useQueryPositionFromSubgraph(address: string | undefined | null, marketPositionId: string) {
-  const accountAddress = address ? address.toLowerCase() : undefined;
+export function usePositionListFromSubgraph(address: string | undefined | null, marketPositionIdList: string[]) {
+  const accountAddress = address ? address.toLowerCase() : undefined;  
 
-  return useQueryPositionQuery(accountAddress ? { account: accountAddress, marketPositionId } : skipToken, { 
+  return usePositionListQuery(accountAddress ? { account: accountAddress, marketPositionIdList } : skipToken, { 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -299,10 +299,10 @@ export interface UniwndsData {
   position: Pick<PositionData, 'id'>
 }
 
-export function useQueryPosition(
+export function usePositionList(
   address: string | undefined | null,
-  marketPositionId: string
-):{
+  marketPositionIdList: string[]
+):{  
   isLoading: boolean
   isFetching: boolean
   isUninitialized: boolean
@@ -311,7 +311,7 @@ export function useQueryPosition(
   positions: PositionDataV2[] | undefined
   refetch: () => void
 } {
-  const walletPositionData = useQueryPositionFromSubgraph(address ? address : undefined, marketPositionId)
+  const walletPositionData = usePositionListFromSubgraph(address ? address : undefined, marketPositionIdList)
   return {
     isLoading: walletPositionData.isLoading,
     isFetching: walletPositionData.isFetching,

@@ -100,3 +100,30 @@ export function useThirdWebStakingContract(stakingAddress?: string): Contract | 
 export function useClaimMerkleTreeContract(address: string | undefined): Contract | null {
   return useContract(address, CLAIM_MERKLETREE_ABI, false)
 }
+
+export function useMultipleContract(marketAddressList: (string | undefined)[], ABI: any, withSignerIfPossible = true): (Contract | null)[] {
+  const {library, account, chainId} = useActiveWeb3React()
+
+  return useMemo(() => {
+    const contractList: (Contract | null)[] = []
+
+    marketAddressList.forEach(address => {
+      if (!address || !ABI || !library || !chainId) {
+        contractList.push(null)
+        return
+      }
+
+      try {
+        contractList.push(getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined))
+      } catch (error) {
+        console.error('Failed to get contract', error)
+        contractList.push(null)
+      }
+    })
+    return contractList
+  }, [marketAddressList, ABI, library, chainId, withSignerIfPossible, account]) as (Contract | null)[]
+}
+
+export function useMultipleMarketsContract(marketAddressList: (string | undefined)[]): (Contract | null)[] {
+  return useMultipleContract(marketAddressList, V1_MARKET_ABI, false)
+}

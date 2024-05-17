@@ -1020,10 +1020,13 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               {marketIndex && marketIndex.length > 0 && (
                 <SecondColumn>
                   <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
-                  <RightDetailColumn style={{height: '126px'}}>
+                  <RightDetailColumn style={{height: 'auto'}}>
                     <UlList>
                       {visibleIndexes?.map((element, index) => (
-                        <LiList key={index}>{element}</LiList>
+                        <>
+                          <LiList key={index}>{element}</LiList>
+                          <br />
+                        </>
                       ))}
                     </UlList>
                     {marketIndex && marketIndex.length > 4 && (

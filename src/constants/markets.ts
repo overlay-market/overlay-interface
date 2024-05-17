@@ -23,6 +23,8 @@ import BtcFrogsLogo from '../assets/images/tokens/btc-frogs.png'
 import NodeMonkesLogo from '../assets/images/tokens/node-monkes.png'
 import EthVixLogo from '../assets/images/tokens/eth-vix.png'
 import FlippeningLogo from '../assets/images/tokens/flippening.png'
+import EvIndexLogo from '../assets/images/tokens/ev-index.png'
+import EvIndexFull from '../assets/images/tokens/ev-index-full-logo.jpeg'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 import QuantumCatsLogo from '../assets/images/tokens/quantum-cats.png'
 import InkLogo from '../assets/images/tokens/ink.png'
@@ -344,6 +346,29 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   //   descriptionText:
   //     "TL;DR -- The Bitcoin market capitalization divided by the Ethereum market capitalization. \n\nThe Flippening... will it ever happen? Will Ethereum ever take the #1 spot as the biggest blockchain? It's already happened for total transactions and transactions fees. But for the market cap? Obviously that's the only thing that matters. \n\nData is sourced from Chainlink, Coinmarketcap, Cryptocompare, and others.",
   // },
+  '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {
+    // TODO change to real address
+    marketName: 'Electric Vehicle Commodity Index',
+    logo: EvIndexLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.TRUFLATION],
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    descriptionText:
+      'TL:DR -- Benchmark for tracking the price movements of essential commodities in the production of electric vehicles (EVs).\n\nSummary:\n- Benchmarking key commodities used in EV production\n- Insights into supply chain dynamics and cost trends\n- Reflecting the evolving landscape of the EV market\n\nData Sources & Compliance:\n- Blend of market exchanges, research firms, and direct manufacturer data\n- Ensuring depth and accuracy in market representation\n- In process of becoming compliant with IOSCO standards\n- Oversight committee for continuous review and integrity\n- Regular audits and stakeholder engagement for transparency',
+    // descriptionText:
+    //   'The Truflation EV Commodity index calculates electric vehicle production by multiplying the types of EVs produced. The four different types and their percent of market are:\n \n- Battery Electric Vehicles (BEVs): 26.27%\n- Hybrid Electric Vehicles (HEVs) 61.98%\n- Plug-in Hybrid Electric Vehicles (PHEVs): 11.45%, and\n- Fuel Cell Electric Vehicles (FCEVs): 0.29%\n\nThe basket employs a dynamic weighting scheme recalibrated quarterly, which considers metal intensity per vehicle and market share of each EV type, at current metal prices.',
+    indexesConstruction: [
+      'Step 1: Metal Intensity Adjustment',
+      'Step 2: Vehicle Type Weighting',
+      'Step 3: Production data adjustment',
+      'Step 4: Daily Index Calculation',
+    ],
+    sources: [{name: 'Truflation', url: 'https://truflation.com/marketplace/ev-index'}],
+    contract: {
+      name: shortenAddress('0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9'),
+      url: 'https://sepolia.arbiscan.io/address/0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9',
+    },
+    fullLogo: EvIndexFull,
+  },
 }
 
 type ComingSoonMarketsData = MarketDetailsData & {

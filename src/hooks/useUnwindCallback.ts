@@ -10,7 +10,6 @@ import {TransactionType} from './../state/transactions/actions'
 import {useAddPopup} from '../state/application/hooks'
 import {currentTimeParsed} from '../utils/currentTime'
 import {useMarketContract, useMultipleMarketsContract} from './useContract'
-import {usePositionsActionHandlers} from '../state/positions/hooks'
 
 interface UnwindCall {
   address: string
@@ -359,7 +358,6 @@ export function useMultipleUnwindsCallback(unwindDataList: UnwindDataType): {
   const currentTimeForId = currentTimeParsed()
   const addTransaction = useTransactionAdder()
   const unwindCalls = useMultipleUnwindsCallArguments(unwindDataList)
-  const {onClosePositions} = usePositionsActionHandlers()
 
   return useMemo(() => {
     const areUnwindDataUndefined = Object.keys(unwindDataList).reduce((ac, id) => ac || unwindDataList[id]['unwindData'] === undefined, false)
@@ -448,7 +446,6 @@ export function useMultipleUnwindsCallback(unwindDataList: UnwindDataType): {
                   positionId: positionId.toString(),
                   shares: unwindValue,
                 })
-                onClosePositions(true)
                 return response.hash
               })
               .catch(error => {

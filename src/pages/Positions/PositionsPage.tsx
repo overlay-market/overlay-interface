@@ -219,7 +219,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   )
   const [showLoader, setShowLoader] = useState(false)
   const isMetamask = window?.ethereum?.isMetaMask
-  const {isUnwoundPosition} = usePositionsState()
+  const {isUnwoundPosition, areClosedPositions} = usePositionsState()
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -237,6 +237,15 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
       return () => clearInterval(interval)
     }
   }, [isUnwoundPosition, refetch, isFetching])
+
+  useEffect(() => {
+    if (areClosedPositions) {
+      const interval = setInterval(() => {
+        refetch()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [areClosedPositions, refetch, isFetching])
 
   // Show loader only on page change
   useEffect(() => {
@@ -468,6 +477,13 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
               ) : (
                 <>
                   {isUnwoundPosition && positionStatus === PositionStatus.Closed && (
+                    <StyledTableNewRow>
+                      <td colSpan={10}>
+                        <Loader />
+                      </td>
+                    </StyledTableNewRow>
+                  )}
+                  {areClosedPositions && positionStatus === PositionStatus.Closed && (
                     <StyledTableNewRow>
                       <td colSpan={10}>
                         <Loader />
@@ -742,8 +758,8 @@ const Positions = () => {
   const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData, error: currentMarketsError} = useCurrentMarketState(marketDetails)
-  const {isUnwoundPosition} = usePositionsState()
-  const {onUnwindPosition} = usePositionsActionHandlers()
+  const {isUnwoundPosition, areClosedPositions} = usePositionsState()
+  const {onUnwindPosition, onClosePositions} = usePositionsActionHandlers()
   const [initialNumberOfUnwinds, setInitialNumberOfUnwinds] = useState<null | number>(null)
 
   useEffect(() => {
@@ -785,6 +801,24 @@ const Positions = () => {
   }, [isUnwoundPosition, refetchMarkets, isFetching])
 
   useEffect(() => {
+    if (areClosedPositions) {
+      const interval = setInterval(() => {
+        refetchPositionsTableDetails()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [areClosedPositions, refetchPositionsTableDetails, isFetching])
+
+  useEffect(() => {
+    if (areClosedPositions) {
+      const interval = setInterval(() => {
+        refetchMarkets()
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [areClosedPositions, refetchMarkets, isFetching])
+
+  useEffect(() => {
     if (
       isUnwoundPosition &&
       positionsTableDetails?.numberOfUnwinds &&
@@ -795,6 +829,18 @@ const Positions = () => {
       onUnwindPosition(false)
     }
   }, [isUnwoundPosition, initialNumberOfUnwinds, setInitialNumberOfUnwinds, positionsTableDetails?.numberOfUnwinds])
+
+  useEffect(() => {
+    if (
+      areClosedPositions &&
+      positionsTableDetails?.numberOfUnwinds &&
+      initialNumberOfUnwinds &&
+      Number(positionsTableDetails?.numberOfUnwinds) > initialNumberOfUnwinds
+    ) {
+      setInitialNumberOfUnwinds(+positionsTableDetails?.numberOfUnwinds)
+      onClosePositions(false)
+    }
+  }, [areClosedPositions, initialNumberOfUnwinds, setInitialNumberOfUnwinds, positionsTableDetails?.numberOfUnwinds])
 
   return (
     <PageContainer>

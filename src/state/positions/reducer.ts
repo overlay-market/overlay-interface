@@ -1,11 +1,12 @@
 import {createReducer} from '@reduxjs/toolkit'
-import {buildPosition, unwindPosition, closePositions, setNumberOfClosePositions, resetPositionsState} from './actions'
+import {buildPosition, unwindPosition, closePositions, setNumberOfClosedPositions, setNumberOfOpenPositions, resetPositionsState} from './actions'
 
 export interface PositionsState {
   readonly isBuiltPosition: boolean
   readonly isUnwoundPosition: boolean
   readonly areClosedPositions: boolean
   readonly numberOfClosedPositions: number
+  readonly numberOfOpenPositions: number
 }
 
 export const initialState: PositionsState = {
@@ -13,6 +14,7 @@ export const initialState: PositionsState = {
   isUnwoundPosition: false,
   areClosedPositions: false,
   numberOfClosedPositions: 0,
+  numberOfOpenPositions: 0,
 }
 
 export default createReducer<PositionsState>(initialState, builder =>
@@ -26,13 +28,17 @@ export default createReducer<PositionsState>(initialState, builder =>
     .addCase(closePositions, (state, {payload: {areClosedPositions}}) => {
       state.areClosedPositions = areClosedPositions
     })
-    .addCase(setNumberOfClosePositions, (state, {payload: {numberOfClosedPositions}}) => {
+    .addCase(setNumberOfClosedPositions, (state, {payload: {numberOfClosedPositions}}) => {
       state.numberOfClosedPositions = numberOfClosedPositions
+    })
+    .addCase(setNumberOfOpenPositions, (state, {payload: {numberOfOpenPositions}}) => {
+      state.numberOfOpenPositions = numberOfOpenPositions
     })
     .addCase(resetPositionsState, state => {
       state.isBuiltPosition = false
       state.isUnwoundPosition = false
       state.areClosedPositions = false
       state.numberOfClosedPositions = 0
+      state.numberOfOpenPositions = 0
     }),
 )

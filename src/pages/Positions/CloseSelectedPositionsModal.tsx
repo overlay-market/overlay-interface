@@ -50,6 +50,7 @@ interface ModalProps {
   onClose: Function
   selectedPositionsList: string[]
   onCloseCheckboxes: Function
+  rowsCount: number
 }
 
 type SelPositionsIds = {
@@ -70,12 +71,11 @@ type MarketListPrices = {
   }
 }
 
-export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onCloseCheckboxes}: ModalProps) {
+export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onCloseCheckboxes, rowsCount}: ModalProps) {
   const {account, chainId} = useActiveWeb3React()
 
   const {positions: selPositions, isUninitialized, refetch} = usePositionList(account, selectedPositionsList)
-  const {onClosePositions, onSetNumberOfClosePositions} = usePositionsActionHandlers()
-  const {areClosedPositions} = usePositionsState()
+  const {onClosePositions, onSetNumberOfClosedPositions, onSetNumberOfOpenPositions} = usePositionsActionHandlers()
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -159,15 +159,15 @@ export function CloseSelectedPositionsModal({onClose, selectedPositionsList, onC
 
   const handleUnwind = useCallback(() => {
     onClose(false)
+    onSetNumberOfOpenPositions(rowsCount)
     if (!unwindCallback) return
     unwindCallback()
       .then(resultsList => {
         onCloseCheckboxes(false)
         onResetUnwindState()
-        const areAllTransactionsRejected = resultsList.reduce((ac, res) => ac || res.status === 'rejected', false)
         const numberOfFulfilledTransactions = resultsList.reduce((ac, res) => (res.status === 'fulfilled' ? (ac = ac + 1) : ac), 0)
-        numberOfFulfilledTransactions > 0 && onSetNumberOfClosePositions(numberOfFulfilledTransactions)
-        !areAllTransactionsRejected && onClosePositions(true)
+        numberOfFulfilledTransactions > 0 && onSetNumberOfClosedPositions(numberOfFulfilledTransactions)
+        numberOfFulfilledTransactions > 0 && onClosePositions(true)
       })
       .catch(err => console.error('Error from handleUnwind: ', err))
   }, [unwindCallback, onResetUnwindState])

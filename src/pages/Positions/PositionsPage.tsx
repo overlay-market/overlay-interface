@@ -541,6 +541,7 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
           onClose={setShowSelPositionsModal}
           selectedPositionsList={selectedPositionsList}
           onCloseCheckboxes={setIsOpenCloseAllPositionsOption}
+          rowsCount={rowsCount}
         />
       )}
     </Container>
@@ -758,7 +759,7 @@ const Positions = () => {
   const {markets, isUninitialized: isUninitializedMarkets, refetch: refetchMarkets} = useTotalMarketsData()
   const marketDetails = useMarketDetails(markets)
   const {markets: marketsData, error: currentMarketsError} = useCurrentMarketState(marketDetails)
-  const {isUnwoundPosition, areClosedPositions} = usePositionsState()
+  const {isUnwoundPosition, areClosedPositions, numberOfClosedPositions, numberOfOpenPositions: initialNumberOfOpenPositions} = usePositionsState()
   const {onUnwindPosition, onClosePositions} = usePositionsActionHandlers()
   const [initialNumberOfUnwinds, setInitialNumberOfUnwinds] = useState<null | number>(null)
 
@@ -833,14 +834,12 @@ const Positions = () => {
   useEffect(() => {
     if (
       areClosedPositions &&
-      positionsTableDetails?.numberOfUnwinds &&
-      initialNumberOfUnwinds &&
-      Number(positionsTableDetails?.numberOfUnwinds) > initialNumberOfUnwinds
+      positionsTableDetails?.numberOfOpenPositions &&
+      Number(positionsTableDetails?.numberOfOpenPositions) === initialNumberOfOpenPositions - numberOfClosedPositions
     ) {
-      setInitialNumberOfUnwinds(+positionsTableDetails?.numberOfUnwinds)
       onClosePositions(false)
     }
-  }, [areClosedPositions, initialNumberOfUnwinds, setInitialNumberOfUnwinds, positionsTableDetails?.numberOfUnwinds])
+  }, [areClosedPositions, initialNumberOfOpenPositions, numberOfClosedPositions, positionsTableDetails?.numberOfOpenPositions])
 
   return (
     <PageContainer>

@@ -128,7 +128,7 @@ export type MarketDetailsData = {
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
-  '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9': {
+  '0x1660b1adffa321a30e5e7db85b24aa0a7edce488': {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],

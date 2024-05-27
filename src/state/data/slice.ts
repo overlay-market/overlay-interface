@@ -8,7 +8,7 @@ import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
   [SupportedChainId.MAINNET]: 'https://api.studio.thegraph.com/query/46086/overlay-subgraph-eth/v2.0.2',
-  [SupportedChainId.ARBITRUM_SEPOLIA]: 'https://api.thegraph.com/subgraphs/name/overlay-market/overlay-sepolia',
+  [SupportedChainId.ARBITRUM_SEPOLIA]: 'https://api.studio.thegraph.com/proxy/75563/overlay-deployment-test/version/latest',
   [SupportedChainId.GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-goerli',
   [SupportedChainId.RINKEBY]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-rinkeby',
   // [SupportedChainId.ARBITRUM]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arbitrum',
@@ -25,7 +25,7 @@ export const api = createApi({
     positionListQuery: builder.query({
       query: ({account, marketPositionIdList}) => ({
         document: gql`
-          query queryPosition($account: ID!, $marketPositionId: [ID]) {
+          query queryPosition($account: ID!, $marketPositionIdList: [ID!]) {
             account(id: $account) {
               positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id_in: $marketPositionIdList}) {
                 id

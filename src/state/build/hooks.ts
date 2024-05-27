@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { usePositionListQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
+import { useQueryPositionQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -193,7 +193,7 @@ export function useTxnSettingsManager(): [boolean, (default_slippage: DefaultTxn
 export function usePositionListFromSubgraph(address: string | undefined | null, marketPositionIdList: string[]) {
   const accountAddress = address ? address.toLowerCase() : undefined;  
 
-  return usePositionListQuery(accountAddress ? { account: accountAddress, marketPositionIdList } : skipToken, { 
+  return useQueryPositionQuery(accountAddress ? { account: accountAddress, marketPositionIdList } : skipToken, { 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,

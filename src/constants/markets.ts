@@ -23,6 +23,8 @@ import BtcFrogsLogo from '../assets/images/tokens/btc-frogs.png'
 import NodeMonkesLogo from '../assets/images/tokens/node-monkes.png'
 import EthVixLogo from '../assets/images/tokens/eth-vix.png'
 import FlippeningLogo from '../assets/images/tokens/flippening.png'
+import EvIndexLogo from '../assets/images/tokens/ev-index.png'
+import EvIndexFull from '../assets/images/tokens/ev-index-full-logo.jpeg'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 import QuantumCatsLogo from '../assets/images/tokens/quantum-cats.png'
 import InkLogo from '../assets/images/tokens/ink.png'
@@ -344,6 +346,26 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
   //   descriptionText:
   //     "TL;DR -- The Bitcoin market capitalization divided by the Ethereum market capitalization. \n\nThe Flippening... will it ever happen? Will Ethereum ever take the #1 spot as the biggest blockchain? It's already happened for total transactions and transactions fees. But for the market cap? Obviously that's the only thing that matters. \n\nData is sourced from Chainlink, Coinmarketcap, Cryptocompare, and others.",
   // },
+  '0x770e3a8afc5c01855b5bd8eb5b96b23bd7af1e43': {
+    marketName: 'Electric Vehicle Commodity Index',
+    logo: EvIndexLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.TRUFLATION],
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    descriptionText:
+      'TL:DR -- Benchmark for tracking the price movements of essential commodities in the production of electric vehicles (EVs).\n\nSummary:\n- Benchmarking key commodities used in EV production\n- Insights into supply chain dynamics and cost trends\n- Reflecting the evolving landscape of the EV market\n\nData Sources & Compliance:\n- Blend of market exchanges, research firms, and direct manufacturer data\n- Ensuring depth and accuracy in market representation\n- In process of becoming compliant with IOSCO standards\n- Oversight committee for continuous review and integrity\n- Regular audits and stakeholder engagement for transparency',
+    indexesConstruction: [
+      'Step 1: Metal Intensity Adjustment',
+      'Step 2: Vehicle Type Weighting',
+      'Step 3: Production data adjustment',
+      'Step 4: Daily Index Calculation',
+    ],
+    sources: [{name: 'Truflation', url: 'https://truflation.com/marketplace/ev-index'}],
+    contract: {
+      name: shortenAddress('0x770e3a8afc5c01855b5bd8eb5b96b23bd7af1e43'),
+      url: 'https://sepolia.arbiscan.io/address/0x770e3a8afc5c01855b5bd8eb5b96b23bd7af1e43',
+    },
+    fullLogo: EvIndexFull,
+  },
 }
 
 type ComingSoonMarketsData = MarketDetailsData & {

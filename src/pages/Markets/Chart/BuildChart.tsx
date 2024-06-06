@@ -90,6 +90,10 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
         studies_overrides: defaultProps.studiesOverrides,
         theme: defaultProps.theme,
         header_widget_buttons_mode: 'fullsize',
+        overrides: {
+          'mainSeriesProperties.showPriceLine': false,
+          'scalesProperties.showSeriesLastValue': false,
+        },
         custom_formatters: {
           timeFormatter: {
             format: date => {

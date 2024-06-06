@@ -37,15 +37,17 @@ export interface ChartContainerProps {
 type BuildChartProps = {
   feedAddress?: string
   marketId?: string
+  longPrice: string | number
+  shortPrice: string | number
 }
 
-export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
+export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: BuildChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>
   const {description} = useMarketName(feedAddress)
   const {chainId} = useActiveWeb3React()
 
   useEffect(() => {
-    if (marketId && description) {
+    if (marketId && description && longPrice && shortPrice) {
       const defaultProps: Omit<ChartContainerProps, 'container'> = {
         symbol: JSON.stringify({marketId, description: MarketDetails[marketId].marketName}),
         interval: '60' as ResolutionString,
@@ -142,11 +144,37 @@ export const BuildChart = ({feedAddress, marketId}: BuildChartProps) => {
 
       const tvWidget = new widget(widgetOptions)
 
+      tvWidget.onChartReady(function () {
+        const currentTime = Date.now()
+
+        //add horizontal line with long Price
+        tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(longPrice)}], {
+          shape: 'horizontal_line',
+          lock: true,
+          disableSelection: true,
+          disableSave: true,
+          disableUndo: true,
+          filled: false,
+          zOrder: 'top',
+        })
+
+        //add horizontal line with short Price
+        tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(shortPrice)}], {
+          shape: 'horizontal_line',
+          lock: true,
+          disableSelection: true,
+          disableSave: true,
+          disableUndo: true,
+          filled: false,
+          zOrder: 'top',
+        })
+      })
+
       return () => {
         tvWidget.remove()
       }
     }
-  }, [marketId, description, chainId])
+  }, [marketId, description, chainId, longPrice, shortPrice])
 
   return <TVChartContainer ref={chartContainerRef} />
 }

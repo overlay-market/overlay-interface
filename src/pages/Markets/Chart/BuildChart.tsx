@@ -160,6 +160,16 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
           disableUndo: true,
           filled: false,
           zOrder: 'top',
+          overrides: {
+            linecolor: '#089981',
+            linewidth: 1,
+            text: 'Long Price',
+            showLabel: true,
+            labelBackgroundColor: '#089981',
+            textcolor: '#089981',
+            horzLabelsAlign: 'left',
+            vertLabelsAlign: 'bottom',
+          },
         })
 
         //add horizontal line with short Price
@@ -171,6 +181,15 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
           disableUndo: true,
           filled: false,
           zOrder: 'top',
+          overrides: {
+            linecolor: '#f23645',
+            linewidth: 1,
+            textcolor: '#f23645',
+            text: 'Short Price',
+            showLabel: true,
+            horzLabelsAlign: 'left',
+            vertLabelsAlign: 'top',
+          },
         })
       })
 

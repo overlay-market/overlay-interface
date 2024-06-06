@@ -836,7 +836,12 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       <BuildContainer>
         <LeftColumn>
           <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
-            <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} longPrice={longPrice} shortPrice={shortPrice} />
+            <BuildChart
+              feedAddress={market?.feedAddress}
+              marketId={market?.id}
+              longPrice={longPrice.replaceAll(',', '')}
+              shortPrice={shortPrice.replaceAll(',', '')}
+            />
           </BuildChartColumn>
           <PositionsTableContainer>
             <PositionsTableForBuildPage

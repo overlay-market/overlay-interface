@@ -163,11 +163,10 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
           overrides: {
             linecolor: '#089981',
             linewidth: 1,
-            text: 'Long Price',
+            text: 'ask',
             showLabel: true,
-            labelBackgroundColor: '#089981',
             textcolor: '#089981',
-            horzLabelsAlign: 'left',
+            horzLabelsAlign: 'right',
             vertLabelsAlign: 'bottom',
           },
         })
@@ -185,9 +184,9 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
             linecolor: '#f23645',
             linewidth: 1,
             textcolor: '#f23645',
-            text: 'Short Price',
+            text: 'bid',
             showLabel: true,
-            horzLabelsAlign: 'left',
+            horzLabelsAlign: 'right',
             vertLabelsAlign: 'top',
           },
         })

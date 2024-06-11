@@ -446,7 +446,6 @@ export function useMultipleUnwindsCallback(unwindDataList: UnwindDataType): {
                   positionId: positionId.toString(),
                   shares: unwindValue,
                 })
-
                 return response.hash
               })
               .catch(error => {

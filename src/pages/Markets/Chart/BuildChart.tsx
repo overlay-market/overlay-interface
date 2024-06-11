@@ -150,6 +150,25 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
 
       tvWidget.onChartReady(function () {
         const currentTime = Date.now()
+        const priceScale = tvWidget.activeChart().getPanes()[0].getRightPriceScales()[0]
+        const priceRangeFrom = priceScale.getVisiblePriceRange()?.from
+        const priceRangeTo = priceScale.getVisiblePriceRange()?.to
+
+        //check if bid/ask prices are outside the price range
+        //if so, set new values for boundaries
+        if (priceRangeFrom && priceRangeTo) {
+          const priceRangeDifference = priceRangeTo - priceRangeFrom
+          const priceRangeDifferenceOffset = priceRangeDifference * 0.1
+
+          const offsetTop = Number(longPrice) >= priceRangeTo - priceRangeDifferenceOffset ? Number(longPrice) + priceRangeDifferenceOffset : null
+          const offsetBottom =
+            Number(shortPrice) <= priceRangeFrom + priceRangeDifferenceOffset ? Number(shortPrice) - priceRangeDifferenceOffset : null
+
+          priceScale.setVisiblePriceRange({
+            from: offsetBottom ? offsetBottom : priceRangeFrom,
+            to: offsetTop ? offsetTop : priceRangeTo,
+          })
+        }
 
         //add horizontal line with long Price
         tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(longPrice)}], {

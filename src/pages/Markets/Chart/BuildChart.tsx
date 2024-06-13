@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import {widget, ChartingLibraryWidgetOptions, ResolutionString} from '../../../charting_library'
+import {widget, ChartingLibraryWidgetOptions, ResolutionString, IChartingLibraryWidget, EntityId} from '../../../charting_library'
 import * as React from 'react'
 import styled from 'styled-components'
 import Datafeed from './chartDatafeed'
@@ -46,8 +46,12 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
   const {description} = useMarketName(feedAddress)
   const {chainId} = useActiveWeb3React()
 
+  const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
+  const longPriceLineRef = useRef<EntityId | null>(null)
+  const shortPriceLineRef = useRef<EntityId | null>(null)
+
   useEffect(() => {
-    if (marketId && description && longPrice && shortPrice) {
+    if (marketId && description) {
       const defaultProps: Omit<ChartContainerProps, 'container'> = {
         symbol: JSON.stringify({marketId, description: MarketDetails[marketId].marketName}),
         interval: '60' as ResolutionString,
@@ -147,9 +151,11 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
       }
 
       const tvWidget = new widget(widgetOptions)
+      tvWidgetRef.current = tvWidget
 
       tvWidget.onChartReady(function () {
-        const currentTime = Date.now()
+        const currentTime = Date.now() / 1000
+
         const priceScale = tvWidget.activeChart().getPanes()[0].getRightPriceScales()[0]
         const priceRangeFrom = priceScale.getVisiblePriceRange()?.from
         const priceRangeTo = priceScale.getVisiblePriceRange()?.to
@@ -171,7 +177,7 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
         }
 
         //add horizontal line with long Price
-        tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(longPrice)}], {
+        const longPriceLine = tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(longPrice)}], {
           shape: 'horizontal_line',
           lock: true,
           disableSelection: true,
@@ -189,9 +195,10 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
             vertLabelsAlign: 'bottom',
           },
         })
+        longPriceLineRef.current = longPriceLine
 
         //add horizontal line with short Price
-        tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(shortPrice)}], {
+        const shortPriceLine = tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(shortPrice)}], {
           shape: 'horizontal_line',
           lock: true,
           disableSelection: true,
@@ -209,13 +216,74 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
             vertLabelsAlign: 'top',
           },
         })
+        shortPriceLineRef.current = shortPriceLine
       })
 
       return () => {
         tvWidget.remove()
       }
     }
-  }, [marketId, description, chainId, longPrice, shortPrice])
+  }, [marketId, description, chainId])
+
+  // Effect to update the longPrice shape
+  useEffect(() => {
+    if (tvWidgetRef.current && longPriceLineRef.current && longPrice) {
+      const currentTime = Date.now() / 1000
+      const chart = tvWidgetRef.current?.activeChart()
+
+      chart.removeEntity(longPriceLineRef.current)
+
+      const newLongPriceLine = chart.createMultipointShape([{time: currentTime, price: Number(longPrice)}], {
+        shape: 'horizontal_line',
+        lock: true,
+        disableSelection: true,
+        disableSave: true,
+        disableUndo: true,
+        filled: false,
+        zOrder: 'top',
+        overrides: {
+          linecolor: '#089981',
+          linewidth: 1,
+          text: 'ask',
+          showLabel: true,
+          textcolor: '#089981',
+          horzLabelsAlign: 'right',
+          vertLabelsAlign: 'bottom',
+        },
+      })
+      longPriceLineRef.current = newLongPriceLine
+    }
+  }, [longPrice])
+
+  // Effect to update the shortPrice shape
+  useEffect(() => {
+    if (tvWidgetRef.current && shortPriceLineRef.current && shortPrice) {
+      const currentTime = Date.now() / 1000
+      const chart = tvWidgetRef.current?.activeChart()
+
+      chart.removeEntity(shortPriceLineRef.current)
+
+      const newShortPriceLine = chart.createMultipointShape([{time: currentTime, price: Number(shortPrice)}], {
+        shape: 'horizontal_line',
+        lock: true,
+        disableSelection: true,
+        disableSave: true,
+        disableUndo: true,
+        filled: false,
+        zOrder: 'top',
+        overrides: {
+          linecolor: '#f23645',
+          linewidth: 1,
+          textcolor: '#f23645',
+          text: 'bid',
+          showLabel: true,
+          horzLabelsAlign: 'right',
+          vertLabelsAlign: 'top',
+        },
+      })
+      shortPriceLineRef.current = newShortPriceLine
+    }
+  }, [shortPrice])
 
   return <TVChartContainer ref={chartContainerRef} />
 }

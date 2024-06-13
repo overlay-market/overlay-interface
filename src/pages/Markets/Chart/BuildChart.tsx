@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {widget, ChartingLibraryWidgetOptions, ResolutionString, IChartingLibraryWidget, EntityId} from '../../../charting_library'
 import * as React from 'react'
 import styled from 'styled-components'
@@ -46,12 +46,24 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
   const {description} = useMarketName(feedAddress)
   const {chainId} = useActiveWeb3React()
 
+  const [ask, setAsk] = useState(Number(longPrice))
+  const [bid, setBid] = useState(Number(shortPrice))
+
+  useEffect(() => {
+    if (isNaN(ask)) {
+      setAsk(Number(longPrice))
+    }
+    if (isNaN(bid)) {
+      setBid(Number(shortPrice))
+    }
+  }, [longPrice, shortPrice])
+
   const tvWidgetRef = useRef<IChartingLibraryWidget | null>(null)
   const longPriceLineRef = useRef<EntityId | null>(null)
   const shortPriceLineRef = useRef<EntityId | null>(null)
 
   useEffect(() => {
-    if (marketId && description) {
+    if (marketId && description && ask && bid) {
       const defaultProps: Omit<ChartContainerProps, 'container'> = {
         symbol: JSON.stringify({marketId, description: MarketDetails[marketId].marketName}),
         interval: '60' as ResolutionString,
@@ -155,7 +167,6 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
 
       tvWidget.onChartReady(function () {
         const currentTime = Date.now() / 1000
-
         const priceScale = tvWidget.activeChart().getPanes()[0].getRightPriceScales()[0]
         const priceRangeFrom = priceScale.getVisiblePriceRange()?.from
         const priceRangeTo = priceScale.getVisiblePriceRange()?.to
@@ -166,9 +177,8 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
           const priceRangeDifference = priceRangeTo - priceRangeFrom
           const priceRangeDifferenceOffset = priceRangeDifference * 0.1
 
-          const offsetTop = Number(longPrice) >= priceRangeTo - priceRangeDifferenceOffset ? Number(longPrice) + priceRangeDifferenceOffset : null
-          const offsetBottom =
-            Number(shortPrice) <= priceRangeFrom + priceRangeDifferenceOffset ? Number(shortPrice) - priceRangeDifferenceOffset : null
+          const offsetTop = ask >= priceRangeTo - priceRangeDifferenceOffset ? ask + priceRangeDifferenceOffset : null
+          const offsetBottom = bid <= priceRangeFrom + priceRangeDifferenceOffset ? bid - priceRangeDifferenceOffset : null
 
           priceScale.setVisiblePriceRange({
             from: offsetBottom ? offsetBottom : priceRangeFrom,
@@ -177,7 +187,7 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
         }
 
         //add horizontal line with long Price
-        const longPriceLine = tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(longPrice)}], {
+        const longPriceLine = tvWidget.activeChart().createMultipointShape([{time: currentTime, price: ask}], {
           shape: 'horizontal_line',
           lock: true,
           disableSelection: true,
@@ -198,7 +208,7 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
         longPriceLineRef.current = longPriceLine
 
         //add horizontal line with short Price
-        const shortPriceLine = tvWidget.activeChart().createMultipointShape([{time: currentTime, price: Number(shortPrice)}], {
+        const shortPriceLine = tvWidget.activeChart().createMultipointShape([{time: currentTime, price: bid}], {
           shape: 'horizontal_line',
           lock: true,
           disableSelection: true,
@@ -223,7 +233,7 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
         tvWidget.remove()
       }
     }
-  }, [marketId, description, chainId])
+  }, [marketId, description, chainId, ask, bid])
 
   // Effect to update the longPrice shape
   useEffect(() => {

@@ -22,6 +22,7 @@ import ClaimChecker from './ClaimChecker/ClaimChecker'
 import SepoliaFaucet from './SepoliaFaucet/SepoliaFaucet'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import Leaderboard from './Leaderboard/Leaderboard'
+import TradingMiningLeaderboard from './TradingMining/TradingMiningLeaderboard'
 import {cookie3Analytics} from '@cookie3/analytics'
 import {useEffect, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
@@ -117,6 +118,7 @@ const App = () => {
                     <Route exact strict path="/claim-checker" component={ClaimChecker} />
                     <Route exact strict path="/sepolia-faucet" component={SepoliaFaucet} />
                     <Route exact strict path="/leaderboard" component={Leaderboard} />
+                    <Route exact strict path="/trading-mining" component={TradingMiningLeaderboard} />
                   </Switch>
                 </ProtectedRoute>
               }

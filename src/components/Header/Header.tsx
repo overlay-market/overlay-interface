@@ -252,6 +252,10 @@ export default function Header() {
               {/* </Trans> */}
             </StyledLink>
 
+            <StyledLink to={'/trading-mining'}>
+              <TEXT.Menu>Trading Mining</TEXT.Menu>
+            </StyledLink>
+
             <PowerCardLink to={'/sepolia-faucet'}>
               <TEXT.Menu>Claim Test Token</TEXT.Menu>
             </PowerCardLink>

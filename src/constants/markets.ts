@@ -22,6 +22,8 @@ import MiladyNewLogo from '../assets/images/tokens/milady.png'
 import BtcFrogsLogo from '../assets/images/tokens/btc-frogs.png'
 import NodeMonkesLogo from '../assets/images/tokens/node-monkes.png'
 import EthVixLogo from '../assets/images/tokens/eth-vix.png'
+import AIIndexLogo from '../assets/images/tokens/AI_Index.png'
+import AIIndexFull from '../assets/images/tokens/AI-Index_full_logo.png'
 import FlippeningLogo from '../assets/images/tokens/flippening.png'
 import EvIndexLogo from '../assets/images/tokens/ev-index.png'
 import EvIndexFull from '../assets/images/tokens/ev-index-full-logo.jpeg'
@@ -365,6 +367,21 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://sepolia.arbiscan.io/address/0x770e3a8afc5c01855b5bd8eb5b96b23bd7af1e43',
     },
     fullLogo: EvIndexFull,
+  },
+  '0xad90fff9d159e18cec2048dd6881e29886e4899e': {
+    marketName: 'AI Index',
+    logo: AIIndexLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'Uniswap'}, {name: 'Kucoin'}, {name: 'Others'}],
+    descriptionText:
+      'TL;DR -- The market cap of the top AI related protocols on crypto.\n\nThe source of data is the API provided by Coinmarketcap, Cryptocompare, supplemented by Uniswap, Kucoin, and others.\n\nThe following projects are cap-weighted in this index:\n- Render\n- Bittensor\n- Fetch.ai\n- SingularityNET\n- Akash Network\n- AIOZ Network\n- Ocean Protocol\n- Arkham\n- PAAL AI\n- OriginTrail',
+    contract: {
+      name: shortenAddress('0xad90fff9d159e18cec2048dd6881e29886e4899e'),
+      url: 'https://sepolia.arbiscan.io/address/0xad90fff9d159e18cec2048dd6881e29886e4899e',
+    },
+    fullLogo: AIIndexFull,
   },
 }
 

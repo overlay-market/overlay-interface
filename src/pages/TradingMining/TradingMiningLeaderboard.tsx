@@ -101,33 +101,35 @@ const ChevronDownIcon: FC = () => (
   </svg>
 )
 
-export interface IPrevWeekDetails {
-  sessionId: string
+export interface SessionDetails {
+  _id: string
   sessionStart: string
   sessionEnd: string
+  sessionLastUpdated: string
+  totalRewards: string
 }
-export interface ILeaderboardRank {
+export interface TMLeaderboardRank {
   _id: string
   totalPoints: number
-  previousWeekPoints: number
   rank?: number
 }
-export interface ILeaderboardUserRank extends ILeaderboardRank {
+export interface TMLeaderboardUserRank extends TMLeaderboardRank {
   username?: string
   avatar?: string
 }
 
-export interface ILeaderboardPointsData {
-  previousWeekDetails: IPrevWeekDetails
+export interface TMLeaderboardPointsData {
+  _id: string
+  sessionDetails: SessionDetails
   totalUsers: number
-  leaderboardTable: [ILeaderboardRank]
-  user?: ILeaderboardRank
+  leaderboardTable: [TMLeaderboardRank]
+  user?: TMLeaderboardRank
 }
 
 const TradingMiningLeaderboard = () => {
   const {account} = useActiveWeb3React()
-  const [ranks, setRanks] = useState<ILeaderboardUserRank[] | null>(null)
-  const [userData, setUserData] = useState<ILeaderboardUserRank | null>(null)
+  const [ranks, setRanks] = useState<TMLeaderboardUserRank[] | null>(null)
+  const [userData, setUserData] = useState<TMLeaderboardUserRank | null>(null)
   const initialNumberOfRows = 10
   const [loadedNumberOfRows, setLoadedNumberOfRows] = useState(initialNumberOfRows)
   const [isDisabledLoadMoreBtn, setIsDisabledLoadMoreBtn] = useState(false)
@@ -157,13 +159,13 @@ const TradingMiningLeaderboard = () => {
     initialDataHandle()
   }, [])
 
-  const prevWeekDetails = useMemo<IPrevWeekDetails>(() => {
+  const sessionDetails = useMemo<SessionDetails>(() => {
     if (pointsData) {
-      return pointsData.previousWeekDetails
+      return pointsData.sessionDetails
     }
   }, [pointsData])
 
-  const leaderboardPointsData = useMemo<ILeaderboardRank[]>(() => {
+  const leaderboardPointsData = useMemo<TMLeaderboardRank[]>(() => {
     if (pointsData) {
       return pointsData.leaderboardTable
     }
@@ -183,7 +185,7 @@ const TradingMiningLeaderboard = () => {
     {manual: true},
   )
 
-  const leaderboardPointsMoreData = useMemo<ILeaderboardRank[]>(() => {
+  const leaderboardPointsMoreData = useMemo<TMLeaderboardRank[]>(() => {
     if (pointsMoreData) {
       const newRowStarts = loadedNumberOfRows === initialNumberOfRows ? initialNumberOfRows : loadedNumberOfRows
       return pointsMoreData.leaderboardTable.slice(newRowStarts)
@@ -191,7 +193,7 @@ const TradingMiningLeaderboard = () => {
   }, [pointsMoreData])
 
   // get initial ranks without usernames and avatars
-  const getProcessedRanks = (passedData: ILeaderboardRank[]) => {
+  const getProcessedRanks = (passedData: TMLeaderboardRank[]) => {
     return passedData.map(data => {
       return {
         ...data,
@@ -204,7 +206,7 @@ const TradingMiningLeaderboard = () => {
   useEffect(() => {
     const processedRanks = leaderboardPointsData && getProcessedRanks(leaderboardPointsData)
 
-    setRanks(processedRanks as unknown as [ILeaderboardUserRank])
+    setRanks(processedRanks as unknown as [TMLeaderboardUserRank])
     setUsersCounter(processedRanks?.length)
   }, [leaderboardPointsData])
 
@@ -220,7 +222,7 @@ const TradingMiningLeaderboard = () => {
     setIsLoadingProfiles(false)
   }, [leaderboardPointsMoreData])
 
-  const initialUserData = useMemo<ILeaderboardRank>(() => {
+  const initialUserData = useMemo<TMLeaderboardRank>(() => {
     if (pointsData) {
       return pointsData?.user
     }
@@ -234,7 +236,7 @@ const TradingMiningLeaderboard = () => {
     {manual: true},
   )
 
-  const curUserData = useMemo<ILeaderboardRank>(() => {
+  const curUserData = useMemo<TMLeaderboardRank>(() => {
     if (userPointsData) {
       return userPointsData?.user
     }
@@ -254,7 +256,7 @@ const TradingMiningLeaderboard = () => {
       username: undefined,
     }
 
-    setUserData(userRankData as unknown as ILeaderboardUserRank)
+    setUserData(userRankData as unknown as TMLeaderboardUserRank)
   }, [initialUserData, curUserData])
 
   useEffect(() => {
@@ -266,7 +268,7 @@ const TradingMiningLeaderboard = () => {
         username: username ?? undefined,
       }
 
-      setUserData(userRankData as unknown as ILeaderboardUserRank)
+      setUserData(userRankData as unknown as TMLeaderboardUserRank)
     }
 
     if (account && userData?._id && !userData.username) {
@@ -275,7 +277,7 @@ const TradingMiningLeaderboard = () => {
   }, [account, initialUserData, curUserData, setUserData])
 
   // get final ranks with usernames and avatars
-  const getProfiles = async (passedData: ILeaderboardRank[]) => {
+  const getProfiles = async (passedData: TMLeaderboardRank[]) => {
     const profilesIds: string[] = []
     const profilesMap = new Map()
 
@@ -333,7 +335,7 @@ const TradingMiningLeaderboard = () => {
     <PageContainerStyled>
       <TradingMiningOverview
         userPoints={userData?.totalPoints}
-        pointsUpdatedAt={prevWeekDetails?.sessionEnd}
+        pointsUpdatedAt={sessionDetails?.sessionEnd}
         isLoading={dataLoading || userDataLoading}
       />
 
@@ -383,7 +385,7 @@ const TradingMiningLeaderboard = () => {
 
         <TableBody>
           {ranks &&
-            ranks.map((data: ILeaderboardUserRank, index) => (
+            ranks.map((data: TMLeaderboardUserRank, index) => (
               <StyledTableRow notclickable="true" key={data._id}>
                 <TableDataCell className="rank" textalign="center">
                   <TEXT.SmallBody color={colors(true).dark.white}>{index + 1}</TEXT.SmallBody>

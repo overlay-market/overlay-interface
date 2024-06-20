@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {shortenAddress} from '../../utils/web3'
 import useAxios from 'axios-hooks'
-import {LEADERBOARD_POINTS_API} from '../../constants/applications'
+import {TRADING_MINING_API} from '../../constants/applications'
 import {FC, useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
 import {LoadMoreButton} from '../../components/Button/Button'
@@ -137,7 +137,7 @@ const TradingMiningLeaderboard = () => {
 
   const [{data: pointsData, loading: dataLoading}, getPointsData] = useAxios(
     {
-      baseURL: LEADERBOARD_POINTS_API,
+      baseURL: TRADING_MINING_API,
       method: 'GET',
     },
     {manual: true},
@@ -146,7 +146,7 @@ const TradingMiningLeaderboard = () => {
   const initialDataHandle = async () => {
     try {
       await getPointsData({
-        url: `${initialNumberOfRows}${account ? `/${account}` : ''}`,
+        url: `/points/leaderboard/${initialNumberOfRows}${account ? `/${account}` : ''}`,
       })
     } catch (error) {
       console.log(error)
@@ -177,7 +177,7 @@ const TradingMiningLeaderboard = () => {
 
   const [{data: pointsMoreData, loading: moreLoading}, getMoreData] = useAxios(
     {
-      baseURL: LEADERBOARD_POINTS_API,
+      baseURL: TRADING_MINING_API,
       method: 'GET',
     },
     {manual: true},
@@ -228,7 +228,7 @@ const TradingMiningLeaderboard = () => {
 
   const [{data: userPointsData, loading: userDataLoading}, getUserPointsData] = useAxios(
     {
-      baseURL: LEADERBOARD_POINTS_API,
+      baseURL: TRADING_MINING_API,
       method: 'GET',
     },
     {manual: true},
@@ -243,7 +243,7 @@ const TradingMiningLeaderboard = () => {
   useEffect(() => {
     if (account && pointsData && initialUserData === undefined) {
       getUserPointsData({
-        url: `0/${account}`,
+        url: `/points/leaderboard/0/${account}`,
       })
     }
   }, [account, pointsData, initialUserData, getUserPointsData])
@@ -321,7 +321,7 @@ const TradingMiningLeaderboard = () => {
   const loadMoreHandle = async () => {
     try {
       await getMoreData({
-        url: `${loadedNumberOfRows + 20}`,
+        url: `/points/leaderboard/${loadedNumberOfRows + 20}`,
       })
       setLoadedNumberOfRows(loadedNumberOfRows + 20)
     } catch (error) {

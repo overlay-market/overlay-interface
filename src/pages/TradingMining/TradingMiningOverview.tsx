@@ -137,12 +137,6 @@ const TradingMiningOverview = ({userPoints, sessionEnd, isLoading}: {userPoints?
 
           <FlexRowTextContainer>
             <TEXT.Supplemental color={colors(false).dark.grey2}>Leaderboard resets every Monday.</TEXT.Supplemental>
-            <LearnMoreLink
-              target="_blank"
-              href="https://mirror.xyz/0x7999C7f0b9f2259434b7aD130bBe36723a49E14e/Q5OmkZ7eXCZ8AgrDy37IaLfTQouVR9R1U3mmiRDDdz8"
-            >
-              Learn more ➞
-            </LearnMoreLink>
           </FlexRowTextContainer>
         </OverviewLeftContainer>
 

@@ -115,7 +115,7 @@ const TradingMiningOverview = ({userPoints, pointsUpdatedAt, isLoading}: {userPo
           {account ? (
             <ResponsiveFlexRow>
               <TEXT.BoldHeader1 fontSize={24} color={colors(true).dark.white}>
-                You have {isLoading ? <Loader size="16px" /> : `${userPoints ?? '0'} points`}
+                Your Total Volume is {isLoading ? <Loader size="16px" /> : `${userPoints ?? '0'}`}
               </TEXT.BoldHeader1>
             </ResponsiveFlexRow>
           ) : (
@@ -124,13 +124,13 @@ const TradingMiningOverview = ({userPoints, pointsUpdatedAt, isLoading}: {userPo
                 Connect Wallet
               </ConnectWalletLink>
               <TEXT.BoldHeader1 fontSize={24} color={colors(false).dark.blue1}>
-                to see points
+                to see Total Volume
               </TEXT.BoldHeader1>
             </FlexRowTextContainer>
           )}
 
           <FlexRowTextContainer>
-            <TEXT.Supplemental color={colors(false).dark.grey2}>Points are calculated on Thursdays.</TEXT.Supplemental>
+            <TEXT.Supplemental color={colors(false).dark.grey2}>Leaderboard resets every Monday.</TEXT.Supplemental>
             <LearnMoreLink
               target="_blank"
               href="https://mirror.xyz/0x7999C7f0b9f2259434b7aD130bBe36723a49E14e/Q5OmkZ7eXCZ8AgrDy37IaLfTQouVR9R1U3mmiRDDdz8"

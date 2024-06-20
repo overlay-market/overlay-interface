@@ -19,46 +19,13 @@ const PageContainerStyled = styled(PageContainer)`
   }
 `
 
-const PageWrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 100px;
-  z-index: 100;
-  overflow: hidden;
-  background: rgba(32, 36, 49, 0.85) !important;
-  backdrop-filter: blur(2px);
-`
-
-const FrontCover = styled.div`
-  position: fixed;
-  top: 42px;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1000;
-  overflow: hidden;
-  background: rgba(32, 36, 49, 0.85) !important;
-  backdrop-filter: blur(2px);
-`
-const MessageBox = styled.div`
-  margin-top: 140px;
-  padding-right: 40px;
-  background: rgba(32, 36, 49, 0.85);
-
-  ${({theme}) => theme.mediaWidth.minMedium`
-    margin-top: 20px;
-  `}
-`
-
 const LeaderboardsTable = styled(StyledTable)`
-  .points-prev-week,
   .rankings-header,
   .username {
     display: none;
   }
 
   ${({theme}) => theme.mediaWidth.minSmall`
-  .points-prev-week,
   .username,
   .rankings-header,
   .total-point {
@@ -381,11 +348,8 @@ const TradingMiningLeaderboard = () => {
                 Leaderboard Rankings
               </TEXT.SmallBody>
             </HeaderCell>
-            <HeaderCell className="points-prev-week" widthCell={'240px'} noborder={`${account && 'true'}`}>
-              <TEXT.SmallBody color={colors(true).dark.white}>Points-Previous Week</TEXT.SmallBody>
-            </HeaderCell>
             <HeaderCell className="total-point" widthCell={'140px'} noborder={`${account && 'true'}`}>
-              <TEXT.SmallBody color={colors(true).dark.white}>Total Points</TEXT.SmallBody>
+              <TEXT.SmallBody color={colors(true).dark.white}>Total Volume</TEXT.SmallBody>
             </HeaderCell>
           </StyledTableHeaderRow>
         </TableHead>
@@ -407,12 +371,6 @@ const TradingMiningLeaderboard = () => {
                     {userData?.username ?? shortenAddress(account)}
                   </TEXT.Supplemental>
                 </UsernameContainer>
-              </TableDataCell>
-
-              <TableDataCell className="points-prev-week" noborder="true">
-                <TEXT.SmallBody color={colors(true).dark.white}>
-                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.previousWeekPoints ?? '0'}
-                </TEXT.SmallBody>
               </TableDataCell>
               <TableDataCell className="total-point" noborder="true">
                 <TEXT.SmallBody color={colors(true).dark.white}>
@@ -440,9 +398,6 @@ const TradingMiningLeaderboard = () => {
                     />
                     <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
-                </TableDataCell>
-                <TableDataCell className="points-prev-week">
-                  <TEXT.SmallBody color={colors(true).dark.white}>{data.previousWeekPoints}</TEXT.SmallBody>
                 </TableDataCell>
                 <TableDataCell className="total-point">
                   <TEXT.SmallBody color={colors(true).dark.white}>{data.totalPoints}</TEXT.SmallBody>

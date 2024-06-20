@@ -101,9 +101,15 @@ const SeasonContainer = styled.div`
   flex-direction: row;
   align-items: center;
 `
-const TradingMiningOverview = ({userPoints, pointsUpdatedAt, isLoading}: {userPoints?: number; pointsUpdatedAt: string; isLoading: boolean}) => {
+
+const TradingMiningOverview = ({userPoints, sessionEnd, isLoading}: {userPoints?: number; sessionEnd: string; isLoading: boolean}) => {
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+
+  const currentTime = moment.utc(new Date())
+  const sessionEndsTime = moment.utc(sessionEnd)
+  const timeDifference = sessionEndsTime.diff(currentTime)
+  const timeLeftDuration = moment.duration(timeDifference)
 
   return (
     <>
@@ -146,9 +152,9 @@ const TradingMiningOverview = ({userPoints, pointsUpdatedAt, isLoading}: {userPo
               <Clock color={colors(false).dark.tan2} />
             </CardIcon>
             <CardInfoBox>
-              <TEXT.SmallBody color={'#C4C4C4'}>Points Updated At</TEXT.SmallBody>
+              <TEXT.SmallBody color={'#C4C4C4'}>Season Ends</TEXT.SmallBody>
               <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
-                {!pointsUpdatedAt ? <Loader size="16px" /> : `${moment.utc(pointsUpdatedAt).format('DD MMM HH:mm')} UTC`}
+                {!sessionEnd ? <Loader size="16px" /> : `${timeLeftDuration.days()}d ${timeLeftDuration.hours()}h ${timeLeftDuration.minutes()}m`}
               </TEXT.BoldNumber>
             </CardInfoBox>
           </StyledCard>

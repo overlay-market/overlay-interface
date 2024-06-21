@@ -5,6 +5,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {Clock} from 'react-feather'
 import Loader from '../../components/Loaders/Loaders'
 import moment from 'moment'
+import {useMemo} from 'react'
 
 const OverviewContainer = styled.div`
   display: flex;
@@ -102,7 +103,14 @@ const SeasonContainer = styled.div`
   align-items: center;
 `
 
-const TradingMiningOverview = ({userPoints, sessionEnd, isLoading}: {userPoints?: number; sessionEnd: string; isLoading: boolean}) => {
+interface TradingMiningOverviewProps {
+  userPoints?: number
+  sessionEnd: string
+  sessionLastUpdated: string
+  isLoading: boolean
+}
+
+const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, isLoading}: TradingMiningOverviewProps) => {
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
 
@@ -110,6 +118,23 @@ const TradingMiningOverview = ({userPoints, sessionEnd, isLoading}: {userPoints?
   const sessionEndsTime = moment.utc(sessionEnd)
   const timeDifference = sessionEndsTime.diff(currentTime)
   const timeLeftDuration = moment.duration(timeDifference)
+
+  const sessionLastUpdatedTime = moment.utc(sessionLastUpdated)
+  const lastUpdatedTimeDifference = currentTime.diff(sessionLastUpdatedTime)
+  const lastUpdatedTimeDuration = moment.duration(lastUpdatedTimeDifference)
+
+  const lastUpdatedTime = useMemo(() => {
+    if (!sessionLastUpdated) return `...`
+    if (lastUpdatedTimeDuration.minutes() === 0 && lastUpdatedTimeDuration.hours() === 0) return `1 minute`
+
+    if (lastUpdatedTimeDuration.hours() === 0) {
+      return `${lastUpdatedTimeDuration.minutes()} minute${lastUpdatedTimeDuration.minutes() === 1 ? '' : 's'}`
+    } else {
+      return `${lastUpdatedTimeDuration.hours()} hour${
+        lastUpdatedTimeDuration.hours() === 1 ? '' : 's'
+      } and ${lastUpdatedTimeDuration.minutes()} minute${lastUpdatedTimeDuration.minutes() === 1 ? '' : 's'}`
+    }
+  }, [lastUpdatedTimeDuration, sessionLastUpdated])
 
   return (
     <>
@@ -137,6 +162,9 @@ const TradingMiningOverview = ({userPoints, sessionEnd, isLoading}: {userPoints?
 
           <FlexRowTextContainer>
             <TEXT.Supplemental color={colors(false).dark.grey2}>Leaderboard resets every Monday.</TEXT.Supplemental>
+          </FlexRowTextContainer>
+          <FlexRowTextContainer>
+            <TEXT.Supplemental color={colors(false).dark.grey2}>Updated {lastUpdatedTime} ago</TEXT.Supplemental>
           </FlexRowTextContainer>
         </OverviewLeftContainer>
 

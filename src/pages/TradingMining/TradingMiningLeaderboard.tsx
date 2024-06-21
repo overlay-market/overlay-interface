@@ -1,5 +1,5 @@
-import {TableBody, TableHead} from '@material-ui/core'
-import {PageContainer} from '../../components/Container/Container'
+import {TableBody, TableHead, Menu, MenuItem} from '@material-ui/core'
+import {FlexContainer, PageContainer} from '../../components/Container/Container'
 import {StyledHeaderCell, StyledTable, StyledTableCell, StyledTableHeaderRow, StyledTableRow} from '../../components/Table/Table'
 import TradingMiningOverview from './TradingMiningOverview'
 import {TEXT, colors} from '../../theme/theme'
@@ -18,6 +18,32 @@ const PageContainerStyled = styled(PageContainer)`
     background: rgba(32, 36, 49, 0.85) !important;
   }
 `
+
+const DropdownButton = styled(LoadMoreButton)`
+  width: 170px;
+`
+
+const StyledMenu = styled(Menu)({
+  marginTop: '48px',
+  borderRadius: '4px',
+
+  '& .MuiPaper-root': {
+    backgroundColor: `${colors(true).dark.grey4}`,
+    borderTop: '1px solid #333',
+    maxWidth: '190px',
+    width: '170px',
+    color: `${colors(true).dark.blue1}`,
+  },
+  '& .MuiListItem-root': {
+    justifyContent: 'center',
+  },
+  '& .MuiButtonBase-root': {
+    paddingLeft: '20px',
+  },
+  '& .MuiButtonBase-root:hover': {
+    backgroundColor: 'rgb(0,0,0, 0.16)',
+  },
+})
 
 const LeaderboardsTable = styled(StyledTable)`
   .rankings-header,
@@ -136,6 +162,8 @@ const TradingMiningLeaderboard = () => {
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
   const [usersCounter, setUsersCounter] = useState(0)
   const [profilesCounter, setProfilesCounter] = useState(0)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const openDropdownMenu = Boolean(anchorEl)
 
   const [{data: pointsData, loading: dataLoading}, getPointsData] = useAxios(
     {
@@ -331,6 +359,16 @@ const TradingMiningLeaderboard = () => {
     }
   }
 
+  const clickSelectSeason = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const closeSelectSeason = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+
+    setAnchorEl(null)
+  }
+
   return (
     <PageContainerStyled>
       <TradingMiningOverview
@@ -339,6 +377,21 @@ const TradingMiningLeaderboard = () => {
         sessionLastUpdated={sessionDetails?.sessionLastUpdated}
         isLoading={dataLoading || userDataLoading}
       />
+      <FlexContainer justify="flex-end" padding={'6px 0 0'}>
+        <DropdownButton
+          onClick={clickSelectSeason}
+          id="dropdown"
+          aria-controls={openDropdownMenu ? 'basic-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={openDropdownMenu ? 'true' : undefined}
+        >
+          Current Season <ChevronDownIcon />
+        </DropdownButton>
+        <StyledMenu id="basic-menu" anchorEl={anchorEl} open={openDropdownMenu} onClose={closeSelectSeason}>
+          <MenuItem>1 season</MenuItem>
+          <MenuItem>2 season</MenuItem>
+        </StyledMenu>
+      </FlexContainer>
 
       <LeaderboardsTable smwidth="100%">
         <TableHead>

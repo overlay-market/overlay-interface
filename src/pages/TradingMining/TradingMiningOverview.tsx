@@ -133,6 +133,19 @@ const StyledMenu = styled(Menu)({
   },
 })
 
+const MenuItemLabel = styled(Box)({
+  position: 'absolute',
+  left: '4px',
+  fontSize: '10px',
+  fontFamily: 'Inter',
+  fontWeight: '600',
+  background: 'linear-gradient(89.2deg, #d5b4ff -1.18%, #ffa2b9 26.07%, #ff648a 47.56%, #ffcc8f 64.85%, #d5b4ff 99.44%)',
+  '-webkit-background-clip': 'text',
+  '-webkit-text-fill-color': 'transparent',
+  backgroundClip: 'text',
+  textFillColor: 'transparent',
+})
+
 interface TradingMiningOverviewProps {
   userPoints?: number
   sessionEnd: string
@@ -221,6 +234,7 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sess
             sessionsDatesList.map((session, idx) => {
               return (
                 <MenuItem onClick={() => handleSelectSession(idx)}>
+                  {idx === 0 && <MenuItemLabel>Current</MenuItemLabel>}
                   <Box sx={{color: session === activeDropdownValue ? '#71CEFF' : ''}}>{session}</Box>
                 </MenuItem>
               )

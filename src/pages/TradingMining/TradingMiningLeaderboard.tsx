@@ -143,6 +143,7 @@ const TradingMiningLeaderboard = () => {
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
   const [usersCounter, setUsersCounter] = useState(0)
   const [profilesCounter, setProfilesCounter] = useState(0)
+  const [selectedSessionId, setSelectedSessionId] = useState<null | string>(null)
 
   const [{data: pointsData, loading: dataLoading}, getPointsData] = useAxios(
     {
@@ -370,6 +371,12 @@ const TradingMiningLeaderboard = () => {
     }
   }, [sessionsData, sessionDetails])
 
+  useEffect(() => {
+    if (sessionDetails) {
+      setSelectedSessionId(sessionDetails._id)
+    }
+  }, [sessionDetails])
+
   return (
     <PageContainerStyled>
       <TradingMiningOverview
@@ -377,6 +384,8 @@ const TradingMiningLeaderboard = () => {
         sessionEnd={sessionDetails?.sessionEnd}
         sessionLastUpdated={sessionDetails?.sessionLastUpdated}
         sessionsList={sessionsList}
+        selectedSessionId={selectedSessionId}
+        setSelectedSessionId={setSelectedSessionId}
         isLoading={dataLoading || userDataLoading}
       />
 

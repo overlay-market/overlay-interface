@@ -151,10 +151,20 @@ interface TradingMiningOverviewProps {
   sessionEnd: string
   sessionLastUpdated: string
   sessionsList: SessionData[]
+  selectedSessionId: string | null
+  setSelectedSessionId: React.Dispatch<React.SetStateAction<string | null>>
   isLoading: boolean
 }
 
-const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sessionsList, isLoading}: TradingMiningOverviewProps) => {
+const TradingMiningOverview = ({
+  userPoints,
+  sessionEnd,
+  sessionLastUpdated,
+  sessionsList,
+  selectedSessionId,
+  setSelectedSessionId,
+  isLoading,
+}: TradingMiningOverviewProps) => {
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [activeDropdownValue, setActiveDropdownValue] = useState('...')
@@ -186,18 +196,24 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sess
 
   const sessionsDatesList = useMemo(() => {
     if (sessionsList) {
-      const newList = sessionsList.map(el => {
+      const newList: Map<string, string> = new Map()
+
+      sessionsList.forEach(el => {
         const sessionStarts = moment.utc(el.sessionStart)
         const sessionEnds = moment.utc(el.sessionEnd)
-        return `Session ${sessionStarts.format('MMM')} ${sessionStarts.format('DD')} - ${sessionEnds.format('MMM')} ${sessionEnds.format('DD')}`
+        newList.set(
+          el._id,
+          `Session ${sessionStarts.format('MMM')} ${sessionStarts.format('DD')} - ${sessionEnds.format('MMM')} ${sessionEnds.format('DD')}`,
+        )
       })
-      return newList.reverse()
+      const resultList = Array.from(newList).map(([id, session]) => ({id, session}))
+      return resultList.reverse()
     }
   }, [sessionsList])
 
   useEffect(() => {
     if (sessionsDatesList) {
-      setActiveDropdownValue(sessionsDatesList[0])
+      setActiveDropdownValue(sessionsDatesList[0].session)
     }
   }, [sessionsDatesList])
 
@@ -210,8 +226,9 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sess
     setAnchorEl(null)
   }
 
-  const handleSelectSession = (index: number) => {
-    sessionsDatesList && setActiveDropdownValue(sessionsDatesList[index])
+  const handleSelectSession = (session: {id: string; session: string}) => {
+    sessionsDatesList && setActiveDropdownValue(session.session)
+    setSelectedSessionId(session.id)
     setAnchorEl(null)
   }
 
@@ -227,15 +244,16 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sess
           aria-haspopup="true"
           aria-expanded={openDropdownMenu ? 'true' : undefined}
         >
-          {activeDropdownValue} <ChevronDownIcon />
+          {activeDropdownValue}
+          {activeDropdownValue !== '...' && <ChevronDownIcon />}
         </DropdownButton>
         <StyledMenu id="basic-menu" anchorEl={anchorEl} open={openDropdownMenu} onClose={closeSelectSeason}>
           {sessionsDatesList &&
             sessionsDatesList.map((session, idx) => {
               return (
-                <MenuItem onClick={() => handleSelectSession(idx)}>
+                <MenuItem onClick={() => handleSelectSession(session)}>
                   {idx === 0 && <MenuItemLabel>Current</MenuItemLabel>}
-                  <Box sx={{color: session === activeDropdownValue ? '#71CEFF' : ''}}>{session}</Box>
+                  <Box sx={{color: session.session === activeDropdownValue ? '#71CEFF' : ''}}>{session.session}</Box>
                 </MenuItem>
               )
             })}

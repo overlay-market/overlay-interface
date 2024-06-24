@@ -5,8 +5,18 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {Clock} from 'react-feather'
 import Loader from '../../components/Loaders/Loaders'
 import moment from 'moment'
-import {useMemo} from 'react'
+import {FC, useMemo, useState} from 'react'
+import {Menu, MenuItem, Box} from '@material-ui/core'
+import {LoadMoreButton} from '../../components/Button/Button'
 
+const ChevronDownIcon: FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+    <path
+      fillRule="evenodd"
+      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+    />
+  </svg>
+)
 const OverviewContainer = styled.div`
   display: flex;
   padding: 24px 0 8px;
@@ -53,14 +63,6 @@ const OverviewRightContainer = styled.div`
   `}
 `
 
-const LearnMoreLink = styled.a`
-  font-size: 12px;
-  font-family: Inter;
-  font-weight: 400;
-  color: ${({theme}) => theme.dark.blue2};
-  text-decoration: none;
-`
-
 const ResponsiveFlexRow = styled(FlexRowTextContainer)`
   flex-direction: column;
   ${({theme}) => theme.mediaWidth.minExtraSmall`
@@ -101,7 +103,37 @@ const SeasonContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
 `
+
+const DropdownButton = styled(LoadMoreButton)`
+  width: 260px;
+`
+
+const StyledMenu = styled(Menu)({
+  marginTop: '50px',
+
+  '& .MuiPaper-root': {
+    backgroundColor: `${colors(true).dark.grey4}`,
+    borderTop: '1px solid #333',
+    maxWidth: '260px',
+    width: '260px',
+    color: `${colors(true).dark.blue1}`,
+    borderRadius: '8px',
+  },
+  '& .MuiListItem-root': {
+    justifyContent: 'center',
+  },
+  '& .MuiButtonBase-root': {
+    paddingLeft: '20px',
+  },
+  '& .MuiButtonBase-root:hover': {
+    backgroundColor: 'rgb(0,0,0, 0.16)',
+  },
+  '&.active': {
+    color: '#71CEFF',
+  },
+})
 
 interface TradingMiningOverviewProps {
   userPoints?: number
@@ -113,6 +145,9 @@ interface TradingMiningOverviewProps {
 const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, isLoading}: TradingMiningOverviewProps) => {
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const openDropdownMenu = Boolean(anchorEl)
 
   const currentTime = moment.utc(new Date())
   const sessionEndsTime = moment.utc(sessionEnd)
@@ -136,10 +171,37 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, isLo
     }
   }, [lastUpdatedTimeDuration, sessionLastUpdated])
 
+  const clickSelectSeason = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const closeSelectSeason = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+    setAnchorEl(null)
+  }
+
   return (
     <>
       <SeasonContainer>
         <TEXT.BoldSmallBody fontWeight={600}>Trading Competition</TEXT.BoldSmallBody>
+
+        <DropdownButton
+          onClick={clickSelectSeason}
+          id="dropdown"
+          aria-controls={openDropdownMenu ? 'basic-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={openDropdownMenu ? 'true' : undefined}
+        >
+          Session Jun 24 - Jul 01 <ChevronDownIcon />
+        </DropdownButton>
+        <StyledMenu id="basic-menu" anchorEl={anchorEl} open={openDropdownMenu} onClose={closeSelectSeason}>
+          <MenuItem>
+            <Box sx={{color: '#71CEFF'}}>Session Jun 24 - Jul 01</Box>
+          </MenuItem>
+          <MenuItem>
+            <Box>Session Jun 17 - Jun 24</Box>
+          </MenuItem>
+        </StyledMenu>
       </SeasonContainer>
       <OverviewContainer>
         <OverviewLeftContainer>

@@ -126,6 +126,13 @@ export interface TMLeaderboardPointsData {
   user?: TMLeaderboardRank
 }
 
+export interface SessionData {
+  _id: string
+  sessionStart: string
+  sessionEnd: string
+  sessionNumber: number
+}
+
 const TradingMiningLeaderboard = () => {
   const {account} = useActiveWeb3React()
   const [ranks, setRanks] = useState<TMLeaderboardUserRank[] | null>(null)
@@ -330,6 +337,38 @@ const TradingMiningLeaderboard = () => {
       console.log(error)
     }
   }
+
+  // get all sessions till the current
+
+  const [{data: sessionsData, loading: sesionsdataLoading}, getSessionsData] = useAxios(
+    {
+      baseURL: TRADING_MINING_API,
+      method: 'GET',
+    },
+    {manual: true},
+  )
+
+  const sessionsDataHandle = async () => {
+    try {
+      await getSessionsData({
+        url: `/sessions/getSessionsForDropdown`,
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    sessionsDataHandle()
+  }, [])
+
+  const sessionsList = useMemo<SessionData[]>(() => {
+    if (sessionsData && sessionDetails) {
+      const currentSession: SessionData = sessionsData.sessions.find((el: SessionData) => el._id === sessionDetails._id)
+      const newList = sessionsData.sessions.filter((el: SessionData) => el.sessionNumber <= currentSession.sessionNumber)
+      return newList
+    }
+  }, [sessionsData, sessionDetails])
 
   return (
     <PageContainerStyled>

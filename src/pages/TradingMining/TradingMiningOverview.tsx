@@ -131,9 +131,6 @@ const StyledMenu = styled(Menu)({
   '& .MuiButtonBase-root:hover': {
     backgroundColor: 'rgb(0,0,0, 0.16)',
   },
-  '&.active': {
-    color: '#71CEFF',
-  },
 })
 
 interface TradingMiningOverviewProps {
@@ -200,6 +197,11 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sess
     setAnchorEl(null)
   }
 
+  const handleSelectSession = (index: number) => {
+    sessionsDatesList && setActiveDropdownValue(sessionsDatesList[index])
+    setAnchorEl(null)
+  }
+
   return (
     <>
       <SeasonContainer>
@@ -216,9 +218,9 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sess
         </DropdownButton>
         <StyledMenu id="basic-menu" anchorEl={anchorEl} open={openDropdownMenu} onClose={closeSelectSeason}>
           {sessionsDatesList &&
-            sessionsDatesList.map(session => {
+            sessionsDatesList.map((session, idx) => {
               return (
-                <MenuItem>
+                <MenuItem onClick={() => handleSelectSession(idx)}>
                   <Box sx={{color: session === activeDropdownValue ? '#71CEFF' : ''}}>{session}</Box>
                 </MenuItem>
               )

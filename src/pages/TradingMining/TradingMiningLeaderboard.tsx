@@ -340,7 +340,7 @@ const TradingMiningLeaderboard = () => {
 
   // get all sessions till the current
 
-  const [{data: sessionsData, loading: sesionsdataLoading}, getSessionsData] = useAxios(
+  const [{data: sessionsData, loading: sessionsdataLoading}, getSessionsData] = useAxios(
     {
       baseURL: TRADING_MINING_API,
       method: 'GET',
@@ -376,6 +376,7 @@ const TradingMiningLeaderboard = () => {
         userPoints={userData?.totalPoints}
         sessionEnd={sessionDetails?.sessionEnd}
         sessionLastUpdated={sessionDetails?.sessionLastUpdated}
+        sessionsList={sessionsList}
         isLoading={dataLoading || userDataLoading}
       />
 

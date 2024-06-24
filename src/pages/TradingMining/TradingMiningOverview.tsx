@@ -5,9 +5,10 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {Clock} from 'react-feather'
 import Loader from '../../components/Loaders/Loaders'
 import moment from 'moment'
-import {FC, useMemo, useState} from 'react'
+import {FC, useEffect, useMemo, useState} from 'react'
 import {Menu, MenuItem, Box} from '@material-ui/core'
 import {LoadMoreButton} from '../../components/Button/Button'
+import {SessionData} from './TradingMiningLeaderboard'
 
 const ChevronDownIcon: FC = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -139,12 +140,14 @@ interface TradingMiningOverviewProps {
   userPoints?: number
   sessionEnd: string
   sessionLastUpdated: string
+  sessionsList: SessionData[]
   isLoading: boolean
 }
 
-const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, isLoading}: TradingMiningOverviewProps) => {
+const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, sessionsList, isLoading}: TradingMiningOverviewProps) => {
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const [activeDropdownValue, setActiveDropdownValue] = useState('...')
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const openDropdownMenu = Boolean(anchorEl)
@@ -171,6 +174,23 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, isLo
     }
   }, [lastUpdatedTimeDuration, sessionLastUpdated])
 
+  const sessionsDatesList = useMemo(() => {
+    if (sessionsList) {
+      const newList = sessionsList.map(el => {
+        const sessionStarts = moment.utc(el.sessionStart)
+        const sessionEnds = moment.utc(el.sessionEnd)
+        return `Session ${sessionStarts.format('MMM')} ${sessionStarts.format('DD')} - ${sessionEnds.format('MMM')} ${sessionEnds.format('DD')}`
+      })
+      return newList.reverse()
+    }
+  }, [sessionsList])
+
+  useEffect(() => {
+    if (sessionsDatesList) {
+      setActiveDropdownValue(sessionsDatesList[0])
+    }
+  }, [sessionsDatesList])
+
   const clickSelectSeason = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -192,15 +212,17 @@ const TradingMiningOverview = ({userPoints, sessionEnd, sessionLastUpdated, isLo
           aria-haspopup="true"
           aria-expanded={openDropdownMenu ? 'true' : undefined}
         >
-          Session Jun 24 - Jul 01 <ChevronDownIcon />
+          {activeDropdownValue} <ChevronDownIcon />
         </DropdownButton>
         <StyledMenu id="basic-menu" anchorEl={anchorEl} open={openDropdownMenu} onClose={closeSelectSeason}>
-          <MenuItem>
-            <Box sx={{color: '#71CEFF'}}>Session Jun 24 - Jul 01</Box>
-          </MenuItem>
-          <MenuItem>
-            <Box>Session Jun 17 - Jun 24</Box>
-          </MenuItem>
+          {sessionsDatesList &&
+            sessionsDatesList.map(session => {
+              return (
+                <MenuItem>
+                  <Box sx={{color: session === activeDropdownValue ? '#71CEFF' : ''}}>{session}</Box>
+                </MenuItem>
+              )
+            })}
         </StyledMenu>
       </SeasonContainer>
       <OverviewContainer>

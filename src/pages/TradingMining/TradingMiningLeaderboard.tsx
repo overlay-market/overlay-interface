@@ -333,7 +333,12 @@ const TradingMiningLeaderboard = () => {
 
   return (
     <PageContainerStyled>
-      <TradingMiningOverview userPoints={userData?.totalPoints} sessionEnd={sessionDetails?.sessionEnd} isLoading={dataLoading || userDataLoading} />
+      <TradingMiningOverview
+        userPoints={userData?.totalPoints}
+        sessionEnd={sessionDetails?.sessionEnd}
+        sessionLastUpdated={sessionDetails?.sessionLastUpdated}
+        isLoading={dataLoading || userDataLoading}
+      />
 
       <LeaderboardsTable smwidth="100%">
         <TableHead>

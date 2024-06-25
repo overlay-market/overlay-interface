@@ -168,6 +168,7 @@ const TradingMiningOverview = ({
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [activeDropdownValue, setActiveDropdownValue] = useState('...')
+  const isCurrentSession = Boolean(sessionLastUpdated)
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const openDropdownMenu = Boolean(anchorEl)
@@ -281,9 +282,11 @@ const TradingMiningOverview = ({
           <FlexRowTextContainer>
             <TEXT.Supplemental color={colors(false).dark.grey2}>Leaderboard resets every Monday.</TEXT.Supplemental>
           </FlexRowTextContainer>
-          <FlexRowTextContainer>
-            <TEXT.Supplemental color={colors(false).dark.grey2}>Updated {lastUpdatedTime} ago</TEXT.Supplemental>
-          </FlexRowTextContainer>
+          {isCurrentSession && (
+            <FlexRowTextContainer>
+              <TEXT.Supplemental color={colors(false).dark.grey2}>Updated {lastUpdatedTime} ago</TEXT.Supplemental>
+            </FlexRowTextContainer>
+          )}
         </OverviewLeftContainer>
 
         <OverviewRightContainer>
@@ -292,10 +295,20 @@ const TradingMiningOverview = ({
               <Clock color={colors(false).dark.tan2} />
             </CardIcon>
             <CardInfoBox>
-              <TEXT.SmallBody color={'#C4C4C4'}>Season Ends</TEXT.SmallBody>
-              <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
-                {!sessionEnd ? <Loader size="16px" /> : `${timeLeftDuration.days()}d ${timeLeftDuration.hours()}h ${timeLeftDuration.minutes()}m`}
-              </TEXT.BoldNumber>
+              {isCurrentSession ? (
+                <TEXT.SmallBody color={'#C4C4C4'}>Season Ends</TEXT.SmallBody>
+              ) : (
+                <TEXT.SmallBody color={'#C4C4C4'}>Season Ended</TEXT.SmallBody>
+              )}
+              {isCurrentSession ? (
+                <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
+                  {!sessionEnd ? <Loader size="16px" /> : `${timeLeftDuration.days()}d ${timeLeftDuration.hours()}h ${timeLeftDuration.minutes()}m`}
+                </TEXT.BoldNumber>
+              ) : (
+                <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
+                  {!sessionEnd ? <Loader size="16px" /> : `${moment.utc(sessionEnd).format('MMM')} ${moment.utc(sessionEnd).format('DD')}`}
+                </TEXT.BoldNumber>
+              )}
             </CardInfoBox>
           </StyledCard>
         </OverviewRightContainer>

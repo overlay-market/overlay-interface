@@ -143,6 +143,7 @@ const TradingMiningLeaderboard = () => {
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
   const [usersCounter, setUsersCounter] = useState(0)
   const [profilesCounter, setProfilesCounter] = useState(0)
+  const [currentSessionId, setCurrentSessionId] = useState<null | string>(null)
   const [selectedSessionId, setSelectedSessionId] = useState<null | string>(null)
 
   const [{data: pointsData, loading: dataLoading}, getPointsData] = useAxios(
@@ -156,7 +157,9 @@ const TradingMiningLeaderboard = () => {
   const initialDataHandle = async () => {
     try {
       await getPointsData({
-        url: `/points/leaderboard/${initialNumberOfRows}${account ? `/${account}` : ''}`,
+        url: `/points/leaderboard/${selectedSessionId ? `getBySessionId/${selectedSessionId}/` : ''}${initialNumberOfRows}${
+          account ? `/${account}` : ''
+        }`,
       })
     } catch (error) {
       console.log(error)
@@ -165,7 +168,7 @@ const TradingMiningLeaderboard = () => {
 
   useEffect(() => {
     initialDataHandle()
-  }, [])
+  }, [selectedSessionId])
 
   const sessionDetails = useMemo<SessionDetails>(() => {
     if (pointsData) {
@@ -253,10 +256,10 @@ const TradingMiningLeaderboard = () => {
   useEffect(() => {
     if (account && pointsData && initialUserData === undefined) {
       getUserPointsData({
-        url: `/points/leaderboard/0/${account}`,
+        url: `/points/leaderboard/${selectedSessionId ? `getBySessionId/${selectedSessionId}/` : ''}0/${account}`,
       })
     }
-  }, [account, pointsData, initialUserData, getUserPointsData])
+  }, [account, pointsData, initialUserData, getUserPointsData, selectedSessionId])
 
   useEffect(() => {
     const userRankData = {
@@ -331,7 +334,7 @@ const TradingMiningLeaderboard = () => {
   const loadMoreHandle = async () => {
     try {
       await getMoreData({
-        url: `/points/leaderboard/${loadedNumberOfRows + 20}`,
+        url: `/points/leaderboard/${selectedSessionId ? `getBySessionId/${selectedSessionId}/` : ''}${loadedNumberOfRows + 20}`,
       })
       setLoadedNumberOfRows(loadedNumberOfRows + 20)
     } catch (error) {
@@ -363,19 +366,23 @@ const TradingMiningLeaderboard = () => {
     sessionsDataHandle()
   }, [])
 
+  useEffect(() => {
+    if (!currentSessionId && sessionDetails) {
+      setCurrentSessionId(sessionDetails._id)
+    }
+  }, [sessionDetails])
+
   const sessionsList = useMemo<SessionData[]>(() => {
-    if (sessionsData && sessionDetails) {
-      const currentSession: SessionData = sessionsData.sessions.find((el: SessionData) => el._id === sessionDetails._id)
+    if (sessionsData && currentSessionId) {
+      const currentSession: SessionData = sessionsData.sessions.find((el: SessionData) => el._id === currentSessionId)
       const newList = sessionsData.sessions.filter((el: SessionData) => el.sessionNumber <= currentSession.sessionNumber)
       return newList
     }
-  }, [sessionsData, sessionDetails])
+  }, [sessionsData, currentSessionId])
 
   useEffect(() => {
-    if (sessionDetails) {
-      setSelectedSessionId(sessionDetails._id)
-    }
-  }, [sessionDetails])
+    setLoadedNumberOfRows(initialNumberOfRows)
+  }, [selectedSessionId])
 
   return (
     <PageContainerStyled>

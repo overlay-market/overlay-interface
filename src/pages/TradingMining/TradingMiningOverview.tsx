@@ -102,9 +102,14 @@ const CardInfoBox = styled.div`
 
 const SeasonContainer = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 24px;
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  `}
 `
 
 const DropdownButton = styled(LoadMoreButton)`

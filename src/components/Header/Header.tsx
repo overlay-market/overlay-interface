@@ -15,6 +15,7 @@ import WalletMenu from './WalletMenu'
 import MobileWalletMenu from './WalletMenuMobile'
 import SetSlippageModal from '../SetSlippageModal.tsx/SetSlippageModal'
 import {ClaimId} from '../../constants/claims'
+import {LINKS} from '../../constants/links'
 
 export const HeaderContainer = styled.div`
   color: ${({theme}) => theme.dark.white};
@@ -65,6 +66,21 @@ export const StyledLink = styled(NavLink).attrs({
   &.${activeClassName} {
     color: ${({theme}) => theme.dark.blue2};
   }
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    display: flex;
+  `};
+`
+
+const StyledExternalLink = styled.a`
+  color: ${({theme}) => theme.dark.white};
+  font-size: 14px;
+  font-family: Inter;
+  text-decoration: none;
+  font-weight: bold;
+  margin: auto 16px;
+  cursor: pointer;
+  display: none;
 
   ${({theme}) => theme.mediaWidth.minSmall`
     display: flex;
@@ -255,6 +271,10 @@ export default function Header() {
             <StyledLink to={'/trading-mining'}>
               <TEXT.Menu>Trading Mining</TEXT.Menu>
             </StyledLink>
+
+            <StyledExternalLink href={LINKS.STATISTICS} target="_blank" rel="noopener noreferrer">
+              Statistics
+            </StyledExternalLink>
 
             <PowerCardLink to={'/sepolia-faucet'}>
               <TEXT.Menu>Claim Test Token</TEXT.Menu>

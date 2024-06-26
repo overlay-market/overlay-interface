@@ -264,30 +264,30 @@ const TradingMiningLeaderboard = () => {
   useEffect(() => {
     const userRankData = {
       ...(initialUserData ?? curUserData),
-      username: undefined,
+      username: userData?.username ?? undefined,
     }
 
     setUserData(userRankData as unknown as TMLeaderboardUserRank)
-  }, [initialUserData, curUserData])
+  }, [initialUserData, curUserData, userData?.username, selectedSessionId])
 
   useEffect(() => {
     const getUserData = async () => {
       const username = account && (await getWeb3Username(account))
-
       const userRankData = {
-        ...userData,
+        ...(initialUserData ?? curUserData),
         username: username ?? undefined,
       }
 
       setUserData(userRankData as unknown as TMLeaderboardUserRank)
     }
 
-    if (account && userData?._id && !userData.username) {
+    if (account && userData && userData._id && !userData.username) {
       getUserData()
     }
-  }, [account, initialUserData, curUserData, setUserData])
+  }, [account, initialUserData, curUserData, userData?._id, setUserData, selectedSessionId])
 
   // get final ranks with usernames and avatars
+
   const getProfiles = async (passedData: TMLeaderboardRank[]) => {
     const profilesIds: string[] = []
     const profilesMap = new Map()
@@ -382,6 +382,7 @@ const TradingMiningLeaderboard = () => {
 
   useEffect(() => {
     setLoadedNumberOfRows(initialNumberOfRows)
+    setRanks(null)
   }, [selectedSessionId])
 
   return (

@@ -392,7 +392,6 @@ const TradingMiningLeaderboard = () => {
         sessionEnd={sessionDetails?.sessionEnd}
         sessionLastUpdated={sessionDetails?.sessionLastUpdated}
         sessionsList={sessionsList}
-        selectedSessionId={selectedSessionId}
         setSelectedSessionId={setSelectedSessionId}
         isLoading={dataLoading || userDataLoading}
       />

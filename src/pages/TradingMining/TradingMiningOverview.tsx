@@ -156,7 +156,6 @@ interface TradingMiningOverviewProps {
   sessionEnd: string
   sessionLastUpdated: string
   sessionsList: SessionData[]
-  selectedSessionId: string | null
   setSelectedSessionId: React.Dispatch<React.SetStateAction<string | null>>
   isLoading: boolean
 }
@@ -166,7 +165,6 @@ const TradingMiningOverview = ({
   sessionEnd,
   sessionLastUpdated,
   sessionsList,
-  selectedSessionId,
   setSelectedSessionId,
   isLoading,
 }: TradingMiningOverviewProps) => {

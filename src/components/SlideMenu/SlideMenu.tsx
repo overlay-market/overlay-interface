@@ -12,6 +12,7 @@ import ExternalLinks from '../Header/ExternalLinks'
 import {useState} from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {ClaimId} from '../../constants/claims'
+import {LINKS} from '../../constants/links'
 
 const NEW_MOBILE_MENU_FLAG = true
 
@@ -167,6 +168,9 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               <StyledInternalLink tabIndex={tabIndex} to={'/trading-mining'}>
                 <StyledMenuLink displayText={'Trading Mining'} linkDestination={'/trading-mining'} currentLocation={location} />
               </StyledInternalLink>
+              <StyledExternalLink href={LINKS.STATISTICS}>
+                <TEXT.Menu>Statistics</TEXT.Menu>
+              </StyledExternalLink>
               <ClaimTestTokenLink tabIndex={tabIndex} to={'/sepolia-faucet'}>
                 <StyledMenuLink displayText={'Claim Test Token'} linkDestination={'/leaderboard'} currentLocation={location} />
               </ClaimTestTokenLink>

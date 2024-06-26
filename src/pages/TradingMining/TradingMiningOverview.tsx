@@ -206,7 +206,7 @@ const TradingMiningOverview = ({
 
       sessionsList.forEach(el => {
         const sessionStarts = moment.utc(el.sessionStart)
-        const sessionEnds = moment.utc(el.sessionEnd)
+        const sessionEnds = moment.utc(el.sessionEnd).subtract(1, 'hours')
         newList.set(
           el._id,
           `Session ${sessionStarts.format('MMM')} ${sessionStarts.format('DD')} - ${sessionEnds.format('MMM')} ${sessionEnds.format('DD')}`,

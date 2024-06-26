@@ -126,6 +126,13 @@ export interface TMLeaderboardPointsData {
   user?: TMLeaderboardRank
 }
 
+export interface SessionData {
+  _id: string
+  sessionStart: string
+  sessionEnd: string
+  sessionNumber: number
+}
+
 const TradingMiningLeaderboard = () => {
   const {account} = useActiveWeb3React()
   const [ranks, setRanks] = useState<TMLeaderboardUserRank[] | null>(null)
@@ -136,6 +143,8 @@ const TradingMiningLeaderboard = () => {
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
   const [usersCounter, setUsersCounter] = useState(0)
   const [profilesCounter, setProfilesCounter] = useState(0)
+  const [currentSessionId, setCurrentSessionId] = useState<null | string>(null)
+  const [selectedSessionId, setSelectedSessionId] = useState<null | string>(null)
 
   const [{data: pointsData, loading: dataLoading}, getPointsData] = useAxios(
     {
@@ -148,7 +157,9 @@ const TradingMiningLeaderboard = () => {
   const initialDataHandle = async () => {
     try {
       await getPointsData({
-        url: `/points/leaderboard/${initialNumberOfRows}${account ? `/${account}` : ''}`,
+        url: `/points/leaderboard/${selectedSessionId ? `getBySessionId/${selectedSessionId}/` : ''}${initialNumberOfRows}${
+          account ? `/${account}` : ''
+        }`,
       })
     } catch (error) {
       console.log(error)
@@ -157,7 +168,7 @@ const TradingMiningLeaderboard = () => {
 
   useEffect(() => {
     initialDataHandle()
-  }, [])
+  }, [selectedSessionId])
 
   const sessionDetails = useMemo<SessionDetails>(() => {
     if (pointsData) {
@@ -245,38 +256,38 @@ const TradingMiningLeaderboard = () => {
   useEffect(() => {
     if (account && pointsData && initialUserData === undefined) {
       getUserPointsData({
-        url: `/points/leaderboard/0/${account}`,
+        url: `/points/leaderboard/${selectedSessionId ? `getBySessionId/${selectedSessionId}/` : ''}0/${account}`,
       })
     }
-  }, [account, pointsData, initialUserData, getUserPointsData])
+  }, [account, pointsData, initialUserData, getUserPointsData, selectedSessionId])
 
   useEffect(() => {
     const userRankData = {
       ...(initialUserData ?? curUserData),
-      username: undefined,
+      username: userData?.username ?? undefined,
     }
 
     setUserData(userRankData as unknown as TMLeaderboardUserRank)
-  }, [initialUserData, curUserData])
+  }, [initialUserData, curUserData, userData?.username, selectedSessionId])
 
   useEffect(() => {
     const getUserData = async () => {
       const username = account && (await getWeb3Username(account))
-
       const userRankData = {
-        ...userData,
+        ...(initialUserData ?? curUserData),
         username: username ?? undefined,
       }
 
       setUserData(userRankData as unknown as TMLeaderboardUserRank)
     }
 
-    if (account && userData?._id && !userData.username) {
+    if (account && userData && userData._id && !userData.username) {
       getUserData()
     }
-  }, [account, initialUserData, curUserData, setUserData])
+  }, [account, initialUserData, curUserData, userData?._id, setUserData])
 
   // get final ranks with usernames and avatars
+
   const getProfiles = async (passedData: TMLeaderboardRank[]) => {
     const profilesIds: string[] = []
     const profilesMap = new Map()
@@ -323,7 +334,7 @@ const TradingMiningLeaderboard = () => {
   const loadMoreHandle = async () => {
     try {
       await getMoreData({
-        url: `/points/leaderboard/${loadedNumberOfRows + 20}`,
+        url: `/points/leaderboard/${selectedSessionId ? `getBySessionId/${selectedSessionId}/` : ''}${loadedNumberOfRows + 20}`,
       })
       setLoadedNumberOfRows(loadedNumberOfRows + 20)
     } catch (error) {
@@ -331,12 +342,57 @@ const TradingMiningLeaderboard = () => {
     }
   }
 
+  // get all sessions till the current
+
+  const [{data: sessionsData, loading: sessionsdataLoading}, getSessionsData] = useAxios(
+    {
+      baseURL: TRADING_MINING_API,
+      method: 'GET',
+    },
+    {manual: true},
+  )
+
+  const sessionsDataHandle = async () => {
+    try {
+      await getSessionsData({
+        url: `/sessions/getSessionsForDropdown`,
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    sessionsDataHandle()
+  }, [])
+
+  useEffect(() => {
+    if (!currentSessionId && sessionDetails) {
+      setCurrentSessionId(sessionDetails._id)
+    }
+  }, [sessionDetails])
+
+  const sessionsList = useMemo<SessionData[]>(() => {
+    if (sessionsData && currentSessionId) {
+      const currentSession: SessionData = sessionsData.sessions.find((el: SessionData) => el._id === currentSessionId)
+      const newList = sessionsData.sessions.filter((el: SessionData) => el.sessionNumber <= currentSession.sessionNumber)
+      return newList
+    }
+  }, [sessionsData, currentSessionId])
+
+  useEffect(() => {
+    setLoadedNumberOfRows(initialNumberOfRows)
+    setRanks(null)
+  }, [selectedSessionId])
+
   return (
     <PageContainerStyled>
       <TradingMiningOverview
         userPoints={userData?.totalPoints}
         sessionEnd={sessionDetails?.sessionEnd}
         sessionLastUpdated={sessionDetails?.sessionLastUpdated}
+        sessionsList={sessionsList}
+        setSelectedSessionId={setSelectedSessionId}
         isLoading={dataLoading || userDataLoading}
       />
 
@@ -357,12 +413,12 @@ const TradingMiningLeaderboard = () => {
           </StyledTableHeaderRow>
         </TableHead>
 
-        {account && (
+        {account && userData && (
           <TableBody>
             <UserRankingRow notclickable="true">
               <TableDataCell className="rank" noborder="true" textalign="center">
                 <TEXT.SmallBody color={colors(true).dark.white}>
-                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.rank ?? 'N/A'}
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData.rank ?? 'N/A'}
                 </TEXT.SmallBody>
               </TableDataCell>
               <TableDataCell noborder="true">
@@ -371,7 +427,7 @@ const TradingMiningLeaderboard = () => {
                     Your current rank
                   </TEXT.BoldSmallBody>
                   <TEXT.Supplemental color={colors(false).dark.grey1} className="username">
-                    {userData?.username ?? shortenAddress(account)}
+                    {userData.username ?? shortenAddress(account)}
                   </TEXT.Supplemental>
                 </UsernameContainer>
               </TableDataCell>

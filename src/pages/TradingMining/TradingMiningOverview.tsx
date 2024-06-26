@@ -66,7 +66,7 @@ const OverviewRightContainer = styled.div`
 
 const ResponsiveFlexRow = styled(FlexRowTextContainer)`
   flex-direction: column;
-  ${({theme}) => theme.mediaWidth.minExtraSmall`
+  ${({theme}) => theme.mediaWidth.minSmall`
     flex-direction: row;
   `}
 `
@@ -274,14 +274,14 @@ const TradingMiningOverview = ({
               </TEXT.BoldHeader1>
             </ResponsiveFlexRow>
           ) : (
-            <FlexRowTextContainer>
+            <ResponsiveFlexRow>
               <ConnectWalletLink onClick={toggleWalletModal} fontSize={24} color={colors(false).dark.blue2}>
                 Connect Wallet
               </ConnectWalletLink>
               <TEXT.BoldHeader1 fontSize={24} color={colors(false).dark.blue1}>
                 to see Total Volume
               </TEXT.BoldHeader1>
-            </FlexRowTextContainer>
+            </ResponsiveFlexRow>
           )}
 
           <FlexRowTextContainer>

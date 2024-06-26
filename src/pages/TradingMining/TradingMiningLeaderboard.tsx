@@ -284,7 +284,7 @@ const TradingMiningLeaderboard = () => {
     if (account && userData && userData._id && !userData.username) {
       getUserData()
     }
-  }, [account, initialUserData, curUserData, userData?._id, setUserData, selectedSessionId])
+  }, [account, initialUserData, curUserData, userData?._id, setUserData])
 
   // get final ranks with usernames and avatars
 
@@ -414,12 +414,12 @@ const TradingMiningLeaderboard = () => {
           </StyledTableHeaderRow>
         </TableHead>
 
-        {account && (
+        {account && userData && (
           <TableBody>
             <UserRankingRow notclickable="true">
               <TableDataCell className="rank" noborder="true" textalign="center">
                 <TEXT.SmallBody color={colors(true).dark.white}>
-                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData?.rank ?? 'N/A'}
+                  {dataLoading || userDataLoading ? <Loader size="16px" /> : userData.rank ?? 'N/A'}
                 </TEXT.SmallBody>
               </TableDataCell>
               <TableDataCell noborder="true">
@@ -428,7 +428,7 @@ const TradingMiningLeaderboard = () => {
                     Your current rank
                   </TEXT.BoldSmallBody>
                   <TEXT.Supplemental color={colors(false).dark.grey1} className="username">
-                    {userData?.username ?? shortenAddress(account)}
+                    {userData.username ?? shortenAddress(account)}
                   </TEXT.Supplemental>
                 </UsernameContainer>
               </TableDataCell>

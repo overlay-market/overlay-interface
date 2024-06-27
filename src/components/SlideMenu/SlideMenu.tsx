@@ -48,7 +48,7 @@ const StyledInternalLink = styled(NavLink)`
   margin: 12px 0;
   border: none !important;
 `
-const ClaimTestTokenLink = styled(NavLink)`
+const PowerCardLink = styled(NavLink)`
   background: linear-gradient(89.2deg, #d5b4ff -1.18%, #ffa2b9 26.07%, #ff648a 47.56%, #ffcc8f 64.85%, #d5b4ff 99.44%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -168,12 +168,15 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               <StyledInternalLink tabIndex={tabIndex} to={'/trading-mining'}>
                 <StyledMenuLink displayText={'Trading Mining'} linkDestination={'/trading-mining'} currentLocation={location} />
               </StyledInternalLink>
+              <PowerCardLink tabIndex={tabIndex} to={'/power-cards'}>
+                <StyledMenuLink displayText={'Power Cards'} linkDestination={'/power-cards'} currentLocation={location} />
+              </PowerCardLink>
               <StyledExternalLink href={LINKS.STATISTICS}>
                 <TEXT.Menu>Statistics</TEXT.Menu>
               </StyledExternalLink>
-              <ClaimTestTokenLink tabIndex={tabIndex} to={'/sepolia-faucet'}>
+              <PowerCardLink tabIndex={tabIndex} to={'/sepolia-faucet'}>
                 <StyledMenuLink displayText={'Claim Test Token'} linkDestination={'/leaderboard'} currentLocation={location} />
-              </ClaimTestTokenLink>
+              </PowerCardLink>
               {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
             <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />
           </StyledInternalLink> */}

@@ -23,6 +23,9 @@ import SepoliaFaucet from './SepoliaFaucet/SepoliaFaucet'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import Leaderboard from './Leaderboard/Leaderboard'
 import TradingMiningLeaderboard from './TradingMining/TradingMiningLeaderboard'
+import AllCards from './PowerCards/AllCards'
+import MyCards from './PowerCards/MyCards'
+import BurntCards from './PowerCards/BurntCards'
 import {cookie3Analytics} from '@cookie3/analytics'
 import {useEffect, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
@@ -119,6 +122,10 @@ const App = () => {
                     <Route exact strict path="/sepolia-faucet" component={SepoliaFaucet} />
                     <Route exact strict path="/leaderboard" component={Leaderboard} />
                     <Route exact strict path="/trading-mining" component={TradingMiningLeaderboard} />
+                    <Route exact strict path="/power-cards" render={() => <Redirect to="/power-cards/all-cards" />} />
+                    <Route exact strict path="/power-cards/all-cards" component={AllCards} />
+                    <Route exact strict path="/power-cards/my-cards" component={MyCards} />
+                    <Route exact strict path="/power-cards/burnt-cards" component={BurntCards} />
                   </Switch>
                 </ProtectedRoute>
               }

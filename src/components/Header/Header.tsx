@@ -272,6 +272,10 @@ export default function Header() {
               <TEXT.Menu>Trading Mining</TEXT.Menu>
             </StyledLink>
 
+            <PowerCardLink to={'/power-cards'}>
+              <TEXT.Menu>Power Cards</TEXT.Menu>
+            </PowerCardLink>
+
             <StyledExternalLink href={LINKS.STATISTICS} target="_blank" rel="noopener noreferrer">
               Statistics
             </StyledExternalLink>

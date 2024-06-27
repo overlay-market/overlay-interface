@@ -153,7 +153,7 @@ const MarketsRow = ({
       </StyledTableCellThin>
 
       <StyledTableCellThin id="marketFeedLogo">
-        <Icon size={20} margin="auto">
+        <Icon size={20} margin="auto" justifyContent="center">
           <img src={oracleLogo} alt="Market Feed Logo" />
         </Icon>
       </StyledTableCellThin>

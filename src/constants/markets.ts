@@ -30,6 +30,7 @@ import EvIndexFull from '../assets/images/tokens/ev-index-full-logo.jpeg'
 import BtcdFull from '../assets/images/market-details/btc-dom-full.jpg'
 import QuantumCatsLogo from '../assets/images/tokens/quantum-cats.png'
 import InkLogo from '../assets/images/tokens/ink.png'
+import EthSolLogo from '../assets/images/tokens/ethsol.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -382,6 +383,19 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://sepolia.arbiscan.io/address/0xad90fff9d159e18cec2048dd6881e29886e4899e',
     },
     fullLogo: AIIndexFull,
+  },
+  '0x3966f792517e2df998c48301163c2a95bfd3eff8': {
+    marketName: 'ETH / SOL',
+    logo: EthSolLogo,
+    currency: '',
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.PYTH],
+    sources: [{name: 'Pyth Network'}],
+    descriptionText: 'TL;DR - ETH price divided by SOL price\n\nThe source of data is the API provided by Pyth Network',
+    contract: {
+      name: shortenAddress('0x3966f792517e2df998c48301163c2a95bfd3eff8'),
+      url: 'https://sepolia.arbiscan.io/address/0x3966f792517e2df998c48301163c2a95bfd3eff8',
+    },
   },
 }
 

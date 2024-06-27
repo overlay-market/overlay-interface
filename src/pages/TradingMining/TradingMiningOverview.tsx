@@ -181,6 +181,8 @@ const TradingMiningOverview = ({
   const timeDifference = sessionEndsTime.diff(currentTime)
   const timeLeftDuration = moment.duration(timeDifference)
 
+  const seasonEndedTime = moment.utc(sessionEnd).subtract(1, 'hours')
+
   const sessionLastUpdatedTime = moment.utc(sessionLastUpdated)
   const lastUpdatedTimeDifference = currentTime.diff(sessionLastUpdatedTime)
   const lastUpdatedTimeDuration = moment.duration(lastUpdatedTimeDifference)
@@ -299,18 +301,19 @@ const TradingMiningOverview = ({
             </CardIcon>
             <CardInfoBox>
               {isCurrentSession ? (
-                <TEXT.SmallBody color={'#C4C4C4'}>Season Ends</TEXT.SmallBody>
+                <>
+                  <TEXT.SmallBody color={'#C4C4C4'}>Season Ends</TEXT.SmallBody>
+                  <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
+                    {!sessionEnd ? <Loader size="16px" /> : `${timeLeftDuration.days()}d ${timeLeftDuration.hours()}h ${timeLeftDuration.minutes()}m`}
+                  </TEXT.BoldNumber>
+                </>
               ) : (
-                <TEXT.SmallBody color={'#C4C4C4'}>Season Ended</TEXT.SmallBody>
-              )}
-              {isCurrentSession ? (
-                <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
-                  {!sessionEnd ? <Loader size="16px" /> : `${timeLeftDuration.days()}d ${timeLeftDuration.hours()}h ${timeLeftDuration.minutes()}m`}
-                </TEXT.BoldNumber>
-              ) : (
-                <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
-                  {!sessionEnd ? <Loader size="16px" /> : `${moment.utc(sessionEnd).format('MMM')} ${moment.utc(sessionEnd).format('DD')}`}
-                </TEXT.BoldNumber>
+                <>
+                  <TEXT.SmallBody color={'#C4C4C4'}>Season Ended</TEXT.SmallBody>
+                  <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>
+                    {!sessionEnd ? <Loader size="16px" /> : `${seasonEndedTime.format('MMM')} ${seasonEndedTime.format('DD')}`}
+                  </TEXT.BoldNumber>
+                </>
               )}
             </CardInfoBox>
           </StyledCard>

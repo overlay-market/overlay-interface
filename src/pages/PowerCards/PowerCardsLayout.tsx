@@ -1,5 +1,11 @@
 import {ReactNode} from 'react'
-import {Link} from 'react-router-dom'
+import {PageContainer} from '../../components/Container/Container'
+import CardTabs from './CardTabs'
+import styled from 'styled-components'
+
+const StyledPageContainer = styled(PageContainer)`
+  padding: 0;
+`
 
 interface PowerCardsLayoutProps {
   children: ReactNode
@@ -7,12 +13,10 @@ interface PowerCardsLayoutProps {
 
 const PowerCardsLayout: React.FC<PowerCardsLayoutProps> = ({children}) => {
   return (
-    <div>
-      <Link to={'/power-cards/all-cards'}>All cards</Link>
-      <Link to={'/power-cards/my-cards'}>My cards</Link>
-      <Link to={'/power-cards/burnt-cards'}>Burnt cards</Link>
+    <StyledPageContainer maxWidth={'1023px'}>
+      <CardTabs />
       {children}
-    </div>
+    </StyledPageContainer>
   )
 }
 

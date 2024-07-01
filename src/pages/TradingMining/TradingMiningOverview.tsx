@@ -171,8 +171,6 @@ const TradingMiningOverview = ({
   const {account} = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [activeDropdownValue, setActiveDropdownValue] = useState('...')
-  const isCurrentSession = Boolean(sessionLastUpdated)
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const openDropdownMenu = Boolean(anchorEl)
 
@@ -180,7 +178,7 @@ const TradingMiningOverview = ({
   const sessionEndsTime = moment.utc(sessionEnd)
   const timeDifference = sessionEndsTime.diff(currentTime)
   const timeLeftDuration = moment.duration(timeDifference)
-
+  const isCurrentSession = timeDifference > 0
   const seasonEndedTime = moment.utc(sessionEnd).subtract(1, 'hours')
 
   const sessionLastUpdatedTime = moment.utc(sessionLastUpdated)
@@ -287,11 +285,13 @@ const TradingMiningOverview = ({
           <FlexRowTextContainer>
             <TEXT.Supplemental color={colors(false).dark.grey2}>Leaderboard resets every Monday.</TEXT.Supplemental>
           </FlexRowTextContainer>
-          {isCurrentSession && (
-            <FlexRowTextContainer>
-              <TEXT.Supplemental color={colors(false).dark.grey2}>Updated {lastUpdatedTime} ago</TEXT.Supplemental>
-            </FlexRowTextContainer>
-          )}
+          {isLoading
+            ? ''
+            : isCurrentSession && (
+                <FlexRowTextContainer>
+                  <TEXT.Supplemental color={colors(false).dark.grey2}>Updated {lastUpdatedTime} ago</TEXT.Supplemental>
+                </FlexRowTextContainer>
+              )}
         </OverviewLeftContainer>
 
         <OverviewRightContainer>
@@ -300,7 +300,9 @@ const TradingMiningOverview = ({
               <Clock color={colors(false).dark.tan2} />
             </CardIcon>
             <CardInfoBox>
-              {isCurrentSession ? (
+              {isLoading ? (
+                <Loader size="16px" />
+              ) : isCurrentSession ? (
                 <>
                   <TEXT.SmallBody color={'#C4C4C4'}>Season Ends</TEXT.SmallBody>
                   <TEXT.BoldNumber fontSize={18} color={colors(false).dark.blue1}>

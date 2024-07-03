@@ -1,6 +1,7 @@
 import {Card, Grid} from '@material-ui/core'
 import styled from 'styled-components'
 import {colors} from '../../theme/theme'
+import {useHistory} from 'react-router-dom'
 
 const StyledGrid = styled(Grid)`
   & .MuiGrid-root {
@@ -51,11 +52,17 @@ const ImageContainer = styled(Card)<{imgUrl: string}>`
 `
 
 const AllCards = () => {
+  let history = useHistory()
+
+  const handleNavigate = (card: any) => {
+    history.push(`/power-cards/all-cards/${card.title}`)
+  }
+
   return (
     <StyledGrid container spacing={2}>
       {allCardsData.map(card => (
         <Grid item xs={12} sm={12} md={4} key={card.img}>
-          <ImageContainer key={card.img} imgUrl={card.img} />
+          <ImageContainer key={card.img} imgUrl={card.img} onClick={() => handleNavigate(card)} />
         </Grid>
       ))}
     </StyledGrid>

@@ -117,13 +117,13 @@ export const LoadMoreButton = styled(RebassButton)<
   font-family: Inter;
 `
 
-export const ColorButton = styled(BaseTemplateButton)<{width?: string; bgColor?: string; color?: string; disabled?: boolean}>`
+export const ColorButton = styled(BaseTemplateButton)<{width?: string; height?: string; bgColor?: string; color?: string; disabled?: boolean}>`
   width: ${({width}) => (width ? width : 'auto')};
   color: ${({color}) => (color ? color : 'white')};
   background: ${({bgColor}) => (bgColor ? bgColor : '#53b1f9')};
   opacity: ${({disabled}) => (disabled ? '0.5' : '')};
   cursor: ${({disabled}) => (disabled ? 'default' : 'pointer')};
-  height: 42px;
+  height: ${({height}) => (height ? height : '42px')};
   padding: 12px 24px;
   font-size: 14px;
   font-weight: 700;

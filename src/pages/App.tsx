@@ -27,6 +27,7 @@ import PowerCardsLayout from './PowerCards/PowerCardsLayout'
 import AllCards from './PowerCards/AllCards'
 import MyCards from './PowerCards/MyCards'
 import BurntCards from './PowerCards/BurntCards'
+import OpenCard from './PowerCards/OpenCard'
 import {cookie3Analytics} from '@cookie3/analytics'
 import {useEffect, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
@@ -130,6 +131,7 @@ const App = () => {
                           <Switch>
                             <Route exact strict path={`${url}`} render={() => <Redirect to={`${url}/all-cards`} />} />
                             <Route exact strict path={`${url}/all-cards`} component={AllCards} />
+                            <Route exact strict path={`${url}/all-cards/:cardId`} component={OpenCard} />
                             <Route exact strict path={`${url}/my-cards`} component={MyCards} />
                             <Route exact strict path={`${url}/burnt-cards`} component={BurntCards} />{' '}
                           </Switch>

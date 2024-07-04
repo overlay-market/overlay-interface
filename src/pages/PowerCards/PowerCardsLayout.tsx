@@ -20,6 +20,11 @@ const PageWrapper = styled(Container)`
 
 const StyledPageContainer = styled(PageContainer)`
   padding: 0;
+  @media (max-width: 767px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
   ${({theme}) => theme.mediaWidth.minMedium`
     > div {

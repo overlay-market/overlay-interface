@@ -5,9 +5,9 @@ import {useHistory} from 'react-router-dom'
 
 const StyledGrid = styled(Grid)`
   & .MuiGrid-root {
-    @media (max-width: 764px) {
-      margin-left: 8px;
-      max-width: 359px;
+    @media (max-width: 767px) {
+      margin: 0 auto;
+      max-width: 360px;
       display: flex;
       justify-content: center;
       background: ${() => colors(false).dark.grey4};

@@ -1,6 +1,7 @@
 import {Box, Card, Grid, Link} from '@material-ui/core'
 import styled from 'styled-components'
-import {colors} from '../../theme/theme'
+import {colors, TEXT} from '../../theme/theme'
+import {ColorButton} from '../../components/Button/Button'
 import {ExternalLink as ExternalLinkIcon} from 'react-feather'
 
 const StyledGrid = styled(Grid)`
@@ -83,6 +84,27 @@ const LinkContent = styled(Box)`
   color: ${colors(false).dark.blue2};
 `
 
+const ButtonWrapper = styled(Box)`
+  position: relative;
+  width: 360px;
+  padding-bottom: 24px;
+  ${({theme}) => theme.mediaWidth.minSmall`
+    width: auto;
+    padding-bottom: 0;
+  `};
+`
+
+const ButtonContainer = styled(Box)`
+  ${({theme}) => theme.mediaWidth.minSmall`
+    position: absolute;
+    top: -70px;
+  `};
+  ${({theme}) => theme.mediaWidth.minMedium`
+    position: absolute;
+    top: -78px;
+  `};
+`
+
 const MyCards = () => {
   // const myCardsData: Array<any> = []
   const handleSelectCard = (card: any) => {
@@ -115,13 +137,34 @@ const MyCards = () => {
         </>
       )}
       {myCardsData.length > 0 && (
-        <StyledGrid container spacing={2}>
-          {myCardsData.map(card => (
-            <Grid item xs={12} sm={12} md={4} key={card.img}>
-              <ImageContainer key={card.img} imgUrl={card.img} onClick={() => handleSelectCard(card)} />
+        <>
+          <ButtonWrapper>
+            <Grid container spacing={2} direction="row-reverse" style={{margin: '-8px'}}>
+              <Grid item style={{display: 'flex', justifyContent: 'end', paddingBottom: '0'}}>
+                <ButtonContainer>
+                  <ColorButton
+                    width={'174px'}
+                    height={'53px'}
+                    bgColor={'#353B4F'}
+                    onClick={() => {
+                      console.log('Clicked the button!')
+                    }}
+                  >
+                    <TEXT.BoldStandardBody color={colors(false).dark.blue1}>Select a card</TEXT.BoldStandardBody>
+                  </ColorButton>
+                </ButtonContainer>
+              </Grid>
             </Grid>
-          ))}
-        </StyledGrid>
+          </ButtonWrapper>
+
+          <StyledGrid container spacing={2}>
+            {myCardsData.map(card => (
+              <Grid item xs={12} sm={12} md={4} key={card.img}>
+                <ImageContainer key={card.img} imgUrl={card.img} onClick={() => handleSelectCard(card)} />
+              </Grid>
+            ))}
+          </StyledGrid>
+        </>
       )}
     </>
   )
@@ -137,5 +180,9 @@ const myCardsData = [
   {
     img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
     title: 'Burger',
+  },
+  {
+    img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
+    title: 'Tomato basil',
   },
 ]

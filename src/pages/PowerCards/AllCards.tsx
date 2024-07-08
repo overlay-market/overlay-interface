@@ -64,11 +64,12 @@ const AllCards = () => {
 
   return (
     <StyledGrid container spacing={2}>
-      {Object.keys(allCardsData).map((key: string) => (
-        <Grid item xs={12} sm={12} md={4} key={key}>
-          <ImageContainer key={allCardsData[key].img} imgUrl={allCardsData[key].img} onClick={() => handleNavigate(key)} />
-        </Grid>
-      ))}
+      {allCardsData &&
+        Object.keys(allCardsData).map((key: string) => (
+          <Grid item xs={12} sm={12} md={4} key={key}>
+            <ImageContainer key={allCardsData[key].img} imgUrl={allCardsData[key].img} onClick={() => handleNavigate(key)} />
+          </Grid>
+        ))}
     </StyledGrid>
   )
 }

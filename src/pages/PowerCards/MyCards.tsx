@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import {colors, TEXT} from '../../theme/theme'
 import {ColorButton} from '../../components/Button/Button'
 import {ExternalLink as ExternalLinkIcon} from 'react-feather'
+import {NFTsDataType, useNFTsData} from '../../hooks/useNFTsData'
 
 const StyledGrid = styled(Grid)`
   & .MuiGrid-root {
@@ -106,14 +107,19 @@ const ButtonContainer = styled(Box)`
 `
 
 const MyCards = () => {
-  // const myCardsData: Array<any> = []
-  const handleSelectCard = (card: any) => {
-    console.log('select a card!')
+  const myCardsIdsList: number[] = [12, 1, 4, 3]
+
+  const NFTdata = useNFTsData(myCardsIdsList)
+  const myCardsData: NFTsDataType = JSON.parse(NFTdata)
+  const myCardsAmount = myCardsData && Object.keys(myCardsData).length
+
+  const handleSelectCard = (key: string) => {
+    console.log('select a card!', key)
   }
 
   return (
     <>
-      {!myCardsData.length && (
+      {(!myCardsIdsList.length || !myCardsAmount) && (
         <>
           <NoCardsContainer>
             <Box>No cards to display.</Box>
@@ -136,7 +142,7 @@ const MyCards = () => {
           <EmptyBgColorContainer />
         </>
       )}
-      {myCardsData.length > 0 && (
+      {myCardsAmount > 0 && (
         <>
           <ButtonWrapper>
             <Grid container spacing={2} direction="row-reverse" style={{margin: '-8px'}}>
@@ -158,11 +164,12 @@ const MyCards = () => {
           </ButtonWrapper>
 
           <StyledGrid container spacing={2}>
-            {myCardsData.map(card => (
-              <Grid item xs={12} sm={12} md={4} key={card.img}>
-                <ImageContainer key={card.img} imgUrl={card.img} onClick={() => handleSelectCard(card)} />
-              </Grid>
-            ))}
+            {myCardsData &&
+              Object.keys(myCardsData).map((key: string) => (
+                <Grid item xs={12} sm={12} md={4} key={key}>
+                  <ImageContainer imgUrl={myCardsData[key].img} onClick={() => handleSelectCard(key)} />
+                </Grid>
+              ))}
           </StyledGrid>
         </>
       )}
@@ -171,18 +178,3 @@ const MyCards = () => {
 }
 
 export default MyCards
-
-const myCardsData = [
-  {
-    img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-    title: 'Breakfast',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-    title: 'Burger',
-  },
-  {
-    img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-    title: 'Tomato basil',
-  },
-]

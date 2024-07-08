@@ -2,7 +2,7 @@ import {Card, Grid} from '@material-ui/core'
 import styled from 'styled-components'
 import {colors} from '../../theme/theme'
 import {useHistory} from 'react-router-dom'
-import {useAllNFTsData} from '../../hooks/useNFTsData'
+import {NFTsDataType, useAllNFTsData} from '../../hooks/useNFTsData'
 
 const StyledGrid = styled(Grid)`
   & .MuiGrid-root {
@@ -55,18 +55,18 @@ const ImageContainer = styled(Card)<{imgUrl: string}>`
 const AllCards = () => {
   let history = useHistory()
 
-  const handleNavigate = (card: any) => {
-    history.push(`/power-cards/all-cards/${card.title}`)
+  const handleNavigate = (key: string) => {
+    history.push(`/power-cards/all-cards/${key}`)
   }
 
   const allNFTdata = useAllNFTsData()
-  const allCardsData = JSON.parse(allNFTdata)
+  const allCardsData: NFTsDataType = JSON.parse(allNFTdata)
 
   return (
     <StyledGrid container spacing={2}>
-      {Object.keys(allCardsData).map((card: any) => (
-        <Grid item xs={12} sm={12} md={4} key={card}>
-          <ImageContainer key={allCardsData[card].img} imgUrl={allCardsData[card].img} onClick={() => handleNavigate(card)} />
+      {Object.keys(allCardsData).map((key: string) => (
+        <Grid item xs={12} sm={12} md={4} key={key}>
+          <ImageContainer key={allCardsData[key].img} imgUrl={allCardsData[key].img} onClick={() => handleNavigate(key)} />
         </Grid>
       ))}
     </StyledGrid>

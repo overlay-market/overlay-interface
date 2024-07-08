@@ -5,6 +5,8 @@ import {Back} from '../../components/Back/Back'
 import {ColorButton} from '../../components/Button/Button'
 import {ExternalLink as ExternalLinkIcon} from 'react-feather'
 import useIsMobile from '../../hooks/useIsMobile'
+import {RouteComponentProps} from 'react-router-dom'
+import {NFTsDataType, useNFTsData} from '../../hooks/useNFTsData'
 
 const OpenCardContainer = styled(Box)`
   display: flex;
@@ -93,8 +95,16 @@ const ButtonContent = styled(Box)`
   align-items: center;
 `
 
-const OpenCard = () => {
+const OpenCard = ({
+  match: {
+    params: {cardId},
+  },
+}: RouteComponentProps<{cardId: string}>) => {
   const isMobile = useIsMobile()
+
+  const NFTdata = useNFTsData([Number(cardId)])
+  const cardData: NFTsDataType = JSON.parse(NFTdata)
+  const card = cardData[cardId]
 
   return (
     <Box>
@@ -104,15 +114,15 @@ const OpenCard = () => {
             <BackButton>
               <Back arrowSize={16} fontSize={14} fontColor={colors(false).dark.blue2} toUrl={'/power-cards/all-cards'} />
             </BackButton>
-            <TEXT.StandardHeader1 fontSize={24}>Breeze of Mt Fuji</TEXT.StandardHeader1>
+            <TEXT.StandardHeader1 fontSize={24}>{card.title}</TEXT.StandardHeader1>
           </CardHeader>
         )}
-        <ImageContainer imgUrl={'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e'} />
+        <ImageContainer imgUrl={card.img} />
         <TextContentContainer>
           {!isMobile && (
             <CardHeader>
               <Back arrowSize={16} fontSize={14} fontColor={colors(false).dark.blue2} toUrl={'/power-cards/all-cards'} />
-              <TEXT.StandardHeader1 fontSize={24}>Breeze of Mt Fuji</TEXT.StandardHeader1>
+              <TEXT.StandardHeader1 fontSize={24}>{card.title}</TEXT.StandardHeader1>
             </CardHeader>
           )}
           <CardDetails>
@@ -121,8 +131,8 @@ const OpenCard = () => {
                 <TEXT.BoldStandardBody>Stats</TEXT.BoldStandardBody>
               </CardDetailsTitle>
               <CardDetailsDescription>
-                <TEXT.StandardBody>1/2000</TEXT.StandardBody>
-                <TEXT.StandardBody>Max 10 OV payout</TEXT.StandardBody>
+                <TEXT.StandardBody>{card.stats}</TEXT.StandardBody>
+                <TEXT.StandardBody>{card.statsMax}</TEXT.StandardBody>
               </CardDetailsDescription>
             </CardDetailsBox>
             <CardDetailsBox>
@@ -130,7 +140,7 @@ const OpenCard = () => {
                 <TEXT.BoldStandardBody>Powers</TEXT.BoldStandardBody>
               </CardDetailsTitle>
               <CardDetailsDescription>
-                <TEXT.StandardBody>Negative fees, good for 1, 24 hour period of trading</TEXT.StandardBody>
+                <TEXT.StandardBody>{card.powers}</TEXT.StandardBody>
               </CardDetailsDescription>
             </CardDetailsBox>
             <CardDetailsBox>

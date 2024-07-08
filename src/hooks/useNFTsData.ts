@@ -2,7 +2,7 @@ import * as metadata from '../powerCardsNFTs/metadata'
 import * as images from '../powerCardsNFTs/images'
 
 export type NFTsDataType = {
-  [id: number]: {
+  [id: number | string]: {
     img: string
     title: string
     stats: string

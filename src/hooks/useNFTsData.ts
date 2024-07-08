@@ -16,13 +16,16 @@ export function useNFTsData(ids: number[]): string {
 
   ids.forEach((id: number) => {
     const jsonData = metadata[`f${id}` as keyof typeof metadata]
+    const image = images[`Img${id}` as keyof typeof images]
 
-    NFTsData[id] = {
-      img: images[`Img${id}` as keyof typeof images],
-      title: jsonData.title,
-      stats: jsonData.Stats,
-      statsMax: jsonData.StatsMax,
-      powers: jsonData.Powers,
+    if (jsonData && image) {
+      NFTsData[id] = {
+        img: image,
+        title: jsonData.title,
+        stats: jsonData.Stats,
+        statsMax: jsonData.StatsMax,
+        powers: jsonData.Powers,
+      }
     }
   })
 

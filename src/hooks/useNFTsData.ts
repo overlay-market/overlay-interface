@@ -28,3 +28,13 @@ export function useNFTsData(ids: number[]): string {
 
   return JSON.stringify(NFTsData)
 }
+
+export function useAllNFTsData(): string {
+  let idsList: number[] = []
+
+  Object.keys(metadata).forEach((key: string) => {
+    idsList.push(Number(key.substring(1, key.length)))
+  })
+
+  return useNFTsData(idsList)
+}

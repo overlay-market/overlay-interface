@@ -1,6 +1,7 @@
 import {Box, Card, Grid} from '@material-ui/core'
 import styled from 'styled-components'
 import {colors} from '../../theme/theme'
+import {NFTsDataType, useNFTsData} from '../../hooks/useNFTsData'
 
 const StyledGrid = styled(Grid)`
   & .MuiGrid-root {
@@ -64,41 +65,30 @@ const NoCardsContainer = styled(Box)`
   `};
 `
 
-const EmptyBgColorContainer = styled(Box)`
-  ${({theme}) => theme.mediaWidth.minMedium`
-    background: #161a27;
-    position: absolute;
-    left: 0;
-    width: 100vw;
-    height: calc(100vh - 250px);
-  `};
-`
-
 const BurntCards = () => {
-  // const burntCardsData: Array<any> = []
-  const burntCardsData = [
-    {
-      img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-      title: 'Breakfast',
-    },
-  ]
+  const burntCardsIdsList: number[] = [1, 3]
+
+  const NFTdata = useNFTsData(burntCardsIdsList)
+  const burntCardsData: NFTsDataType = JSON.parse(NFTdata)
+  const burntCardsAmount = burntCardsData && Object.keys(burntCardsData).length
+
   return (
     <>
-      {!burntCardsData.length && (
+      {(!burntCardsIdsList.length || !burntCardsAmount) && (
         <>
           <NoCardsContainer>
             <Box>No burnt cards to display.</Box>
           </NoCardsContainer>
-          <EmptyBgColorContainer />
         </>
       )}
-      {burntCardsData.length > 0 && (
+      {burntCardsAmount > 0 && (
         <StyledGrid container spacing={2}>
-          {burntCardsData.map(card => (
-            <Grid item xs={12} sm={12} md={4} key={card.img}>
-              <ImageContainer key={card.img} imgUrl={card.img} />
-            </Grid>
-          ))}
+          {burntCardsData &&
+            Object.keys(burntCardsData).map((key: string) => (
+              <Grid item xs={12} sm={12} md={4} key={key}>
+                <ImageContainer imgUrl={burntCardsData[key].img} />
+              </Grid>
+            ))}
         </StyledGrid>
       )}
     </>

@@ -4,6 +4,7 @@ import {colors, TEXT} from '../../theme/theme'
 import {ColorButton} from '../../components/Button/Button'
 import {ExternalLink as ExternalLinkIcon} from 'react-feather'
 import {NFTsDataType, useNFTsData} from '../../hooks/useNFTsData'
+import {useEffect, useState} from 'react'
 
 const StyledGrid = styled(Grid)`
   & .MuiGrid-root {
@@ -41,13 +42,18 @@ const StyledGrid = styled(Grid)`
   }
   `};
 `
-const ImageContainer = styled(Card)<{imgUrl: string}>`
+const ImageContainer = styled(Card)<{imgUrl: string; isBoxShadow: boolean; isFilterGrayScale: boolean}>`
   border-radius: 4px;
   cursor: pointer;
   aspect-ratio: 333/455;
   background: ${({imgUrl}) => `url(${imgUrl})`};
   background-size: cover;
   width: 333px;
+  &.MuiPaper-elevation1 {
+    box-shadow: ${({isBoxShadow}) => (isBoxShadow ? `0px 4px 35px 4px rgba(255, 204, 143, 0.57)` : `none`)} !important;
+  }
+  filter: ${({isFilterGrayScale}) => (isFilterGrayScale ? `grayscale(1)` : ``)};
+
   ${({theme}) => theme.mediaWidth.minSmall`
     width: auto;
   `};
@@ -107,14 +113,23 @@ const ButtonContainer = styled(Box)`
 `
 
 const MyCards = () => {
-  const myCardsIdsList: number[] = [12, 1, 4, 3]
+  const myCardsIdsList: number[] = [12, 1, 4, 3, 36, 2]
 
   const NFTdata = useNFTsData(myCardsIdsList)
   const myCardsData: NFTsDataType = JSON.parse(NFTdata)
   const myCardsAmount = myCardsData && Object.keys(myCardsData).length
 
+  const [isActiveSelectCardOption, setIsActiveSelectCardOption] = useState(false)
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (isActiveSelectCardOption && !selectedCardId) {
+      setSelectedCardId(Object.keys(myCardsData)[0])
+    }
+  }, [selectedCardId, isActiveSelectCardOption])
+
   const handleSelectCard = (key: string) => {
-    console.log('select a card!', key)
+    isActiveSelectCardOption && setSelectedCardId(key)
   }
 
   return (
@@ -153,7 +168,7 @@ const MyCards = () => {
                     height={'53px'}
                     bgColor={'#353B4F'}
                     onClick={() => {
-                      console.log('Clicked the button!')
+                      setIsActiveSelectCardOption(true)
                     }}
                   >
                     <TEXT.BoldStandardBody color={colors(false).dark.blue1}>Select a card</TEXT.BoldStandardBody>
@@ -167,7 +182,12 @@ const MyCards = () => {
             {myCardsData &&
               Object.keys(myCardsData).map((key: string) => (
                 <Grid item xs={12} sm={12} md={4} key={key}>
-                  <ImageContainer imgUrl={myCardsData[key].img} onClick={() => handleSelectCard(key)} />
+                  <ImageContainer
+                    imgUrl={myCardsData[key].img}
+                    isBoxShadow={isActiveSelectCardOption && key === selectedCardId}
+                    isFilterGrayScale={isActiveSelectCardOption && key !== selectedCardId}
+                    onClick={() => handleSelectCard(key)}
+                  />
                 </Grid>
               ))}
           </StyledGrid>

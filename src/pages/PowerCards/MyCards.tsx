@@ -32,6 +32,11 @@ const StyledGrid = styled(Grid)`
     padding: 6px !important;
   }
   ${({theme}) => theme.mediaWidth.minSmall`
+  & .MuiGrid-root {
+    &:nth-child(-n + 3) {
+      margin-top: 8px;
+    }
+  };
   & .MuiGrid-item {
     padding: 10px !important;
   }
@@ -50,6 +55,8 @@ const ImageContainer = styled(Card)<{imgUrl: string; isBoxShadow: boolean; isFil
   background-size: cover;
   width: 333px;
   &.MuiPaper-elevation1 {
+    position: relative;
+    z-index: ${({isBoxShadow}) => (isBoxShadow ? `10` : `1`)} !important;
     box-shadow: ${({isBoxShadow}) => (isBoxShadow ? `0px 4px 35px 4px rgba(255, 204, 143, 0.57)` : `none`)} !important;
   }
   filter: ${({isFilterGrayScale}) => (isFilterGrayScale ? `grayscale(1)` : ``)};
@@ -183,7 +190,7 @@ const MyCards = () => {
         <>
           <ButtonWrapper>
             <Grid container spacing={2} direction="row-reverse" style={{margin: '-8px'}}>
-              <Grid item style={{display: 'flex', justifyContent: 'end', paddingBottom: '0'}}>
+              <Grid item style={{display: 'flex', justifyContent: 'end', paddingBottom: '0', paddingTop: '0'}}>
                 <ButtonContainer>
                   {!isActiveSelectCardOption && (
                     <ColorButton

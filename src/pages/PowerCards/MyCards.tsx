@@ -4,7 +4,7 @@ import {colors, TEXT} from '../../theme/theme'
 import {ColorButton} from '../../components/Button/Button'
 import {ExternalLink as ExternalLinkIcon} from 'react-feather'
 import {NFTsDataType, useNFTsData} from '../../hooks/useNFTsData'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 const StyledGrid = styled(Grid)`
   & .MuiGrid-root {
@@ -132,6 +132,28 @@ const MyCards = () => {
     isActiveSelectCardOption && setSelectedCardId(key)
   }
 
+  const burnCardCallback = useCallback(
+    async (card: string): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(`Card burn transaction successful, ${card}`)
+        }, 500)
+      })
+    },
+    [selectedCardId],
+  )
+
+  const handleBurnCard = useCallback(() => {
+    selectedCardId &&
+      burnCardCallback(myCardsData[selectedCardId].title)
+        .then((result: string) => {
+          alert(result)
+          setIsActiveSelectCardOption(false)
+          setSelectedCardId(null)
+        })
+        .catch(() => console.error('Error from handleBurnCard '))
+  }, [burnCardCallback])
+
   return (
     <>
       {(!myCardsIdsList.length || !myCardsAmount) && (
@@ -163,16 +185,24 @@ const MyCards = () => {
             <Grid container spacing={2} direction="row-reverse" style={{margin: '-8px'}}>
               <Grid item style={{display: 'flex', justifyContent: 'end', paddingBottom: '0'}}>
                 <ButtonContainer>
-                  <ColorButton
-                    width={'174px'}
-                    height={'53px'}
-                    bgColor={'#353B4F'}
-                    onClick={() => {
-                      setIsActiveSelectCardOption(true)
-                    }}
-                  >
-                    <TEXT.BoldStandardBody color={colors(false).dark.blue1}>Select a card</TEXT.BoldStandardBody>
-                  </ColorButton>
+                  {!isActiveSelectCardOption && (
+                    <ColorButton
+                      width={'174px'}
+                      height={'53px'}
+                      bgColor={'#353B4F'}
+                      onClick={() => {
+                        setIsActiveSelectCardOption(true)
+                      }}
+                    >
+                      <TEXT.BoldStandardBody color={colors(false).dark.blue1}>Select a card</TEXT.BoldStandardBody>
+                    </ColorButton>
+                  )}
+
+                  {isActiveSelectCardOption && (
+                    <ColorButton width={'182px'} height={'53px'} bgColor={'#53b1f9'} onClick={handleBurnCard}>
+                      <TEXT.BoldStandardBody color={colors(true).dark.white}>Burn this card</TEXT.BoldStandardBody>
+                    </ColorButton>
+                  )}
                 </ButtonContainer>
               </Grid>
             </Grid>

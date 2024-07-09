@@ -47,6 +47,7 @@ const StyledGrid = styled(Grid)`
   }
   `};
 `
+
 const ImageContainer = styled(Card)<{imgUrl: string; isBoxShadow: boolean; isFilterGrayScale: boolean}>`
   border-radius: 4px;
   cursor: pointer;
@@ -78,16 +79,6 @@ const NoCardsContainer = styled(Box)`
   ${({theme}) => theme.mediaWidth.minSmall`
   right: 0;
   font-size: 16px;
-  `};
-`
-
-const EmptyBgColorContainer = styled(Box)`
-  ${({theme}) => theme.mediaWidth.minMedium`
-    background: #161a27;
-    position: absolute;
-    left: 0;
-    width: 100vw;
-    height: calc(100vh - 250px);
   `};
 `
 
@@ -183,7 +174,6 @@ const MyCards = () => {
               </Link>
             </LinkContent>
           </NoCardsContainer>
-          <EmptyBgColorContainer />
         </>
       )}
       {myCardsAmount > 0 && (

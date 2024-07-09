@@ -14,7 +14,7 @@ const PageWrapper = styled(Container)`
     background: #161a27;
     min-width: 100vw;
     border: 1px solid #161a27;
-    box-shadow: 0 94px 0px 0px #161a27;
+    box-shadow: 0 100vh 0px 100vh #161a27;
   `};
 `
 

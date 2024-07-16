@@ -80,6 +80,7 @@ export const MainDetails = ({
   minPrice?: BigNumber
   priceCurrency?: string
 }) => {
+  const sigFigConstant = 8
   const estimatedReceivedPrice: any = useMemo(() => {
     if (isLong === undefined || estimatedBid === undefined || estimatedAsk === undefined) {
       return null
@@ -87,12 +88,12 @@ export const MainDetails = ({
     // if (estimatedBid === undefined || estimatedAsk === undefined) return prices.mid;
     if (decimals) {
       return isLong
-        ? formatBigNumberUsingDecimalsToString(estimatedAsk, decimals, 4)
-        : formatBigNumberUsingDecimalsToString(estimatedBid, decimals, 4)
+        ? formatBigNumberUsingDecimalsToString(estimatedAsk, decimals, sigFigConstant)
+        : formatBigNumberUsingDecimalsToString(estimatedBid, decimals, sigFigConstant)
     }
     return isLong
-      ? formatBigNumberUsingDecimalsToString(estimatedAsk, quoteTokenDecimals, 4)
-      : formatBigNumberUsingDecimalsToString(estimatedBid, quoteTokenDecimals, 4)
+      ? formatBigNumberUsingDecimalsToString(estimatedAsk, quoteTokenDecimals, sigFigConstant)
+      : formatBigNumberUsingDecimalsToString(estimatedBid, quoteTokenDecimals, sigFigConstant)
   }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals])
 
   const priceImpact = useMemo(() => {
@@ -116,7 +117,18 @@ export const MainDetails = ({
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Price</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>
           {estimatedReceivedPrice && minPrice
-            ? `${priceCurrency}${priceCurrency === '%' ? toPercentUnit(estimatedReceivedPrice) : toScientificNumber(estimatedReceivedPrice)}`
+            ? `${priceCurrency}${
+                priceCurrency === '%'
+                  ? toPercentUnit(estimatedReceivedPrice)
+                  : toScientificNumber(
+                      estimatedReceivedPrice < 1
+                        ? Number(estimatedReceivedPrice).toLocaleString('en-US', {
+                            maximumSignificantDigits: 4,
+                            minimumSignificantDigits: 4,
+                          })
+                        : estimatedReceivedPrice,
+                    )
+              }`
             : '-'}
         </DetailValue>
       </AdditionalDetailRow>

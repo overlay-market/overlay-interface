@@ -111,6 +111,26 @@ export const MainDetails = ({
   const toggleSetSlippageModal = useSetSlippageModalToggle()
   const {setSlippageValue} = useBuildState()
 
+  const formattedMinPrice: string | null = useMemo(() => {
+    if (minPrice) {
+      const formattedPrice = formatBigNumberUsingDecimalsToString(minPrice, 18, sigFigConstant)
+
+      if (Number(formattedPrice) < 1) {
+        return Number(formattedPrice).toLocaleString('en-US', {
+          maximumSignificantDigits: 4,
+          minimumSignificantDigits: 4,
+        })
+      } else {
+        return Number(formattedPrice).toLocaleString('en-US', {
+          minimumFractionDigits: 4,
+          maximumFractionDigits: 4,
+        })
+      }
+    } else {
+      return null
+    }
+  }, [minPrice])
+
   return (
     <ContentContainer>
       <AdditionalDetailRow>
@@ -145,12 +165,8 @@ export const MainDetails = ({
           </TEXT.Supplemental>
         </SlippageValueContainer>
         <DetailValue color={colors(false).dark.blue1}>
-          {minPrice
-            ? `${priceCurrency}${
-                priceCurrency === '%'
-                  ? toPercentUnit(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
-                  : toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
-              }`
+          {formattedMinPrice
+            ? `${priceCurrency}${priceCurrency === '%' ? toPercentUnit(formattedMinPrice) : toScientificNumber(formattedMinPrice)}`
             : '-'}
         </DetailValue>
       </AdditionalDetailRow>

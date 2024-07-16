@@ -36,6 +36,7 @@ import {useEmergencyWithdrawCallback} from '../../hooks/useEmergencyWithdrawCall
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
 import {usePositionsActionHandlers} from '../../state/positions/hooks'
 import {usePositionMulticall} from '../../hooks/usePositionMulticall'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -84,6 +85,7 @@ export function Unwind({
   const [customInput, setCustomInput] = useState<string>('')
   const {account, chainId} = useActiveWeb3React()
   const {positions, isUninitialized, refetch} = usePositionList(account, [marketPositionId])
+  const sigFigConstant = 8
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -127,7 +129,7 @@ export function Unwind({
   const maintenanceMargin = useMaintenanceMargin(position?.market.id, positionId)
   const liquidationPrice =
     liquidationPriceResult &&
-    formatBigNumberUsingDecimalsToNumber(liquidationPriceResult, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+    formatBigNumberUsingDecimalsToNumber(liquidationPriceResult, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : sigFigConstant)
 
   const fractionOfCapOi = useFractionOfCapOi(position?.market.id, oi)
   const estimatedBid = useBid(position?.market.id, fractionOfCapOi)
@@ -140,8 +142,8 @@ export function Unwind({
     if (!decimals && !quoteTokenDecimals) return null
     if (estimatedBid === undefined || estimatedAsk === undefined) return null
     return isLong
-      ? formatBigNumberUsingDecimalsToNumber(estimatedBid, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
-      : formatBigNumberUsingDecimalsToNumber(estimatedAsk, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+      ? formatBigNumberUsingDecimalsToNumber(estimatedBid, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : sigFigConstant)
+      : formatBigNumberUsingDecimalsToNumber(estimatedAsk, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : sigFigConstant)
   }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals, priceCurrency])
 
   const fetchPrices = useMarketPrice(position?.market.id)
@@ -175,10 +177,10 @@ export function Unwind({
   }, [fetchPrices])
 
   const bidPrice = fetchPrices
-    ? formatBigNumberUsingDecimalsToNumber(fetchPrices.bid_, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+    ? formatBigNumberUsingDecimalsToNumber(fetchPrices.bid_, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : sigFigConstant)
     : null
   const askPrice = fetchPrices
-    ? formatBigNumberUsingDecimalsToNumber(fetchPrices.ask_, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+    ? formatBigNumberUsingDecimalsToNumber(fetchPrices.ask_, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : sigFigConstant)
     : null
 
   const priceImpact = useMemo(() => {
@@ -195,7 +197,8 @@ export function Unwind({
   const PnL = cost && value ? value.sub(cost) : null
   const parsedPnL = PnL ? formatWeiToParsedNumber(PnL, 18, 2) : 0
   const entryPrice: number | string | null | undefined =
-    position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : 2)
+    position &&
+    formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, priceCurrency === '%' ? 4 : sigFigConstant)
 
   const showUnderwaterFlow =
     liquidationPriceResult && prices._mid ? (isLong ? liquidationPriceResult.gt(prices._mid) : liquidationPriceResult.lt(prices._mid)) : false
@@ -331,12 +334,12 @@ export function Unwind({
                   priceCurrency === '%' ? (
                     toPercentUnit(bidPrice)
                   ) : (
-                    toScientificNumber(bidPrice)
+                    toScientificNumber(limitDigitsInDecimals(bidPrice))
                   )
                 ) : priceCurrency === '%' ? (
                   toPercentUnit(askPrice)
                 ) : (
-                  toScientificNumber(askPrice)
+                  toScientificNumber(limitDigitsInDecimals(askPrice))
                 )
               ) : (
                 <Loader stroke="white" size="12px" />
@@ -447,7 +450,9 @@ export function Unwind({
         <FlexColumn mt="48px" padding="0 16px">
           <AdditionalDetailRow
             detail={'Entry Price'}
-            value={entryPrice ? `${priceCurrency === '%' ? toPercentUnit(entryPrice) : toScientificNumber(entryPrice)}` : 'loading'}
+            value={
+              entryPrice ? `${priceCurrency === '%' ? toPercentUnit(entryPrice) : toScientificNumber(limitDigitsInDecimals(entryPrice))}` : 'loading'
+            }
           />
           <AdditionalDetailRow
             detail={'Current Price'}
@@ -456,10 +461,10 @@ export function Unwind({
                 ? isLong
                   ? priceCurrency === '%'
                     ? toPercentUnit(bidPrice)
-                    : toScientificNumber(bidPrice)
+                    : toScientificNumber(limitDigitsInDecimals(bidPrice))
                   : priceCurrency === '%'
                   ? toPercentUnit(askPrice)
-                  : toScientificNumber(askPrice)
+                  : toScientificNumber(limitDigitsInDecimals(askPrice))
                 : 'loading'
             }
           />
@@ -469,14 +474,20 @@ export function Unwind({
               estimatedReceivedPrice
                 ? priceCurrency === '%'
                   ? toPercentUnit(estimatedReceivedPrice)
-                  : toScientificNumber(estimatedReceivedPrice)
+                  : toScientificNumber(limitDigitsInDecimals(estimatedReceivedPrice))
                 : 'loading'
             }
           />
           <AdditionalDetailRow detail={'Price Impact'} value={priceImpact ? `${priceImpact}%` : '-'} />
           <AdditionalDetailRow
             detail={'Liquidation Price (est)'}
-            value={liquidationPrice ? (priceCurrency === '%' ? toPercentUnit(liquidationPrice) : toScientificNumber(liquidationPrice)) : 'loading'}
+            value={
+              liquidationPrice
+                ? priceCurrency === '%'
+                  ? toPercentUnit(liquidationPrice)
+                  : toScientificNumber(limitDigitsInDecimals(liquidationPrice))
+                : 'loading'
+            }
           />
         </FlexColumn>
       </>

@@ -1,15 +1,13 @@
-export const limitDigitsInDecimals = (input: string | number | null | undefined, limit?: number) => {
-  const sigFigConstant = limit ? limit : 4
-
+export const limitDigitsInDecimals = (input: string | number | null | undefined, sigFig: number = 4) => {
   if (Number(input) < 1) {
     return Number(input).toLocaleString('en-US', {
-      maximumSignificantDigits: sigFigConstant,
-      minimumSignificantDigits: sigFigConstant,
+      maximumSignificantDigits: sigFig,
+      minimumSignificantDigits: sigFig,
     })
   } else {
     return Number(input).toLocaleString('en-US', {
-      maximumFractionDigits: sigFigConstant,
-      minimumFractionDigits: sigFigConstant,
+      maximumFractionDigits: sigFig,
+      minimumFractionDigits: sigFig,
     })
   }
 }

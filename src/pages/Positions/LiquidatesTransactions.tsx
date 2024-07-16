@@ -9,6 +9,7 @@ import {Build, Liquidate, Unwind} from '../../state/build/hooks'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {LiquidatedPositionsQuery} from '../../state/data/generated'
 import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 type LiquidatesType = NonNullable<LiquidatedPositionsQuery['account']>['liquidates'][number]
 type PositiopnType = LiquidatesType['position'] & ParsedMarketStateDetails
@@ -35,12 +36,12 @@ export const LiquidatesTransactions = ({transaction, columns}: PositionProps) =>
 
   const parsedEntryPrice = useMemo(() => {
     if (!entryPrice || decimals === undefined) return null
-    return formatBigNumber(entryPrice, Number(decimals))
+    return formatBigNumber(entryPrice, Number(decimals), 8)
   }, [entryPrice, decimals])
 
   const parsedExitPrice = useMemo(() => {
     if (!price || decimals === undefined) return null
-    return formatBigNumber(price, Number(decimals))
+    return formatBigNumber(price, Number(decimals), 8)
   }, [price, decimals])
 
   const parsedSize = useMemo(() => {
@@ -70,10 +71,14 @@ export const LiquidatesTransactions = ({transaction, columns}: PositionProps) =>
         </FlexRow>
       ),
       'Entry Price': `${priceCurrency ? priceCurrency : ''}${
-        parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+        parsedEntryPrice
+          ? priceCurrency === '%'
+            ? toPercentUnit(parsedEntryPrice)
+            : toScientificNumber(limitDigitsInDecimals(parsedEntryPrice))
+          : '-'
       }`,
       'Exit Price': `${priceCurrency ? priceCurrency : ''}${
-        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(parsedExitPrice)) : '-'
+        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(limitDigitsInDecimals(parsedExitPrice))) : '-'
       }`,
       Liquidated: parsedClosedTimestamp,
       Created: parsedCreatedTimestamp,

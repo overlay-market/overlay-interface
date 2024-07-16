@@ -50,9 +50,9 @@ import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetai
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {Icon} from '../../components/Icon/Icon'
 import {AlertCircle} from 'react-feather'
-import React from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {usePositionsActionHandlers} from '../../state/positions/hooks'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -708,50 +708,20 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const headerPrice: string = useMemo(() => {
     const price = estimatedReceivedPrice ?? prices.mid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    if (formattedPrice < 1) {
-      return Number(formattedPrice).toLocaleString('en-US', {
-        maximumSignificantDigits: 4,
-        minimumSignificantDigits: 4,
-      })
-    } else {
-      return Number(formattedPrice).toLocaleString('en-US', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      })
-    }
+    return limitDigitsInDecimals(formattedPrice)
   }, [estimatedReceivedPrice, prices])
 
   const longPrice: string = useMemo(() => {
     const price = prices.ask
 
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    if (formattedPrice < 1) {
-      return Number(formattedPrice).toLocaleString('en-US', {
-        maximumSignificantDigits: 4,
-        minimumSignificantDigits: 4,
-      })
-    } else {
-      return Number(formattedPrice).toLocaleString('en-US', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      })
-    }
+    return limitDigitsInDecimals(formattedPrice)
   }, [prices])
 
   const shortPrice: string = useMemo(() => {
     const price = prices.bid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    if (formattedPrice < 1) {
-      return Number(formattedPrice).toLocaleString('en-US', {
-        maximumSignificantDigits: 4,
-        minimumSignificantDigits: 4,
-      })
-    } else {
-      return Number(formattedPrice).toLocaleString('en-US', {
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 4,
-      })
-    }
+    return limitDigitsInDecimals(formattedPrice)
   }, [prices])
 
   const priceImpact = useMemo(() => {

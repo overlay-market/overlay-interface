@@ -9,6 +9,7 @@ import SetSlippageModal from '../../components/SetSlippageModal.tsx/SetSlippageM
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
 import {useBuildState} from '../../state/build/hooks'
 import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const ContentContainer = styled(FlexColumn)`
   gap: 16px;
@@ -115,17 +116,7 @@ export const MainDetails = ({
     if (minPrice) {
       const formattedPrice = formatBigNumberUsingDecimalsToString(minPrice, 18, sigFigConstant)
 
-      if (Number(formattedPrice) < 1) {
-        return Number(formattedPrice).toLocaleString('en-US', {
-          maximumSignificantDigits: 4,
-          minimumSignificantDigits: 4,
-        })
-      } else {
-        return Number(formattedPrice).toLocaleString('en-US', {
-          minimumFractionDigits: 4,
-          maximumFractionDigits: 4,
-        })
-      }
+      return limitDigitsInDecimals(formattedPrice)
     } else {
       return null
     }
@@ -138,16 +129,7 @@ export const MainDetails = ({
         <DetailValue color={colors(false).dark.blue1}>
           {estimatedReceivedPrice && minPrice
             ? `${priceCurrency}${
-                priceCurrency === '%'
-                  ? toPercentUnit(estimatedReceivedPrice)
-                  : toScientificNumber(
-                      estimatedReceivedPrice < 1
-                        ? Number(estimatedReceivedPrice).toLocaleString('en-US', {
-                            maximumSignificantDigits: 4,
-                            minimumSignificantDigits: 4,
-                          })
-                        : estimatedReceivedPrice,
-                    )
+                priceCurrency === '%' ? toPercentUnit(estimatedReceivedPrice) : toScientificNumber(limitDigitsInDecimals(estimatedReceivedPrice))
               }`
             : '-'}
         </DetailValue>

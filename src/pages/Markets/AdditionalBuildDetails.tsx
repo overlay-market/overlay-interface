@@ -85,7 +85,19 @@ export const AdditionalDetails = ({
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Liquidation Price</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>{`${priceCurrency}${
-          priceCurrency === '%' ? toPercentUnit(estLiquidationPrice) : toScientificNumber(estLiquidationPrice)
+          priceCurrency === '%'
+            ? toPercentUnit(estLiquidationPrice)
+            : toScientificNumber(
+                Number(estLiquidationPrice) < 1
+                  ? Number(estLiquidationPrice).toLocaleString('en-US', {
+                      maximumSignificantDigits: 4,
+                      minimumSignificantDigits: 4,
+                    })
+                  : Number(estLiquidationPrice).toLocaleString('en-US', {
+                      minimumFractionDigits: 4,
+                      maximumFractionDigits: 4,
+                    }),
+              )
         }`}</DetailValue>
       </AdditionalDetailRow>
 

@@ -61,7 +61,7 @@ export const ApproveTransactionButton = ({attemptingTransaction, onClick}: {atte
     {attemptingTransaction ? (
       <PendingActionButton>Pending Confirmation...</PendingActionButton>
     ) : (
-      <PendingActionButton onClick={onClick}>Approve OV</PendingActionButton>
+      <PendingActionButton onClick={onClick}>Approve OVL</PendingActionButton>
     )}
   </>
 )

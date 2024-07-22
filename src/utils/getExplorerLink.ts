@@ -66,6 +66,20 @@ export function getExplorerLink(chainId: number, data: string, type: ExplorerDat
     }
   }
 
+  if (chainId === SupportedChainId.BARTIO) {
+    switch (type) {
+      case ExplorerDataType.TRANSACTION:
+        return `https://bartio.beratrail.io/tx/${data}`
+      case ExplorerDataType.ADDRESS:
+      case ExplorerDataType.TOKEN:
+        return `https://bartio.beratrail.io/address/${data}`
+      case ExplorerDataType.BLOCK:
+        return `https://bartio.beratrail.io/block/${data}`
+      default:
+        return `https://bartio.beratrail.io/`
+    }
+  }
+
   const prefix = `https://${ETHERSCAN_PREFIXES[chainId] ?? ''}etherscan.io`
 
   switch (type) {

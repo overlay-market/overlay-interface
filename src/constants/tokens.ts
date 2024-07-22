@@ -15,6 +15,7 @@ export const OVL: {[chainId: number]: Token} = {
   [SupportedChainId.ARBITRUM]: new Token(SupportedChainId.ARBITRUM, OVL_TOKEN_ADDRESS[42161], 18, 'OVL', 'Overlay'),
   [SupportedChainId.ARBITRUM_GÖRLI]: new Token(SupportedChainId.ARBITRUM_GÖRLI, OVL_TOKEN_ADDRESS[421613], 18, 'OVL', 'Overlay'),
   [SupportedChainId.ARBITRUM_SEPOLIA]: new Token(SupportedChainId.ARBITRUM_SEPOLIA, OVL_TOKEN_ADDRESS[421614], 18, 'OVL', 'Overlay'),
+  [SupportedChainId.BARTIO]: new Token(SupportedChainId.BARTIO, OVL_TOKEN_ADDRESS[80084], 18, 'OVL', 'Overlay'),
 }
 
 export const NETWORK_LOGO: {[chainId: number]: string} = {
@@ -23,6 +24,7 @@ export const NETWORK_LOGO: {[chainId: number]: string} = {
   [SupportedChainId.GÖRLI]: ETHEREUM_LOGO,
   [SupportedChainId.ARBITRUM_GÖRLI]: ARBITRUM_LOGO,
   [SupportedChainId.ARBITRUM_SEPOLIA]: ARBITRUM_TESTNET_LOGO,
+  [SupportedChainId.BARTIO]: ETHEREUM_LOGO,
 }
 
 //@dev: remove LL Token addresses after bridge testing

@@ -1,6 +1,6 @@
 import {useMarketData} from '../../../state/markets/hooks'
 import {LibrarySymbolInfo} from '../../../charting_library/charting_library'
-import {getBinSizeAndUnit, isSepolia} from './helpers'
+import {getBinSizeAndUnit, isSepolia, isBartio} from './helpers'
 import {subscribeOnStream, unsubscribeFromStream} from './streaming'
 import {MarketDetails} from '../../../constants/markets'
 
@@ -78,6 +78,8 @@ export default {
       let res = await fetch(
         isSepolia(symbolInfo)
           ? `https://api.overlay.market/sepolia-charts/v1/charts?${query}`
+          : isBartio(symbolInfo)
+          ? `https://api.overlay.market/bartio-charts/v1/charts?${query}`
           : `https://api.overlay.market/charts/v1/charts?${query}`,
       )
       res = await res.json()

@@ -11,9 +11,12 @@ export function isSepolia(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0x4edfb4057f3a448b2704df1a3665db4ae6371b69' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x770e3a8afc5c01855b5bd8eb5b96b23bd7af1e43' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xad90fff9d159e18cec2048dd6881e29886e4899e' ||
-    String(symbolInfo?.marketAddress).toLowerCase() === '0x3966f792517e2df998c48301163c2a95bfd3eff8' ||
-    String(symbolInfo?.marketAddress).toLowerCase() === '0x56cd0b7fa176454bcd9486df6a8f0603a457bde0'
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x3966f792517e2df998c48301163c2a95bfd3eff8'
   )
+}
+
+export function isBartio(symbolInfo) {
+  return String(symbolInfo?.marketAddress).toLowerCase() === '0x56cd0b7fa176454bcd9486df6a8f0603a457bde0'
 }
 
 export function getBinSizeAndUnit(input: string): {binSize: number, binUnit: 'minute' | 'day' | 'week' | 'month'} | null {

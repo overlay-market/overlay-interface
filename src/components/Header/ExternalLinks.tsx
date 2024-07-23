@@ -286,7 +286,7 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
                 // @ts-ignore
                 type: 'ERC20',
                 options: {
-                  address: '0x3E27fAe625f25291bFda517f74bf41DC40721dA2',
+                  address: '0x1db48ce98b2fb4464f73aa6d8465af5f85d39429',
                   symbol: 'OVL',
                   decimals: 18,
                   image: 'https://raw.githubusercontent.com/overlay-market/overlay-interface/staging/public/overlay-logo-white.png',

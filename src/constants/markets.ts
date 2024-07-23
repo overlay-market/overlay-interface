@@ -309,7 +309,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://sepolia.arbiscan.io/address/0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae',
     },
   },
-  '0x56cd0b7fa176454bcd9486df6a8f0603a457bde0': {
+  '0x796cc71ad083e27675530d9acb1ad1632c66ee5a': {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -322,8 +322,8 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     //   url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
     // },
     contract: {
-      name: shortenAddress('0x56CD0B7Fa176454bCd9486dF6a8f0603A457Bde0'),
-      url: 'https://bartio.beratrail.io/address/0x56CD0B7Fa176454bCd9486dF6a8f0603A457Bde0',
+      name: shortenAddress('0x796cc71ad083e27675530d9acb1ad1632c66ee5a'),
+      url: 'https://bartio.beratrail.io/address/0x796cc71ad083e27675530d9acb1ad1632c66ee5a',
     },
     sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},

@@ -1,4 +1,4 @@
-import {getBinSizeAndUnit, isSepolia, isBartio} from './helpers'
+import {getBinSizeAndUnit, isSepolia, isImola} from './helpers'
 
 // Reference: https://www.tradingview.com/charting-library-docs/latest/tutorials/implement_datafeed_tutorial/Streaming-Implementation
 
@@ -22,8 +22,8 @@ export function subscribeOnStream(symbolInfo, resolution, onRealtimeCallback, su
 
   const endpoint = isSepolia(symbolInfo)
     ? `https://api.overlay.market/sepolia-charts/v1/charts/sse?${query}`
-    : isBartio(symbolInfo)
-    ? `https://api.overlay.market/bartio-charts/v1/charts/sse?${query}`
+    : isImola(symbolInfo)
+    ? `https://api.overlay.market/imola-charts/v1/charts/sse?${query}`
     : `https://api.overlay.market/charts/v1/charts/sse?${query}`
 
   const eventSource = new EventSource(endpoint)

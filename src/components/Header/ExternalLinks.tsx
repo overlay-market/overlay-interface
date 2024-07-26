@@ -239,25 +239,25 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
     }
   }
 
-  const addBartioTokenToMM = async () => {
+  const addImolaTokenToMM = async () => {
     const {ethereum} = window
     if (ethereum && ethereum.request) {
       let networkSwitched = false
 
-      const chainId = '0x138d4' // Bartio chain ID
+      const chainId = '0x780c' // Imola chain ID
       const networkAdded = await ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [
           {
             chainId,
-            chainName: 'Bartio', // Bartio network name
+            chainName: 'Move-EVM', // Imola network name
             nativeCurrency: {
-              name: 'BERA',
-              symbol: 'BERA',
+              name: 'MOVE',
+              symbol: 'MOVE',
               decimals: 18,
             },
-            rpcUrls: ['https://bartio.rpc.berachain.com'], // Bartio RPC endpoint
-            blockExplorerUrls: ['https://bartio.beratrail.io/'], // Arbitrum Sepolia block explorer URL
+            rpcUrls: ['https://mevm.testnet.imola.movementlabs.xyz'], // Imola RPC endpoint
+            blockExplorerUrls: ['https://explorer.testnet.imola.movementlabs.xyz'], // Imola block explorer URL
           },
         ],
       })
@@ -266,7 +266,7 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
         try {
           await ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{chainId: '0x138d4'}], // Bartio chain ID
+            params: [{chainId: '0x780c'}], // Imola chain ID
           })
           networkSwitched = true
         } catch (error) {
@@ -286,7 +286,7 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
                 // @ts-ignore
                 type: 'ERC20',
                 options: {
-                  address: '0x97576e088f0d05EF68cac2EEc63d017FE90952a0',
+                  address: '0xCde46284D32148c4D470fA33BA788710b3d21E89', // Imola OVL address
                   symbol: 'OVL',
                   decimals: 18,
                   image: 'https://raw.githubusercontent.com/overlay-market/overlay-interface/staging/public/overlay-logo-white.png',
@@ -374,7 +374,7 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
 
           {HIDE_MENU_ITEMS ? null : (
             <>
-              <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addBartioTokenToMM : addTokenToMM}>
+              <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addImolaTokenToMM : addTokenToMM}>
                 <TEXT.SmallBody color={colors(false).dark.tan2}>Add OVL to Wallet</TEXT.SmallBody>
               </MenuLink>
 

@@ -309,7 +309,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://sepolia.arbiscan.io/address/0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae',
     },
   },
-  '0x796cc71ad083e27675530d9acb1ad1632c66ee5a': {
+  '0xb021eb4489c230234567ca6789e53403310db090': {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -322,13 +322,28 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     //   url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
     // },
     contract: {
-      name: shortenAddress('0x796cc71ad083e27675530d9acb1ad1632c66ee5a'),
-      url: 'https://bartio.beratrail.io/address/0x796cc71ad083e27675530d9acb1ad1632c66ee5a',
+      name: shortenAddress('0xb021eb4489c230234567ca6789e53403310db090'),
+      url: 'https://explorer.testnet.imola.movementlabs.xyz/#/account/0x000000000000000000000000b021eb4489c230234567ca6789e53403310db090',
     },
     sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
     descriptionText:
       'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
+  },
+  '0xeab2fbdc9d43e785eb4065c8447d872735729aac': {
+    marketName: 'ETH Dominance',
+    logo: EthDominanceLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    disabled: false,
+    contract: {
+      name: shortenAddress('0xeab2fbdc9d43e785eb4065c8447d872735729aac'),
+      url: 'https://explorer.testnet.imola.movementlabs.xyz/#/account/0x000000000000000000000000eab2fbdc9d43e785eb4065c8447d872735729aac',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
   },
   '0x4edfb4057f3a448b2704df1a3665db4ae6371b69': {
     marketName: 'Quantum Cats',

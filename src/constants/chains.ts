@@ -5,11 +5,11 @@ export enum SupportedChainId {
   ARBITRUM = 42161,
   ARBITRUM_GÖRLI = 421613,
   ARBITRUM_SEPOLIA = 421614,
-  BARTIO = 80084,
+  IMOLA = 30732,
 }
 
 // export const DEFAULT_NET = SupportedChainId[421614]
 // export const DEFAULT_CHAINID = SupportedChainId.ARBITRUM_SEPOLIA
 
-export const DEFAULT_NET = SupportedChainId[80084]
-export const DEFAULT_CHAINID = SupportedChainId.BARTIO
+export const DEFAULT_NET = SupportedChainId[SupportedChainId.IMOLA]
+export const DEFAULT_CHAINID = SupportedChainId.IMOLA

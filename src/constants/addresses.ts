@@ -12,7 +12,7 @@ export const V1_PERIPHERY_ADDRESS: AddressMap = {
   [SupportedChainId.ARBITRUM]: '0xC3cB99652111e7828f38544E3e94c714D8F9a51a',
   [SupportedChainId.ARBITRUM_GÖRLI]: '0x68eb0F1Fbbb35b98526F53c01B18507f95F02119',
   [SupportedChainId.ARBITRUM_SEPOLIA]: '0x2878837ea173e8bd40db7cee360b15c1c27deb5a',
-  [SupportedChainId.BARTIO]: '0xDD711dA03Ef569dfE8dd466845e36d9Fc91E1e45',
+  [SupportedChainId.IMOLA]: '0x0CA6128B528f503C7c649ba9cc02560a8B9fD55e',
 }
 
 export const OVL_TOKEN_ADDRESS: AddressMap = {
@@ -23,7 +23,7 @@ export const OVL_TOKEN_ADDRESS: AddressMap = {
   [ChainId.ARBITRUM]: '0x4305C4Bc521B052F17d389c2Fe9d37caBeB70d54',
   [SupportedChainId.ARBITRUM_GÖRLI]: '0x1023b1BC47b9b449eAD9329EE0eFD4fDAcA3D767',
   [SupportedChainId.ARBITRUM_SEPOLIA]: '0x3E27fAe625f25291bFda517f74bf41DC40721dA2',
-  [SupportedChainId.BARTIO]: '0x97576e088f0d05EF68cac2EEc63d017FE90952a0',
+  [SupportedChainId.IMOLA]: '0xCde46284D32148c4D470fA33BA788710b3d21E89',
 }
 
 //@dev: remove LL Token addresses after bridge testing
@@ -62,5 +62,5 @@ export const MULTICALL2_ADDRESS: AddressMap = {
   [ChainId.HARMONY_TESTNET]: '',
   [ChainId.OKEX]: '0xF4d73326C13a4Fc5FD7A064217e12780e9Bd62c3',
   [ChainId.OKEX_TESTNET]: '',
-  [SupportedChainId.BARTIO]: '0xDe9D8f9d9d2B276Dd5B921211AcB918d33Ed0B6C',
+  [SupportedChainId.IMOLA]: '0x1C513aA41Ac47fAc94635A3B4425641ab38Dfb29',
 }

@@ -15,8 +15,11 @@ export function isSepolia(symbolInfo) {
   )
 }
 
-export function isBartio(symbolInfo) {
-  return String(symbolInfo?.marketAddress).toLowerCase() === '0x796cc71ad083e27675530d9acb1ad1632c66ee5a'
+export function isImola(symbolInfo) {
+  return (
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xb021eb4489c230234567ca6789e53403310db090' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xeab2fbdc9d43e785eb4065c8447d872735729aac'
+  )
 }
 
 export function getBinSizeAndUnit(input: string): {binSize: number, binUnit: 'minute' | 'day' | 'week' | 'month'} | null {

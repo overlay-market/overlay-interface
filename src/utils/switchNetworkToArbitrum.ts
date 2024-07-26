@@ -22,13 +22,13 @@ export async function switchNetworkToArbitrum() {
             params: [
               {
                 chainId: ethers.utils.hexValue(DEFAULT_CHAINID),
-                chainName: 'Bartio',
-                rpcUrls: ['https://bartio.rpc.berachain.com'],
-                blockExplorerUrls: ['https://bartio.beratrail.io/'],
+                chainName: 'Move-EVM',
+                rpcUrls: ['https://mevm.testnet.imola.movementlabs.xyz'],
+                blockExplorerUrls: ['https://explorer.testnet.imola.movementlabs.xyz'],
                 nativeCurrency: {
                   decimals: 18,
-                  name: 'BERA',
-                  symbol: 'BERA',
+                  name: 'MOVE',
+                  symbol: 'MOVE',
                 },
               },
             ],

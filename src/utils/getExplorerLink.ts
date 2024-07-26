@@ -66,17 +66,17 @@ export function getExplorerLink(chainId: number, data: string, type: ExplorerDat
     }
   }
 
-  if (chainId === SupportedChainId.BARTIO) {
+  if (chainId === SupportedChainId.IMOLA) {
     switch (type) {
       case ExplorerDataType.TRANSACTION:
-        return `https://bartio.beratrail.io/tx/${data}`
+        return `https://explorer.testnet.imola.movementlabs.xyz/#/txn/${data}`
       case ExplorerDataType.ADDRESS:
       case ExplorerDataType.TOKEN:
-        return `https://bartio.beratrail.io/address/${data}`
+        return `https://explorer.testnet.imola.movementlabs.xyz/`
       case ExplorerDataType.BLOCK:
-        return `https://bartio.beratrail.io/block/${data}`
+        return `https://explorer.testnet.imola.movementlabs.xyz/#/block/${data}`
       default:
-        return `https://bartio.beratrail.io/`
+        return `https://explorer.testnet.imola.movementlabs.xyz/`
     }
   }
 

@@ -92,7 +92,7 @@ export const NETWORK_ICONS: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.MAINNET]: EthereumLogo,
   [SupportedChainId.ARBITRUM]: ArbitrumLogo,
   [SupportedChainId.ARBITRUM_SEPOLIA]: ArbitrumTestnetLogo,
-  [SupportedChainId.BARTIO]: EthereumLogo,
+  [SupportedChainId.IMOLA]: EthereumLogo,
 }
 
 export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Element} = {
@@ -110,9 +110,9 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
       <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
     </FlexRow>
   ),
-  [SupportedChainId.BARTIO]: (
+  [SupportedChainId.IMOLA]: (
     <FlexRow>
-      <TEXT.SmallBody>Bartio -</TEXT.SmallBody>
+      <TEXT.SmallBody>Imola -</TEXT.SmallBody>
       <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
     </FlexRow>
   ),

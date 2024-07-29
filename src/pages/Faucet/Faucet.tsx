@@ -94,6 +94,7 @@ const Faucet = () => {
 
   const [isDisabledClaimBtn, setIsDisabledClaimBtn] = useState(true)
   const [responseMessage, setResponseMessage] = useState('')
+  const [selectedChain, setSelectedChain] = useState('arb-sepolia')
 
   const [{data: responseData, loading, error}, getResponseData] = useAxios(
     {
@@ -113,6 +114,7 @@ const Faucet = () => {
         await getResponseData({
           data: JSON.stringify({
             tokens: ['eth', 'ovl'],
+            chains: [selectedChain],
             recipient: account,
           }),
         })
@@ -180,6 +182,20 @@ const Faucet = () => {
       <TitleSection>
         <BoldHeader1>Claiming Faucet </BoldHeader1>
       </TitleSection>
+
+      <select
+        value={selectedChain}
+        onChange={e => setSelectedChain(e.target.value)}
+        style={{
+          marginBottom: '16px',
+          padding: '8px',
+          fontSize: '16px',
+          borderRadius: '4px',
+        }}
+      >
+        <option value="arb-sepolia">Arbitrum Sepolia</option>
+        <option value="imola">Movement Devnet</option>
+      </select>
 
       <ReCAPTCHA sitekey={`${process.env.REACT_APP_RECAPTCHA_CLIENT_SITE_KEY}`} onChange={onChangeCaptcha} onExpired={onExpiredCaptcha} />
       <ButtonsContainer>

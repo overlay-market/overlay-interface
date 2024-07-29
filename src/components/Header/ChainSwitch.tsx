@@ -1,12 +1,13 @@
 import {useState, useRef, useEffect} from 'react'
 import styled from 'styled-components/macro'
-import {FlexRow} from '../Container/Container'
+import {FlexContainer, FlexRow} from '../Container/Container'
 import {TEXT, colors} from '../../theme/theme'
 import ArbitrumLogo from '../../assets/images/arbitrum-logo.png'
 import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
+import {Box, Menu, MenuItem} from '@material-ui/core'
 
 export const ChainLogo = styled.div<{src: string}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -19,6 +20,36 @@ const ChainSwitchButton = styled.div`
   align-items: center;
   cursor: pointer;
 `
+
+const StyledMenu = styled(Menu)({
+  marginTop: '40px',
+
+  '& .MuiPaper-root': {
+    backgroundColor: `${colors(true).dark.grey4}`,
+    borderTop: '1px solid #333',
+    maxWidth: '232px',
+    width: '232px',
+    boxSizing: 'border-box',
+    color: `${colors(true).dark.blue1}`,
+    borderRadius: '8px',
+    padding: '10px 0px',
+  },
+  '& .MuiList-root': {
+    padding: '0',
+  },
+  '& .MuiListItem-root': {
+    justifyContent: 'start',
+    padding: '0',
+  },
+
+  '& .MuiButtonBase-root': {
+    padding: '8px 18px',
+  },
+  '& .MuiButtonBase-root:hover': {
+    backgroundColor: `${colors(true).dark.background}`,
+    fontWeight: '700',
+  },
+})
 
 export const PlatformLogo = styled.div<{src: string; open?: boolean}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -57,20 +88,67 @@ export default function ChainSwitch() {
   const {account, chainId} = useActiveWeb3React()
   const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId])
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [activeChainSrc, setActiveChainSrc] = useState(
+    account && chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID],
+  )
+  const openDropdownMenu = Boolean(anchorEl)
+
+  const chainsList: {[chainId in SupportedChainId | number]: string} = {
+    [SupportedChainId.MAINNET]: 'Movement',
+    [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia',
+  }
+
+  const clickSelectChain = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const closeSelectChain = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+    setAnchorEl(null)
+  }
+
+  const handleSelectChain = (chainId: number) => {
+    setActiveChainSrc(NETWORK_ICONS[chainId])
+    setAnchorEl(null)
+  }
+
   return (
     <>
       <ChainSwitchButton
-        id="showButton"
-        onClick={event => {
-          event.stopPropagation()
-        }}
+        id="dropdown"
+        onClick={clickSelectChain}
+        aria-controls={openDropdownMenu ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={openDropdownMenu ? 'true' : undefined}
       >
-        {account && chainId && supportedChainId ? (
-          <ChainLogo src={NETWORK_ICONS[chainId]} />
-        ) : (
-          supportedChainId && <ChainLogo src={NETWORK_ICONS[DEFAULT_CHAINID]} />
-        )}
+        <ChainLogo src={activeChainSrc} />
       </ChainSwitchButton>
+      <StyledMenu
+        id="basic-menu"
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        anchorEl={anchorEl}
+        open={openDropdownMenu}
+        onClose={closeSelectChain}
+      >
+        {Object.keys(chainsList).map((chainId: any) => {
+          return (
+            <MenuItem key={chainId} onClick={() => handleSelectChain(chainId)} disableRipple>
+              <FlexContainer gap="16px">
+                <ChainLogo src={NETWORK_ICONS[chainId]} />
+                <Box style={{fontFamily: 'Inter', color: '#fff'}}>{chainsList[chainId]}</Box>
+              </FlexContainer>
+            </MenuItem>
+          )
+        })}
+      </StyledMenu>
     </>
   )
 }

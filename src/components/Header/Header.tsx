@@ -276,7 +276,7 @@ export default function Header() {
               Statistics
             </StyledExternalLink>
 
-            <PowerCardLink to={'/sepolia-faucet'}>
+            <PowerCardLink to={'/faucet'}>
               <TEXT.Menu>Claim Test Token</TEXT.Menu>
             </PowerCardLink>
           </>

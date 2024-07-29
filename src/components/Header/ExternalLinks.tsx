@@ -7,7 +7,7 @@ import {LINKS} from '../../constants/links'
 import {useBuildState} from '../../state/build/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useSetSlippageModalToggle, useWalletModalToggle} from '../../state/application/hooks'
-import {NETWORK_ICONS, NETWORK_LABELS} from './WalletMenu'
+import {NETWORK_ICONS, NETWORK_LABELS} from './ChainSwitch'
 import {DEFAULT_CHAINID} from '../../constants/chains'
 
 export const PlatformLogo = styled.div<{src: string; open?: boolean}>`

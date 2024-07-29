@@ -23,7 +23,7 @@ export async function switchNetworkToArbitrum() {
               {
                 chainId: ethers.utils.hexValue(DEFAULT_CHAINID),
                 chainName: 'Move-EVM',
-                rpcUrls: ['https://mevm.testnet.imola.movementlabs.xyz'],
+                rpcUrls: ['https://mevm.devnet.imola.movementlabs.xyz'],
                 blockExplorerUrls: ['https://explorer.testnet.imola.movementlabs.xyz'],
                 nativeCurrency: {
                   decimals: 18,

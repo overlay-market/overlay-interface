@@ -5,6 +5,7 @@ import {TEXT, colors} from '../../theme/theme'
 import ArbitrumLogo from '../../assets/images/arbitrum-logo.png'
 import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
+import ImolaLogo from '../../assets/images/imola-logo.png'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
@@ -65,6 +66,7 @@ export const NETWORK_ICONS: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.MAINNET]: EthereumLogo,
   [SupportedChainId.ARBITRUM]: ArbitrumLogo,
   [SupportedChainId.ARBITRUM_SEPOLIA]: ArbitrumTestnetLogo,
+  [SupportedChainId.IMOLA]: ImolaLogo,
 }
 
 export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Element} = {
@@ -82,6 +84,12 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
       <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
     </FlexRow>
   ),
+  [SupportedChainId.IMOLA]: (
+    <FlexRow>
+      <TEXT.SmallBody>Movement -</TEXT.SmallBody>
+      <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
+    </FlexRow>
+  ),
 }
 
 export default function ChainSwitch() {
@@ -95,8 +103,8 @@ export default function ChainSwitch() {
   const openDropdownMenu = Boolean(anchorEl)
 
   const chainsList: {[chainId in SupportedChainId | number]: string} = {
-    [SupportedChainId.MAINNET]: 'Movement',
     [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia',
+    [SupportedChainId.IMOLA]: 'Movement',
   }
 
   const clickSelectChain = (event: React.MouseEvent<HTMLElement>) => {

@@ -171,7 +171,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               <StyledExternalLink href={LINKS.STATISTICS}>
                 <TEXT.Menu>Statistics</TEXT.Menu>
               </StyledExternalLink>
-              <ClaimTestTokenLink tabIndex={tabIndex} to={'/sepolia-faucet'}>
+              <ClaimTestTokenLink tabIndex={tabIndex} to={'/faucet'}>
                 <StyledMenuLink displayText={'Claim Test Token'} linkDestination={'/leaderboard'} currentLocation={location} />
               </ClaimTestTokenLink>
               {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>

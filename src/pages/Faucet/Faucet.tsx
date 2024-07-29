@@ -89,7 +89,7 @@ const CheckingButtonContent = styled.div`
   gap: 10px;
 `
 
-const SepoliaFaucet = () => {
+const Faucet = () => {
   const {account} = useActiveWeb3React()
 
   const [isDisabledClaimBtn, setIsDisabledClaimBtn] = useState(true)
@@ -178,7 +178,7 @@ const SepoliaFaucet = () => {
   return (
     <PageWrapper>
       <TitleSection>
-        <BoldHeader1>Sepolia Claiming Faucet </BoldHeader1>
+        <BoldHeader1>Claiming Faucet </BoldHeader1>
       </TitleSection>
 
       <ReCAPTCHA sitekey={`${process.env.REACT_APP_RECAPTCHA_CLIENT_SITE_KEY}`} onChange={onChangeCaptcha} onExpired={onExpiredCaptcha} />
@@ -219,4 +219,4 @@ const SepoliaFaucet = () => {
   )
 }
 
-export default SepoliaFaucet
+export default Faucet

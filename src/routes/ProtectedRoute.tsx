@@ -7,7 +7,7 @@ export const ProtectedRoute = ({children}: {children: JSX.Element}) => {
   const {chainId} = useActiveWeb3React()
   const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId] === DEFAULT_NET)
 
-  if (!supportedChainId && location.pathname !== '/claim-checker' && location.pathname !== '/sepolia-faucet')
+  if (!supportedChainId && location.pathname !== '/claim-checker' && location.pathname !== '/faucet')
     return <Redirect to="/network-checker" exact={true} />
   return children
 }

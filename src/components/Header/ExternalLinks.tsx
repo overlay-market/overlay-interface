@@ -8,7 +8,7 @@ import {useBuildState} from '../../state/build/hooks'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useSetSlippageModalToggle, useWalletModalToggle} from '../../state/application/hooks'
 import {NETWORK_ICONS, NETWORK_LABELS} from './ChainSwitch'
-import {DEFAULT_CHAINID} from '../../constants/chains'
+import {DEFAULT_CHAINID, SupportedChainId} from '../../constants/chains'
 
 export const PlatformLogo = styled.div<{src: string; open?: boolean}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -374,7 +374,16 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
 
           {HIDE_MENU_ITEMS ? null : (
             <>
-              <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addSepoliaTokenToMM : addImolaTokenToMM}>
+              <MenuLink
+                mobile={mobile}
+                onClick={
+                  chainId && Number(chainId) === Number(DEFAULT_CHAINID)
+                    ? addSepoliaTokenToMM
+                    : Number(chainId) === Number(SupportedChainId.IMOLA)
+                    ? addImolaTokenToMM
+                    : addTokenToMM
+                }
+              >
                 <TEXT.SmallBody color={colors(false).dark.tan2}>Add OVL to Wallet</TEXT.SmallBody>
               </MenuLink>
 

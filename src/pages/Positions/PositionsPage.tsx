@@ -27,6 +27,8 @@ import {Checkbox} from '@material-ui/core'
 import {CheckboxIcon, CheckedIcon, PositionType} from './OpenPosition'
 import {usePositionsState, usePositionsActionHandlers} from '../../state/positions/hooks'
 import {StyledTableRow} from '../../components/Table/Table'
+import {useAppSelector} from '../../state/hooks'
+import {AppState} from '../../state/state'
 
 const Container = styled.div`
   display: flex;
@@ -220,10 +222,11 @@ const PositionsTable = ({title, marginTop, positionStatus, rowsCount, marketsDat
   const [showLoader, setShowLoader] = useState(false)
   const isMetamask = window?.ethereum?.isMetaMask
   const {isUnwoundPosition, areClosedPositions} = usePositionsState()
+  const chainIdAppSelector = useAppSelector((state: AppState) => state.application.chainId)
 
   useEffect(() => {
     !isUninitialized && refetch()
-  }, [chainId, isUninitialized, refetch])
+  }, [refetch, chainIdAppSelector])
 
   useEffect(() => {
     positionsTableData && !positionsTableData.account && refetch()

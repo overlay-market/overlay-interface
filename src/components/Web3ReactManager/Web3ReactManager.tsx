@@ -17,7 +17,7 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
     if (triedEager && !networkActive && !networkError && !active) {
       activateNetwork(network)
     }
-  }, [triedEager, networkActive, networkError, activateNetwork, active])
+  }, [triedEager, networkActive, networkError, activateNetwork, active, network])
 
   // when there's no account connected, react to logins (broadly speaking) on the injected provider, if it exists
   useInactiveListener(!triedEager)

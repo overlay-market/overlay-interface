@@ -4,6 +4,9 @@ import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
 import {NetworkConnector} from './NetworkConnector'
 import getLibrary from '../utils/getLibrary'
 import {WalletConnectV2Connector} from './walletconnectV2Connector'
+import {useApplicationState} from '../state/application/hooks'
+import {AppState} from '../state/state'
+import {BaseQueryApi} from '@reduxjs/toolkit/query'
 
 const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.MAINNET,
@@ -41,9 +44,30 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   [SupportedChainId.IMOLA]: `https://mevm.devnet.imola.movementlabs.xyz`,
 }
 
+const chainIdLocal1 = () => {
+  // const {chainIdLocal} = useApplicationState()
+  return ({getState}: BaseQueryApi) => {
+    const chainId = (getState() as AppState).application.chainIdLocal
+    return chainId
+  }
+  // const network1 = new NetworkConnector({
+  //   urls: NETWORK_URLS,
+  //   defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
+  // })
+
+  // return network1
+}
+
+// export function useChainIdLocal() {
+//   const {chainIdLocal} = useApplicationState()
+//   return chainIdLocal
+// }
+// const chainIdLocal = useChainIdLocal()
+const chainIdLocal = chainIdLocal1()
+
 export const network = new NetworkConnector({
   urls: NETWORK_URLS,
-  defaultChainId: DEFAULT_CHAINID,
+  defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
 })
 
 let networkLibrary: Web3Provider | undefined
@@ -54,6 +78,6 @@ export function getNetworkLibrary(): Web3Provider {
 export const walletconnect = new WalletConnectV2Connector({
   projectId: process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '',
   showQrModal: true,
-  chains: [DEFAULT_CHAINID],
+  chains: [chainIdLocal ?? DEFAULT_CHAINID],
   rpcMap: NETWORK_URLS,
 })

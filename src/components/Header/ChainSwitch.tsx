@@ -10,6 +10,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
 import {switchNetworkToArbitrum, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
+import {useSetChainId} from '../../state/application/hooks'
 
 export const ChainLogo = styled.div<{src: string}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -109,6 +110,8 @@ export default function ChainSwitch() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [activeChainSrc, setActiveChainSrc] = useState('')
 
+  const setChainId = useSetChainId()
+
   useEffect(() => {
     setActiveChainSrc(account && chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID])
   }, [account, chainId, supportedChainId])
@@ -133,6 +136,7 @@ export default function ChainSwitch() {
       ? switchNetworkToImola()
       : console.log('error')
     setAnchorEl(null)
+    setChainId(chainId)
   }
 
   return (

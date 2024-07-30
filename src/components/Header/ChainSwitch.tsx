@@ -7,8 +7,9 @@ import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
 import ImolaLogo from '../../assets/images/imola-logo.png'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
+import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
+import {switchNetworkToArbitrum, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
 
 export const ChainLogo = styled.div<{src: string}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -94,12 +95,14 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
 
 export default function ChainSwitch() {
   const {account, chainId} = useActiveWeb3React()
-  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId])
-
+  const supportedChainId: boolean = Boolean(chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]))
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [activeChainSrc, setActiveChainSrc] = useState(
-    account && chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID],
-  )
+  const [activeChainSrc, setActiveChainSrc] = useState('')
+
+  useEffect(() => {
+    setActiveChainSrc(account && chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID])
+  }, [account, chainId, supportedChainId])
+
   const openDropdownMenu = Boolean(anchorEl)
 
   const chainsList: {[chainId in SupportedChainId | number]: string} = {
@@ -118,6 +121,12 @@ export default function ChainSwitch() {
 
   const handleSelectChain = (chainId: number) => {
     setActiveChainSrc(NETWORK_ICONS[chainId])
+
+    Number(chainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
+      ? switchNetworkToArbitrum()
+      : Number(chainId) === Number(SupportedChainId.IMOLA)
+      ? switchNetworkToImola()
+      : console.log('error')
     setAnchorEl(null)
   }
 
@@ -135,7 +144,7 @@ export default function ChainSwitch() {
       <StyledMenu
         id="basic-menu"
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'right',
         }}
         transformOrigin={{

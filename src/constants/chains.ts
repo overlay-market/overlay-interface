@@ -10,3 +10,5 @@ export enum SupportedChainId {
 
 export const DEFAULT_NET = SupportedChainId[421614]
 export const DEFAULT_CHAINID = SupportedChainId.ARBITRUM_SEPOLIA
+
+export const WORKING_CHAINS = [SupportedChainId[SupportedChainId.ARBITRUM_SEPOLIA], SupportedChainId[SupportedChainId.IMOLA]]

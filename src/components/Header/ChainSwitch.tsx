@@ -6,6 +6,7 @@ import ArbitrumLogo from '../../assets/images/arbitrum-logo.png'
 import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
 import ImolaLogo from '../../assets/images/imola-logo.png'
+import BartioLogo from '../../assets/images/berachain-logo.png'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
@@ -68,6 +69,7 @@ export const NETWORK_ICONS: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.ARBITRUM]: ArbitrumLogo,
   [SupportedChainId.ARBITRUM_SEPOLIA]: ArbitrumTestnetLogo,
   [SupportedChainId.IMOLA]: ImolaLogo,
+  [SupportedChainId.BARTIO]: BartioLogo,
 }
 
 export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Element} = {
@@ -88,6 +90,12 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
   [SupportedChainId.IMOLA]: (
     <FlexRow>
       <TEXT.SmallBody>Movement -</TEXT.SmallBody>
+      <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
+    </FlexRow>
+  ),
+  [SupportedChainId.BARTIO]: (
+    <FlexRow>
+      <TEXT.SmallBody>Bartio -</TEXT.SmallBody>
       <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
     </FlexRow>
   ),

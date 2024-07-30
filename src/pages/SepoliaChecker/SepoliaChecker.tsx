@@ -46,7 +46,7 @@ const SepoliaChecker = () => {
           <Image src={BlueYellowHearts} alt={'Overlay Logo'} height={'73px'} width={'auto'} />
           <TEXT.StandardHeader1 color={colors(true).dark.white}>OVL Testnet Trading Competition is on</TEXT.StandardHeader1>
           <TEXT.BoldHeader1 fontSize="26px" fontStyle={'italic'} color={colors(true).dark.white}>
-            Arbitrum Sepolia and Movement
+            Arbitrum Sepolia, Movement and Bera Chain
           </TEXT.BoldHeader1>
           <TEXT.BoldStandardBody textAlign={'center'}>
             Please make sure you are on one of these networks to join the Testnet Trading Competition

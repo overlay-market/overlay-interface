@@ -1,24 +1,7 @@
 import {useState, useRef, useEffect} from 'react'
 import styled from 'styled-components/macro'
-import {FlexRow} from '../Container/Container'
-import {TEXT, colors} from '../../theme/theme'
-import ArbitrumLogo from '../../assets/images/arbitrum-logo.png'
-import EthereumLogo from '../../assets/images/ethereum-logo.png'
-import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
 import HeaderHamburger from '../HeaderHamburger/HeaderHamburger'
-import {useActiveWeb3React} from '../../hooks/web3'
-import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
 import ExternalLinks from './ExternalLinks'
-
-export const PlatformLogo = styled.div<{src: string; open?: boolean}>`
-  background: no-repeat center/contain url(${({src}) => src});
-  background-size: contain;
-  background-repeat: no-repeat;
-  height: 17px;
-  width: 17px;
-  opacity: ${({open}) => (open ? '0' : '1')};
-  transition: all 0.2s linear;
-`
 
 const RelativeContainer = styled.div`
   position: relative;
@@ -88,31 +71,7 @@ export const MenuLink = ({background, link, onClick, children}: {background?: st
   )
 }
 
-export const NETWORK_ICONS: {[chainId in SupportedChainId | number]: string} = {
-  [SupportedChainId.MAINNET]: EthereumLogo,
-  [SupportedChainId.ARBITRUM]: ArbitrumLogo,
-  [SupportedChainId.ARBITRUM_SEPOLIA]: ArbitrumTestnetLogo,
-}
-
-export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Element} = {
-  [SupportedChainId.MAINNET]: <TEXT.SmallBody>Ethereum Mainnet</TEXT.SmallBody>,
-  [SupportedChainId.ARBITRUM]: <TEXT.SmallBody>Arbitrum One</TEXT.SmallBody>,
-  [SupportedChainId.ARBITRUM_GÖRLI]: (
-    <FlexRow>
-      <TEXT.SmallBody>Arbitrum Goerli -</TEXT.SmallBody>
-      <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
-    </FlexRow>
-  ),
-  [SupportedChainId.ARBITRUM_SEPOLIA]: (
-    <FlexRow>
-      <TEXT.SmallBody>Arbitrum Sepolia -</TEXT.SmallBody>
-      <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
-    </FlexRow>
-  ),
-}
-
 export default function WalletMenu() {
-  const {account, chainId} = useActiveWeb3React()
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
   const [isSubMenuOpen, setIsSubMenuOpen] = useState<boolean>(false)
 
@@ -138,8 +97,6 @@ export default function WalletMenu() {
     }
   }, [])
 
-  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId])
-
   return (
     <>
       <RelativeContainer>
@@ -151,11 +108,6 @@ export default function WalletMenu() {
               showMenu(true)
             }}
           >
-            {account && chainId && supportedChainId ? (
-              <PlatformLogo open={isMenuOpen} src={NETWORK_ICONS[chainId]} />
-            ) : (
-              supportedChainId && <PlatformLogo open={isMenuOpen} src={NETWORK_ICONS[DEFAULT_CHAINID]} />
-            )}
             <HeaderHamburger
               open={isMenuOpen}
               onClick={(event: React.MouseEvent<HTMLButtonElement>) => {

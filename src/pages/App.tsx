@@ -28,7 +28,7 @@ import {useEffect, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
 import {ProtectedRoute} from '../routes/ProtectedRoute'
 import {useActiveWeb3React} from '../hooks/web3'
-import {SupportedChainId, DEFAULT_NET} from '../constants/chains'
+import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -48,7 +48,7 @@ const App = () => {
   let history = useHistory()
   let location = useLocation()
   const {chainId} = useActiveWeb3React()
-  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId] === DEFAULT_NET)
+  const supportedChainId: boolean = Boolean(chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]))
   const [showLoader, setShowLoader] = useState(false)
   const [currentPathName, setCurrentPathName] = useState(location.pathname)
 

@@ -4,12 +4,15 @@ import {ClientError, gql, GraphQLClient} from 'graphql-request'
 import {AppState} from '../state'
 import {DocumentNode} from 'graphql'
 import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
+import {useActiveWeb3React} from '../../hooks/web3'
 
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
   [SupportedChainId.MAINNET]: 'https://api.studio.thegraph.com/query/46086/overlay-subgraph-eth/v2.0.2',
   [SupportedChainId.ARBITRUM_SEPOLIA]:
-    'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/6HYgwKVqKS4dYr3DDhZCH6zey7LbTd8DHqWtHZkjXBW5',
+    'https://gateway-arbitrum.network.thegraph.com/api/84ab887f7372fde61d4f1e228fa25964/subgraphs/id/59rgxaXFUQv5K6UXb1JJhS44uyPYn2EJFEZrZJLG5a4Y',
+
+  // 'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/6HYgwKVqKS4dYr3DDhZCH6zey7LbTd8DHqWtHZkjXBW5',
   [SupportedChainId.GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-goerli',
   [SupportedChainId.RINKEBY]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-rinkeby',
   // [SupportedChainId.ARBITRUM]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arbitrum',
@@ -17,6 +20,7 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   [SupportedChainId.ARBITRUM]:
     'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/7RuVCeRzAHL5apu6SWHyUEVt3Ko2pUv2wMTiHQJaiUW9',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arb-goerli',
+  [SupportedChainId.IMOLA]: 'https://subgraph.overlay.market/query/subgraphs/name/overlay/v1-subgraph',
 }
 
 export const api = createApi({
@@ -386,9 +390,25 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   return async ({document, variables}, {getState}: BaseQueryApi) => {
     try {
       const chainId = (getState() as AppState).application.chainId
+      const chainIdLocal = (getState() as AppState).application.chainIdLocal
+      // const {account} = useActiveWeb3React()
 
       // if chainId in state is null, set default query to Arbitrum One
-      const subgraphUrl = chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+
+      // const subgraphUrl = chainId
+      //   ? CHAIN_SUBGRAPH_URL[chainId]
+      //   : chainIdLocal
+      //   ? CHAIN_SUBGRAPH_URL[chainIdLocal]
+      //   : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+
+      const subgraphUrl = chainId
+        ? CHAIN_SUBGRAPH_URL[chainId]
+        : chainIdLocal
+        ? CHAIN_SUBGRAPH_URL[chainIdLocal]
+        : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+
+      // const subgraphUrl = chainIdLocal ? CHAIN_SUBGRAPH_URL[chainIdLocal] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+      console.log({subgraphUrl}, {chainIdLocal}, {chainId})
 
       if (!subgraphUrl) {
         return {

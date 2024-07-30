@@ -11,6 +11,7 @@ import {useAppDispatch, useAppSelector} from '../hooks'
 import {updateBlockNumber} from '../application/actions'
 import {useMulticall2Contract} from '../../hooks/useContract'
 import {errorFetchingMulticallResults, fetchingMulticallResults, updateMulticallResults} from './actions'
+import {SupportedChainId} from '../../constants/chains'
 
 /**
  * Fetches a chunk of calls, enforcing a minimum block number constraint
@@ -138,7 +139,7 @@ export default function Updater(): null {
     if (outdatedCallKeys.length === 0) return
     const calls = outdatedCallKeys.map(key => parseCallKey(key))
 
-    const chunkedCalls = chunkArray(calls)
+    const chunkedCalls = chunkArray(calls, +chainId === SupportedChainId.IMOLA ? 2000000 : undefined)
 
     if (cancellations.current && cancellations.current.blockNumber !== latestBlockNumber) {
       cancellations.current.cancellations.forEach(c => c())

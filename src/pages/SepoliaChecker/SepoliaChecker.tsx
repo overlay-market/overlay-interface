@@ -43,13 +43,13 @@ const SepoliaChecker = () => {
     <BgWrapper>
       <Container>
         <ModalContainer>
-          <Image src={BlueYellowHearts} alt={'Overlay Logo'} height={'73px'} width={'auto'} />
+          {/* <Image src={BlueYellowHearts} alt={'Overlay Logo'} height={'73px'} width={'auto'} /> */}
           <TEXT.StandardHeader1 color={colors(true).dark.white}>OVL Testnet Trading Competition is on</TEXT.StandardHeader1>
           <TEXT.BoldHeader1 fontSize="26px" fontStyle={'italic'} color={colors(true).dark.white}>
-            Arbitrum Sepolia
+            Arbitrum Sepolia and Movement
           </TEXT.BoldHeader1>
           <TEXT.BoldStandardBody textAlign={'center'}>
-            Please make sure you are on Sepolia network to join the Testnet Trading Competition
+            Please make sure you are on one of these networks to join the Testnet Trading Competition
           </TEXT.BoldStandardBody>
           <TriggerActionButton onClick={() => switchNetworkToArbitrum()} active={true}>
             Change

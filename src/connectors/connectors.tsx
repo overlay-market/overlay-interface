@@ -7,6 +7,7 @@ import {WalletConnectV2Connector} from './walletconnectV2Connector'
 import {useApplicationState} from '../state/application/hooks'
 import {AppState} from '../state/state'
 import {BaseQueryApi} from '@reduxjs/toolkit/query'
+import {useAppSelector} from '../state/hooks'
 
 const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.MAINNET,
@@ -37,47 +38,51 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   [SupportedChainId.MAINNET]: `https://mainnet.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.GÖRLI]: `https://goerli.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.RINKEBY]: `https://kovan.infura.io/v3/${INFURA_KEY}`,
-  // [SupportedChainId.ARBITRUM]: `https://arbitrum-mainnet.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM]: `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
   [SupportedChainId.ARBITRUM_GÖRLI]: `https://arbitrum-goerli.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM_SEPOLIA]: `https://arbitrum-sepolia.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.IMOLA]: `https://mevm.devnet.imola.movementlabs.xyz`,
 }
 
-const chainIdLocal1 = () => {
-  // const {chainIdLocal} = useApplicationState()
-  return ({getState}: BaseQueryApi) => {
-    const chainId = (getState() as AppState).application.chainIdLocal
-    return chainId
-  }
-  // const network1 = new NetworkConnector({
-  //   urls: NETWORK_URLS,
-  //   defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
-  // })
-
-  // return network1
+export function useChainIdLocal() {
+  return useAppSelector((state: AppState) => state.application.chainIdLocal)
 }
-
-// export function useChainIdLocal() {
-//   const {chainIdLocal} = useApplicationState()
-//   return chainIdLocal
-// }
-// const chainIdLocal = useChainIdLocal()
-const chainIdLocal = chainIdLocal1()
-
-export const network = new NetworkConnector({
-  urls: NETWORK_URLS,
-  defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
-})
 
 let networkLibrary: Web3Provider | undefined
 export function getNetworkLibrary(): Web3Provider {
   return (networkLibrary = networkLibrary ?? getLibrary(network.provider))
 }
 
+// This is a placeholder for the network instance.
+// It should be replaced with the result of calling useNetwork() in a React component where possible.
+export const network = new NetworkConnector({
+  urls: NETWORK_URLS,
+  defaultChainId: DEFAULT_CHAINID,
+})
+
+// This is a placeholder for the walletconnect instance.
+// It should be replaced with the result of calling useWalletConnect() in a React component where possible.
 export const walletconnect = new WalletConnectV2Connector({
   projectId: process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '',
   showQrModal: true,
-  chains: [chainIdLocal ?? DEFAULT_CHAINID],
+  chains: [DEFAULT_CHAINID],
   rpcMap: NETWORK_URLS,
 })
+
+export function useNetwork() {
+  const chainIdLocal = useChainIdLocal()
+  return new NetworkConnector({
+    urls: NETWORK_URLS,
+    defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
+  })
+}
+
+export function useWalletConnect() {
+  const chainIdLocal = useChainIdLocal()
+  return new WalletConnectV2Connector({
+    projectId: process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '',
+    showQrModal: true,
+    chains: [chainIdLocal ?? DEFAULT_CHAINID],
+    rpcMap: NETWORK_URLS,
+  })
+}

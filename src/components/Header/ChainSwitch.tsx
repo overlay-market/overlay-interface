@@ -113,7 +113,9 @@ export default function ChainSwitch() {
   const setChainId = useSetChainId()
 
   useEffect(() => {
-    setActiveChainSrc(account && chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID])
+    if (account) {
+      setActiveChainSrc(account && chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID])
+    }
   }, [account, chainId, supportedChainId])
 
   const openDropdownMenu = Boolean(anchorEl)
@@ -130,11 +132,13 @@ export default function ChainSwitch() {
   const handleSelectChain = (chainId: number) => {
     setActiveChainSrc(NETWORK_ICONS[chainId])
 
-    Number(chainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
-      ? switchNetworkToArbitrum()
-      : Number(chainId) === Number(SupportedChainId.IMOLA)
-      ? switchNetworkToImola()
-      : console.log('error')
+    if (account) {
+      Number(chainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
+        ? switchNetworkToArbitrum()
+        : Number(chainId) === Number(SupportedChainId.IMOLA)
+        ? switchNetworkToImola()
+        : console.log('error')
+    }
     setAnchorEl(null)
     setChainId(chainId)
   }

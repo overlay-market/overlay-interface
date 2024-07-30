@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import {useWeb3React} from '@web3-react/core'
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3'
 import {NetworkContextName} from '../../constants/misc'
-import {network} from '../../connectors/connectors'
+import {network, useChainIdLocal, useNetwork} from '../../connectors/connectors'
 
 export default function Web3ReactManager({children}: {children: JSX.Element}) {
   const {active} = useWeb3React()
@@ -12,12 +12,29 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
   // useEagerConnect();
   const triedEager = useEagerConnect()
 
+  const activeNetwork = useNetwork()
+  const chainIdLocal = useChainIdLocal()
+
+  console.log('start Web3ReactManager')
+  console.log({network, networkActive, activeNetwork})
+  console.log(activeNetwork.getProvider().then(provider => provider.chainId))
+
   // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate itd
   useEffect(() => {
     if (triedEager && !networkActive && !networkError && !active) {
       activateNetwork(network)
     }
-  }, [triedEager, networkActive, networkError, activateNetwork, active, network])
+  }, [triedEager, networkActive, networkError, activateNetwork, active])
+
+  useEffect(() => {
+    console.log({network, networkActive, activeNetwork})
+    console.log(!networkActive, !networkError, !active)
+    if (!networkError && !active) {
+      console.log('changing network')
+      console.log({network, networkActive, activeNetwork})
+      activeNetwork ? activateNetwork(activeNetwork) : activateNetwork(network)
+    }
+  }, [chainIdLocal])
 
   // when there's no account connected, react to logins (broadly speaking) on the injected provider, if it exists
   useInactiveListener(!triedEager)

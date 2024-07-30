@@ -93,6 +93,16 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
   ),
 }
 
+const CHAIN_LIST: {[chainId in SupportedChainId | number]: string} = {
+  [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia',
+  [SupportedChainId.IMOLA]: 'Movement',
+}
+
+const CHAIN_LIST_ORDER: {[x: number]: number} = {
+  [1]: SupportedChainId.ARBITRUM_SEPOLIA,
+  [2]: SupportedChainId.IMOLA,
+}
+
 export default function ChainSwitch() {
   const {account, chainId} = useActiveWeb3React()
   const supportedChainId: boolean = Boolean(chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]))
@@ -104,11 +114,6 @@ export default function ChainSwitch() {
   }, [account, chainId, supportedChainId])
 
   const openDropdownMenu = Boolean(anchorEl)
-
-  const chainsList: {[chainId in SupportedChainId | number]: string} = {
-    [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia',
-    [SupportedChainId.IMOLA]: 'Movement',
-  }
 
   const clickSelectChain = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -155,12 +160,13 @@ export default function ChainSwitch() {
         open={openDropdownMenu}
         onClose={closeSelectChain}
       >
-        {Object.keys(chainsList).map((chainId: any) => {
+        {Object.keys(CHAIN_LIST_ORDER).map((idValue: string) => {
+          const id = Number(idValue)
           return (
-            <MenuItem key={chainId} onClick={() => handleSelectChain(chainId)} disableRipple>
+            <MenuItem key={id} onClick={() => handleSelectChain(CHAIN_LIST_ORDER[id])} disableRipple>
               <FlexContainer gap="16px">
-                <ChainLogo src={NETWORK_ICONS[chainId]} />
-                <Box style={{fontFamily: 'Inter', color: '#fff'}}>{chainsList[chainId]}</Box>
+                <ChainLogo src={NETWORK_ICONS[CHAIN_LIST_ORDER[id]]} />
+                <Box style={{fontFamily: 'Inter', color: '#fff'}}>{CHAIN_LIST[CHAIN_LIST_ORDER[id]]}</Box>
               </FlexContainer>
             </MenuItem>
           )

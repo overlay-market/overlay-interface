@@ -106,6 +106,10 @@ const Markets = () => {
     currentMarketsError && refetch()
   }, [currentMarketsError, refetch])
 
+  useEffect(() => {
+    marketsData.length !== markets?.length && refetch()
+  }, [marketsData, markets, refetch])
+
   // list of hidden markets from Markets page
 
   const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {

@@ -140,10 +140,12 @@ const Faucet = () => {
     if (responseSuccess) {
       if (responseSuccess.hasOwnProperty('eth') && responseSuccess.hasOwnProperty('ovl')) {
         if (responseSuccess.eth.status === 'success' && responseSuccess.ovl.status === 'success') {
-          setResponseMessage('Congrats on getting your 50 OVL and 0.003 ETH! Start trading & earn your points now!')
+          setResponseMessage(
+            `Congrats on getting your 50 OVL and ${selectedChain === 'imola' ? 'MOVE' : 'ETH'}! Start trading & earn your points now!`,
+          )
         }
         if (responseSuccess.eth.status === 'success' && responseSuccess.ovl.status === 'error') {
-          setResponseMessage('Congrats on getting your 0.003 ETH! Start trading & earn your points now!')
+          setResponseMessage(`Congrats on getting your ${selectedChain === 'imola' ? 'MOVE' : 'ETH'}! Start trading & earn your points now!`)
         }
         if (responseSuccess.eth.status === 'error' && responseSuccess.ovl.status === 'success') {
           setResponseMessage('Congrats on getting your 50 OVL! Start trading & earn your points now!')
@@ -230,7 +232,7 @@ const Faucet = () => {
       </TEXT.StandardBody>
       {responseMessage && (
         <TEXT.BoldSmallBody color={colors(true).dark.blue1}>
-          You can get extra 100 OVL and 0.0069 ETH on{' '}
+          You can get extra 100 OVL and 0.0069 {selectedChain === 'imola' ? 'MOVE' : 'ETH'} on{' '}
           <Link key={'Discord'} target="_blank" href={LINKS.DISCORD} underline="none" style={{color: `${colors(true).dark.blue2}`}}>
             discord
           </Link>

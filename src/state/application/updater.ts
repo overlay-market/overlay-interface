@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {useAppDispatch, useAppSelector} from '../hooks'
 import {api, CHAIN_TAG} from '../data/enhanced'
 import {useActiveWeb3React} from '../../hooks/web3'
-import {updateBlockNumber, updateChainId} from './actions'
+import {setChainId, updateBlockNumber, updateChainId} from './actions'
 import {supportedChainId} from '../../utils/supportedChainId'
 import useDebounce from '../../hooks/useDebounce'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
@@ -88,6 +88,11 @@ export default function Updater(): null {
   useEffect(() => {
     dispatch(
       updateChainId({
+        chainId: debouncedState.chainId ? supportedChainId(debouncedState.chainId) ?? null : null,
+      }),
+    )
+    dispatch(
+      setChainId({
         chainId: debouncedState.chainId ? supportedChainId(debouncedState.chainId) ?? null : null,
       }),
     )

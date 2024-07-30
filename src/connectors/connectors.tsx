@@ -12,6 +12,7 @@ const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.ARBITRUM,
   SupportedChainId.ARBITRUM_GÖRLI,
   SupportedChainId.ARBITRUM_SEPOLIA,
+  SupportedChainId.IMOLA,
 ]
 
 export const injected = new InjectedConnector({
@@ -37,6 +38,7 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   [SupportedChainId.ARBITRUM]: `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
   [SupportedChainId.ARBITRUM_GÖRLI]: `https://arbitrum-goerli.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM_SEPOLIA]: `https://arbitrum-sepolia.infura.io/v3/${INFURA_KEY}`,
+  [SupportedChainId.IMOLA]: `https://mevm.devnet.imola.movementlabs.xyz`,
 }
 
 export const network = new NetworkConnector({

@@ -239,6 +239,68 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
     }
   }
 
+  const addImolaTokenToMM = async () => {
+    const {ethereum} = window
+    if (ethereum && ethereum.request) {
+      let networkSwitched = false
+
+      const chainId = '0x780c' // Imola chain ID
+      const networkAdded = await ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId,
+            chainName: 'Move-EVM', // Imola network name
+            nativeCurrency: {
+              name: 'MOVE',
+              symbol: 'MOVE',
+              decimals: 18,
+            },
+            rpcUrls: ['https://mevm.devnet.imola.movementlabs.xyz'], // Imola RPC endpoint
+            blockExplorerUrls: ['https://explorer.testnet.imola.movementlabs.xyz'], // Imola block explorer URL
+          },
+        ],
+      })
+
+      if (!networkAdded) {
+        try {
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{chainId: '0x780c'}], // Imola chain ID
+          })
+          networkSwitched = true
+        } catch (error) {
+          if ((error as any).code === 4902) {
+            console.error('User rejected network switch.')
+          } else {
+            console.error(error)
+          }
+        }
+
+        if (networkSwitched) {
+          try {
+            await ethereum.request({
+              method: 'wallet_watchAsset',
+              params: {
+                // params is expecting an array, even though the correct type is an object.
+                // @ts-ignore
+                type: 'ERC20',
+                options: {
+                  address: '0xCde46284D32148c4D470fA33BA788710b3d21E89', // Imola OVL address
+                  symbol: 'OVL',
+                  decimals: 18,
+                  image: 'https://raw.githubusercontent.com/overlay-market/overlay-interface/staging/public/overlay-logo-white.png',
+                },
+              },
+            })
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+    }
+  }
+
   return (
     <>
       {(!mobile || isSubMenuOpen) && (
@@ -312,7 +374,7 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
 
           {HIDE_MENU_ITEMS ? null : (
             <>
-              <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addSepoliaTokenToMM : addTokenToMM}>
+              <MenuLink mobile={mobile} onClick={chainId && Number(chainId) === Number(DEFAULT_CHAINID) ? addImolaTokenToMM : addTokenToMM}>
                 <TEXT.SmallBody color={colors(false).dark.tan2}>Add OVL to Wallet</TEXT.SmallBody>
               </MenuLink>
 

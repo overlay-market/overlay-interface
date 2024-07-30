@@ -22,13 +22,13 @@ export async function switchNetworkToArbitrum() {
             params: [
               {
                 chainId: ethers.utils.hexValue(DEFAULT_CHAINID),
-                chainName: 'Arbitrum Sepolia',
-                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-                blockExplorerUrls: ['https://sepolia.arbiscan.io/'],
+                chainName: 'Move-EVM',
+                rpcUrls: ['https://mevm.devnet.imola.movementlabs.xyz'],
+                blockExplorerUrls: ['https://explorer.testnet.imola.movementlabs.xyz'],
                 nativeCurrency: {
                   decimals: 18,
-                  name: 'ETH-Sepolia',
-                  symbol: 'ETH',
+                  name: 'MOVE',
+                  symbol: 'MOVE',
                 },
               },
             ],

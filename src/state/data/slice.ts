@@ -401,10 +401,10 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
       //   ? CHAIN_SUBGRAPH_URL[chainIdLocal]
       //   : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
-      const subgraphUrl = chainIdLocal
-        ? CHAIN_SUBGRAPH_URL[chainIdLocal]
-        : chainId
+      const subgraphUrl = chainId
         ? CHAIN_SUBGRAPH_URL[chainId]
+        : chainIdLocal
+        ? CHAIN_SUBGRAPH_URL[chainIdLocal]
         : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
       // const subgraphUrl = chainIdLocal ? CHAIN_SUBGRAPH_URL[chainIdLocal] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]

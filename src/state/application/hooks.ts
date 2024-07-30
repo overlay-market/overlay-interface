@@ -86,7 +86,7 @@ export function useSetChainId(): (chainId: number | null) => void {
   const dispatch = useDispatch()
   return useCallback(
     (chainId: number | null) => {
-      // dispatch(updateChainId({chainId}))
+      dispatch(updateChainId({chainId}))
       dispatch(setChainId({chainId}))
     },
     [dispatch],

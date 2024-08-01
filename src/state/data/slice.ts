@@ -28,7 +28,7 @@ export const api = createApi({
     positionListQuery: builder.query({
       query: ({account, marketPositionIdList}) => ({
         document: gql`
-          query queryPosition($account: ID!, $marketPositionId: [ID]) {
+          query queryPosition($account: ID!, $marketPositionIdList: [ID!]) {
             account(id: $account) {
               positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id_in: $marketPositionIdList}) {
                 id
@@ -218,7 +218,7 @@ export const api = createApi({
           query openPositions($account: ID!, $first: Int, $skip: Int) {
             account(id: $account) {
               positions(
-                where: {isLiquidated: false, currentOi_gt: "0"}
+                where: {isLiquidated: false, fractionUnwound_lt: "1000000000000000000"}
                 orderBy: createdAtTimestamp
                 orderDirection: desc
                 first: $first
@@ -227,6 +227,7 @@ export const api = createApi({
                 id
                 createdAtTimestamp
                 currentOi
+                fractionUnwound
                 entryPrice
                 initialCollateral
                 isLiquidated
@@ -255,7 +256,7 @@ export const api = createApi({
           query marketOpenPositions($account: ID!, $first: Int, $skip: Int, $marketId: String) {
             account(id: $account) {
               positions(
-                where: {isLiquidated: false, currentOi_gt: "0", market: $marketId}
+                where: {isLiquidated: false, fractionUnwound_lt: "1000000000000000000", market: $marketId}
                 orderBy: createdAtTimestamp
                 orderDirection: desc
                 first: $first
@@ -264,6 +265,7 @@ export const api = createApi({
                 id
                 createdAtTimestamp
                 currentOi
+                fractionUnwound
                 entryPrice
                 initialCollateral
                 isLiquidated
@@ -389,24 +391,12 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
     try {
       const chainId = (getState() as AppState).application.chainId
       const chainIdLocal = (getState() as AppState).application.chainIdLocal
-      // const {account} = useActiveWeb3React()
-
-      // if chainId in state is null, set default query to Arbitrum One
-
-      // const subgraphUrl = chainId
-      //   ? CHAIN_SUBGRAPH_URL[chainId]
-      //   : chainIdLocal
-      //   ? CHAIN_SUBGRAPH_URL[chainIdLocal]
-      //   : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
       const subgraphUrl = chainId
         ? CHAIN_SUBGRAPH_URL[chainId]
         : chainIdLocal
         ? CHAIN_SUBGRAPH_URL[chainIdLocal]
         : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
-
-      // const subgraphUrl = chainIdLocal ? CHAIN_SUBGRAPH_URL[chainIdLocal] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
-      console.log({subgraphUrl}, {chainIdLocal}, {chainId})
 
       if (!subgraphUrl) {
         return {

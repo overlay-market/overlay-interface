@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
@@ -14,9 +14,11 @@ import MarketsRow from './MarketsRow'
 import ComingSoonMarketsRow from './ComingSoonMarketsRow'
 import ReactTooltip from 'react-tooltip'
 import {MarketChartMap, MarketDetails, ComingSoonMarkets} from '../../constants/markets'
+import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
+import {SupportedChainId, WORKING_CHAINS} from '../../constants/chains'
+import {useActiveWeb3React} from '../../hooks/web3'
 import {useAppSelector} from '../../state/hooks'
 import {AppState} from '../../state/state'
-import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
 
 const activeClassName = 'INACTIVE'
 
@@ -93,10 +95,19 @@ const Markets = () => {
   const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData, error: currentMarketsError}: MarketStateResults = useCurrentMarketState(marketDetails)
-  let chainId = useAppSelector((state: AppState) => state.application.chainId)
+  const {account, chainId: web3ChainId} = useActiveWeb3React()
+  let chainIdLocal = useAppSelector((state: AppState) => state.application.chainIdLocal)
+  const [chainId, setChainId] = useState<number | null | undefined>(null)
 
   // toggle to hide 7d chart if data unavailable
   const hide7dChart = true
+
+  // console.log({chainId}, {chainIdLocal})
+  // console.log({account})
+
+  useEffect(() => {
+    account ? setChainId(web3ChainId) : setChainId(chainIdLocal)
+  }, [chainIdLocal, web3ChainId, account])
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -105,6 +116,10 @@ const Markets = () => {
   useEffect(() => {
     currentMarketsError && refetch()
   }, [currentMarketsError, refetch])
+
+  // useEffect(() => {
+  //   marketsData.length !== markets?.length && refetch()
+  // }, [marketsData, markets, refetch])
 
   // list of hidden markets from Markets page
 
@@ -124,7 +139,7 @@ const Markets = () => {
   return (
     <PageContainer>
       <TableContainer component={Paper}>
-        {chainId !== 1 ? (
+        {chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]) ? (
           <StyledTable smwidth="100%">
             <TableHead>
               <MarketsStyledTableHeaderRow>
@@ -219,7 +234,12 @@ const Markets = () => {
           <ChangeNetworkModal />
         )}
       </TableContainer>
-      {marketsData.length === 0 && chainId !== 1 && (
+      {marketsData.length === 0 && chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]) && (
+        <FlexRow marginTop="32px" justifyContent="center !important" width="100%">
+          <Loader stroke="white" size="21px" />
+        </FlexRow>
+      )}
+      {!chainId && (
         <FlexRow marginTop="32px" justifyContent="center !important" width="100%">
           <Loader stroke="white" size="21px" />
         </FlexRow>

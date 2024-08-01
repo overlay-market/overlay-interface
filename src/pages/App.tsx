@@ -19,7 +19,7 @@ import Pool from './Stake/PoolWrapper'
 import SepoliaChecker from './SepoliaChecker/SepoliaChecker'
 import Popups from '../components/Popup/Popups'
 import ClaimChecker from './ClaimChecker/ClaimChecker'
-import SepoliaFaucet from './SepoliaFaucet/SepoliaFaucet'
+import Faucet from './Faucet/Faucet'
 import {ClosedPosition} from './Positions/ClosedPosition'
 import Leaderboard from './Leaderboard/Leaderboard'
 import TradingMiningLeaderboard from './TradingMining/TradingMiningLeaderboard'
@@ -28,7 +28,7 @@ import {useEffect, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
 import {ProtectedRoute} from '../routes/ProtectedRoute'
 import {useActiveWeb3React} from '../hooks/web3'
-import {SupportedChainId, DEFAULT_NET} from '../constants/chains'
+import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -48,12 +48,12 @@ const App = () => {
   let history = useHistory()
   let location = useLocation()
   const {chainId} = useActiveWeb3React()
-  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId] === DEFAULT_NET)
+  const supportedChainId: boolean = Boolean(chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]))
   const [showLoader, setShowLoader] = useState(false)
   const [currentPathName, setCurrentPathName] = useState(location.pathname)
 
   useEffect(() => {
-    if (location.pathname !== '/network-checker' && location.pathname !== '/claim-checker' && location.pathname !== '/sepolia-faucet') {
+    if (location.pathname !== '/network-checker' && location.pathname !== '/claim-checker' && location.pathname !== '/faucet') {
       setCurrentPathName(location.pathname)
     }
   }, [location])
@@ -68,7 +68,7 @@ const App = () => {
   }, [chainId, location])
 
   useEffect(() => {
-    if (!supportedChainId && location.pathname !== '/claim-checker' && location.pathname !== '/sepolia-faucet') {
+    if (!supportedChainId && location.pathname !== '/claim-checker' && location.pathname !== '/faucet') {
       history.push('/network-checker')
     }
   }, [chainId, supportedChainId, location])
@@ -116,7 +116,7 @@ const App = () => {
                     <Route exact strict path="/stake/:poolAddress" component={Pool} />
                     <Route exact strict path="/bridge" component={Bridge} />
                     <Route exact strict path="/claim-checker" component={ClaimChecker} />
-                    <Route exact strict path="/sepolia-faucet" component={SepoliaFaucet} />
+                    <Route exact strict path="/faucet" component={Faucet} />
                     <Route exact strict path="/leaderboard" component={Leaderboard} />
                     <Route exact strict path="/trading-mining" component={TradingMiningLeaderboard} />
                   </Switch>

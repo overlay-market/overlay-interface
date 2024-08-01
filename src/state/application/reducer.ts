@@ -9,7 +9,9 @@ import {
   removePopup,
   updateTermsOfServiceStatus,
   UserTermsOfServiceStatus,
+  setChainId,
 } from './actions'
+import {DEFAULT_CHAINID} from '../../constants/chains'
 
 type PopupList = Array<{
   key: string
@@ -23,6 +25,7 @@ export interface ApplicationState {
   readonly blockNumber: {readonly [chainId: number]: number}
   readonly openModal: ApplicationModal | null
   readonly termsOfServiceStatus: UserTermsOfServiceStatus
+  readonly chainIdLocal: number | null
 }
 
 const initialState: ApplicationState = {
@@ -31,6 +34,7 @@ const initialState: ApplicationState = {
   blockNumber: {},
   openModal: null,
   termsOfServiceStatus: UserTermsOfServiceStatus.NEW_USER,
+  chainIdLocal: DEFAULT_CHAINID,
 }
 
 export default createReducer(initialState, builder =>
@@ -69,5 +73,9 @@ export default createReducer(initialState, builder =>
     })
     .addCase(updateTermsOfServiceStatus, (state, action) => {
       state.termsOfServiceStatus = action.payload.termsOfServiceStatus
+    })
+    .addCase(setChainId, (state, action) => {
+      const {chainId} = action.payload
+      state.chainIdLocal = chainId
     }),
 )

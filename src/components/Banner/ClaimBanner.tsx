@@ -55,7 +55,7 @@ export default function ClaimBanner() {
       {linkToClaim === 'true' ? (
         <BannerContainer>
           <TextWrapper>
-            <StyledLink to={'/sepolia-faucet'}>
+            <StyledLink to={'/faucet'}>
               <TEXT.BoldSupplemental onClick={handleClose}>
                 You can now claim Arbitrum Sepolia Testnet ETH and test token OVL here. You can test the protocol, collect points and share 1.5% of
                 the total supply thanks to TUNA: The Ultimate New Airdrop.

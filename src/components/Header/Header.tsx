@@ -4,7 +4,7 @@ import styled from 'styled-components/macro'
 import {IconButton} from '@material-ui/core'
 import {Image} from 'rebass'
 import {useDarkModeManager} from '../../state/user/hooks'
-import {FlexRow} from '../Container/Container'
+import {FlexContainer, FlexRow} from '../Container/Container'
 import {enableLock, disableLock} from '../../utils/scrollLock'
 import {TEXT, colors} from '../../theme/theme'
 import SlideMenu from '../SlideMenu/SlideMenu'
@@ -12,6 +12,7 @@ import Web3Status from '../Web3Status/Web3Status'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
 import {ChevronDown} from 'react-feather'
 import WalletMenu from './WalletMenu'
+import ChainSwitch from './ChainSwitch'
 import MobileWalletMenu from './WalletMenuMobile'
 import SetSlippageModal from '../SetSlippageModal.tsx/SetSlippageModal'
 import {ClaimId} from '../../constants/claims'
@@ -276,7 +277,7 @@ export default function Header() {
               Statistics
             </StyledExternalLink>
 
-            <PowerCardLink to={'/sepolia-faucet'}>
+            <PowerCardLink to={'/faucet'}>
               <TEXT.Menu>Claim Test Token</TEXT.Menu>
             </PowerCardLink>
           </>
@@ -314,9 +315,12 @@ export default function Header() {
             </BuyOVLButtonContainer>
           </UnstyledLink>
         )}
-        <Web3Status />
-        <WalletMenu />
-        <MobileWalletMenu open={open} setOpen={setOpen} />
+        <FlexContainer gap="12px">
+          <Web3Status />
+          <ChainSwitch />
+          <WalletMenu />
+          <MobileWalletMenu open={open} setOpen={setOpen} />
+        </FlexContainer>
       </AccountContainer>
       <SlideMenu open={open} setOpen={setOpen} />
       <SetSlippageModal />

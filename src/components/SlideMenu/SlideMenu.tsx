@@ -6,7 +6,7 @@ import {SUPPORTED_LOCALES} from '../../constants/locales'
 import {useActiveLocale} from '../../hooks/useActiveLocale'
 import {useWindowDimensions} from '../../hooks/useWindowDimensions'
 import {Accordion, AccordionSelection} from '../Accordion/Accordion'
-import {NETWORK_ICONS, NETWORK_LABELS, PlatformLogo} from '../Header/WalletMenu'
+import {NETWORK_ICONS, NETWORK_LABELS, PlatformLogo} from '../Header/ChainSwitch'
 import {useActiveWeb3React} from '../../hooks/web3'
 import ExternalLinks from '../Header/ExternalLinks'
 import {useState} from 'react'
@@ -171,7 +171,7 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               <StyledExternalLink href={LINKS.STATISTICS}>
                 <TEXT.Menu>Statistics</TEXT.Menu>
               </StyledExternalLink>
-              <ClaimTestTokenLink tabIndex={tabIndex} to={'/sepolia-faucet'}>
+              <ClaimTestTokenLink tabIndex={tabIndex} to={'/faucet'}>
                 <StyledMenuLink displayText={'Claim Test Token'} linkDestination={'/leaderboard'} currentLocation={location} />
               </ClaimTestTokenLink>
               {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>

@@ -1,20 +1,6 @@
 import {useState, useEffect} from 'react'
 import styled from 'styled-components/macro'
-import ArbitrumLogo from '../../assets/images/arbitrum-logo.png'
 import HeaderHamburger from '../HeaderHamburger/HeaderHamburger'
-import {useActiveWeb3React} from '../../hooks/web3'
-import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
-import {NETWORK_ICONS} from './WalletMenu'
-
-const PlatformLogo = styled.div<{src: string; open?: boolean}>`
-  background: no-repeat center/contain url(${({src}) => src});
-  background-size: contain;
-  background-repeat: no-repeat;
-  height: 17px;
-  width: 17px;
-  opacity: ${({open}) => (open ? '0' : '1')};
-  transition: all 0.2s linear;
-`
 
 const RelativeContainer = styled.div`
   position: relative;
@@ -39,7 +25,6 @@ const WalletMenuButton = styled.div`
 `
 
 export default function MobileWalletMenu({open, setOpen}: {open: boolean; setOpen: Function}) {
-  const {account, chainId} = useActiveWeb3React()
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
 
   const showMenu = (val: boolean) => {
@@ -49,8 +34,6 @@ export default function MobileWalletMenu({open, setOpen}: {open: boolean; setOpe
   useEffect(() => {
     setIsMenuOpen(open)
   }, [open])
-
-  const supportedChainId: boolean = Boolean(chainId && SupportedChainId[chainId])
 
   return (
     <>
@@ -63,11 +46,6 @@ export default function MobileWalletMenu({open, setOpen}: {open: boolean; setOpe
               setOpen(!open)
             }}
           >
-            {account && chainId && supportedChainId ? (
-              <PlatformLogo open={isMenuOpen} src={NETWORK_ICONS[chainId]} />
-            ) : (
-              supportedChainId && <PlatformLogo open={isMenuOpen} src={NETWORK_ICONS[DEFAULT_CHAINID]} />
-            )}
             <HeaderHamburger
               open={isMenuOpen}
               onClick={(event: React.MouseEvent<HTMLButtonElement>) => {

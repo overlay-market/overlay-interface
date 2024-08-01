@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { usePositionListQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
+import { useQueryPositionQuery as usePositionListQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 

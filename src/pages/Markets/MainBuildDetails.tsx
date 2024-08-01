@@ -9,6 +9,7 @@ import SetSlippageModal from '../../components/SetSlippageModal.tsx/SetSlippageM
 import {useSetSlippageModalToggle} from '../../state/application/hooks'
 import {useBuildState} from '../../state/build/hooks'
 import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const ContentContainer = styled(FlexColumn)`
   gap: 16px;
@@ -80,6 +81,7 @@ export const MainDetails = ({
   minPrice?: BigNumber
   priceCurrency?: string
 }) => {
+  const sigFigConstant = 8
   const estimatedReceivedPrice: any = useMemo(() => {
     if (isLong === undefined || estimatedBid === undefined || estimatedAsk === undefined) {
       return null
@@ -87,12 +89,12 @@ export const MainDetails = ({
     // if (estimatedBid === undefined || estimatedAsk === undefined) return prices.mid;
     if (decimals) {
       return isLong
-        ? formatBigNumberUsingDecimalsToString(estimatedAsk, decimals, 4)
-        : formatBigNumberUsingDecimalsToString(estimatedBid, decimals, 4)
+        ? formatBigNumberUsingDecimalsToString(estimatedAsk, decimals, sigFigConstant)
+        : formatBigNumberUsingDecimalsToString(estimatedBid, decimals, sigFigConstant)
     }
     return isLong
-      ? formatBigNumberUsingDecimalsToString(estimatedAsk, quoteTokenDecimals, 4)
-      : formatBigNumberUsingDecimalsToString(estimatedBid, quoteTokenDecimals, 4)
+      ? formatBigNumberUsingDecimalsToString(estimatedAsk, quoteTokenDecimals, sigFigConstant)
+      : formatBigNumberUsingDecimalsToString(estimatedBid, quoteTokenDecimals, sigFigConstant)
   }, [isLong, estimatedBid, estimatedAsk, quoteTokenDecimals, decimals])
 
   const priceImpact = useMemo(() => {
@@ -110,13 +112,25 @@ export const MainDetails = ({
   const toggleSetSlippageModal = useSetSlippageModalToggle()
   const {setSlippageValue} = useBuildState()
 
+  const formattedMinPrice: string | null = useMemo(() => {
+    if (minPrice) {
+      const formattedPrice = formatBigNumberUsingDecimalsToString(minPrice, 18, sigFigConstant)
+
+      return limitDigitsInDecimals(formattedPrice)
+    } else {
+      return null
+    }
+  }, [minPrice])
+
   return (
     <ContentContainer>
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Price</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>
           {estimatedReceivedPrice && minPrice
-            ? `${priceCurrency}${priceCurrency === '%' ? toPercentUnit(estimatedReceivedPrice) : toScientificNumber(estimatedReceivedPrice)}`
+            ? `${priceCurrency}${
+                priceCurrency === '%' ? toPercentUnit(estimatedReceivedPrice) : toScientificNumber(limitDigitsInDecimals(estimatedReceivedPrice))
+              }`
             : '-'}
         </DetailValue>
       </AdditionalDetailRow>
@@ -133,12 +147,8 @@ export const MainDetails = ({
           </TEXT.Supplemental>
         </SlippageValueContainer>
         <DetailValue color={colors(false).dark.blue1}>
-          {minPrice
-            ? `${priceCurrency}${
-                priceCurrency === '%'
-                  ? toPercentUnit(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
-                  : toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
-              }`
+          {formattedMinPrice
+            ? `${priceCurrency}${priceCurrency === '%' ? toPercentUnit(formattedMinPrice) : toScientificNumber(formattedMinPrice)}`
             : '-'}
         </DetailValue>
       </AdditionalDetailRow>

@@ -10,6 +10,7 @@ import {TEXT} from '../../theme/theme'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {UnwindsQuery} from '../../state/data/generated'
 import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 type UnwindsType = NonNullable<UnwindsQuery['account']>['unwinds'][number]
 type PositiopnType = UnwindsType['position'] & ParsedMarketStateDetails
@@ -37,7 +38,7 @@ export const UnwindsTransactions = ({page, transaction, columns}: PositionProps)
 
   const parsedEntryPrice = useMemo(() => {
     if (!entryPrice || decimals === undefined) return null
-    return formatBigNumber(entryPrice, Number(decimals))
+    return formatBigNumber(entryPrice, Number(decimals), 8)
   }, [entryPrice, decimals])
 
   const parsedPnl = useMemo(() => {
@@ -47,7 +48,7 @@ export const UnwindsTransactions = ({page, transaction, columns}: PositionProps)
 
   const parsedExitPrice = useMemo(() => {
     if (!price || decimals === undefined) return null
-    return formatBigNumber(price, Number(decimals))
+    return formatBigNumber(price, Number(decimals), 8)
   }, [price, decimals])
 
   const unwindSize: string | undefined = useMemo(() => {
@@ -93,10 +94,14 @@ export const UnwindsTransactions = ({page, transaction, columns}: PositionProps)
         </FlexRow>
       ),
       'Entry Price': `${priceCurrency ? priceCurrency : ''}${
-        parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+        parsedEntryPrice
+          ? priceCurrency === '%'
+            ? toPercentUnit(parsedEntryPrice)
+            : toScientificNumber(limitDigitsInDecimals(parsedEntryPrice))
+          : '-'
       }`,
       'Exit Price': `${priceCurrency ? priceCurrency : ''}${
-        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(parsedExitPrice)) : '-'
+        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(limitDigitsInDecimals(parsedExitPrice))) : '-'
       }`,
       Closed: parsedClosedTimestamp,
       Created: parsedCreatedTimestamp,

@@ -17,6 +17,7 @@ import {OpenPositionsQuery} from '../../state/data/generated'
 import {usePositionMulticall} from '../../hooks/usePositionMulticall'
 import {Checkbox} from '@material-ui/core'
 import styled from 'styled-components'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 export const CheckboxIcon = styled('span')(() => ({
   borderRadius: 3,
@@ -99,7 +100,7 @@ export const OpenPosition = ({
 
   const parsedEntryPrice = useMemo(() => {
     if (!entryPrice || decimals === undefined) return undefined
-    return formatBigNumber(entryPrice, Number(decimals))
+    return formatBigNumber(entryPrice, Number(decimals), 8)
   }, [entryPrice, decimals])
 
   const multicallRes = usePositionMulticall(marketAddress, positionId)
@@ -145,7 +146,7 @@ export const OpenPosition = ({
   const parsedLiquidationPrice: string | number | undefined | null = useMemo(() => {
     if (!liquidationPrice && liquidationPrice === undefined) return null
     if (decimals === undefined || decimals === null) return null
-    return formatBigNumber(liquidationPrice, Number(decimals), 4)
+    return formatBigNumber(liquidationPrice, Number(decimals), 8)
   }, [liquidationPrice, decimals])
 
   const unrealizedPnL: string | number | undefined = useMemo(() => {
@@ -219,13 +220,19 @@ export const OpenPosition = ({
             </FlexRow>
           ),
           'Entry Price': `${priceCurrency ? priceCurrency : ''}${
-            parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+            parsedEntryPrice
+              ? priceCurrency === '%'
+                ? toPercentUnit(parsedEntryPrice)
+                : toScientificNumber(limitDigitsInDecimals(parsedEntryPrice))
+              : '-'
           }`,
           'Current Price': `${priceCurrency ? priceCurrency : ''}${
-            parsedMid ? (priceCurrency === '%' ? toPercentUnit(parsedMid) : toScientificNumber(parsedMid)) : '-'
+            parsedMid ? (priceCurrency === '%' ? toPercentUnit(parsedMid) : toScientificNumber(limitDigitsInDecimals(parsedMid))) : '-'
           }`,
           'Liq. Price': parsedLiquidationPrice
-            ? `${priceCurrency ?? ''} ${priceCurrency === '%' ? toPercentUnit(parsedLiquidationPrice) : toScientificNumber(parsedLiquidationPrice)}`
+            ? `${priceCurrency ?? ''} ${
+                priceCurrency === '%' ? toPercentUnit(parsedLiquidationPrice) : toScientificNumber(limitDigitsInDecimals(parsedLiquidationPrice))
+              }`
             : `-`,
           Created: parsedCreatedTimestamp ?? undefined,
           'Unrealized PnL': unrealizedPnL ? <ProfitLossCell PnL={Number(unrealizedPnL)} /> : '-',
@@ -241,7 +248,11 @@ export const OpenPosition = ({
             </FlexRow>
           ),
           'Entry Price': `${priceCurrency ? priceCurrency : ''}${
-            parsedEntryPrice ? (priceCurrency === '%' ? toPercentUnit(parsedEntryPrice) : toScientificNumber(parsedEntryPrice)) : '-'
+            parsedEntryPrice
+              ? priceCurrency === '%'
+                ? toPercentUnit(parsedEntryPrice)
+                : toScientificNumber(limitDigitsInDecimals(parsedEntryPrice))
+              : '-'
           }`,
           'Current Price': `Shut Down Market`,
           'Liq. Price': `-`,

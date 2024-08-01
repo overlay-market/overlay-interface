@@ -4,6 +4,7 @@ import Loader from '../../components/Loaders/Loaders'
 import {TEXT, colors} from '../../theme/theme'
 import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 import {BigNumber} from 'ethers'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const ContentContainer = styled(FlexColumn)`
   gap: 16px;
@@ -85,7 +86,7 @@ export const AdditionalDetails = ({
       <AdditionalDetailRow>
         <TEXT.SmallBody color={colors(false).dark.grey2}>Est. Liquidation Price</TEXT.SmallBody>
         <DetailValue color={colors(false).dark.blue1}>{`${priceCurrency}${
-          priceCurrency === '%' ? toPercentUnit(estLiquidationPrice) : toScientificNumber(estLiquidationPrice)
+          priceCurrency === '%' ? toPercentUnit(estLiquidationPrice) : toScientificNumber(limitDigitsInDecimals(estLiquidationPrice))
         }`}</DetailValue>
       </AdditionalDetailRow>
 

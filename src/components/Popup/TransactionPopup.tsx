@@ -82,6 +82,22 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
       errorMessage = 'Undefined error. Please look into console'
   }
 
+  let notSuccessfulMessage: string | undefined
+
+  switch (info?.code) {
+    case 4001:
+      notSuccessfulMessage = 'Transaction Rejected'
+      break
+    case 'ACTION_REJECTED':
+      notSuccessfulMessage = 'Transaction Rejected'
+      break
+    case -32603:
+      notSuccessfulMessage = 'Transaction Failed'
+      break
+    default:
+      notSuccessfulMessage = undefined
+  }
+
   return (
     <PopupContentsContainer>
       <Icon>{success ? <CheckCircle width={22} height={22} color={'#10DCB1'} /> : <AlertTriangle width={22} height={22} color={'#FF648A'} />}</Icon>
@@ -94,12 +110,10 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
           {info?.type === TransactionType.BRIDGE_OVL && 'Bridge Successful'}
           {info?.type === TransactionType.CLAIM_OVL && 'Claim Successful'}
           {/* {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)} */}
-          {info?.code === 4001 && 'Transaction Rejected'}
-          {info?.code === 'ACTION_REJECTED' && 'Transaction Rejected'}
-          {info?.code === -32603 && 'Transaction Failed'}
+          {notSuccessfulMessage}
         </TEXT.BoldSmallBody>
 
-        {info?.message && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        {info?.message && !info?.type && !notSuccessfulMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
 
         {/* {chainId && info?.message && (
           <ErrorMessage>

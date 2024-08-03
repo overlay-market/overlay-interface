@@ -10,7 +10,7 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
   [SupportedChainId.MAINNET]: 'https://api.studio.thegraph.com/query/46086/overlay-subgraph-eth/v2.0.2',
   [SupportedChainId.ARBITRUM_SEPOLIA]:
-    'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/6HYgwKVqKS4dYr3DDhZCH6zey7LbTd8DHqWtHZkjXBW5',
+    'https://gateway-arbitrum.network.thegraph.com/api/f2e24a6f4bc2253fc8b99f56a3600aa1/subgraphs/id/6HYgwKVqKS4dYr3DDhZCH6zey7LbTd8DHqWtHZkjXBW5',
   [SupportedChainId.GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-goerli',
   [SupportedChainId.RINKEBY]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-rinkeby',
   // [SupportedChainId.ARBITRUM]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arbitrum',

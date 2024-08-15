@@ -6,6 +6,7 @@ import {updateBlockNumber, updateChainId} from './actions'
 import {supportedChainId} from '../../utils/supportedChainId'
 import useDebounce from '../../hooks/useDebounce'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
+import {useMultichainContext} from '../multichain/useMultichainContext'
 
 function useQueryCacheInvalidator() {
   const dispatch = useAppDispatch()
@@ -13,16 +14,17 @@ function useQueryCacheInvalidator() {
   // subscribe to `chainId` changes in the redux store rather than Web3
   // this will ensure that when `invalidateTags` is called, the latest
   // `chainId` is available in redux to build the subgraph url
-  const chainId = useAppSelector(state => state.application.chainId)
+  // const chainId = useAppSelector(state => state.application.chainId)
+  const {chainId: contextChainId} = useMultichainContext()
 
   useEffect(() => {
     dispatch(api.util.invalidateTags([CHAIN_TAG]))
-  }, [chainId, dispatch])
+  }, [contextChainId, dispatch])
 }
 
 export default function Updater(): null {
-  const {library, chainId} = useActiveWeb3React()
-
+  const {library} = useActiveWeb3React()
+  const {chainId} = useMultichainContext()
   const dispatch = useAppDispatch()
 
   const windowVisible = useIsWindowVisible()

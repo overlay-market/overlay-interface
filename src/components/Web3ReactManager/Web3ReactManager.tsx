@@ -3,6 +3,7 @@ import {useWeb3React} from '@web3-react/core'
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3'
 import {NetworkContextName} from '../../constants/misc'
 import {network, useNetwork, useChainIdLocal} from '../../connectors/connectors'
+import {useMultichainContext} from '../../state/multichain/useMultichainContext'
 
 export default function Web3ReactManager({children}: {children: JSX.Element}) {
   const {active} = useWeb3React()
@@ -13,7 +14,8 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
   const triedEager = useEagerConnect()
 
   const activeNetwork = useNetwork()
-  const chainIdLocal = useChainIdLocal()
+  // const chainIdLocal = useChainIdLocal()
+  const {chainId: contextChainId} = useMultichainContext()
 
   // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate itd
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
     if (!networkError && !active) {
       activeNetwork ? activateNetwork(activeNetwork) : activateNetwork(network)
     }
-  }, [chainIdLocal])
+  }, [contextChainId])
 
   // when there's no account connected, react to logins (broadly speaking) on the injected provider, if it exists
   useInactiveListener(!triedEager)

@@ -11,6 +11,7 @@ import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants
 import {Box, Menu, MenuItem} from '@material-ui/core'
 import {switchNetworkToArbitrum, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
 import {useChainIdLocal, useSetChainId} from '../../state/application/hooks'
+import {useMultichainContext} from '../../state/multichain/useMultichainContext'
 
 export const ChainLogo = styled.div<{src: string}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -105,20 +106,23 @@ const CHAIN_LIST_ORDER: {[x: number]: number} = {
 }
 
 export default function ChainSwitch() {
-  const {account, chainId} = useActiveWeb3React()
-  const supportedChainId: boolean = Boolean(chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]))
+  const {account} = useActiveWeb3React()
+  const {chainId: contextChainId, setSelectedChainId} = useMultichainContext()
+  const supportedChainId: boolean = Boolean(contextChainId && WORKING_CHAINS.includes(SupportedChainId[contextChainId]))
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [activeChainSrc, setActiveChainSrc] = useState('')
-  const chainIdLocal = useChainIdLocal()
-  const setChainId = useSetChainId()
+  // const chainIdLocal = useChainIdLocal()
+  // const setChainId = useSetChainId()
 
   useEffect(() => {
-    if (account) {
-      setActiveChainSrc(chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID])
-    } else {
-      setActiveChainSrc(chainIdLocal ? NETWORK_ICONS[chainIdLocal] : NETWORK_ICONS[DEFAULT_CHAINID])
-    }
-  }, [account, chainId, supportedChainId, chainIdLocal])
+    setActiveChainSrc(contextChainId && supportedChainId ? NETWORK_ICONS[contextChainId] : NETWORK_ICONS[DEFAULT_CHAINID])
+    // if (account) {
+    //   setActiveChainSrc(contextChainId && supportedChainId ? NETWORK_ICONS[contextChainId] : NETWORK_ICONS[DEFAULT_CHAINID])
+    // } else {
+    //   setActiveChainSrc(chainIdLocal ? NETWORK_ICONS[chainIdLocal] : NETWORK_ICONS[DEFAULT_CHAINID])
+    // }
+  }, [supportedChainId, contextChainId])
 
   const openDropdownMenu = Boolean(anchorEl)
 
@@ -131,18 +135,19 @@ export default function ChainSwitch() {
     setAnchorEl(null)
   }
 
-  const handleSelectChain = (chainId: number) => {
-    setActiveChainSrc(NETWORK_ICONS[chainId])
+  const handleSelectChain = (targetChainId: number) => {
+    setActiveChainSrc(NETWORK_ICONS[targetChainId])
 
     if (account) {
-      Number(chainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
+      Number(targetChainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
         ? switchNetworkToArbitrum()
-        : Number(chainId) === Number(SupportedChainId.IMOLA)
+        : Number(targetChainId) === Number(SupportedChainId.IMOLA)
         ? switchNetworkToImola()
         : console.log('error')
     }
+    setSelectedChainId(targetChainId)
     setAnchorEl(null)
-    setChainId(chainId)
+    // setChainId(chainId)
   }
 
   return (

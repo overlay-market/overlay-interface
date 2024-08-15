@@ -8,6 +8,7 @@ import {useApplicationState} from '../state/application/hooks'
 import {AppState} from '../state/state'
 import {BaseQueryApi} from '@reduxjs/toolkit/query'
 import {useAppSelector} from '../state/hooks'
+import {useMultichainContext} from '../state/multichain/useMultichainContext'
 
 const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.MAINNET,
@@ -67,19 +68,21 @@ export const walletconnect = new WalletConnectV2Connector({
 })
 
 export function useNetwork() {
-  const chainIdLocal = useChainIdLocal()
+  // const chainIdLocal = useChainIdLocal()
+  const {chainId: contextChainId} = useMultichainContext()
   return new NetworkConnector({
     urls: NETWORK_URLS,
-    defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
+    defaultChainId: contextChainId ?? DEFAULT_CHAINID,
   })
 }
 
 export function useWalletConnect() {
-  const chainIdLocal = useChainIdLocal()
+  // const chainIdLocal = useChainIdLocal()
+  const {chainId: contextChainId} = useMultichainContext()
   return new WalletConnectV2Connector({
     projectId: process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '',
     showQrModal: true,
-    chains: [chainIdLocal ?? DEFAULT_CHAINID],
+    chains: [contextChainId ?? DEFAULT_CHAINID],
     rpcMap: NETWORK_URLS,
   })
 }

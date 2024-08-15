@@ -29,6 +29,8 @@ import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
 import {ProtectedRoute} from '../routes/ProtectedRoute'
 import {useActiveWeb3React} from '../hooks/web3'
 import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
+import {useMultichainContext} from '../state/multichain/useMultichainContext'
+import {MultichainContextProvider} from '../state/multichain/MultichainContext'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -48,6 +50,7 @@ const App = () => {
   let history = useHistory()
   let location = useLocation()
   const {chainId} = useActiveWeb3React()
+  const {chainId: contextChainID} = useMultichainContext()
   const supportedChainId: boolean = Boolean(chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]))
   const [showLoader, setShowLoader] = useState(false)
   const [currentPathName, setCurrentPathName] = useState(location.pathname)
@@ -83,52 +86,54 @@ const App = () => {
   }, [])
 
   return (
-    <AppWrapper>
-      <Popups />
-      <TermsOfServiceManager>
-        <ClaimBanner />
-        <Header />
-        <Web3ReactManager>
-          <ContentWrapper>
-            <Route
-              path="/network-checker"
-              children={
-                <NetworkCheckerRoute currentPathName={currentPathName} showLoader={showLoader}>
-                  <SepoliaChecker />
-                </NetworkCheckerRoute>
-              }
-            />
+    <MultichainContextProvider initialChainId={contextChainID}>
+      <AppWrapper>
+        <Popups />
+        <TermsOfServiceManager>
+          <ClaimBanner />
+          <Header />
+          <Web3ReactManager>
+            <ContentWrapper>
+              <Route
+                path="/network-checker"
+                children={
+                  <NetworkCheckerRoute currentPathName={currentPathName} showLoader={showLoader}>
+                    <SepoliaChecker />
+                  </NetworkCheckerRoute>
+                }
+              />
 
-            <Route
-              path="/"
-              children={
-                <ProtectedRoute>
-                  <Switch>
-                    <Route exact strict path="/" render={() => <Redirect to="/markets" />} />
-                    <Route exact strict path="/markets" component={Markets} />
-                    <Route exact strict path="/markets/:marketId" component={Market} />
-                    <Route exact strict path="/positions" component={Positions} />
-                    <Route exact strict path="/positions/:marketPositionId/:positionId" component={Unwind} />
-                    <Route exact strict path="/closed-positions/:unwindId/:positionId" component={ClosedPosition} />
-                    <Route exact strict path="/claim/:claimId" component={Claim} />
-                    <Route exact strict path="/claimpage" component={ClaimPage} />
-                    <Route exact strict path="/stake" component={Pools} />
-                    <Route exact strict path="/stake/:poolAddress" component={Pool} />
-                    <Route exact strict path="/bridge" component={Bridge} />
-                    <Route exact strict path="/claim-checker" component={ClaimChecker} />
-                    <Route exact strict path="/faucet" component={Faucet} />
-                    <Route exact strict path="/leaderboard" component={Leaderboard} />
-                    <Route exact strict path="/trading-mining" component={TradingMiningLeaderboard} />
-                  </Switch>
-                </ProtectedRoute>
-              }
-            />
-          </ContentWrapper>
-        </Web3ReactManager>
-        <Footer />
-      </TermsOfServiceManager>
-      <CurrentBlock />
-    </AppWrapper>
+              <Route
+                path="/"
+                children={
+                  <ProtectedRoute>
+                    <Switch>
+                      <Route exact strict path="/" render={() => <Redirect to="/markets" />} />
+                      <Route exact strict path="/markets" component={Markets} />
+                      <Route exact strict path="/markets/:marketId" component={Market} />
+                      <Route exact strict path="/positions" component={Positions} />
+                      <Route exact strict path="/positions/:marketPositionId/:positionId" component={Unwind} />
+                      <Route exact strict path="/closed-positions/:unwindId/:positionId" component={ClosedPosition} />
+                      <Route exact strict path="/claim/:claimId" component={Claim} />
+                      <Route exact strict path="/claimpage" component={ClaimPage} />
+                      <Route exact strict path="/stake" component={Pools} />
+                      <Route exact strict path="/stake/:poolAddress" component={Pool} />
+                      <Route exact strict path="/bridge" component={Bridge} />
+                      <Route exact strict path="/claim-checker" component={ClaimChecker} />
+                      <Route exact strict path="/faucet" component={Faucet} />
+                      <Route exact strict path="/leaderboard" component={Leaderboard} />
+                      <Route exact strict path="/trading-mining" component={TradingMiningLeaderboard} />
+                    </Switch>
+                  </ProtectedRoute>
+                }
+              />
+            </ContentWrapper>
+          </Web3ReactManager>
+          <Footer />
+        </TermsOfServiceManager>
+        <CurrentBlock />
+      </AppWrapper>
+    </MultichainContextProvider>
   )
 }
 export default App

@@ -16,7 +16,16 @@ export function isSepolia(symbolInfo) {
 }
 
 export function isBartio(symbolInfo) {
-  return String(symbolInfo?.marketAddress).toLowerCase() === '0xd9b217fa8a9e8ef1c8558128029564e9a50f284d'
+  return (
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xd9b217fa8a9e8ef1c8558128029564e9a50f284d' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x1c66ae94c7dd18935f1e723d6395dac27905ab0c' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x09e8641df1e963d0bb1267e51579fc2b4e3e60cd' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xb2599445aeb2fa97d5d8d02e70ffb938f3d803ee' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x3178aa08845c986cc62d8aaaac0ec1fb381d01b3' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x3d47247220d89ad623767de2045dc5e0c5920610' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x9d32d77c2213a5ff7b6e52669d32752cc092ff40'
+  )
 }
 
 export function getBinSizeAndUnit(input: string): {binSize: number, binUnit: 'minute' | 'day' | 'week' | 'month'} | null {

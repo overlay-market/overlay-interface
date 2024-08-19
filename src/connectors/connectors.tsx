@@ -4,6 +4,10 @@ import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
 import {NetworkConnector} from './NetworkConnector'
 import getLibrary from '../utils/getLibrary'
 import {WalletConnectV2Connector} from './walletconnectV2Connector'
+import {useApplicationState} from '../state/application/hooks'
+import {AppState} from '../state/state'
+import {BaseQueryApi} from '@reduxjs/toolkit/query'
+import {useAppSelector} from '../state/hooks'
 
 const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.MAINNET,
@@ -43,6 +47,10 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   [SupportedChainId.BARTIO]: `https://bartio.rpc.berachain.com`,
 }
 
+export function useChainIdLocal() {
+  return useAppSelector((state: AppState) => state.application.chainIdLocal)
+}
+
 export const network = new NetworkConnector({
   urls: NETWORK_URLS,
   defaultChainId: DEFAULT_CHAINID,
@@ -59,3 +67,21 @@ export const walletconnect = new WalletConnectV2Connector({
   chains: [DEFAULT_CHAINID],
   rpcMap: NETWORK_URLS,
 })
+
+export function useNetwork() {
+  const chainIdLocal = useChainIdLocal()
+  return new NetworkConnector({
+    urls: NETWORK_URLS,
+    defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
+  })
+}
+
+export function useWalletConnect() {
+  const chainIdLocal = useChainIdLocal()
+  return new WalletConnectV2Connector({
+    projectId: process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '',
+    showQrModal: true,
+    chains: [chainIdLocal ?? DEFAULT_CHAINID],
+    rpcMap: NETWORK_URLS,
+  })
+}

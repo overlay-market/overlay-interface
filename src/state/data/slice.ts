@@ -4,12 +4,13 @@ import {ClientError, gql, GraphQLClient} from 'graphql-request'
 import {AppState} from '../state'
 import {DocumentNode} from 'graphql'
 import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
+import {useActiveWeb3React} from '../../hooks/web3'
 
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
   [SupportedChainId.MAINNET]: 'https://api.studio.thegraph.com/query/46086/overlay-subgraph-eth/v2.0.2',
   [SupportedChainId.ARBITRUM_SEPOLIA]:
-    'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/6HYgwKVqKS4dYr3DDhZCH6zey7LbTd8DHqWtHZkjXBW5',
+    'https://gateway-arbitrum.network.thegraph.com/api/f2e24a6f4bc2253fc8b99f56a3600aa1/subgraphs/id/6HYgwKVqKS4dYr3DDhZCH6zey7LbTd8DHqWtHZkjXBW5',
   [SupportedChainId.GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-goerli',
   [SupportedChainId.RINKEBY]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-rinkeby',
   // [SupportedChainId.ARBITRUM]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arbitrum',
@@ -28,7 +29,7 @@ export const api = createApi({
     positionListQuery: builder.query({
       query: ({account, marketPositionIdList}) => ({
         document: gql`
-          query queryPosition($account: ID!, $marketPositionId: [ID]) {
+          query queryPosition($account: ID!, $marketPositionIdList: [ID!]) {
             account(id: $account) {
               positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id_in: $marketPositionIdList}) {
                 id
@@ -218,7 +219,7 @@ export const api = createApi({
           query openPositions($account: ID!, $first: Int, $skip: Int) {
             account(id: $account) {
               positions(
-                where: {isLiquidated: false, currentOi_gt: "0"}
+                where: {isLiquidated: false, fractionUnwound_lt: "1000000000000000000"}
                 orderBy: createdAtTimestamp
                 orderDirection: desc
                 first: $first
@@ -227,6 +228,7 @@ export const api = createApi({
                 id
                 createdAtTimestamp
                 currentOi
+                fractionUnwound
                 entryPrice
                 initialCollateral
                 isLiquidated
@@ -255,7 +257,7 @@ export const api = createApi({
           query marketOpenPositions($account: ID!, $first: Int, $skip: Int, $marketId: String) {
             account(id: $account) {
               positions(
-                where: {isLiquidated: false, currentOi_gt: "0", market: $marketId}
+                where: {isLiquidated: false, fractionUnwound_lt: "1000000000000000000", market: $marketId}
                 orderBy: createdAtTimestamp
                 orderDirection: desc
                 first: $first
@@ -264,6 +266,7 @@ export const api = createApi({
                 id
                 createdAtTimestamp
                 currentOi
+                fractionUnwound
                 entryPrice
                 initialCollateral
                 isLiquidated
@@ -388,9 +391,13 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   return async ({document, variables}, {getState}: BaseQueryApi) => {
     try {
       const chainId = (getState() as AppState).application.chainId
+      const chainIdLocal = (getState() as AppState).application.chainIdLocal
 
-      // if chainId in state is null, set default query to Arbitrum One
-      const subgraphUrl = chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+      const subgraphUrl = chainId
+        ? CHAIN_SUBGRAPH_URL[chainId]
+        : chainIdLocal
+        ? CHAIN_SUBGRAPH_URL[chainIdLocal]
+        : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
       if (!subgraphUrl) {
         return {

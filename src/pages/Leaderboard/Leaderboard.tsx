@@ -12,6 +12,8 @@ import {FC, useEffect, useMemo, useState} from 'react'
 import Loader from '../../components/Loaders/Loaders'
 import {LoadMoreButton} from '../../components/Button/Button'
 import {getWeb3Avatar, getWeb3Username} from '../../utils/web3Name'
+import Avatar from 'boring-avatars'
+import {getRandomColors, getRandomName} from '../../utils/boringAvatars'
 
 const PageContainerStyled = styled(PageContainer)`
   > div {
@@ -432,12 +434,11 @@ const Leaderboard = () => {
                 </TableDataCell>
                 <TableDataCell>
                   <UsernameContainer>
-                    <UsernameIcon
-                      src={data.avatar ?? `https://source.boringavatars.com/bauhaus?colors=F0F0F0,E5F6FF,F5EEFE,FFDBB0,FFA1B9&wallet=${data._id}`}
-                      alt={'Overlay user avatar'}
-                      height={'32px'}
-                      width={'32px'}
-                    />
+                    {data.avatar ? (
+                      <UsernameIcon src={data.avatar} alt={'Overlay user avatar'} height={'32px'} width={'32px'} />
+                    ) : (
+                      <Avatar size={32} variant="bauhaus" name={getRandomName()} colors={getRandomColors()} />
+                    )}
                     <TEXT.BoldSmallBody>{data.username ?? shortenAddress(data._id)}</TEXT.BoldSmallBody>
                   </UsernameContainer>
                 </TableDataCell>

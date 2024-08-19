@@ -64,6 +64,8 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
 
   useEffect(() => {
     if (marketId && description && ask && bid) {
+      const fractionDigitsAmount = Math.max(String(bid + '. ').split('.')[1].length, String(ask + '. ').split('.')[1].length)
+
       const defaultProps: Omit<ChartContainerProps, 'container'> = {
         symbol: JSON.stringify({marketId, description: MarketDetails[marketId].marketName}),
         interval: '60' as ResolutionString,
@@ -153,7 +155,7 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
                     if (MarketDetails[marketId].currency === '%') {
                       return (price * 100).toFixed(2)
                     } else {
-                      return price.toFixed(4)
+                      return price.toFixed(fractionDigitsAmount)
                     }
                   }
                   return price.toFixed(2)

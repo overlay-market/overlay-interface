@@ -89,11 +89,12 @@ const CheckingButtonContent = styled.div`
   gap: 10px;
 `
 
-const SepoliaFaucet = () => {
+const Faucet = () => {
   const {account} = useActiveWeb3React()
 
   const [isDisabledClaimBtn, setIsDisabledClaimBtn] = useState(true)
   const [responseMessage, setResponseMessage] = useState('')
+  const [selectedChain, setSelectedChain] = useState('arb-sepolia')
 
   const [{data: responseData, loading, error}, getResponseData] = useAxios(
     {
@@ -113,6 +114,7 @@ const SepoliaFaucet = () => {
         await getResponseData({
           data: JSON.stringify({
             tokens: ['eth', 'ovl'],
+            chains: [selectedChain],
             recipient: account,
           }),
         })
@@ -138,10 +140,12 @@ const SepoliaFaucet = () => {
     if (responseSuccess) {
       if (responseSuccess.hasOwnProperty('eth') && responseSuccess.hasOwnProperty('ovl')) {
         if (responseSuccess.eth.status === 'success' && responseSuccess.ovl.status === 'success') {
-          setResponseMessage('Congrats on getting your 50 OVL and 0.003 ETH! Start trading & earn your points now!')
+          setResponseMessage(
+            `Congrats on getting your 50 OVL and ${selectedChain === 'imola' ? 'MOVE' : 'ETH'}! Start trading & earn your points now!`,
+          )
         }
         if (responseSuccess.eth.status === 'success' && responseSuccess.ovl.status === 'error') {
-          setResponseMessage('Congrats on getting your 0.003 ETH! Start trading & earn your points now!')
+          setResponseMessage(`Congrats on getting your ${selectedChain === 'imola' ? 'MOVE' : 'ETH'}! Start trading & earn your points now!`)
         }
         if (responseSuccess.eth.status === 'error' && responseSuccess.ovl.status === 'success') {
           setResponseMessage('Congrats on getting your 50 OVL! Start trading & earn your points now!')
@@ -154,10 +158,16 @@ const SepoliaFaucet = () => {
 
     if (responseError) {
       if (responseError.hasOwnProperty('message')) {
-        if (responseError?.message.startsWith('recipient has already claimed token')) {
-          setResponseMessage('Sorry, each wallet address may only claim free tokens once.')
-        } else if (responseError?.message === 'recipient must have a non-zero arbitrum mainnet balance to claim tokens') {
-          setResponseMessage('Sorry - the wallet must hold some ETH on Arbitrum Mainnet.')
+        if (typeof responseError.message === 'string') {
+          if (responseError?.message.startsWith('recipient has already claimed token')) {
+            setResponseMessage('Sorry, each wallet address may only claim free tokens once.')
+          } else if (responseError?.message === 'recipient must have a non-zero arbitrum mainnet balance to claim tokens') {
+            setResponseMessage('Sorry - the wallet must hold some ETH on Arbitrum Mainnet.')
+          } else if (responseError?.message.startsWith('recipient must have a non-zero balance')) {
+            setResponseMessage('Sorry - the wallet must hold some ETH on Arbitrum Mainnet or Ethereum Mainnet.')
+          } else {
+            setResponseMessage('An error occurred; please refresh and try again.')
+          }
         } else {
           setResponseMessage('An error occurred; please refresh and try again.')
         }
@@ -178,8 +188,22 @@ const SepoliaFaucet = () => {
   return (
     <PageWrapper>
       <TitleSection>
-        <BoldHeader1>Sepolia Claiming Faucet </BoldHeader1>
+        <BoldHeader1>Claiming Faucet </BoldHeader1>
       </TitleSection>
+
+      <select
+        value={selectedChain}
+        onChange={e => setSelectedChain(e.target.value)}
+        style={{
+          marginBottom: '16px',
+          padding: '8px',
+          fontSize: '16px',
+          borderRadius: '4px',
+        }}
+      >
+        <option value="arb-sepolia">Arbitrum Sepolia</option>
+        <option value="imola">Movement Devnet</option>
+      </select>
 
       <ReCAPTCHA sitekey={`${process.env.REACT_APP_RECAPTCHA_CLIENT_SITE_KEY}`} onChange={onChangeCaptcha} onExpired={onExpiredCaptcha} />
       <ButtonsContainer>
@@ -208,7 +232,7 @@ const SepoliaFaucet = () => {
       </TEXT.StandardBody>
       {responseMessage && (
         <TEXT.BoldSmallBody color={colors(true).dark.blue1}>
-          You can get extra 100 OVL and 0.0069 ETH on{' '}
+          You can get extra 100 OVL and 0.0069 {selectedChain === 'imola' ? 'MOVE' : 'ETH'} on{' '}
           <Link key={'Discord'} target="_blank" href={LINKS.DISCORD} underline="none" style={{color: `${colors(true).dark.blue2}`}}>
             discord
           </Link>
@@ -219,4 +243,4 @@ const SepoliaFaucet = () => {
   )
 }
 
-export default SepoliaFaucet
+export default Faucet

@@ -8,6 +8,7 @@ import {ModalContent, WalletHeader, CloseIcon} from '../ConnectWalletModal/Conne
 import {BigNumber, BigNumberish} from 'ethers'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 export default function ConfirmTxnModal({
   marketName,
@@ -75,7 +76,7 @@ export default function ConfirmTxnModal({
               <AdditionalDetailRow
                 detail={'Price'}
                 detailColor={'#B9BABD'}
-                value={isDominanceMarket ? toPercentUnit(marketPrice) : toScientificNumber(marketPrice)}
+                value={isDominanceMarket ? toPercentUnit(marketPrice) : toScientificNumber(limitDigitsInDecimals(marketPrice))}
               />
 
               <AdditionalDetailRow
@@ -96,7 +97,9 @@ export default function ConfirmTxnModal({
               <AdditionalDetailRow
                 detail={'Est. Liquidation Price'}
                 detailColor={'#B9BABD'}
-                value={isDominanceMarket ? toPercentUnit(estimatedLiquidationPrice) : toScientificNumber(estimatedLiquidationPrice)}
+                value={
+                  isDominanceMarket ? toPercentUnit(estimatedLiquidationPrice) : toScientificNumber(limitDigitsInDecimals(estimatedLiquidationPrice))
+                }
               />
             </FlexColumn>
 

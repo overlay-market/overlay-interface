@@ -16,6 +16,7 @@ import {useMarketName} from '../../hooks/useMarketName'
 import {MarketDetails} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -104,10 +105,10 @@ export function ClosedPosition({
 
   const parsedPnL = filteredUnwind ? +filteredUnwind.pnl / 10 ** 18 : 0
   const entryPrice: number | string | null | undefined =
-    position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, 4)
+    position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, 8)
 
   const exitPrice: number | string | null | undefined =
-    filteredUnwind && formatBigNumberUsingDecimalsToString(filteredUnwind.price, decimals ? 18 : quoteTokenDecimals, 4)
+    filteredUnwind && formatBigNumberUsingDecimalsToString(filteredUnwind.price, decimals ? 18 : quoteTokenDecimals, 8)
 
   useEffect(() => {
     onResetUnwindState()
@@ -150,11 +151,15 @@ export function ClosedPosition({
         <FlexColumn mt="48px">
           <AdditionalDetailRow
             detail={'Entry Price'}
-            value={entryPrice ? `${priceCurrency === '%' ? toPercentUnit(entryPrice) : toScientificNumber(entryPrice)}` : 'loading'}
+            value={
+              entryPrice ? `${priceCurrency === '%' ? toPercentUnit(entryPrice) : toScientificNumber(limitDigitsInDecimals(entryPrice))}` : 'loading'
+            }
           />
           <AdditionalDetailRow
             detail={'Exit Price'}
-            value={exitPrice ? `${priceCurrency === '%' ? toPercentUnit(exitPrice) : toScientificNumber(exitPrice)}` : 'loading'}
+            value={
+              exitPrice ? `${priceCurrency === '%' ? toPercentUnit(exitPrice) : toScientificNumber(limitDigitsInDecimals(exitPrice))}` : 'loading'
+            }
           />
         </FlexColumn>
       </>

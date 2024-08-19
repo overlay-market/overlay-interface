@@ -22,13 +22,13 @@ export async function switchNetworkToArbitrum() {
             params: [
               {
                 chainId: ethers.utils.hexValue(DEFAULT_CHAINID),
-                chainName: 'Arbitrum Sepolia',
-                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-                blockExplorerUrls: ['https://sepolia.arbiscan.io/'],
+                chainName: 'Bartio',
+                rpcUrls: ['https://bartio.rpc.berachain.com'],
+                blockExplorerUrls: ['https://bartio.beratrail.io/'],
                 nativeCurrency: {
                   decimals: 18,
-                  name: 'ETH-Sepolia',
-                  symbol: 'ETH',
+                  name: 'BERA',
+                  symbol: 'BERA',
                 },
               },
             ],

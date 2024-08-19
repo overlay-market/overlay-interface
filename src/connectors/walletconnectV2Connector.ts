@@ -3,6 +3,7 @@ import {AbstractConnector} from '@web3-react/abstract-connector'
 import type WalletConnectProvider from '@walletconnect/ethereum-provider'
 import {EthereumProviderOptions} from '@walletconnect/ethereum-provider/dist/types/EthereumProvider'
 import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
+import {ethers} from 'ethers'
 
 export class WalletConnectV2Connector extends AbstractConnector {
   provider?: typeof WalletConnectProvider.prototype
@@ -107,6 +108,7 @@ export class WalletConnectV2Connector extends AbstractConnector {
 
   handleChainChanged = (chainId: string | number): void => {
     this.emitUpdate({chainId})
+    sessionStorage.setItem('chainId', ethers.BigNumber.from(chainId).toNumber().toString())
   }
 
   handleDisconnect = (): void => {

@@ -14,6 +14,6 @@ export const DEFAULT_CHAINID = SupportedChainId.ARBITRUM_SEPOLIA
 
 export const WORKING_CHAINS = [
   SupportedChainId[SupportedChainId.ARBITRUM_SEPOLIA],
-  SupportedChainId[SupportedChainId.IMOLA],
+  // SupportedChainId[SupportedChainId.IMOLA],
   SupportedChainId[SupportedChainId.BARTIO],
 ]

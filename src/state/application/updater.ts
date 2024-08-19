@@ -23,10 +23,8 @@ function useQueryCacheInvalidator() {
 }
 
 export default function Updater(): null {
-  const {library} = useActiveWeb3React()
-  const {chainId} = useMultichainContext()
+  const {library, chainId} = useActiveWeb3React()
   const dispatch = useAppDispatch()
-
   const windowVisible = useIsWindowVisible()
 
   const [state, setState] = useState<{

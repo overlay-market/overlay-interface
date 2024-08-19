@@ -6,13 +6,18 @@ import {NetworkContextName} from '../constants/misc'
 import {injected, walletconnect} from './../connectors/connectors'
 import {isMobile} from 'react-device-detect'
 import {ChainId} from '@sushiswap/sdk'
+import {DEFAULT_CHAINID} from '../constants/chains'
 
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & {
   chainId?: ChainId
 } {
   const context = useWeb3ReactCore<Web3Provider>()
-  const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName)
-  return context.active ? context : contextNetwork
+  const {chainId, ...rest} = useWeb3ReactCore<Web3Provider>()
+  const fallbackChainId = Number(sessionStorage.getItem('chainId'))
+  const supportedChainId = chainId ? chainId : fallbackChainId > 0 ? fallbackChainId : DEFAULT_CHAINID
+
+  const {chainId: chainIdFallback, ...restFallback} = useWeb3ReactCore<Web3Provider>(NetworkContextName)
+  return context.active ? {...rest, chainId: supportedChainId} : {...restFallback, chainId: supportedChainId}
 }
 
 export function useEagerConnect() {

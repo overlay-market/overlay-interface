@@ -24,13 +24,14 @@ import {ClosedPosition} from './Positions/ClosedPosition'
 import Leaderboard from './Leaderboard/Leaderboard'
 import TradingMiningLeaderboard from './TradingMining/TradingMiningLeaderboard'
 import {cookie3Analytics} from '@cookie3/analytics'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
 import {ProtectedRoute} from '../routes/ProtectedRoute'
 import {useActiveWeb3React} from '../hooks/web3'
 import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
 import {useMultichainContext} from '../state/multichain/useMultichainContext'
 import {MultichainContextProvider} from '../state/multichain/MultichainContext'
+import useSyncChainQuery from '../hooks/useSyncChainQuery'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -47,6 +48,9 @@ export const ContentWrapper = styled.div`
 `
 
 const App = () => {
+  const chainIdRef = useRef<number | undefined>(undefined)
+  useSyncChainQuery(chainIdRef)
+
   let history = useHistory()
   let location = useLocation()
   const {chainId} = useActiveWeb3React()

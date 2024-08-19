@@ -202,7 +202,7 @@ const Faucet = () => {
         }}
       >
         <option value="arb-sepolia">Arbitrum Sepolia</option>
-        <option value="imola">Movement Devnet</option>
+        {/* <option value="imola">Movement Devnet</option> */}
       </select>
 
       <ReCAPTCHA sitekey={`${process.env.REACT_APP_RECAPTCHA_CLIENT_SITE_KEY}`} onChange={onChangeCaptcha} onExpired={onExpiredCaptcha} />

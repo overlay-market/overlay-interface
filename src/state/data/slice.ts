@@ -4,7 +4,6 @@ import {ClientError, gql, GraphQLClient} from 'graphql-request'
 import {AppState} from '../state'
 import {DocumentNode} from 'graphql'
 import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
-import {useActiveWeb3React} from '../../hooks/web3'
 
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
@@ -390,13 +389,10 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   return async ({document, variables}, {getState}: BaseQueryApi) => {
     try {
       const chainId = (getState() as AppState).application.chainId
-      const chainIdLocal = (getState() as AppState).application.chainIdLocal
+      const storageChainId = Number(sessionStorage.getItem('chainId'))
 
-      const subgraphUrl = chainId
-        ? CHAIN_SUBGRAPH_URL[chainId]
-        : chainIdLocal
-        ? CHAIN_SUBGRAPH_URL[chainIdLocal]
-        : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+      const subgraphUrl =
+        storageChainId > 0 ? CHAIN_SUBGRAPH_URL[storageChainId] : chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
       if (!subgraphUrl) {
         return {

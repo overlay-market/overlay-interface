@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import styled from 'styled-components/macro'
 import {FlexContainer, FlexRow} from '../Container/Container'
 import {TEXT, colors} from '../../theme/theme'
@@ -10,7 +10,6 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
 import {switchNetworkToArbitrum, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
-import {useChainIdLocal, useSetChainId} from '../../state/application/hooks'
 import {useMultichainContext} from '../../state/multichain/useMultichainContext'
 
 export const ChainLogo = styled.div<{src: string}>`
@@ -112,16 +111,9 @@ export default function ChainSwitch() {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [activeChainSrc, setActiveChainSrc] = useState('')
-  // const chainIdLocal = useChainIdLocal()
-  // const setChainId = useSetChainId()
 
   useEffect(() => {
     setActiveChainSrc(contextChainId && supportedChainId ? NETWORK_ICONS[contextChainId] : NETWORK_ICONS[DEFAULT_CHAINID])
-    // if (account) {
-    //   setActiveChainSrc(contextChainId && supportedChainId ? NETWORK_ICONS[contextChainId] : NETWORK_ICONS[DEFAULT_CHAINID])
-    // } else {
-    //   setActiveChainSrc(chainIdLocal ? NETWORK_ICONS[chainIdLocal] : NETWORK_ICONS[DEFAULT_CHAINID])
-    // }
   }, [supportedChainId, contextChainId])
 
   const openDropdownMenu = Boolean(anchorEl)
@@ -136,18 +128,19 @@ export default function ChainSwitch() {
   }
 
   const handleSelectChain = (targetChainId: number) => {
-    setActiveChainSrc(NETWORK_ICONS[targetChainId])
-
     if (account) {
       Number(targetChainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
         ? switchNetworkToArbitrum()
         : Number(targetChainId) === Number(SupportedChainId.IMOLA)
         ? switchNetworkToImola()
         : console.log('error')
+    } else {
+      sessionStorage.setItem('chainId', String(targetChainId))
+      setSelectedChainId(targetChainId)
+      setActiveChainSrc(NETWORK_ICONS[targetChainId])
     }
-    setSelectedChainId(targetChainId)
+
     setAnchorEl(null)
-    // setChainId(chainId)
   }
 
   return (

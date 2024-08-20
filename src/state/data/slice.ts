@@ -390,7 +390,7 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   return async ({document, variables}, {getState}: BaseQueryApi) => {
     try {
       const chainId = (getState() as AppState).application.chainId
-      const storageChainId = Number(sessionStorage.getItem('chainId'))
+      const storageChainId = Number(localStorage.getItem('chainId'))
 
       const subgraphUrl =
         storageChainId > 0 ? CHAIN_SUBGRAPH_URL[storageChainId] : chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]

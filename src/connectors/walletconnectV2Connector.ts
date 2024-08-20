@@ -108,7 +108,7 @@ export class WalletConnectV2Connector extends AbstractConnector {
 
   handleChainChanged = (chainId: string | number): void => {
     this.emitUpdate({chainId})
-    sessionStorage.setItem('chainId', ethers.BigNumber.from(chainId).toNumber().toString())
+    localStorage.setItem('chainId', ethers.BigNumber.from(chainId).toNumber().toString())
   }
 
   handleDisconnect = (): void => {

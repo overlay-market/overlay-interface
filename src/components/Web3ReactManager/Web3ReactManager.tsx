@@ -40,7 +40,7 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
     if (library && library.provider && library.provider.on) {
       const handleChainChanged = (chainId: string) => {
         const decimalChainId = ethers.BigNumber.from(chainId).toNumber()
-        sessionStorage.setItem('chainId', String(decimalChainId))
+        localStorage.setItem('chainId', String(decimalChainId))
       }
 
       library.provider.on('chainChanged', handleChainChanged)

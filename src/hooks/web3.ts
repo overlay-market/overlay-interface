@@ -13,7 +13,7 @@ export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & 
 } {
   const context = useWeb3ReactCore<Web3Provider>()
   const {chainId, ...rest} = useWeb3ReactCore<Web3Provider>()
-  const fallbackChainId = Number(sessionStorage.getItem('chainId'))
+  const fallbackChainId = Number(localStorage.getItem('chainId'))
   const supportedChainId = chainId ? chainId : fallbackChainId > 0 ? fallbackChainId : DEFAULT_CHAINID
 
   const {chainId: chainIdFallback, ...restFallback} = useWeb3ReactCore<Web3Provider>(NetworkContextName)

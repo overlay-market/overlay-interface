@@ -147,7 +147,7 @@ export default function ChainSwitch() {
         ? switchNetworkToBartio()
         : console.log('error')
     } else {
-      sessionStorage.setItem('chainId', String(targetChainId))
+      localStorage.setItem('chainId', String(targetChainId))
       setSelectedChainId(targetChainId)
       setActiveChainSrc(NETWORK_ICONS[targetChainId])
     }

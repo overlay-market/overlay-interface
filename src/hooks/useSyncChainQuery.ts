@@ -9,7 +9,7 @@ export default function useSyncChainQuery(chainIdRef: React.MutableRefObject<num
   const {account, chainId} = useActiveWeb3React()
   const {chainId: contextChainId} = useMultichainContext()
   const prevAccount = usePrevious(account)
-  const storageChainId = Number(sessionStorage.getItem('chainId'))
+  const storageChainId = Number(localStorage.getItem('chainId'))
 
   useEffect(() => {
     if (account && !prevAccount && storageChainId > 0 && contextChainId !== storageChainId) {

@@ -13,7 +13,7 @@ export const V1_PERIPHERY_ADDRESS: AddressMap = {
   [SupportedChainId.ARBITRUM_GÖRLI]: '0x68eb0F1Fbbb35b98526F53c01B18507f95F02119',
   [SupportedChainId.ARBITRUM_SEPOLIA]: '0x2878837ea173e8bd40db7cee360b15c1c27deb5a',
   [SupportedChainId.IMOLA]: '0x0CA6128B528f503C7c649ba9cc02560a8B9fD55e',
-  [SupportedChainId.BARTIO]: '0xDD711dA03Ef569dfE8dd466845e36d9Fc91E1e45',
+  [SupportedChainId.BARTIO]: '0x4f69dfb24958fcf69b70bca73c3e74f2c82bb405',
 }
 
 export const OVL_TOKEN_ADDRESS: AddressMap = {

@@ -301,6 +301,68 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
     }
   }
 
+  const addBartioTokenToMM = async () => {
+    const {ethereum} = window
+    if (ethereum && ethereum.request) {
+      let networkSwitched = false
+
+      const chainId = '0x138d4' // Bartio chain ID
+      const networkAdded = await ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId,
+            chainName: 'Bartio', // Bartio network name
+            nativeCurrency: {
+              name: 'BERA',
+              symbol: 'BERA',
+              decimals: 18,
+            },
+            rpcUrls: ['https://bartio.rpc.berachain.com'], // Bartio RPC endpoint
+            blockExplorerUrls: ['https://bartio.beratrail.io/'], // Arbitrum Sepolia block explorer URL
+          },
+        ],
+      })
+
+      if (!networkAdded) {
+        try {
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{chainId: '0x138d4'}], // Bartio chain ID
+          })
+          networkSwitched = true
+        } catch (error) {
+          if ((error as any).code === 4902) {
+            console.error('User rejected network switch.')
+          } else {
+            console.error(error)
+          }
+        }
+
+        if (networkSwitched) {
+          try {
+            await ethereum.request({
+              method: 'wallet_watchAsset',
+              params: {
+                // params is expecting an array, even though the correct type is an object.
+                // @ts-ignore
+                type: 'ERC20',
+                options: {
+                  address: '0x97576e088f0d05EF68cac2EEc63d017FE90952a0',
+                  symbol: 'OVL',
+                  decimals: 18,
+                  image: 'https://raw.githubusercontent.com/overlay-market/overlay-interface/staging/public/overlay-logo-white.png',
+                },
+              },
+            })
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+    }
+  }
+
   return (
     <>
       {(!mobile || isSubMenuOpen) && (
@@ -381,6 +443,8 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
                     ? addSepoliaTokenToMM
                     : Number(chainId) === Number(SupportedChainId.IMOLA)
                     ? addImolaTokenToMM
+                    : Number(chainId) === Number(SupportedChainId.BARTIO)
+                    ? addBartioTokenToMM
                     : addTokenToMM
                 }
               >

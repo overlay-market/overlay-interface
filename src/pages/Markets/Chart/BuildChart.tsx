@@ -75,6 +75,8 @@ export const BuildChart = ({feedAddress, marketId, longPrice, shortPrice}: Build
             ? 'https://api.overlay.market/sepolia-charts/v1/charts'
             : chainId === Number(SupportedChainId.IMOLA)
             ? 'https://api.overlay.market/imola-charts/v1/charts'
+            : chainId === Number(SupportedChainId.BARTIO)
+            ? 'https://api.overlay.market/bartio-charts/v1/charts'
             : 'https://api.overlay.market/charts/v1/charts',
         libraryPath: '/charting_library/',
         chartsStorageUrl: 'https://saveload.tradingview.com',

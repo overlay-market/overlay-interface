@@ -18,6 +18,7 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
     'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/7RuVCeRzAHL5apu6SWHyUEVt3Ko2pUv2wMTiHQJaiUW9',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arb-goerli',
   [SupportedChainId.IMOLA]: 'https://subgraph.overlay.market/query/subgraphs/name/overlay/v1-subgraph',
+  [SupportedChainId.BARTIO]: 'https://api.goldsky.com/api/public/project_clyiptt06ifuv01ul9xiwfj28/subgraphs/overlay-bartio/prod/gn',
 }
 
 export const api = createApi({

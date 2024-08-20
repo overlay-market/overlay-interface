@@ -18,6 +18,7 @@ const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.ARBITRUM_GÖRLI,
   SupportedChainId.ARBITRUM_SEPOLIA,
   SupportedChainId.IMOLA,
+  SupportedChainId.BARTIO,
 ]
 
 export const injected = new InjectedConnector({
@@ -44,6 +45,7 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   [SupportedChainId.ARBITRUM_GÖRLI]: `https://arbitrum-goerli.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM_SEPOLIA]: `https://arbitrum-sepolia.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.IMOLA]: `https://mevm.devnet.imola.movementlabs.xyz`,
+  [SupportedChainId.BARTIO]: `https://bartio.rpc.berachain.com`,
 }
 
 export function useChainIdLocal() {

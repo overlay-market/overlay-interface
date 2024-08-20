@@ -345,6 +345,27 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     descriptionText:
       'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
   },
+  '0x796cc71ad083e27675530d9acb1ad1632c66ee5a': {
+    marketName: 'BTC Dominance',
+    logo: BtcdLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    // indexesConstruction: ['Chainlink', 'Coinmarketcap', 'Cryptocompare', 'More'],
+    // fullLogo: BtcdFull,
+    // proposedBy: {name: '@VitalikButermin', url: 'https://twitter.com/VitalikButermin'},
+    // approved: {
+    //   name: '11.5.24 - OGP 28',
+    //   url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
+    // },
+    contract: {
+      name: shortenAddress('0x796cc71ad083e27675530d9acb1ad1632c66ee5a'),
+      url: 'https://bartio.beratrail.io/address/0x796cc71ad083e27675530d9acb1ad1632c66ee5a',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
+  },
   '0x4edfb4057f3a448b2704df1a3665db4ae6371b69': {
     marketName: 'Quantum Cats',
     logo: QuantumCatsLogo,

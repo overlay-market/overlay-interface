@@ -6,11 +6,12 @@ import ArbitrumLogo from '../../assets/images/arbitrum-logo.png'
 import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
 import ImolaLogo from '../../assets/images/imola-logo.png'
+import BartioLogo from '../../assets/images/berachain-logo.png'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
-import {switchNetworkToArbitrum, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
 import {useMultichainContext} from '../../state/multichain/useMultichainContext'
+import {switchNetworkToArbitrum, switchNetworkToBartio, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
 
 export const ChainLogo = styled.div<{src: string}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -69,6 +70,7 @@ export const NETWORK_ICONS: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.ARBITRUM]: ArbitrumLogo,
   [SupportedChainId.ARBITRUM_SEPOLIA]: ArbitrumTestnetLogo,
   [SupportedChainId.IMOLA]: ImolaLogo,
+  [SupportedChainId.BARTIO]: BartioLogo,
 }
 
 export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Element} = {
@@ -92,16 +94,24 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
       <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
     </FlexRow>
   ),
+  [SupportedChainId.BARTIO]: (
+    <FlexRow>
+      <TEXT.SmallBody>Bartio -</TEXT.SmallBody>
+      <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
+    </FlexRow>
+  ),
 }
 
 const CHAIN_LIST: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia',
-  [SupportedChainId.IMOLA]: 'Movement',
+  // [SupportedChainId.IMOLA]: 'Movement',
+  [SupportedChainId.BARTIO]: 'Bera Chain',
 }
 
 const CHAIN_LIST_ORDER: {[x: number]: number} = {
   [1]: SupportedChainId.ARBITRUM_SEPOLIA,
-  [2]: SupportedChainId.IMOLA,
+  [2]: SupportedChainId.BARTIO,
+  // [3]: SupportedChainId.IMOLA,
 }
 
 export default function ChainSwitch() {
@@ -133,13 +143,14 @@ export default function ChainSwitch() {
         ? switchNetworkToArbitrum()
         : Number(targetChainId) === Number(SupportedChainId.IMOLA)
         ? switchNetworkToImola()
+        : Number(targetChainId) === Number(SupportedChainId.BARTIO)
+        ? switchNetworkToBartio()
         : console.log('error')
     } else {
       sessionStorage.setItem('chainId', String(targetChainId))
       setSelectedChainId(targetChainId)
       setActiveChainSrc(NETWORK_ICONS[targetChainId])
     }
-
     setAnchorEl(null)
   }
 

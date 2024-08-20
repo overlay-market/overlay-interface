@@ -87,3 +87,46 @@ export async function switchNetworkToImola() {
     alert('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html')
   }
 }
+
+export async function switchNetworkToBartio() {
+  if (window.ethereum && window.ethereum.request) {
+    try {
+      // check if the chain to connect to is installed
+      const hex_chainId = ethers.utils.hexValue(SupportedChainId.BARTIO)
+
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{chainId: hex_chainId}], // chainId must be in hexadecimal numbers
+      })
+    } catch (error: any) {
+      // This error code indicates that the chain has not been added to MetaMask
+      // if it is not, then install it into the user MetaMask
+      if (error.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: ethers.utils.hexValue(SupportedChainId.BARTIO),
+                chainName: 'Bartio',
+                rpcUrls: ['https://bartio.rpc.berachain.com'],
+                blockExplorerUrls: ['https://bartio.beratrail.io/'],
+                nativeCurrency: {
+                  decimals: 18,
+                  name: 'BERA',
+                  symbol: 'BERA',
+                },
+              },
+            ],
+          })
+        } catch (addError) {
+          console.error(addError)
+        }
+      }
+      console.error(error)
+    }
+  } else {
+    // if no window.ethereum then MetaMask is not installed
+    alert('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html')
+  }
+}

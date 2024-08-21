@@ -202,6 +202,7 @@ const Faucet = () => {
         }}
       >
         <option value="arb-sepolia">Arbitrum Sepolia</option>
+        <option value="bartio">Berachain Testnet</option>
         {/* <option value="imola">Movement Devnet</option> */}
       </select>
 

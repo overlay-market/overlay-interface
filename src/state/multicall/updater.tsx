@@ -227,6 +227,7 @@ export default function Updater(): null {
                 fetchingBlockNumber: latestBlockNumber,
               }),
             )
+            window.location.reload()
           })
         return cancel
       }),

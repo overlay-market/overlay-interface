@@ -1,8 +1,10 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useWeb3React} from '@web3-react/core'
 import {useEagerConnect, useInactiveListener} from '../../hooks/web3'
 import {NetworkContextName} from '../../constants/misc'
-import {network, useNetwork, useChainIdLocal} from '../../connectors/connectors'
+import {network, useNetwork} from '../../connectors/connectors'
+import {useMultichainContext} from '../../state/multichain/useMultichainContext'
+import {ethers} from 'ethers'
 
 export default function Web3ReactManager({children}: {children: JSX.Element}) {
   const {active} = useWeb3React()
@@ -13,7 +15,8 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
   const triedEager = useEagerConnect()
 
   const activeNetwork = useNetwork()
-  const chainIdLocal = useChainIdLocal()
+
+  const {chainId: contextChainId, setSelectedChainId} = useMultichainContext()
 
   // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate itd
   useEffect(() => {
@@ -26,10 +29,31 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
     if (!networkError && !active) {
       activeNetwork ? activateNetwork(activeNetwork) : activateNetwork(network)
     }
-  }, [chainIdLocal])
+  }, [contextChainId])
 
   // when there's no account connected, react to logins (broadly speaking) on the injected provider, if it exists
   useInactiveListener(!triedEager)
+
+  const {library, activate} = useWeb3React()
+
+  // Add chainChanged listener to store new chainId in localStorage and in MultichainContext
+  useEffect(() => {
+    if (library && library.provider && library.provider.on) {
+      const handleChainChanged = (chainId: string) => {
+        const decimalChainId = ethers.BigNumber.from(chainId).toNumber()
+        localStorage.setItem('chainId', String(decimalChainId))
+        setSelectedChainId(decimalChainId)
+      }
+
+      library.provider.on('chainChanged', handleChainChanged)
+
+      return () => {
+        if (library && library.provider && library.provider.removeListener) {
+          library.provider.removeListener('chainChanged', handleChainChanged)
+        }
+      }
+    }
+  }, [library, activate])
 
   return <>{children}</>
 }

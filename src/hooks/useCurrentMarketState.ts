@@ -51,7 +51,7 @@ export interface MarketStateResults {
 export function useCurrentMarketState(marketsData: AdditionalMarketData[] | undefined, sigFigs: number = 18): MarketStateResults {
   const peripheryContract = useV1PeripheryContract()
   const inputs = useMemo(() => (marketsData ? marketsData.map(market => [market.id]) : []), [marketsData])
-  const results = useSingleContractMultipleData(peripheryContract, 'marketState', inputs)
+  const results = useSingleContractMultipleData(peripheryContract, 'marketState', inputs).filter(el => el.result)
   const loading = useMemo(() => results.some(({loading}) => loading), [results])
   const error = useMemo(() => results.some(({error}) => error), [results])
 

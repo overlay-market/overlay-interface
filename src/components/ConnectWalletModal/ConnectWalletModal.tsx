@@ -15,7 +15,8 @@ import PendingView from './PendingView'
 import WalletOption from './WalletOptions'
 import usePrevious from '../../hooks/usePrevious'
 import METAMASK_ICON from '../../assets/images/metamask.png'
-import {switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
+import {switchNetworkTo, switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
+import {useMultichainContext} from '../../state/multichain/useMultichainContext'
 
 export const ModalContent = styled.div`
   display: flex;
@@ -46,7 +47,7 @@ const WALLET_VIEWS = {
 
 export default function ConnectWalletModal() {
   const {account, connector, activate} = useActiveWeb3React()
-
+  const {chainId: contextChainId} = useMultichainContext()
   const walletModalOpen = useModalOpen(ApplicationModal.WALLET)
 
   const toggleWalletModal = useWalletModalToggle()
@@ -77,7 +78,7 @@ export default function ConnectWalletModal() {
   const tryActivation = async (connector: AbstractConnector | undefined) => {
     Object.keys(SUPPORTED_WALLETS).map(key => {
       if (connector === SUPPORTED_WALLETS[key].connector) {
-        return (SUPPORTED_WALLETS[key].name)
+        return SUPPORTED_WALLETS[key].name
       }
       return true
     })
@@ -101,6 +102,7 @@ export default function ConnectWalletModal() {
         })
         .then(() => {
           localStorage.setItem('disconnected', 'false')
+          contextChainId && switchNetworkTo(contextChainId)
         })
   }
 
@@ -181,7 +183,7 @@ export default function ConnectWalletModal() {
   }
 
   return (
-    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} width='350px'>
+    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} width="350px">
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>

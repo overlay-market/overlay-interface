@@ -16,6 +16,7 @@ import LAYER_ZERO_ABI from '../constants/abis/LzApp.json'
 import LAYER_ZERO_ENDPOINT_ABI from '../constants/abis/LayerZeroEndpoint.json'
 import THIRDWEB_STAKING_ABI from '../constants/abis/ThirdwebStaking.json'
 import CLAIM_MERKLETREE_ABI from '../constants/abis/ClaimMerkleTree.json'
+import {useMultichainContext} from '../state/multichain/useMultichainContext'
 
 // returns null on errors
 export function useContract<T extends Contract = Contract>(
@@ -23,13 +24,13 @@ export function useContract<T extends Contract = Contract>(
   ABI: any,
   withSignerIfPossible = true,
 ): T | null {
-  const {library, account, chainId} = useActiveWeb3React()
-
+  const {library, account} = useActiveWeb3React()
+  const {chainId: contextChainId} = useMultichainContext()
   return useMemo(() => {
-    if (!addressOrAddressMap || !ABI || !library || !chainId) return null
+    if (!addressOrAddressMap || !ABI || !library || !contextChainId) return null
     let address: string | undefined
     if (typeof addressOrAddressMap === 'string') address = addressOrAddressMap
-    else address = addressOrAddressMap[chainId]
+    else address = addressOrAddressMap[contextChainId]
     if (!address) return null
     try {
       return getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined)
@@ -37,17 +38,17 @@ export function useContract<T extends Contract = Contract>(
       console.error('Failed to get contract', error)
       return null
     }
-  }, [addressOrAddressMap, ABI, library, chainId, withSignerIfPossible, account]) as T
+  }, [addressOrAddressMap, ABI, library, contextChainId, withSignerIfPossible, account]) as T
 }
 
 export function useMulticall2Contract(): Contract | null {
-  const {chainId} = useActiveWeb3React()
-  return useContract(chainId && MULTICALL2_ADDRESS[chainId], MULTICALL2_ABI, false)
+  const {chainId: contextChainId} = useMultichainContext()
+  return useContract((contextChainId && MULTICALL2_ADDRESS[contextChainId]) as string, MULTICALL2_ABI, false)
 }
 
 export function useV1PeripheryContract(): Contract | null {
-  const {chainId} = useActiveWeb3React()
-  return useContract(chainId && V1_PERIPHERY_ADDRESS[chainId], V1_PERIPHERY_ABI, false)
+  const {chainId: contextChainId} = useMultichainContext()
+  return useContract((contextChainId && V1_PERIPHERY_ADDRESS[contextChainId]) as string, V1_PERIPHERY_ABI, false)
 }
 
 export function useUniswapV3FeedContract(address: string | undefined): Contract | null {

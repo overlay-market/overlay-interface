@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import styled from 'styled-components/macro'
 import {FlexContainer, FlexRow} from '../Container/Container'
 import {TEXT, colors} from '../../theme/theme'
@@ -6,11 +6,12 @@ import ArbitrumLogo from '../../assets/images/arbitrum-logo.png'
 import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import ArbitrumTestnetLogo from '../../assets/images/arbitrum-testnet-logo.png'
 import ImolaLogo from '../../assets/images/imola-logo.png'
+import BartioLogo from '../../assets/images/berachain-logo.png'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
-import {switchNetworkToArbitrum, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
-import {useChainIdLocal, useSetChainId} from '../../state/application/hooks'
+import {useMultichainContext} from '../../state/multichain/useMultichainContext'
+import {switchNetworkTo} from '../../utils/switchNetworkToArbitrum'
 
 export const ChainLogo = styled.div<{src: string}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -69,6 +70,7 @@ export const NETWORK_ICONS: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.ARBITRUM]: ArbitrumLogo,
   [SupportedChainId.ARBITRUM_SEPOLIA]: ArbitrumTestnetLogo,
   [SupportedChainId.IMOLA]: ImolaLogo,
+  [SupportedChainId.BARTIO]: BartioLogo,
 }
 
 export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Element} = {
@@ -92,33 +94,37 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
       <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
     </FlexRow>
   ),
+  [SupportedChainId.BARTIO]: (
+    <FlexRow>
+      <TEXT.SmallBody>Bartio -</TEXT.SmallBody>
+      <TEXT.SmallBody color={colors(false).dark.red}>Testnet</TEXT.SmallBody>
+    </FlexRow>
+  ),
 }
 
 const CHAIN_LIST: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia',
   // [SupportedChainId.IMOLA]: 'Movement',
+  [SupportedChainId.BARTIO]: 'Bera Chain',
 }
 
 const CHAIN_LIST_ORDER: {[x: number]: number} = {
   [1]: SupportedChainId.ARBITRUM_SEPOLIA,
-  // [2]: SupportedChainId.IMOLA,
+  [2]: SupportedChainId.BARTIO,
+  // [3]: SupportedChainId.IMOLA,
 }
 
 export default function ChainSwitch() {
-  const {account, chainId} = useActiveWeb3React()
-  const supportedChainId: boolean = Boolean(chainId && WORKING_CHAINS.includes(SupportedChainId[chainId]))
+  const {account} = useActiveWeb3React()
+  const {chainId: contextChainId, setSelectedChainId} = useMultichainContext()
+  const supportedChainId: boolean = Boolean(contextChainId && WORKING_CHAINS.includes(SupportedChainId[contextChainId]))
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [activeChainSrc, setActiveChainSrc] = useState('')
-  const chainIdLocal = useChainIdLocal()
-  const setChainId = useSetChainId()
 
   useEffect(() => {
-    if (account) {
-      setActiveChainSrc(chainId && supportedChainId ? NETWORK_ICONS[chainId] : NETWORK_ICONS[DEFAULT_CHAINID])
-    } else {
-      setActiveChainSrc(chainIdLocal ? NETWORK_ICONS[chainIdLocal] : NETWORK_ICONS[DEFAULT_CHAINID])
-    }
-  }, [account, chainId, supportedChainId, chainIdLocal])
+    setActiveChainSrc(contextChainId && supportedChainId ? NETWORK_ICONS[contextChainId] : NETWORK_ICONS[DEFAULT_CHAINID])
+  }, [supportedChainId, contextChainId])
 
   const openDropdownMenu = Boolean(anchorEl)
 
@@ -131,18 +137,18 @@ export default function ChainSwitch() {
     setAnchorEl(null)
   }
 
-  const handleSelectChain = (chainId: number) => {
-    setActiveChainSrc(NETWORK_ICONS[chainId])
-
+  const handleSelectChain = (targetChainId: number) => {
     if (account) {
-      Number(chainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
-        ? switchNetworkToArbitrum()
-        : Number(chainId) === Number(SupportedChainId.IMOLA)
-        ? switchNetworkToImola()
-        : console.log('error')
+      switchNetworkTo(targetChainId, contextChainId)
+
+      // setting targetChainId in localStorage and MultichainContext is done in Web3ReactManager in chainChanged provider listener
+      // in the case user confirms switching, not canceling
+    } else {
+      localStorage.setItem('chainId', String(targetChainId))
+      setSelectedChainId(targetChainId)
+      setActiveChainSrc(NETWORK_ICONS[targetChainId])
     }
     setAnchorEl(null)
-    setChainId(chainId)
   }
 
   return (

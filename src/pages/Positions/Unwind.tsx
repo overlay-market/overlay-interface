@@ -282,7 +282,6 @@ export function Unwind({
     if (!unwindCallback) return
     unwindCallback()
       .then(success => {
-        console.log(success, ' - - - success')
         onResetUnwindState()
         onUnwindPosition(true)
         history.push(`/positions`)

@@ -1,15 +1,14 @@
 import {useCallback, useMemo} from 'react'
 import {useDispatch} from 'react-redux'
 import {AppState} from '../state'
-import {ApplicationModal, updateChainId} from './actions'
-import {useActiveWeb3React} from '../../hooks/web3'
+import {ApplicationModal} from './actions'
 import {useAppSelector, useAppDispatch} from '../hooks'
-import {addPopup, PopupContent, setOpenModal, removePopup, updateTermsOfServiceStatus, UserTermsOfServiceStatus, setChainId} from './actions'
+import {addPopup, PopupContent, setOpenModal, removePopup, updateTermsOfServiceStatus, UserTermsOfServiceStatus} from './actions'
+import {useMultichainContext} from '../multichain/useMultichainContext'
 
 export function useBlockNumber(): number | undefined {
-  const {chainId} = useActiveWeb3React()
-
-  return useAppSelector((state: AppState) => state.application.blockNumber[chainId ?? -1])
+  const {chainId: contextChainId} = useMultichainContext()
+  return useAppSelector((state: AppState) => state.application.blockNumber[contextChainId ?? -1])
 }
 
 // returns a function that allows adding a popup
@@ -82,22 +81,6 @@ export function useTermsOfServiceStatusManager(): [UserTermsOfServiceStatus, (te
   return [status, setStatus]
 }
 
-export function useSetChainId(): (chainId: number | null) => void {
-  const dispatch = useDispatch()
-  return useCallback(
-    (chainId: number | null) => {
-      dispatch(updateChainId({chainId}))
-      dispatch(setChainId({chainId}))
-    },
-    [dispatch],
-  )
-}
-
 export function useApplicationState(): AppState['application'] {
   return useAppSelector(state => state.application)
-}
-
-export function useChainIdLocal() {
-  const {chainIdLocal} = useApplicationState()
-  return chainIdLocal
 }

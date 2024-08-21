@@ -4,10 +4,7 @@ import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
 import {NetworkConnector} from './NetworkConnector'
 import getLibrary from '../utils/getLibrary'
 import {WalletConnectV2Connector} from './walletconnectV2Connector'
-import {useApplicationState} from '../state/application/hooks'
-import {AppState} from '../state/state'
-import {BaseQueryApi} from '@reduxjs/toolkit/query'
-import {useAppSelector} from '../state/hooks'
+import {useMultichainContext} from '../state/multichain/useMultichainContext'
 
 const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.MAINNET,
@@ -17,6 +14,7 @@ const SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.ARBITRUM_GÖRLI,
   SupportedChainId.ARBITRUM_SEPOLIA,
   SupportedChainId.IMOLA,
+  SupportedChainId.BARTIO,
 ]
 
 export const injected = new InjectedConnector({
@@ -43,10 +41,7 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   [SupportedChainId.ARBITRUM_GÖRLI]: `https://arbitrum-goerli.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM_SEPOLIA]: `https://arbitrum-sepolia.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.IMOLA]: `https://mevm.devnet.imola.movementlabs.xyz`,
-}
-
-export function useChainIdLocal() {
-  return useAppSelector((state: AppState) => state.application.chainIdLocal)
+  [SupportedChainId.BARTIO]: `https://bartio.rpc.berachain.com`,
 }
 
 export const network = new NetworkConnector({
@@ -67,19 +62,19 @@ export const walletconnect = new WalletConnectV2Connector({
 })
 
 export function useNetwork() {
-  const chainIdLocal = useChainIdLocal()
+  const {chainId: contextChainId} = useMultichainContext()
   return new NetworkConnector({
     urls: NETWORK_URLS,
-    defaultChainId: chainIdLocal ?? DEFAULT_CHAINID,
+    defaultChainId: contextChainId ?? DEFAULT_CHAINID,
   })
 }
 
 export function useWalletConnect() {
-  const chainIdLocal = useChainIdLocal()
+  const {chainId: contextChainId} = useMultichainContext()
   return new WalletConnectV2Connector({
     projectId: process.env.REACT_APP_WALLET_CONNECT_V2_PROJECT_ID ?? '',
     showQrModal: true,
-    chains: [chainIdLocal ?? DEFAULT_CHAINID],
+    chains: [contextChainId ?? DEFAULT_CHAINID],
     rpcMap: NETWORK_URLS,
   })
 }

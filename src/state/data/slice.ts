@@ -4,7 +4,6 @@ import {ClientError, gql, GraphQLClient} from 'graphql-request'
 import {AppState} from '../state'
 import {DocumentNode} from 'graphql'
 import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
-import {useActiveWeb3React} from '../../hooks/web3'
 
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
@@ -19,6 +18,7 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
     'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/7RuVCeRzAHL5apu6SWHyUEVt3Ko2pUv2wMTiHQJaiUW9',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arb-goerli',
   [SupportedChainId.IMOLA]: 'https://subgraph.overlay.market/query/subgraphs/name/overlay/v1-subgraph',
+  [SupportedChainId.BARTIO]: 'https://api.goldsky.com/api/public/project_clyiptt06ifuv01ul9xiwfj28/subgraphs/overlay-bartio/prod/gn',
 }
 
 export const api = createApi({
@@ -390,13 +390,10 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   return async ({document, variables}, {getState}: BaseQueryApi) => {
     try {
       const chainId = (getState() as AppState).application.chainId
-      const chainIdLocal = (getState() as AppState).application.chainIdLocal
+      const storageChainId = Number(localStorage.getItem('chainId'))
 
-      const subgraphUrl = chainId
-        ? CHAIN_SUBGRAPH_URL[chainId]
-        : chainIdLocal
-        ? CHAIN_SUBGRAPH_URL[chainIdLocal]
-        : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+      const subgraphUrl =
+        storageChainId > 0 ? CHAIN_SUBGRAPH_URL[storageChainId] : chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
       if (!subgraphUrl) {
         return {

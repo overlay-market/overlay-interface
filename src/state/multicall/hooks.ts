@@ -7,6 +7,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {Call, parseCallKey, toCallKey} from './utils'
 import {useAppDispatch, useAppSelector} from '../hooks'
 import {ListenerOptions, addMulticallListeners, removeMulticallListeners} from './actions'
+import {useMultichainContext} from '../multichain/useMultichainContext'
 
 type MethodArg = string | number | BigNumber
 type MethodArgs = Array<MethodArg | MethodArg[]>
@@ -36,7 +37,8 @@ export const NEVER_RELOAD: ListenerOptions = {
 
 // the lowest level call for subscribing to contract data
 function useCallsData(calls: (Call | undefined)[], {blocksPerFetch}: ListenerOptions = {blocksPerFetch: 1}): CallResult[] {
-  const {chainId} = useActiveWeb3React()
+  const {chainId} = useMultichainContext()
+
   const callResults = useAppSelector(state => state.multicall.callResults)
   const dispatch = useAppDispatch()
 

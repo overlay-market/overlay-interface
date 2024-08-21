@@ -146,6 +146,19 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://sepolia.arbiscan.io/address/0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9',
     },
   },
+  '0x49c4ad8b75e118a9b7bd1b89e7af029f3cb1c237': {
+    marketName: 'Counter-Strike 2 Skins',
+    logo: csgoLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    descriptionText:
+      "TL;DR -- The market cap of the top 5000 most commonly traded Counter Strike skins.\n\nThe source of data is the API provided by several skin aggregators. \n\nIn order to be robust, yet representative, the methodology relies on a set of criteria to select the items that will be included in the index. The criteria are as follows:\n\nHighly Traded: The index is limited to the top 5000 most traded items. The most traded item is the one that has the most number of unique minimum listing prices in the analysis period.\n\nMinimum Number of Listings: The current version of the index is restricted to items with at least 100 listings on all days of the analysis period. This ensures that the items are not too concentrated in the hands of a few traders. Further, the number of listings per item is set to the minimum number of listings observed for that item in the analysis period.\n\nDetermining the Value of Each Item: The value for each item is derived using two key metrics from the API. Number of Listings, and Minimum Price.\n\nNumber of Listings: This represents the total number listings across all tracked exchanges. It captures the supply of that item in the market.\n\nMinimum Price: Among all the listings for an item, this is the lowest price at which the item is being offered.\n\nThe 'Market Capitalization' for each item is then calculated as: MCap = Number of Listings * Minimum Price. The sum of all these MCaps at a point in time is the index value for that point in time. However, to restrict manipulability and ensure robustness of the index over time, some further safety measures are imposed that may force the index value to diverge from the pure sum of all MCaps.",
+    indexesConstruction: ['Most traded Counter Strike 2 skins'],
+    contract: {
+      name: shortenAddress('0x49c4ad8b75e118a9b7bd1b89e7af029f3cb1c237'),
+      url: 'https://bartio.beratrail.io/address/0x49c4ad8b75e118a9b7bd1b89e7af029f3cb1c237',
+    },
+  },
   '0x6bd76270a8e8e0c3c030f050134389777a3a7d7e': {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
@@ -283,6 +296,21 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     descriptionText:
       'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
   },
+  '0x09e8641df1e963d0bb1267e51579fc2b4e3e60cd': {
+    marketName: 'ETH Dominance',
+    logo: EthDominanceLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    disabled: false,
+    contract: {
+      name: shortenAddress('0x09e8641df1e963d0bb1267e51579fc2b4e3e60cd'),
+      url: 'https://bartio.beratrail.io/address/0x09e8641df1e963d0bb1267e51579fc2b4e3e60cd',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
+  },
   '0xc7f3240d983fcab7a571be484d2b4da43b95efee': {
     marketName: 'Bitcoin Frogs',
     logo: BtcFrogsLogo,
@@ -294,6 +322,19 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     contract: {
       name: shortenAddress('0xc7f3240d983fcab7a571be484d2b4da43b95efee'),
       url: 'https://sepolia.arbiscan.io/address/0xc7f3240d983fcab7a571be484d2b4da43b95efee',
+    },
+  },
+  '0x3178aa08845c986cc62d8aaaac0ec1fb381d01b3': {
+    marketName: 'Bitcoin Frogs',
+    logo: BtcFrogsLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+    contract: {
+      name: shortenAddress('0x3178aa08845c986cc62d8aaaac0ec1fb381d01b3'),
+      url: 'https://bartio.beratrail.io/address/0x3178aa08845c986cc62d8aaaac0ec1fb381d01b3',
     },
   },
   '0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae': {
@@ -345,6 +386,40 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     descriptionText:
       'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
   },
+  '0x3d47247220d89ad623767de2045dc5e0c5920610': {
+    marketName: 'NodeMonkes',
+    logo: NodeMonkesLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+    contract: {
+      name: shortenAddress('0x3d47247220d89ad623767de2045dc5e0c5920610'),
+      url: 'https://bartio.beratrail.io/address/0x3d47247220d89ad623767de2045dc5e0c5920610',
+    },
+  },
+  '0xd9b217fa8a9e8ef1c8558128029564e9a50f284d': {
+    marketName: 'BTC Dominance',
+    logo: BtcdLogo,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    // indexesConstruction: ['Chainlink', 'Coinmarketcap', 'Cryptocompare', 'More'],
+    // fullLogo: BtcdFull,
+    // proposedBy: {name: '@VitalikButermin', url: 'https://twitter.com/VitalikButermin'},
+    // approved: {
+    //   name: '11.5.24 - OGP 28',
+    //   url: 'https://commonwealth.im/overlay/discussion/14675-mint-the-planckcatdao-nft-for-those-who-have-recently-contributed-to-the-overlay-protocol',
+    // },
+    contract: {
+      name: shortenAddress('0xd9b217fa8a9e8ef1c8558128029564e9a50f284d'),
+      url: 'https://bartio.beratrail.io/address/0xd9b217fa8a9e8ef1c8558128029564e9a50f284d',
+    },
+    sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
+    // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    descriptionText:
+      'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
+  },
   '0x4edfb4057f3a448b2704df1a3665db4ae6371b69': {
     marketName: 'Quantum Cats',
     logo: QuantumCatsLogo,
@@ -358,6 +433,19 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://sepolia.arbiscan.io/address/0x4edfb4057f3a448b2704df1a3665db4ae6371b69',
     },
   },
+  '0xb2599445aeb2fa97d5d8d02e70ffb938f3d803ee': {
+    marketName: 'Quantum Cats',
+    logo: QuantumCatsLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+    contract: {
+      name: shortenAddress('0xb2599445aeb2fa97d5d8d02e70ffb938f3d803ee'),
+      url: 'https://bartio.beratrail.io/address/0xb2599445aeb2fa97d5d8d02e70ffb938f3d803ee',
+    },
+  },
   '0xe060ea13b2e710cefc5124bb790db4823b0f602a': {
     marketName: 'Ink',
     logo: InkLogo,
@@ -369,6 +457,19 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     contract: {
       name: shortenAddress('0xe060ea13b2e710cefc5124bb790db4823b0f602a'),
       url: 'https://sepolia.arbiscan.io/address/0xe060ea13b2e710cefc5124bb790db4823b0f602a',
+    },
+  },
+  '0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d': {
+    marketName: 'Ink',
+    logo: InkLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['BTC'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'MagicEden'}, {name: 'OKX Marketplace'}, {name: 'More...'}],
+    descriptionText: 'The floor (lowest) price of the collection.',
+    contract: {
+      name: shortenAddress('0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d'),
+      url: 'https://bartio.beratrail.io/address/0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d',
     },
   },
   // '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {
@@ -420,6 +521,21 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
     fullLogo: AIIndexFull,
   },
+  '0x1c66ae94c7dd18935f1e723d6395dac27905ab0c': {
+    marketName: 'AI Index',
+    logo: AIIndexLogo,
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    sources: [{name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'Uniswap'}, {name: 'Kucoin'}, {name: 'Others'}],
+    descriptionText:
+      'TL;DR -- The market cap of the top AI related protocols on crypto.\n\nThe source of data is the API provided by Coinmarketcap, Cryptocompare, supplemented by Uniswap, Kucoin, and others.\n\nThe following projects are cap-weighted in this index:\n- Render\n- Bittensor\n- Fetch.ai\n- SingularityNET\n- Akash Network\n- AIOZ Network\n- Ocean Protocol\n- Arkham\n- PAAL AI\n- OriginTrail',
+    contract: {
+      name: shortenAddress('0x1c66ae94c7dd18935f1e723d6395dac27905ab0c'),
+      url: 'https://bartio.beratrail.io/address/0x1c66ae94c7dd18935f1e723d6395dac27905ab0c',
+    },
+    fullLogo: AIIndexFull,
+  },
   '0x3966f792517e2df998c48301163c2a95bfd3eff8': {
     marketName: 'ETH / SOL',
     logo: EthSolLogo,
@@ -431,6 +547,19 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     contract: {
       name: shortenAddress('0x3966f792517e2df998c48301163c2a95bfd3eff8'),
       url: 'https://sepolia.arbiscan.io/address/0x3966f792517e2df998c48301163c2a95bfd3eff8',
+    },
+  },
+  '0x9d32d77c2213a5ff7b6e52669d32752cc092ff40': {
+    marketName: 'ETH / SOL',
+    logo: EthSolLogo,
+    currency: '',
+    disabled: false,
+    oracleLogo: ORACLE_LOGO[FeedType.PYTH],
+    sources: [{name: 'Pyth Network'}],
+    descriptionText: 'TL;DR - ETH price divided by SOL price\n\nThe source of data is the API provided by Pyth Network',
+    contract: {
+      name: shortenAddress('0x9d32d77c2213a5ff7b6e52669d32752cc092ff40'),
+      url: 'https://bartio.beratrail.io/address/0x9d32d77c2213a5ff7b6e52669d32752cc092ff40',
     },
   },
 }

@@ -57,8 +57,8 @@ export default function ClaimBanner() {
           <TextWrapper>
             <StyledLink to={'/faucet'}>
               <TEXT.BoldSupplemental onClick={handleClose}>
-                You can now claim Arbitrum Sepolia Testnet ETH and test token OVL here. You can test the protocol, collect points and share 1.5% of
-                the total supply thanks to TUNA: The Ultimate New Airdrop.
+                You can now claim Arbitrum Sepolia Testnet ETH or Berachain Testnet BERA and test token OVL here. You can test the protocol, collect
+                points and share 1.5% of the total supply thanks to TUNA: The Ultimate New Airdrop.
               </TEXT.BoldSupplemental>
             </StyledLink>
           </TextWrapper>

@@ -11,7 +11,7 @@ import {useActiveWeb3React} from '../../hooks/web3'
 import {SupportedChainId, DEFAULT_CHAINID, WORKING_CHAINS} from '../../constants/chains'
 import {Box, Menu, MenuItem} from '@material-ui/core'
 import {useMultichainContext} from '../../state/multichain/useMultichainContext'
-import {switchNetworkToArbitrum, switchNetworkToBartio, switchNetworkToImola} from '../../utils/switchNetworkToArbitrum'
+import {switchNetworkTo} from '../../utils/switchNetworkToArbitrum'
 
 export const ChainLogo = styled.div<{src: string}>`
   background: no-repeat center/contain url(${({src}) => src});
@@ -139,13 +139,10 @@ export default function ChainSwitch() {
 
   const handleSelectChain = (targetChainId: number) => {
     if (account) {
-      Number(targetChainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
-        ? switchNetworkToArbitrum()
-        : Number(targetChainId) === Number(SupportedChainId.IMOLA)
-        ? switchNetworkToImola()
-        : Number(targetChainId) === Number(SupportedChainId.BARTIO)
-        ? switchNetworkToBartio()
-        : console.log('error')
+      switchNetworkTo(targetChainId, contextChainId)
+
+      // setting targetChainId in localStorage and MultichainContext is done in Web3ReactManager in chainChanged provider listener
+      // in the case user confirms switching, not canceling
     } else {
       localStorage.setItem('chainId', String(targetChainId))
       setSelectedChainId(targetChainId)

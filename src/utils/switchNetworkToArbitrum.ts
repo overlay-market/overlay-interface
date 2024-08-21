@@ -2,7 +2,7 @@ import {ethers} from 'ethers'
 import {SupportedChainId, DEFAULT_CHAINID} from '../constants/chains'
 
 // returns the checksummed address if the address is valid, otherwise returns false
-export async function switchNetworkToArbitrum() {
+export async function switchNetworkToArbitrum(prevChainId?: number) {
   if (window.ethereum && window.ethereum.request) {
     try {
       // check if the chain to connect to is installed
@@ -37,6 +37,18 @@ export async function switchNetworkToArbitrum() {
           console.error(addError)
         }
       }
+
+      // This error code indicates that the user rejected the request
+      if (error.code === 4001) {
+        localStorage.setItem('chainId', String(prevChainId))
+        window.location.reload()
+      }
+
+      // This error code indicates that request of type 'wallet_switchEthereumChain' is already pending
+      if (error.code === -32002) {
+        localStorage.setItem('chainId', String(prevChainId))
+        window.location.reload()
+      }
       console.error(error)
     }
   } else {
@@ -45,7 +57,7 @@ export async function switchNetworkToArbitrum() {
   }
 }
 
-export async function switchNetworkToImola() {
+export async function switchNetworkToImola(prevChainId?: number) {
   if (window.ethereum && window.ethereum.request) {
     try {
       // check if the chain to connect to is installed
@@ -80,6 +92,18 @@ export async function switchNetworkToImola() {
           console.error(addError)
         }
       }
+
+      // This error code indicates that the user rejected the request
+      if (error.code === 4001) {
+        localStorage.setItem('chainId', String(prevChainId))
+        window.location.reload()
+      }
+
+      // This error code indicates that request of type 'wallet_switchEthereumChain' is already pending
+      if (error.code === -32002) {
+        localStorage.setItem('chainId', String(prevChainId))
+        window.location.reload()
+      }
       console.error(error)
     }
   } else {
@@ -88,7 +112,7 @@ export async function switchNetworkToImola() {
   }
 }
 
-export async function switchNetworkToBartio() {
+export async function switchNetworkToBartio(prevChainId?: number) {
   if (window.ethereum && window.ethereum.request) {
     try {
       // check if the chain to connect to is installed
@@ -123,10 +147,32 @@ export async function switchNetworkToBartio() {
           console.error(addError)
         }
       }
+
+      // This error code indicates that the user rejected the request
+      if (error.code === 4001) {
+        localStorage.setItem('chainId', String(prevChainId))
+        window.location.reload()
+      }
+
+      // This error code indicates that request of type 'wallet_switchEthereumChain' is already pending
+      if (error.code === -32002) {
+        localStorage.setItem('chainId', String(prevChainId))
+        window.location.reload()
+      }
       console.error(error)
     }
   } else {
     // if no window.ethereum then MetaMask is not installed
     alert('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html')
   }
+}
+
+export async function switchNetworkTo(chainId: number, prevChainId?: number) {
+  Number(chainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
+    ? switchNetworkToArbitrum(prevChainId)
+    : Number(chainId) === Number(SupportedChainId.IMOLA)
+    ? switchNetworkToImola(prevChainId)
+    : Number(chainId) === Number(SupportedChainId.BARTIO)
+    ? switchNetworkToBartio(prevChainId)
+    : console.log('error')
 }

@@ -1,9 +1,9 @@
 import {useEffect} from 'react'
 import usePrevious from './usePrevious'
 import {useMultichainContext} from '../state/multichain/useMultichainContext'
-import {SupportedChainId} from '../constants/chains'
+import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
 import {useActiveWeb3React} from './web3'
-import {switchNetworkToArbitrum, switchNetworkToImola} from '../utils/switchNetworkToArbitrum'
+import {switchNetworkTo, switchNetworkToArbitrum} from '../utils/switchNetworkToArbitrum'
 
 export default function useSyncChainQuery(chainIdRef: React.MutableRefObject<number | undefined>) {
   const {account, chainId} = useActiveWeb3React()
@@ -14,12 +14,14 @@ export default function useSyncChainQuery(chainIdRef: React.MutableRefObject<num
   useEffect(() => {
     if (account && !prevAccount && storageChainId > 0 && contextChainId !== storageChainId) {
       chainIdRef.current = storageChainId as number
+      const supportedChainId: boolean = Boolean(storageChainId && WORKING_CHAINS.includes(SupportedChainId[storageChainId]))
 
-      Number(storageChainId) === Number(SupportedChainId.ARBITRUM_SEPOLIA)
-        ? switchNetworkToArbitrum()
-        : Number(storageChainId) === Number(SupportedChainId.IMOLA)
-        ? switchNetworkToImola()
-        : console.log('error')
+      if (supportedChainId) {
+        switchNetworkTo(storageChainId, contextChainId)
+      } else {
+        localStorage.setItem('chainId', String(contextChainId))
+        switchNetworkToArbitrum(contextChainId)
+      }
     }
   }, [storageChainId, prevAccount, account, chainIdRef, contextChainId])
 

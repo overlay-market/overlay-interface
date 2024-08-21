@@ -1,7 +1,7 @@
 import {useEffect} from 'react'
 import usePrevious from './usePrevious'
 import {useMultichainContext} from '../state/multichain/useMultichainContext'
-import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
+import {DEFAULT_CHAINID, SupportedChainId, WORKING_CHAINS} from '../constants/chains'
 import {useActiveWeb3React} from './web3'
 import {switchNetworkTo, switchNetworkToArbitrum} from '../utils/switchNetworkToArbitrum'
 
@@ -24,6 +24,12 @@ export default function useSyncChainQuery(chainIdRef: React.MutableRefObject<num
       }
     }
   }, [storageChainId, prevAccount, account, chainIdRef, contextChainId])
+
+  useEffect(() => {
+    if (storageChainId === 0 || Number.isNaN(storageChainId)) {
+      contextChainId ? localStorage.setItem('chainId', String(contextChainId)) : localStorage.setItem('chainId', String(DEFAULT_CHAINID))
+    }
+  }, [storageChainId, contextChainId, chainIdRef])
 
   useEffect(() => {
     if (chainIdRef.current || chainIdRef.current === chainId) {

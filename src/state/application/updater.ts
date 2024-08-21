@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react'
-import {useAppDispatch, useAppSelector} from '../hooks'
+import {useAppDispatch} from '../hooks'
 import {api, CHAIN_TAG} from '../data/enhanced'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {updateBlockNumber, updateChainId} from './actions'

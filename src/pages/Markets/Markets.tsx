@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
@@ -16,9 +16,6 @@ import ReactTooltip from 'react-tooltip'
 import {MarketChartMap, MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
 import {SupportedChainId, WORKING_CHAINS} from '../../constants/chains'
-import {useActiveWeb3React} from '../../hooks/web3'
-import {useAppSelector} from '../../state/hooks'
-import {AppState} from '../../state/state'
 import {useMultichainContext} from '../../state/multichain/useMultichainContext'
 
 const activeClassName = 'INACTIVE'
@@ -96,20 +93,10 @@ const Markets = () => {
   const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData, error: currentMarketsError}: MarketStateResults = useCurrentMarketState(marketDetails)
-  const {account, chainId: web3ChainId} = useActiveWeb3React()
-  let chainIdLocal = useAppSelector((state: AppState) => state.application.chainIdLocal)
-  // const [chainId, setChainId] = useState<number | null | undefined>(null)
   const {chainId: contextChainId} = useMultichainContext()
 
   // toggle to hide 7d chart if data unavailable
   const hide7dChart = true
-
-  // console.log({chainId}, {chainIdLocal})
-  // console.log({account})
-
-  // useEffect(() => {
-  //   account ? setChainId(web3ChainId) : setChainId(chainIdLocal)
-  // }, [chainIdLocal, web3ChainId, account])
 
   useEffect(() => {
     !isUninitialized && refetch()

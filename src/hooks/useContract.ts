@@ -42,13 +42,11 @@ export function useContract<T extends Contract = Contract>(
 }
 
 export function useMulticall2Contract(): Contract | null {
-  // const {chainId} = useActiveWeb3React()
   const {chainId: contextChainId} = useMultichainContext()
   return useContract((contextChainId && MULTICALL2_ADDRESS[contextChainId]) as string, MULTICALL2_ABI, false)
 }
 
 export function useV1PeripheryContract(): Contract | null {
-  // const {chainId} = useActiveWeb3React()
   const {chainId: contextChainId} = useMultichainContext()
   return useContract((contextChainId && V1_PERIPHERY_ADDRESS[contextChainId]) as string, V1_PERIPHERY_ABI, false)
 }

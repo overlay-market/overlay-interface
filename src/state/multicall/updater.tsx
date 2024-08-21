@@ -4,7 +4,6 @@ import {AppState} from '../state'
 import {Call, parseCallKey} from './utils'
 import useDebounce from '../../hooks/useDebounce'
 import {chunkArray} from '../../utils/chunkArray'
-import {useActiveWeb3React} from '../../hooks/web3'
 import {useBlockNumber} from '../application/hooks'
 import {RetryableError, retry} from '../../utils/retry'
 import {useAppDispatch, useAppSelector} from '../hooks'
@@ -119,7 +118,6 @@ export default function Updater(): null {
   // wait for listeners to settle before triggering updates
   const debouncedListeners = useDebounce(state.callListeners, 100)
   const latestBlockNumber = useBlockNumber()
-  // const {chainId} = useActiveWeb3React()
   const {chainId} = useMultichainContext()
 
   const multicall2Contract = useMulticall2Contract()

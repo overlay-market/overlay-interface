@@ -37,7 +37,6 @@ export const NEVER_RELOAD: ListenerOptions = {
 
 // the lowest level call for subscribing to contract data
 function useCallsData(calls: (Call | undefined)[], {blocksPerFetch}: ListenerOptions = {blocksPerFetch: 1}): CallResult[] {
-  // const {chainId} = useActiveWeb3React()
   const {chainId} = useMultichainContext()
 
   const callResults = useAppSelector(state => state.multicall.callResults)

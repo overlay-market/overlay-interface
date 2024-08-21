@@ -90,12 +90,12 @@ export function useInactiveListener(suppress = false) {
         }
       }
 
-      ethereum.on('chainChanged', handleChainChanged)
+      // ethereum.on('chainChanged', handleChainChanged)
       ethereum.on('accountsChanged', handleAccountsChanged)
 
       return () => {
         if (ethereum.removeListener) {
-          ethereum.removeListener('chainChanged', handleChainChanged)
+          // ethereum.removeListener('chainChanged', handleChainChanged)
           ethereum.removeListener('accountsChanged', handleAccountsChanged)
         }
       }

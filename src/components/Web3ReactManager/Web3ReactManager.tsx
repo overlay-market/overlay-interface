@@ -15,8 +15,8 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
   const triedEager = useEagerConnect()
 
   const activeNetwork = useNetwork()
-  // const chainIdLocal = useChainIdLocal()
-  const {chainId: contextChainId} = useMultichainContext()
+
+  const {chainId: contextChainId, setSelectedChainId} = useMultichainContext()
 
   // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate itd
   useEffect(() => {
@@ -36,11 +36,13 @@ export default function Web3ReactManager({children}: {children: JSX.Element}) {
 
   const {library, activate} = useWeb3React()
 
+  // Add chainChanged listener to store new chainId in localStorage and in MultichainContext
   useEffect(() => {
     if (library && library.provider && library.provider.on) {
       const handleChainChanged = (chainId: string) => {
         const decimalChainId = ethers.BigNumber.from(chainId).toNumber()
         localStorage.setItem('chainId', String(decimalChainId))
+        setSelectedChainId(decimalChainId)
       }
 
       library.provider.on('chainChanged', handleChainChanged)

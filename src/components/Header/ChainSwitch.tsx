@@ -105,7 +105,7 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: JSX.Elemen
 const CHAIN_LIST: {[chainId in SupportedChainId | number]: string} = {
   [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia',
   // [SupportedChainId.IMOLA]: 'Movement',
-  [SupportedChainId.BARTIO]: 'Bera Chain',
+  [SupportedChainId.BARTIO]: 'Berachain bArtio',
 }
 
 const CHAIN_LIST_ORDER: {[x: number]: number} = {

@@ -51,6 +51,9 @@ const SepoliaChecker = () => {
           <TEXT.BoldHeader1 fontSize="26px" fontStyle={'italic'} color={colors(true).dark.white}>
             Berachain Testnet
           </TEXT.BoldHeader1>
+          <TEXT.BoldHeader1 fontSize="26px" fontStyle={'italic'} color={colors(true).dark.white}>
+            Movement Testnet
+          </TEXT.BoldHeader1>
           <TEXT.BoldStandardBody textAlign={'center'}>
             Please make sure you are on one of these networks to join the Testnet Trading Competition
           </TEXT.BoldStandardBody>

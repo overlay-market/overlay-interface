@@ -54,37 +54,24 @@ export const api = createApi({
                 numberOfUniwnds
                 fractionUnwound
                 builds {
-                  collateral
-                  currentDebt
-                  currentOi
                   id
                   price
                   timestamp
-                  value
                 }
                 liquidates {
                   collateral
-                  currentDebt
                   id
-                  currentOi
-                  isLong
                   mint
                   price
                   timestamp
-                  value
                 }
                 unwinds(orderBy: unwindNumber, orderDirection: asc) {
-                  collateral
-                  currentDebt
-                  currentOi
                   fraction
                   id
-                  isLong
                   mint
                   timestamp
                   price
                   unwindNumber
-                  value
                   transferAmount
                   pnl
                   size
@@ -295,13 +282,9 @@ export const api = createApi({
           query unwinds($account: ID!, $first: Int, $skip: Int) {
             account(id: $account) {
               unwinds(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
-                collateral
-                currentDebt
-                currentOi
                 fraction
                 fractionOfPosition
                 id
-                isLong
                 mint
                 pnl
                 price
@@ -309,7 +292,6 @@ export const api = createApi({
                 timestamp
                 transferAmount
                 unwindNumber
-                value
                 position {
                   createdAtTimestamp
                   currentOi
@@ -342,11 +324,7 @@ export const api = createApi({
           query liquidatedPositions($account: ID!, $first: Int, $skip: Int) {
             account(id: $account) {
               liquidates(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
-                collateral
-                currentDebt
-                currentOi
                 id
-                isLong
                 mint
                 price
                 timestamp

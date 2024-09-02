@@ -19,7 +19,11 @@ import './index.css'
 import App from './pages/App'
 import reportWebVitals from './reportWebVitals'
 import '@reach/dialog/styles.css'
+import {ampli, LoadOptions} from './ampli'
 require('dotenv').config()
+
+const ampliOptions: LoadOptions = {client: {apiKey: process.env.REACT_APP_AMPLITUDE_API_KEY || ''}}
+ampli.load(ampliOptions)
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 

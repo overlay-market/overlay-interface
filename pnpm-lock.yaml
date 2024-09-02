@@ -8,6 +8,9 @@ overrides:
   '@walletconnect/web3-provider': 1.5.2
 
 dependencies:
+  '@amplitude/analytics-browser':
+    specifier: ^2.11.1
+    version: 2.11.1
   '@cookie3/analytics':
     specifier: ^0.4.8
     version: 0.4.8
@@ -342,6 +345,68 @@ packages:
   /@alloc/quick-lru@5.2.0:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+    dev: false
+
+  /@amplitude/analytics-browser@2.11.1:
+    resolution: {integrity: sha512-dLej5BZLbnlOw40lQJs5KnJx6EQRwcUJJlnZsFH72LyBq8WvxnDb40yHqSxOl/b7tCJWRozBw75B3Fzkz5OOLw==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-remote-config': 0.4.0
+      '@amplitude/analytics-types': 2.8.0
+      '@amplitude/plugin-autocapture-browser': 1.0.0
+      '@amplitude/plugin-page-view-tracking-browser': 2.2.20
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-client-common@2.3.1:
+    resolution: {integrity: sha512-HR5kdLkyz2niUqTA+9fP3MQgqixk5ToY0ohxNrsiqExFDftyKMplQenlFxjh/w5vb72lLf5gI3T2ssIUCkGuvw==}
+    dependencies:
+      '@amplitude/analytics-connector': 1.5.0
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-connector@1.5.0:
+    resolution: {integrity: sha512-T8mOYzB9RRxckzhL0NTHwdge9xuFxXEOplC8B1Y3UX3NHa3BLh7DlBUZlCOwQgMc2nxDfnSweDL5S3bhC+W90g==}
+    dev: false
+
+  /@amplitude/analytics-core@2.5.0:
+    resolution: {integrity: sha512-WQSF6u2k+c+EvC0nVd1kVWvUV/dGyyU2fVBHlcqWtEadCFFZRgty94K5JDC3E+W41+PQeNnTbiH8Wkf98rPYdg==}
+    dependencies:
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-remote-config@0.4.0:
+    resolution: {integrity: sha512-ilp9Dz8Z92V9Wilmz8XIbvEbtuVaN65+jM06JP8I7wL8eNOHVIi4HcI151BzIyekjbprbS1w18Ps3dj2sHlFXA==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-types@2.8.0:
+    resolution: {integrity: sha512-LQ9XWtmv8n0qMGE/JfB0xOvwAc0swy63Xqz7fPhVinz/SUm2buUEKzUNAiq55tZJhEvGs/AsJRmJqu0G563Mgg==}
+    dev: false
+
+  /@amplitude/plugin-autocapture-browser@1.0.0:
+    resolution: {integrity: sha512-qPlR5e1XMPvus32dJTsd8dgFyentR3ugiPv8obwe/bSqpD0Kem31DQic+JadPwG+L3e4UE4QO08hz2lEl9GHMg==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-types': 2.8.0
+      rxjs: 7.8.1
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/plugin-page-view-tracking-browser@2.2.20:
+    resolution: {integrity: sha512-/X2OAdqyGe4kEZGUFX6AcuBLEb2g3KcPIdHDXzGHRk7nxsJKv9pH1dqt3Z4RxHi0Ylhrh25ysr2NzZz4HOA/GQ==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
     dev: false
 
   /@ampproject/remapping@2.2.1:

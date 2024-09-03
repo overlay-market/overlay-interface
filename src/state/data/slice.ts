@@ -59,7 +59,6 @@ export const api = createApi({
                   timestamp
                 }
                 liquidates {
-                  collateral
                   id
                   mint
                   price
@@ -328,7 +327,6 @@ export const api = createApi({
                 mint
                 price
                 timestamp
-                value
                 size
                 position {
                   createdAtTimestamp

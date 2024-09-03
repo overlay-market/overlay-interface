@@ -4656,7 +4656,7 @@ export type QueryPositionQuery = (
         & Pick<Build, 'id' | 'price' | 'timestamp'>
       )>, liquidates: Array<(
         { __typename?: 'Liquidate' }
-        & Pick<Liquidate, 'collateral' | 'id' | 'mint' | 'price' | 'timestamp'>
+        & Pick<Liquidate, 'id' | 'mint' | 'price' | 'timestamp'>
       )>, unwinds: Array<(
         { __typename?: 'Unwind' }
         & Pick<Unwind, 'fraction' | 'id' | 'mint' | 'timestamp' | 'price' | 'unwindNumber' | 'transferAmount' | 'pnl' | 'size'>
@@ -4809,7 +4809,7 @@ export type LiquidatedPositionsQuery = (
     { __typename?: 'Account' }
     & { liquidates: Array<(
       { __typename?: 'Liquidate' }
-      & Pick<Liquidate, 'id' | 'mint' | 'price' | 'timestamp' | 'value' | 'size'>
+      & Pick<Liquidate, 'id' | 'mint' | 'price' | 'timestamp' | 'size'>
       & { position: (
         { __typename?: 'Position' }
         & Pick<Position, 'createdAtTimestamp' | 'currentOi' | 'entryPrice' | 'fractionUnwound' | 'id' | 'initialCollateral' | 'isLong' | 'leverage'>
@@ -4860,7 +4860,6 @@ export const QueryPositionDocument = `
         timestamp
       }
       liquidates {
-        collateral
         id
         mint
         price
@@ -5071,7 +5070,6 @@ export const LiquidatedPositionsDocument = `
       mint
       price
       timestamp
-      value
       size
       position {
         createdAtTimestamp

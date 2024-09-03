@@ -32,6 +32,9 @@ export function isBartio(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x3d47247220d89ad623767de2045dc5e0c5920610' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x49c4ad8b75e118a9b7bd1b89e7af029f3cb1c237' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x745d36559834f6b016fc43d2261f0709e62344e1' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x789d85fb4f104feb1cd85c7475c02f3f8e2dff5b' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x9eb938c3739bbf2b54a80add213f66fe4cd694dc' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x9d32d77c2213a5ff7b6e52669d32752cc092ff40'
   )
 }

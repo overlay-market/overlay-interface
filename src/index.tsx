@@ -20,10 +20,23 @@ import App from './pages/App'
 import reportWebVitals from './reportWebVitals'
 import '@reach/dialog/styles.css'
 import {ampli, LoadOptions} from './ampli'
+import {sessionReplayPlugin} from '@amplitude/plugin-session-replay-browser'
 require('dotenv').config()
 
-const ampliOptions: LoadOptions = {client: {apiKey: process.env.REACT_APP_AMPLITUDE_API_KEY || ''}}
+const ampliOptions: LoadOptions = {
+  client: {
+    apiKey: process.env.REACT_APP_AMPLITUDE_API_KEY || '',
+    configuration: {defaultTracking: {sessions: true}},
+  },
+}
 ampli.load(ampliOptions)
+
+// Create and Install Session Replay Plugin
+const sessionReplayTracking = sessionReplayPlugin({
+  forceSessionTracking: false,
+  sampleRate: 0.05,
+})
+ampli.client.add(sessionReplayTracking)
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 

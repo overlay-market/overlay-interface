@@ -40,7 +40,7 @@ export const NETWORK_URLS: {[key in SupportedChainId]: string} = {
   [SupportedChainId.ARBITRUM]: `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
   [SupportedChainId.ARBITRUM_GÖRLI]: `https://arbitrum-goerli.infura.io/v3/${INFURA_KEY}`,
   [SupportedChainId.ARBITRUM_SEPOLIA]: `https://arbitrum-sepolia.infura.io/v3/${INFURA_KEY}`,
-  [SupportedChainId.IMOLA]: `https://mevm.devnet.imola.movementlabs.xyz`,
+  [SupportedChainId.IMOLA]: `https://mevm4.devnet.imola.movementnetwork.xyz`,
   [SupportedChainId.BARTIO]: `https://bartio.rpc.berachain.com`,
 }
 

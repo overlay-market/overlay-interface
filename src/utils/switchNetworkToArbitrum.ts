@@ -78,7 +78,7 @@ export async function switchNetworkToImola(prevChainId?: number) {
               {
                 chainId: ethers.utils.hexValue(SupportedChainId.IMOLA),
                 chainName: 'Move-EVM',
-                rpcUrls: ['https://mevm.devnet.imola.movementlabs.xyz'],
+                rpcUrls: ['https://mevm4.devnet.imola.movementnetwork.xyz'],
                 blockExplorerUrls: ['https://explorer.testnet.imola.movementlabs.xyz'],
                 nativeCurrency: {
                   decimals: 18,

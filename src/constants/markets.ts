@@ -207,6 +207,48 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://bartio.beratrail.io/address/0x9eb938c3739bbf2b54a80add213f66fe4cd694dc',
     },
   },
+  '0xe35a856f1d98f101c5c60db8d02ba4dff87986b3': {
+    marketName: 'Rifles - CS2 Skins',
+    logo: CsRifleLogo,
+    fullLogo: CsRifleFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    descriptionText:
+      "TL;DR -- The market cap of the top most commonly traded Counter-Strike rifle skins.\n\nThe source of data is the API provided by several skin aggregators.\n\nTo ensure robustness and representativeness, the methodology relies on a set of criteria to select the items included in the index. The criteria are as follows:\n\nHighly Traded: The index is limited to the top most traded rifle skins. The most traded item is the one with the most unique listing prices during the analysis period.\n\nMinimum Number of Listings: The index includes only rifle skins with minimum threshold listings all days of the analysis period. This ensures that the items are not overly concentrated among a few traders. The number of listings per item is set to the minimum observed during the analysis period.\n\nDetermining the Value of Each Item: The value for each rifle skin is derived using two key metrics from the API: Number of Listings and Minimum Price.\n\nNumber of Listings: Represents the total number of listings across all tracked exchanges, capturing the supply of the item.\n\nMinimum Price: The lowest price among all listings for that item.\n\nThe 'Market Capitalization' for each rifle skin is calculated as: MCap = Number of Listings * Minimum Price. The sum of these MCaps at any point in time forms the index value. To ensure robustness, safety measures may force the index value to diverge from the pure sum of all MCaps.",
+    indexesConstruction: ['Most traded Counter Strike 2 Rifles skins'],
+    contract: {
+      name: shortenAddress('0xe35a856f1d98f101c5c60db8d02ba4dff87986b3'),
+      url: 'https://sepolia.arbiscan.io/address/0xe35a856f1d98f101c5c60db8d02ba4dff87986b3',
+    },
+  },
+  '0x6dfe4094599c74a920285a17608ae023d707eed9': {
+    marketName: 'Knives - CS2 Skins',
+    logo: CsKnifeLogo,
+    fullLogo: CsKnifeFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
+    descriptionText:
+      "TL;DR -- The market cap of the top most commonly traded Counter-Strike knife skins.\n\nThe source of data is the API provided by several skin aggregators.\n\nThe methodology is designed to be robust and representative, relying on a set of criteria to select the items included in the index. The criteria are as follows:\n\nHighly Traded: The index is limited to the top most traded knife skins. The most traded item is the one with the most unique listing prices during the analysis period.\n\nMinimum Number of Listings: The index includes only knife skins with a minimum threshold of listings on all days of the analysis period. This ensures that the items are widely distributed and not overly concentrated among a few traders. The number of listings per item is set to the minimum observed during the analysis period.\n\nDetermining the Value of Each Item: The value for each knife skin is derived using two key metrics from the API: Number of Listings and Minimum Price.\n\nNumber of Listings: Represents the total number of listings across all tracked exchanges, capturing the supply of the item.ç\n\nMinimum Price: The lowest price among all listings for that item.\n\nThe 'Market Capitalization' for each knife skin is calculated as: MCap = Number of Listings * Minimum Price. The sum of these MCaps at any point in time forms the index value. To ensure robustness, safety measures may force the index value to diverge from the pure sum of all MCaps.",
+    indexesConstruction: ['Most traded Counter Strike 2 Knives skins'],
+    contract: {
+      name: shortenAddress('0x6dfe4094599c74a920285a17608ae023d707eed9'),
+      url: 'https://sepolia.arbiscan.io/address/0x6dfe4094599c74a920285a17608ae023d707eed9',
+    },
+  },
+  '0x2011d14b00f49cc461958be682bc1443c7fd5d87': {
+    marketName: 'Knives vs Rifles - CS2 Skins',
+    logo: CsRifleKnifeLogo,
+    fullLogo: CsRifleKnifeFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    descriptionText:
+      "TL;DR -- The ratio of the market cap of the top most commonly traded knife skins to the market cap of the top most commonly traded rifle skins.\n\nThe source of data is the API provided by several skin aggregators.\n\nThis index tracks the ratio between the market cap of knife skins and rifle skins, offering insights into their relative value over time. The methodology is robust and representative, relying on a set of criteria to select the items included in the index. The criteria are as follows:\n\nHighly Traded: The index focuses on the top most traded knife and rifle skins separately. The most traded items are identified by the number of unique listing prices during the analysis period.\n\nMinimum Number of Listings: The index includes only skins (both knives and rifles) with a minimum threshold of listings on all days of the analysis period. This ensures widespread distribution and prevents over-concentration among a few traders. The number of listings per item is set to the minimum observed during the analysis period.\n\nDetermining the Value of Each Item: For both knives and rifles, the value of each skin is derived using two key metrics from the API: Number of Listings and Minimum Price.\n\nNumber of Listings: Reflects the total number of listings across all tracked exchanges, capturing the supply of the item.\n\nMinimum Price: The lowest price among all listings for that item.\n\nThe 'Market Capitalization' for each skin type (knives or rifles) is calculated as: MCap = Number of Listings * Minimum Price. The Knives/Rifles ratio is then calculated as the ratio of the sum of MCaps for knife skins to the sum of MCaps for rifle skins. Additional safety measures may be applied to ensure the robustness of the index, preventing manipulation and maintaining long-term accuracy.",
+    indexesConstruction: ['Most traded Counter Strike 2 Rifles skins', 'Most traded Counter Strike 2 Knives skins'],
+    contract: {
+      name: shortenAddress('0x2011d14b00f49cc461958be682bc1443c7fd5d87'),
+      url: 'https://sepolia.arbiscan.io/address/0x2011d14b00f49cc461958be682bc1443c7fd5d87',
+    },
+  },
   '0x6bd76270a8e8e0c3c030f050134389777a3a7d7e': {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,

@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.11.1",
+    "@amplitude/plugin-session-replay-browser": "^1.6.23",
     "@cookie3/analytics": "^0.4.8",
     "@ethersproject/abi": "^5.5.0",
     "@ethersproject/address": "^5.7.0",

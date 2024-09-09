@@ -8,6 +8,12 @@ overrides:
   '@walletconnect/web3-provider': 1.5.2
 
 dependencies:
+  '@amplitude/analytics-browser':
+    specifier: ^2.11.1
+    version: 2.11.1
+  '@amplitude/plugin-session-replay-browser':
+    specifier: ^1.6.23
+    version: 1.6.23
   '@cookie3/analytics':
     specifier: ^0.4.8
     version: 0.4.8
@@ -342,6 +348,120 @@ packages:
   /@alloc/quick-lru@5.2.0:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+    dev: false
+
+  /@amplitude/analytics-browser@2.11.1:
+    resolution: {integrity: sha512-dLej5BZLbnlOw40lQJs5KnJx6EQRwcUJJlnZsFH72LyBq8WvxnDb40yHqSxOl/b7tCJWRozBw75B3Fzkz5OOLw==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-remote-config': 0.4.0
+      '@amplitude/analytics-types': 2.8.0
+      '@amplitude/plugin-autocapture-browser': 1.0.0
+      '@amplitude/plugin-page-view-tracking-browser': 2.2.20
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-client-common@2.3.1:
+    resolution: {integrity: sha512-HR5kdLkyz2niUqTA+9fP3MQgqixk5ToY0ohxNrsiqExFDftyKMplQenlFxjh/w5vb72lLf5gI3T2ssIUCkGuvw==}
+    dependencies:
+      '@amplitude/analytics-connector': 1.5.0
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-connector@1.5.0:
+    resolution: {integrity: sha512-T8mOYzB9RRxckzhL0NTHwdge9xuFxXEOplC8B1Y3UX3NHa3BLh7DlBUZlCOwQgMc2nxDfnSweDL5S3bhC+W90g==}
+    dev: false
+
+  /@amplitude/analytics-core@2.5.0:
+    resolution: {integrity: sha512-WQSF6u2k+c+EvC0nVd1kVWvUV/dGyyU2fVBHlcqWtEadCFFZRgty94K5JDC3E+W41+PQeNnTbiH8Wkf98rPYdg==}
+    dependencies:
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-remote-config@0.4.0:
+    resolution: {integrity: sha512-ilp9Dz8Z92V9Wilmz8XIbvEbtuVaN65+jM06JP8I7wL8eNOHVIi4HcI151BzIyekjbprbS1w18Ps3dj2sHlFXA==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/analytics-types@2.8.0:
+    resolution: {integrity: sha512-LQ9XWtmv8n0qMGE/JfB0xOvwAc0swy63Xqz7fPhVinz/SUm2buUEKzUNAiq55tZJhEvGs/AsJRmJqu0G563Mgg==}
+    dev: false
+
+  /@amplitude/plugin-autocapture-browser@1.0.0:
+    resolution: {integrity: sha512-qPlR5e1XMPvus32dJTsd8dgFyentR3ugiPv8obwe/bSqpD0Kem31DQic+JadPwG+L3e4UE4QO08hz2lEl9GHMg==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-types': 2.8.0
+      rxjs: 7.8.1
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/plugin-page-view-tracking-browser@2.2.20:
+    resolution: {integrity: sha512-/X2OAdqyGe4kEZGUFX6AcuBLEb2g3KcPIdHDXzGHRk7nxsJKv9pH1dqt3Z4RxHi0Ylhrh25ysr2NzZz4HOA/GQ==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-types': 2.8.0
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/plugin-session-replay-browser@1.6.23:
+    resolution: {integrity: sha512-m0obIkC7oVfPZ1NhB6OBERZhgaCXWI5/APkN4gzrCsTiNxGUlan9xM1DyFlInDvDzk3sZt66Zqlp8kKfhC4zoQ==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-types': 2.8.0
+      '@amplitude/session-replay-browser': 1.13.7
+      idb-keyval: 6.2.1
+      tslib: 2.6.2
+    dev: false
+
+  /@amplitude/rrdom@2.0.0-alpha.20:
+    resolution: {integrity: sha512-OZOqHvpYARmc8vJQG1OfAT+3R0/eZJ7SU7UGTmuZR5nM+NRvNqEBahdxOwueQOG+Dofi9gX4YiX4ekwMXJ+R/A==}
+    dependencies:
+      '@amplitude/rrweb-snapshot': 2.0.0-alpha.20
+    dev: false
+
+  /@amplitude/rrweb-snapshot@2.0.0-alpha.20:
+    resolution: {integrity: sha512-cSrAMyFTFnhkyt7m9SVciDRUgpg7OjJAxejDEyAYCDQo8b8cj6WXWS21kPSprILKL27Y/cvaDHTYuU74uTuIiA==}
+    dev: false
+
+  /@amplitude/rrweb-types@2.0.0-alpha.20:
+    resolution: {integrity: sha512-TYR14QUDJ6OvDmWkik5atfBmmGRmPZCz1fyNK+hy7gVtfJ24R4oDmpL2ntwTlflYwSzcTACeGvDw0CQnekDkPw==}
+    dependencies:
+      '@amplitude/rrweb-snapshot': 2.0.0-alpha.20
+    dev: false
+
+  /@amplitude/rrweb@2.0.0-alpha.20:
+    resolution: {integrity: sha512-r2a/ZUTSXwptAsc22pFBvbcb5ixt2Y2l5/HFeyDV7K/bT2uxXoytERZlPIuHuhaK112pnWdAGPRWIqf+IFQGkQ==}
+    dependencies:
+      '@amplitude/rrdom': 2.0.0-alpha.20
+      '@amplitude/rrweb-snapshot': 2.0.0-alpha.20
+      '@amplitude/rrweb-types': 2.0.0-alpha.20
+      '@types/css-font-loading-module': 0.0.7
+      '@xstate/fsm': 1.6.5
+      base64-arraybuffer: 1.0.2
+      fflate: 0.4.8
+      mitt: 3.0.1
+    dev: false
+
+  /@amplitude/session-replay-browser@1.13.7:
+    resolution: {integrity: sha512-eydbE0hWpgm3UJkwkARzCkqqh0SimSV7sevgQtSecnxKV9IohjFlXPwb+zgK/s4cIPfQFlU62r3h8WRJvtX/sw==}
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.1
+      '@amplitude/analytics-core': 2.5.0
+      '@amplitude/analytics-remote-config': 0.4.0
+      '@amplitude/analytics-types': 2.8.0
+      '@amplitude/rrweb': 2.0.0-alpha.20
+      idb: 8.0.0
+      tslib: 2.6.2
     dev: false
 
   /@ampproject/remapping@2.2.1:
@@ -6072,6 +6192,10 @@ packages:
     resolution: {integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==}
     dev: false
 
+  /@types/css-font-loading-module@0.0.7:
+    resolution: {integrity: sha512-nl09VhutdjINdWyXxHWN/w9zlNCfr60JUqJbd24YXUuCwgeL0TpFSdElCwb6cxfB6ybE19Gjj4g0jsgkXxKv1Q==}
+    dev: false
+
   /@types/d3-array@3.2.1:
     resolution: {integrity: sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg==}
     dev: false
@@ -7424,6 +7548,10 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /@xstate/fsm@1.6.5:
+    resolution: {integrity: sha512-b5o1I6aLNeYlU/3CPlj/Z91ybk1gUsKT+5NAJI+2W4UjvS5KLG28K9v5UvNoFVjHV8PajVZ00RH3vnjyQO7ZAw==}
+    dev: false
+
   /@xtuc/ieee754@1.2.0:
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
     dev: false
@@ -8277,6 +8405,11 @@ packages:
     resolution: {integrity: sha512-H7JU6iBHTal1gp56aKoaa//YUxEaAOUiydvrV/pILqIHXTtqxSkATOnDA2u+jZ/61sD+L/412+7kzXRtWukhpQ==}
     dependencies:
       safe-buffer: 5.2.1
+    dev: false
+
+  /base64-arraybuffer@1.0.2:
+    resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
+    engines: {node: '>= 0.6.0'}
     dev: false
 
   /base64-js@1.5.1:
@@ -11397,6 +11530,10 @@ packages:
       - encoding
     dev: false
 
+  /fflate@0.4.8:
+    resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
+    dev: false
+
   /figures@1.7.0:
     resolution: {integrity: sha512-UxKlfCRuCBxSXU4C6t9scbDyWZ4VlaFFdojKtzJuSkuOBQ5CNFum+zZXFwHjo+CxBC1t6zlYPgHIgFjL8ggoEQ==}
     engines: {node: '>=0.10.0'}
@@ -12531,6 +12668,10 @@ packages:
 
   /idb@7.1.1:
     resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
+    dev: false
+
+  /idb@8.0.0:
+    resolution: {integrity: sha512-l//qvlAKGmQO31Qn7xdzagVPPaHTxXx199MhrAFuVBTPqydcPYBWjkrbv4Y0ktB+GmWOiwHl237UUOrLmQxLvw==}
     dev: false
 
   /identity-obj-proxy@3.0.0:
@@ -15004,6 +15145,10 @@ packages:
     dependencies:
       minipass: 3.3.6
       yallist: 4.0.0
+    dev: false
+
+  /mitt@3.0.1:
+    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
     dev: false
 
   /mkdirp@0.5.6:

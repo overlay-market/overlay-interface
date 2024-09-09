@@ -7,6 +7,7 @@ import {injected, walletconnect} from './../connectors/connectors'
 import {isMobile} from 'react-device-detect'
 import {ChainId} from '@sushiswap/sdk'
 import {DEFAULT_CHAINID} from '../constants/chains'
+import {trackWalletConnection} from '../components/ConnectWalletModal/ConnectWalletModal'
 
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & {
   chainId?: ChainId
@@ -30,22 +31,28 @@ export function useEagerConnect() {
   useEffect(() => {
     if (storedDisconnected === 'true') {
       if (isMobile && window.ethereum) {
-        activate(injected, undefined, true).catch(() => {
-          setTried(true)
-        })
+        activate(injected, undefined, true)
+          .catch(() => {
+            setTried(true)
+          })
+          .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
       }
       setTried(true)
     } else {
       injected.isAuthorized().then(isAuthorized => {
         if (isAuthorized) {
-          activate(injected, undefined, true).catch(() => {
-            setTried(true)
-          })
-        } else {
-          if (storedConnection === 'walletconnect') {
-            activate(walletconnect, undefined, true).catch(() => {
+          activate(injected, undefined, true)
+            .catch(() => {
               setTried(true)
             })
+            .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
+        } else {
+          if (storedConnection === 'walletconnect') {
+            activate(walletconnect, undefined, true)
+              .catch(() => {
+                setTried(true)
+              })
+              .then(() => walletconnect.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
           } else {
             setTried(true)
           }
@@ -76,17 +83,21 @@ export function useInactiveListener(suppress = false) {
     if (ethereum && ethereum.on && !active && !error && !suppress) {
       const handleChainChanged = () => {
         // eat errors
-        activate(injected, undefined, true).catch(error => {
-          console.error('Failed to activate after chain changed', error)
-        })
+        activate(injected, undefined, true)
+          .catch(error => {
+            console.error('Failed to activate after chain changed', error)
+          })
+          .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
       }
 
       const handleAccountsChanged = (accounts: string[]) => {
         if (accounts.length > 0) {
           // eat errors
-          activate(injected, undefined, true).catch(error => {
-            console.error('Failed to activate after accounts changed', error)
-          })
+          activate(injected, undefined, true)
+            .catch(error => {
+              console.error('Failed to activate after accounts changed', error)
+            })
+            .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
         }
       }
 

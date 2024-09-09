@@ -17,6 +17,7 @@ import usePrevious from '../../hooks/usePrevious'
 import METAMASK_ICON from '../../assets/images/metamask.png'
 import {switchNetworkTo, switchNetworkToArbitrum} from '../../utils/switchNetworkToArbitrum'
 import {useMultichainContext} from '../../state/multichain/useMultichainContext'
+import {ampli} from '../../ampli'
 
 export const ModalContent = styled.div`
   display: flex;
@@ -43,6 +44,11 @@ const WALLET_VIEWS = {
   OPTIONS_SECONDARY: 'options_secondary',
   ACCOUNT: 'account',
   PENDING: 'pending',
+}
+
+export function trackWalletConnection(address?: string) {
+  ampli.identify(address)
+  ampli.walletConnected({wallet_connected: true})
 }
 
 export default function ConnectWalletModal() {
@@ -96,12 +102,14 @@ export default function ConnectWalletModal() {
           if (error instanceof UnsupportedChainIdError) {
             switchNetworkToArbitrum()
             activate(connector) // a little janky...can't use setError because the connector isn't set
+              .then(() => connector.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
           } else {
             setPendingError(true)
           }
         })
         .then(() => {
           localStorage.setItem('disconnected', 'false')
+          connector.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined))
           contextChainId && switchNetworkTo(contextChainId)
         })
   }

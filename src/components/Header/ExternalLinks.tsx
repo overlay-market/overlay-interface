@@ -256,7 +256,7 @@ export default function ExternalLinks({isSubMenuOpen, setIsSubMenuOpen, mobile}:
               symbol: 'MOVE',
               decimals: 18,
             },
-            rpcUrls: ['https://mevm.devnet.imola.movementlabs.xyz'], // Imola RPC endpoint
+            rpcUrls: ['https://mevm4.devnet.imola.movementnetwork.xyz'], // Imola RPC endpoint
             blockExplorerUrls: ['https://explorer.testnet.imola.movementlabs.xyz'], // Imola block explorer URL
           },
         ],

@@ -159,7 +159,7 @@ const Faucet = () => {
     if (responseError) {
       if (responseError.hasOwnProperty('message')) {
         if (typeof responseError.message === 'string') {
-          if (responseError?.message.startsWith('Recipient has already claimed token')) {
+          if (responseError?.message.startsWith('Recipient has already claimed')) {
             setResponseMessage('Sorry, each wallet address may only claim free tokens once.')
           } else if (responseError?.message === 'recipient must have a non-zero arbitrum mainnet balance to claim tokens') {
             setResponseMessage('Sorry - the wallet must hold some ETH on Arbitrum Mainnet.')

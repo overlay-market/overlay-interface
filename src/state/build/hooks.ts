@@ -247,38 +247,24 @@ export interface PositionDataV2 {
 }
 
 export interface Build {
-  collateral: string
-  currentDebt: string
-  currentOi: string
   id: string
   price: string
   timestamp: string
-  value: string
 }
 
 export interface Liquidate {
-  collateral: string
-  currentDebt: string
-  currentOi: string
   id: string
-  isLong: boolean
   mint: string
   price: string
   timestamp: string
-  value: string
 }
 
 export interface Unwind {
-  collateral: string
-  currentDebt: string
-  currentOi: string
   id: string
   fraction: string
-  isLong: boolean
   mint: string
   price: string
   timestamp: string
-  value: string
   unwindNumber: string
   pnl: string
   transferAmount: string

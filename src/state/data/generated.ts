@@ -4653,13 +4653,13 @@ export type QueryPositionQuery = (
         & Pick<Market, 'id' | 'feedAddress' | 'isShutdown'>
       ), builds: Array<(
         { __typename?: 'Build' }
-        & Pick<Build, 'collateral' | 'currentDebt' | 'currentOi' | 'id' | 'price' | 'timestamp' | 'value'>
+        & Pick<Build, 'id' | 'price' | 'timestamp'>
       )>, liquidates: Array<(
         { __typename?: 'Liquidate' }
-        & Pick<Liquidate, 'collateral' | 'currentDebt' | 'id' | 'currentOi' | 'isLong' | 'mint' | 'price' | 'timestamp' | 'value'>
+        & Pick<Liquidate, 'id' | 'mint' | 'price' | 'timestamp'>
       )>, unwinds: Array<(
         { __typename?: 'Unwind' }
-        & Pick<Unwind, 'collateral' | 'currentDebt' | 'currentOi' | 'fraction' | 'id' | 'isLong' | 'mint' | 'timestamp' | 'price' | 'unwindNumber' | 'value' | 'transferAmount' | 'pnl' | 'size'>
+        & Pick<Unwind, 'fraction' | 'id' | 'mint' | 'timestamp' | 'price' | 'unwindNumber' | 'transferAmount' | 'pnl' | 'size'>
       )> }
     )> }
   )> }
@@ -4783,7 +4783,7 @@ export type UnwindsQuery = (
     { __typename?: 'Account' }
     & { unwinds: Array<(
       { __typename?: 'Unwind' }
-      & Pick<Unwind, 'collateral' | 'currentDebt' | 'currentOi' | 'fraction' | 'fractionOfPosition' | 'id' | 'isLong' | 'mint' | 'pnl' | 'price' | 'size' | 'timestamp' | 'transferAmount' | 'unwindNumber' | 'value'>
+      & Pick<Unwind, 'fraction' | 'fractionOfPosition' | 'id' | 'mint' | 'pnl' | 'price' | 'size' | 'timestamp' | 'transferAmount' | 'unwindNumber'>
       & { position: (
         { __typename?: 'Position' }
         & Pick<Position, 'createdAtTimestamp' | 'currentOi' | 'entryPrice' | 'id' | 'initialCollateral' | 'isLong' | 'leverage' | 'numberOfUniwnds' | 'positionId'>
@@ -4809,7 +4809,7 @@ export type LiquidatedPositionsQuery = (
     { __typename?: 'Account' }
     & { liquidates: Array<(
       { __typename?: 'Liquidate' }
-      & Pick<Liquidate, 'collateral' | 'currentDebt' | 'currentOi' | 'id' | 'isLong' | 'mint' | 'price' | 'timestamp' | 'value' | 'size'>
+      & Pick<Liquidate, 'id' | 'mint' | 'price' | 'timestamp' | 'size'>
       & { position: (
         { __typename?: 'Position' }
         & Pick<Position, 'createdAtTimestamp' | 'currentOi' | 'entryPrice' | 'fractionUnwound' | 'id' | 'initialCollateral' | 'isLong' | 'leverage'>
@@ -4855,37 +4855,23 @@ export const QueryPositionDocument = `
       numberOfUniwnds
       fractionUnwound
       builds {
-        collateral
-        currentDebt
-        currentOi
         id
         price
         timestamp
-        value
       }
       liquidates {
-        collateral
-        currentDebt
         id
-        currentOi
-        isLong
         mint
         price
         timestamp
-        value
       }
       unwinds(orderBy: unwindNumber, orderDirection: asc) {
-        collateral
-        currentDebt
-        currentOi
         fraction
         id
-        isLong
         mint
         timestamp
         price
         unwindNumber
-        value
         transferAmount
         pnl
         size
@@ -5047,13 +5033,9 @@ export const UnwindsDocument = `
     query unwinds($account: ID!, $first: Int, $skip: Int) {
   account(id: $account) {
     unwinds(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
-      collateral
-      currentDebt
-      currentOi
       fraction
       fractionOfPosition
       id
-      isLong
       mint
       pnl
       price
@@ -5061,7 +5043,6 @@ export const UnwindsDocument = `
       timestamp
       transferAmount
       unwindNumber
-      value
       position {
         createdAtTimestamp
         currentOi
@@ -5085,15 +5066,10 @@ export const LiquidatedPositionsDocument = `
     query liquidatedPositions($account: ID!, $first: Int, $skip: Int) {
   account(id: $account) {
     liquidates(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
-      collateral
-      currentDebt
-      currentOi
       id
-      isLong
       mint
       price
       timestamp
-      value
       size
       position {
         createdAtTimestamp

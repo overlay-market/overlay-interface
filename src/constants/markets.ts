@@ -37,6 +37,8 @@ import CsKnifeLogo from '../assets/images/tokens/cs2-knife-logo.png'
 import CsKnifeFull from '../assets/images/tokens/cs2-knife-image.png'
 import CsRifleKnifeLogo from '../assets/images/tokens/cs2-rifle-knife-logo.png'
 import CsRifleKnifeFull from '../assets/images/tokens/cs2-rifle-knife-image.jpeg'
+import CatsDogsLogo from '../assets/images/tokens/cat-vs-dog-logo.png'
+import CatsDogsFull from '../assets/images/tokens/cat-vs-dog-full.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -139,6 +141,34 @@ export type MarketDetailsData = {
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
+  '0x58cac8f5c3b398650e30f724adf57c4d21d1e900': {
+    marketName: 'Cats vs Dogs',
+    logo: CatsDogsLogo,
+    fullLogo: CatsDogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –- This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and CoinGecko, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\n\n \nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/ Dogs Index.',
+    contract: {
+      name: shortenAddress('0x58cac8f5c3b398650e30f724adf57c4d21d1e900'),
+      url: 'https://sepolia.arbiscan.io/address/0x58cac8f5c3b398650e30f724adf57c4d21d1e900',
+    },
+  },
+  '0xa7becde03da95d1dd0657710e4725342218b2876': {
+    marketName: 'Cats vs Dogs',
+    logo: CatsDogsLogo,
+    fullLogo: CatsDogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –- This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and CoinGecko, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\n\n \nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/ Dogs Index.',
+    contract: {
+      name: shortenAddress('0xa7becde03da95d1dd0657710e4725342218b2876'),
+      url: 'https://bartio.beratrail.io/address/0xa7becde03da95d1dd0657710e4725342218b2876',
+    },
+  },
   '0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9': {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,

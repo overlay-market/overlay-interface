@@ -81,9 +81,9 @@ export function useCurrentMarketState(marketsData: AdditionalMarketData[] | unde
 
         if ((decimals && market.type === FeedType.CHAINLINK) || market.type === FeedType.NFTPERP) {
           marketName = MarketDetails[marketId]?.marketName ?? 'Parsing error'
-          parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, 5)
-          parsedAsk = decimals && formatBigNumber(result.state_.ask, decimals, 5)
-          parsedMid = decimals && formatBigNumber(result.state_.mid, decimals, 5)
+          parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, sigFigs)
+          parsedAsk = decimals && formatBigNumber(result.state_.ask, decimals, sigFigs)
+          parsedMid = decimals && formatBigNumber(result.state_.mid, decimals, sigFigs)
           parsedOiLong = decimals && formatBigNumber(result.state_.oiLong, decimals, sigFigs)
           parsedOiShort = decimals && formatBigNumber(result.state_.oiShort, decimals, sigFigs)
           parsedCapOi = decimals && formatBigNumber(result.state_.capOi, decimals, sigFigs)

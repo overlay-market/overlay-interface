@@ -14,6 +14,7 @@ export function isSepolia(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0xe35a856f1d98f101c5c60db8d02ba4dff87986b3' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x6dfe4094599c74a920285a17608ae023d707eed9' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x2011d14b00f49cc461958be682bc1443c7fd5d87' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x58cac8f5c3b398650e30f724adf57c4d21d1e900' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x3966f792517e2df998c48301163c2a95bfd3eff8'
   )
 }
@@ -38,6 +39,7 @@ export function isBartio(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0x745d36559834f6b016fc43d2261f0709e62344e1' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x789d85fb4f104feb1cd85c7475c02f3f8e2dff5b' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x9eb938c3739bbf2b54a80add213f66fe4cd694dc' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xa7becde03da95d1dd0657710e4725342218b2876' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x9d32d77c2213a5ff7b6e52669d32752cc092ff40'
   )
 }

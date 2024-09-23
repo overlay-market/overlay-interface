@@ -256,7 +256,7 @@ const TradingMiningOverview = ({
             sessionsDatesList.map((session, idx) => {
               return (
                 <MenuItem key={session.id} onClick={() => handleSelectSession(session)}>
-                  {idx === 0 && <MenuItemLabel>Current</MenuItemLabel>}
+                  {/* {idx === 0 && <MenuItemLabel>Current</MenuItemLabel>} */}
                   <Box sx={{color: session.session === activeDropdownValue ? '#71CEFF' : ''}}>{session.session}</Box>
                 </MenuItem>
               )

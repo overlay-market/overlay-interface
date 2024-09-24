@@ -146,7 +146,7 @@ export type MarketDetailsData = {
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
   '0x73973d72eef84a8624e4ec381e8e73caff570092': {
-    marketName: 'Cats vs Dogs',
+    marketName: 'Cats vs Dogs - Meme War',
     logo: CatsDogsLogo,
     fullLogo: CatsDogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -160,7 +160,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
   },
   '0xa85ad94c84f2bdc48127d93d087054a5f7e5726b': {
-    marketName: 'Cats vs Dogs',
+    marketName: 'Cats vs Dogs - Meme War',
     logo: CatsDogsLogo,
     fullLogo: CatsDogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -174,7 +174,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
   },
   '0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9': {
-    marketName: 'Cats vs Frogs',
+    marketName: 'Cats vs Frogs - Meme War',
     logo: CatsFrogsLogo,
     fullLogo: CatsFrogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -188,7 +188,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
   },
   '0xf0d9f85295d7a41b51aa5bde08c199735fa15909': {
-    marketName: 'Cats vs Frogs',
+    marketName: 'Cats vs Frogs - Meme War',
     logo: CatsFrogsLogo,
     fullLogo: CatsFrogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -202,7 +202,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
   },
   '0xecd76abb33c36dd62a7d033d26f7146801e03d4f': {
-    marketName: 'Frogs vs Dogs',
+    marketName: 'Frogs vs Dogs - Meme War',
     logo: DogsFrogsLogo,
     fullLogo: DogsFrogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -216,7 +216,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
   },
   '0x0befa5099b225ffdaadbba5911d464e12a75a773': {
-    marketName: 'Frogs vs Dogs',
+    marketName: 'Frogs vs Dogs - Meme War',
     logo: DogsFrogsLogo,
     fullLogo: DogsFrogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],

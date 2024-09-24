@@ -113,7 +113,14 @@ const Markets = () => {
   // list of hidden markets from Markets page
 
   const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
-    const order = ['AI Index', 'ETH / SOL', 'Electric Vehicle Commodity Index']
+    const order = [
+      'AI Index',
+      'ETH / SOL',
+      'Electric Vehicle Commodity Index',
+      'Cats vs Dogs - Meme War',
+      'Cats vs Frogs - Meme War',
+      'Frogs vs Dogs - Meme War',
+    ]
     for (let marketOrdered of order) {
       if (a.marketName === marketOrdered) return -1
       if (b.marketName === marketOrdered) return 1

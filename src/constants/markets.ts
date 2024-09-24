@@ -39,6 +39,10 @@ import CsRifleKnifeLogo from '../assets/images/tokens/cs2-rifle-knife-logo.png'
 import CsRifleKnifeFull from '../assets/images/tokens/cs2-rifle-knife-image.jpeg'
 import CatsDogsLogo from '../assets/images/tokens/cat-vs-dog-logo.png'
 import CatsDogsFull from '../assets/images/tokens/cat-vs-dog-full.png'
+import CatsFrogsLogo from '../assets/images/tokens/cat-vs-frog-logo.png'
+import CatsFrogsFull from '../assets/images/tokens/cat-vs-frog-full.png'
+import DogsFrogsLogo from '../assets/images/tokens/dog-vs-frog-logo.png'
+import DogsFrogsFull from '../assets/images/tokens/dog-vs-frog-full.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -141,8 +145,92 @@ export type MarketDetailsData = {
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
-  '0x58cac8f5c3b398650e30f724adf57c4d21d1e900': {
+  '0x73973d72eef84a8624e4ec381e8e73caff570092': {
     marketName: 'Cats vs Dogs',
+    logo: CatsDogsLogo,
+    fullLogo: CatsDogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/Dogs Index.',
+    contract: {
+      name: shortenAddress('0x73973d72eef84a8624e4ec381e8e73caff570092'),
+      url: 'https://sepolia.arbiscan.io/address/0x73973d72eef84a8624e4ec381e8e73caff570092',
+    },
+  },
+  '0xa85ad94c84f2bdc48127d93d087054a5f7e5726b': {
+    marketName: 'Cats vs Dogs',
+    logo: CatsDogsLogo,
+    fullLogo: CatsDogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/Dogs Index.',
+    contract: {
+      name: shortenAddress('0xa85ad94c84f2bdc48127d93d087054a5f7e5726b'),
+      url: 'https://bartio.beratrail.io/address/0xa85ad94c84f2bdc48127d93d087054a5f7e5726b',
+    },
+  },
+  '0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9': {
+    marketName: 'Cats vs Frogs',
+    logo: CatsFrogsLogo,
+    fullLogo: CatsFrogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Frogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Frogs index:\nPEPE, BRETT, TURBO, PEPECOIN, APU, PEIPEI, HOPPY, TALES, SKOP, TOBY\n\nand the market represents the ratio between Cats Index/Frogs Index.',
+    contract: {
+      name: shortenAddress('0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9'),
+      url: 'https://sepolia.arbiscan.io/address/0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9',
+    },
+  },
+  '0xf0d9f85295d7a41b51aa5bde08c199735fa15909': {
+    marketName: 'Cats vs Frogs',
+    logo: CatsFrogsLogo,
+    fullLogo: CatsFrogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Frogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Frogs index:\nPEPE, BRETT, TURBO, PEPECOIN, APU, PEIPEI, HOPPY, TALES, SKOP, TOBY\n\nand the market represents the ratio between Cats Index/Frogs Index.',
+    contract: {
+      name: shortenAddress('0xf0d9f85295d7a41b51aa5bde08c199735fa15909'),
+      url: 'https://bartio.beratrail.io/address/0xf0d9f85295d7a41b51aa5bde08c199735fa15909',
+    },
+  },
+  '0xecd76abb33c36dd62a7d033d26f7146801e03d4f': {
+    marketName: 'Frogs vs Dogs',
+    logo: DogsFrogsLogo,
+    fullLogo: DogsFrogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Frogs tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Frogs index:\nPEPE, BRETT, TURBO, PEPECOIN, APU, PEIPEI, HOPPY, TALES, SKOP, TOBY\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO, WIF,\n\nand the market represents the ratio between Frogs Index/Dogs Index.',
+    contract: {
+      name: shortenAddress('0xecd76abb33c36dd62a7d033d26f7146801e03d4f'),
+      url: 'https://sepolia.arbiscan.io/address/0xecd76abb33c36dd62a7d033d26f7146801e03d4f',
+    },
+  },
+  '0x0befa5099b225ffdaadbba5911d464e12a75a773': {
+    marketName: 'Frogs vs Dogs',
+    logo: DogsFrogsLogo,
+    fullLogo: DogsFrogsFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
+    descriptionText:
+      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Frogs tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Frogs index:\nPEPE, BRETT, TURBO, PEPECOIN, APU, PEIPEI, HOPPY, TALES, SKOP, TOBY\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO, WIF,\n\nand the market represents the ratio between Frogs Index/Dogs Index.',
+    contract: {
+      name: shortenAddress('0x0befa5099b225ffdaadbba5911d464e12a75a773'),
+      url: 'https://bartio.beratrail.io/address/0x0befa5099b225ffdaadbba5911d464e12a75a773',
+    },
+  },
+  '0x58cac8f5c3b398650e30f724adf57c4d21d1e900': {
+    marketName: 'Cats vs Dogs - archive',
     logo: CatsDogsLogo,
     fullLogo: CatsDogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
@@ -156,7 +244,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
   },
   '0xa7becde03da95d1dd0657710e4725342218b2876': {
-    marketName: 'Cats vs Dogs',
+    marketName: 'Cats vs Dogs - archive',
     logo: CatsDogsLogo,
     fullLogo: CatsDogsFull,
     oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],

@@ -240,7 +240,7 @@ export const OpenPosition = ({
         }
       : {
           Market: marketName,
-          Size: parsedValue ? `${parsedValue} OVL` : <Loader size="12px" />,
+          Size: '-',
           Position: (
             <FlexRow>
               <TEXT.Supplemental mr="4px">{leverage}x</TEXT.Supplemental>

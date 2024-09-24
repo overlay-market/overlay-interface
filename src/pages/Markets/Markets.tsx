@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import styled from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
@@ -11,12 +11,12 @@ import {useMarketDetails, AdditionalMarketData} from '../../hooks/useMarketDetai
 import {useCurrentMarketState, MarketStateResults, ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 import {TEXT} from '../../theme/theme'
 import MarketsRow from './MarketsRow'
-import ComingSoonMarketsRow from './ComingSoonMarketsRow'
 import ReactTooltip from 'react-tooltip'
-import {MarketChartMap, MarketDetails, ComingSoonMarkets} from '../../constants/markets'
+import {MarketChartMap, MarketDetails, CategoryName, MARKET_CATEGORIES} from '../../constants/markets'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
 import {SupportedChainId, WORKING_CHAINS} from '../../constants/chains'
 import {useMultichainContext} from '../../state/multichain/useMultichainContext'
+import CategoryHeader from '../../components/Header/CategoryHeader'
 
 const activeClassName = 'INACTIVE'
 
@@ -106,93 +106,87 @@ const Markets = () => {
     currentMarketsError && refetch()
   }, [currentMarketsError, refetch])
 
-  // useEffect(() => {
-  //   marketsData.length !== markets?.length && refetch()
-  // }, [marketsData, markets, refetch])
+  const groupedMarkets = useMemo(() => {
+    if (!marketsData) return {}
 
-  // list of hidden markets from Markets page
+    return marketsData
+      .filter(
+        market =>
+          Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) && !MarketDetails[market.marketAddress.toLowerCase()].disabled,
+      )
+      .reduce((acc, market) => {
+        const category = MarketDetails[market.marketAddress.toLowerCase()].category || CategoryName.Other
+        if (!acc[category]) {
+          acc[category] = []
+        }
+        acc[category].push(market)
+        return acc
+      }, {} as Record<string, ParsedMarketStateDetails[]>)
+  }, [marketsData])
 
-  const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
-    const order = [
-      'AI Index',
-      'ETH / SOL',
-      'Electric Vehicle Commodity Index',
-      'Cats vs Dogs - Meme War',
-      'Cats vs Frogs - Meme War',
-      'Frogs vs Dogs - Meme War',
-    ]
-    for (let marketOrdered of order) {
-      if (a.marketName === marketOrdered) return -1
-      if (b.marketName === marketOrdered) return 1
-    }
-    return 0
-  }
-
-  const marketsAmount: number = marketsData?.filter(
-    market => Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) && !MarketDetails[market.marketAddress.toLowerCase()].disabled,
-  ).length
+  const sortedCategories = useMemo(() => {
+    const categoryOrder = Object.keys(MARKET_CATEGORIES)
+    return Object.keys(groupedMarkets).sort((a, b) => {
+      const indexA = categoryOrder.indexOf(a)
+      const indexB = categoryOrder.indexOf(b)
+      if (indexA === -1 && indexB === -1) return a.localeCompare(b)
+      if (indexA === -1) return 1
+      if (indexB === -1) return -1
+      return indexA - indexB
+    })
+  }, [groupedMarkets])
 
   return (
     <PageContainer>
       <TableContainer component={Paper}>
         {contextChainId && WORKING_CHAINS.includes(SupportedChainId[contextChainId]) ? (
-          <StyledTable smwidth="100%">
-            <TableHead>
-              <MarketsStyledTableHeaderRow>
-                <StyledHeaderCell width={1} smwidth={6} id="marketIndex">
-                  <TEXT.Supplemental>#</TEXT.Supplemental>
-                </StyledHeaderCell>
-                <StyledHeaderCell width={25} smwidth={60} id="marketName">
-                  <TEXT.Supplemental>Market</TEXT.Supplemental>
-                </StyledHeaderCell>
-                <StyledHeaderCell>
-                  <TEXT.Supplemental id="marketPrice">Price</TEXT.Supplemental>
-                </StyledHeaderCell>
-                {/* <StyledHeaderCell>
-                  
-                    <TEXT.Supplemental>7d</TEXT.Supplemental>
-                  
-                </StyledHeaderCell> */}
-                <StyledHeaderCell id="marketFundingRate">
-                  <TEXT.SupplementalUnderlinedDashes data-for={'funding info'} data-tip={'funding info'}>
-                    Funding
-                  </TEXT.SupplementalUnderlinedDashes>
-                  <ReactTooltip place="bottom" type="info" effect="solid" textColor={'#FFFFFF'} backgroundColor="#000000" id={'funding info'}>
-                    {infoTipDescriptions.fundingRate}
-                  </ReactTooltip>
-                </StyledHeaderCell>
-                <StyledHeaderCell id="marketOi">
-                  <TEXT.SupplementalUnderlinedDashes data-for={'Balance info'} data-tip={'Balance info'}>
-                    OI Balance
-                  </TEXT.SupplementalUnderlinedDashes>
-                  <ReactTooltip place="bottom" type="info" effect="solid" textColor={'#FFFFFF'} backgroundColor="#000000" id={'Balance info'}>
-                    {infoTipDescriptions.openInterest}
-                  </ReactTooltip>
-                </StyledHeaderCell>
-                <StyledHeaderCell align="center" id="marketFeedLogo">
-                  <TEXT.Supplemental>Oracle</TEXT.Supplemental>
-                </StyledHeaderCell>
-                {!hide7dChart && (
-                  <StyledHeaderCell align="center" id="market7dChart">
-                    <TEXT.Supplemental>7D Chart</TEXT.Supplemental>
-                  </StyledHeaderCell>
-                )}
-              </MarketsStyledTableHeaderRow>
-            </TableHead>
-            <TableBody>
-              {marketsData.length > 0 &&
-                marketsData
-                  ?.filter(
-                    market =>
-                      Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) &&
-                      !MarketDetails[market.marketAddress.toLowerCase()].disabled,
-                  )
-                  .sort(customSort)
-                  .map((market: ParsedMarketStateDetails, index: number) => {
-                    return (
+          <>
+            {sortedCategories.map(category => (
+              <React.Fragment key={category}>
+                <CategoryHeader category={category as CategoryName} />
+                <StyledTable smwidth="100%">
+                  <TableHead>
+                    <MarketsStyledTableHeaderRow>
+                      <StyledHeaderCell width={1} smwidth={6} id="marketIndex">
+                        <TEXT.Supplemental>#</TEXT.Supplemental>
+                      </StyledHeaderCell>
+                      <StyledHeaderCell width={25} smwidth={60} id="marketName">
+                        <TEXT.Supplemental>Market</TEXT.Supplemental>
+                      </StyledHeaderCell>
+                      <StyledHeaderCell>
+                        <TEXT.Supplemental id="marketPrice">Price</TEXT.Supplemental>
+                      </StyledHeaderCell>
+                      <StyledHeaderCell id="marketFundingRate">
+                        <TEXT.SupplementalUnderlinedDashes data-for={'funding info'} data-tip={'funding info'}>
+                          Funding
+                        </TEXT.SupplementalUnderlinedDashes>
+                        <ReactTooltip place="bottom" type="info" effect="solid" textColor={'#FFFFFF'} backgroundColor="#000000" id={'funding info'}>
+                          {infoTipDescriptions.fundingRate}
+                        </ReactTooltip>
+                      </StyledHeaderCell>
+                      <StyledHeaderCell id="marketOi">
+                        <TEXT.SupplementalUnderlinedDashes data-for={'Balance info'} data-tip={'Balance info'}>
+                          OI Balance
+                        </TEXT.SupplementalUnderlinedDashes>
+                        <ReactTooltip place="bottom" type="info" effect="solid" textColor={'#FFFFFF'} backgroundColor="#000000" id={'Balance info'}>
+                          {infoTipDescriptions.openInterest}
+                        </ReactTooltip>
+                      </StyledHeaderCell>
+                      <StyledHeaderCell align="center" id="marketFeedLogo">
+                        <TEXT.Supplemental>Oracle</TEXT.Supplemental>
+                      </StyledHeaderCell>
+                      {!hide7dChart && (
+                        <StyledHeaderCell align="center" id="market7dChart">
+                          <TEXT.Supplemental>7D Chart</TEXT.Supplemental>
+                        </StyledHeaderCell>
+                      )}
+                    </MarketsStyledTableHeaderRow>
+                  </TableHead>
+                  <TableBody>
+                    {groupedMarkets[category].map((market: ParsedMarketStateDetails, index: number) => (
                       <MarketsRow
                         key={market.marketAddress}
-                        index={index + 1} //start count at 1
+                        index={index + 1}
                         marketId={market.marketAddress}
                         marketName={market.marketName}
                         midPrice={market.parsedMid}
@@ -207,25 +201,12 @@ const Markets = () => {
                         marketChartData={MarketChartMap[market.marketName ?? '']}
                         hide7dChart={hide7dChart}
                       />
-                    )
-                  })}
-              {ComingSoonMarkets &&
-                marketsData.length > 0 &&
-                Object.keys(ComingSoonMarkets)
-                  .filter(address => !ComingSoonMarkets[address].disabled)
-                  .map((address: string, index: number) => {
-                    return (
-                      <ComingSoonMarketsRow
-                        key={address}
-                        index={marketsAmount + index + 1} //start count at (marketsAmount + 1)
-                        marketId={address}
-                        marketName={ComingSoonMarkets[address].marketName}
-                        marketLogo={ComingSoonMarkets[address].logo}
-                      />
-                    )
-                  })}
-            </TableBody>
-          </StyledTable>
+                    ))}
+                  </TableBody>
+                </StyledTable>
+              </React.Fragment>
+            ))}
+          </>
         ) : (
           <ChangeNetworkModal />
         )}

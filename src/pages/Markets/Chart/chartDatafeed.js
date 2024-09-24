@@ -17,17 +17,14 @@ const lastBarsCache = new Map()
 
 export default {
   onReady: callback => {
-    // console.log('[onReady]: Method call')
     setTimeout(() => callback(configurationData))
   },
 
   searchSymbols: async (userInput, exchange, symbolType, onResultReadyCallback) => {
     // Get all symbols
-    // console.log('[searchSymbols]: Method call')
   },
 
   resolveSymbol: async (symbolName, onSymbolResolvedCallback, onResolveErrorCallback, extension) => {
-    console.log('[resolveSymbol]: Method call', symbolName)
     const {marketId, description} = JSON.parse(symbolName || '{}')
 
     const symbolInfo: LibrarySymbolInfo = {
@@ -56,7 +53,6 @@ export default {
 
   getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
     const {from, to, firstDataRequest} = periodParams
-    console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
     const {binSize, binUnit} = getBinSizeAndUnit(resolution)
 
@@ -106,11 +102,9 @@ export default {
       })
 
       if (firstDataRequest) {
-        console.log('[getBars]: Setting last bar cache', {...bars[bars.length - 1]})
         lastBarsCache.set(symbolInfo.full_name, {...bars[bars.length - 1]})
       }
 
-      console.log(`[getBars]: returned ${bars.length} bars`)
       onHistoryCallback(bars, {noData: false})
     } catch (error) {
       console.log('[getBars]: Get error', error)
@@ -119,12 +113,10 @@ export default {
   },
 
   subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
-    console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID)
     subscribeOnStream(symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback, lastBarsCache.get(symbolInfo.full_name))
   },
 
   unsubscribeBars: subscriberUID => {
-    console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID)
     unsubscribeFromStream(subscriberUID)
   },
 }

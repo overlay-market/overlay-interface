@@ -4,7 +4,7 @@ import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {TEXT, colors} from '../../theme/theme'
 import {ProgressBar} from '../../components/ProgressBar/ProgressBar'
 import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
-import {useTotalMarketsData} from '../../state/markets/hooks'
+import {useActiveMarketsData} from '../../state/markets/hooks'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
@@ -67,7 +67,7 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const [total, setTotal] = React.useState<number>(0)
 
   const {chainId} = useActiveWeb3React()
-  const {markets, isUninitialized, refetch} = useTotalMarketsData()
+  const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData, error: currentMarketsError}: MarketStateResults = useCurrentMarketState(marketDetails)
 

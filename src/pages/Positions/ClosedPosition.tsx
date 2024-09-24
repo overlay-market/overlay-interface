@@ -103,7 +103,7 @@ export function ClosedPosition({
   const positionInfo = usePositionInfo(position?.market.id, positionId)
   const isLong = positionInfo ? positionInfo.isLong : undefined
 
-  const parsedPnL = filteredUnwind ? +filteredUnwind.pnl / 10 ** 18 : 0
+  const parsedPnL = filteredUnwind ? +filteredUnwind.pnl / 10 ** 18 : undefined
   const entryPrice: number | string | null | undefined =
     position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, 8)
 
@@ -143,7 +143,11 @@ export function ClosedPosition({
           <AdditionalDetailRow
             detail={'Profit/Loss'}
             valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
-            value={parsedPnL ? `${Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2)} OVL` : 'loading'}
+            value={
+              parsedPnL !== undefined
+                ? `${parsedPnL === 0 ? 0 : Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2)} OVL`
+                : 'loading'
+            }
           />
           <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
         </FlexColumn>

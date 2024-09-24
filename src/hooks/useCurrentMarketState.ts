@@ -62,7 +62,6 @@ export function useCurrentMarketState(marketsData: AdditionalMarketData[] | unde
         const uniswapDecimalsDifference = market.decimalsDifference
         const result = call.result as Result
         const marketId = market.id
-        console.log({marketId, result})
         const description = market.description
 
         let marketName: string | undefined = undefined

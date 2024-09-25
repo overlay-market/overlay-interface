@@ -128,6 +128,22 @@ const Markets = () => {
     currentMarketsError && refetch()
   }, [currentMarketsError, refetch])
 
+  const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
+    const order = [
+      'AI Index',
+      'ETH / SOL',
+      'Electric Vehicle Commodity Index',
+      'Cats vs Dogs - Meme War',
+      'Cats vs Frogs - Meme War',
+      'Frogs vs Dogs - Meme War',
+    ]
+    for (let marketOrdered of order) {
+      if (a.marketName === marketOrdered) return -1
+      if (b.marketName === marketOrdered) return 1
+    }
+    return 0
+  }
+
   const groupedMarkets = useMemo(() => {
     if (!marketsData) return {}
 
@@ -205,7 +221,7 @@ const Markets = () => {
               </MarketsStyledTableHeaderRow>
             </TableHead>
             <TableBody>
-              {filteredMarkets.map((market: ParsedMarketStateDetails, index: number) => (
+              {filteredMarkets.sort(customSort).map((market: ParsedMarketStateDetails, index: number) => (
                 <MarketsRow
                   key={market.marketAddress}
                   index={index + 1}

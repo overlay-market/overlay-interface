@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo} from 'react'
-import styled from 'styled-components/macro'
+import styled, {keyframes} from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
 import {useActiveMarketsData} from '../../state/markets/hooks'
@@ -118,6 +118,38 @@ const CategoryButton = styled.button<{active: boolean}>`
   }
 `
 
+const shimmer = keyframes`
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+`
+
+const GhostLoader = styled.button`
+  width: 80px;
+  height: 36px;
+  border-radius: 20px;
+  border: 0px;
+  background: ${props => props.theme.dark.grey3};
+  background-image: linear-gradient(
+    to right,
+    ${props => props.theme.dark.grey3} 0%,
+    ${props => props.theme.dark.grey4} 20%,
+    ${props => props.theme.dark.grey5} 40%,
+    ${props => props.theme.dark.grey3} 100%
+  );
+  background-size: 800px 104px;
+  display: inline-block;
+  position: relative;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: ${shimmer};
+  animation-timing-function: linear;
+`
+
 const Markets = () => {
   const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
@@ -170,7 +202,10 @@ const Markets = () => {
       }, {} as Record<string, ParsedMarketStateDetails[]>)
   }, [marketsData])
 
-  const categories = useMemo(() => ['All', ...Object.keys(MARKET_CATEGORIES)], [])
+  const activeCategories = useMemo(() => {
+    const categories = Object.keys(groupedMarkets).filter(category => groupedMarkets[category].length > 0)
+    return ['All', ...categories]
+  }, [groupedMarkets])
 
   const filteredMarkets = useMemo(() => {
     if (selectedCategory === 'All') {
@@ -179,17 +214,33 @@ const Markets = () => {
     return groupedMarkets[selectedCategory] || []
   }, [groupedMarkets, selectedCategory])
 
+  const isLoading = !marketsData || marketsData.length === 0
+
   return (
     <PageContainer>
       <CategorySelector>
-        {categories.map(category => (
-          <CategoryButton key={category} active={selectedCategory === category} onClick={() => setSelectedCategory(category as 'All' | CategoryName)}>
-            {category}
-            {category !== 'All' && MARKET_CATEGORIES[category as CategoryName]?.specialFlag && (
-              <SpecialFlag>{MARKET_CATEGORIES[category as CategoryName].specialFlag}</SpecialFlag>
-            )}
-          </CategoryButton>
-        ))}
+        {isLoading ? (
+          // Display ghost loaders while data is being fetched
+          <>
+            <GhostLoader />
+            <GhostLoader />
+            <GhostLoader />
+            <GhostLoader />
+          </>
+        ) : (
+          activeCategories.map(category => (
+            <CategoryButton
+              key={category}
+              active={selectedCategory === category}
+              onClick={() => setSelectedCategory(category as 'All' | CategoryName)}
+            >
+              {category}
+              {category !== 'All' && MARKET_CATEGORIES[category as CategoryName]?.specialFlag && (
+                <SpecialFlag>{MARKET_CATEGORIES[category as CategoryName].specialFlag}</SpecialFlag>
+              )}
+            </CategoryButton>
+          ))
+        )}
       </CategorySelector>
       <TableContainer component={Paper}>
         {contextChainId && WORKING_CHAINS.includes(SupportedChainId[contextChainId]) ? (

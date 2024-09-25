@@ -26,6 +26,14 @@ const CategorySelector = styled.div`
   margin-bottom: 20px;
 `
 
+const SpecialFlag = styled.span`
+  background: linear-gradient(89.2deg, #d5b4ff -1.18%, #ffa2b9 26.07%, #ff648a 47.56%, #ffcc8f 64.85%, #d5b4ff 99.44%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-left: 5px;
+  font-weight: bold;
+`
+
 export const StyledNavLink = styled(NavLink).attrs({activeClassName})`
   color: ${({theme}) => theme.dark.white};
   font-weight: 500;
@@ -177,6 +185,9 @@ const Markets = () => {
         {categories.map(category => (
           <CategoryButton key={category} active={selectedCategory === category} onClick={() => setSelectedCategory(category as 'All' | CategoryName)}>
             {category}
+            {category !== 'All' && MARKET_CATEGORIES[category as CategoryName]?.specialFlag && (
+              <SpecialFlag>{MARKET_CATEGORIES[category as CategoryName].specialFlag}</SpecialFlag>
+            )}
           </CategoryButton>
         ))}
       </CategorySelector>

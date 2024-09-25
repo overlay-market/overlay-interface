@@ -119,6 +119,7 @@ export const MarketChartMap: {[name: string]: MarketChartData} = {
 interface CategoryDetails {
   background?: string
   description?: string
+  specialFlag?: string
 }
 
 export enum CategoryName {
@@ -137,6 +138,7 @@ export const MARKET_CATEGORIES: MarketCategoryMap = {
   [CategoryName.MemeWar]: {
     background: CatsFrogsFull,
     description: 'Markets related to popular meme competitions',
+    specialFlag: '*NEW*',
   },
   [CategoryName.CounterStrikeSkins]: {
     background: CsRifleFull,

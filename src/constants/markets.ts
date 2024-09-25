@@ -116,6 +116,48 @@ export const MarketChartMap: {[name: string]: MarketChartData} = {
   },
 }
 
+interface CategoryDetails {
+  background?: string
+  description?: string
+  specialFlag?: string
+}
+
+export enum CategoryName {
+  MemeWar = 'Meme Wars',
+  CounterStrikeSkins = 'Counter-Strike',
+  OrdinalNft = 'Ordinals',
+  Crypto = 'Crypto',
+  Other = 'Other',
+}
+
+export type MarketCategoryMap = {
+  [K in CategoryName]: CategoryDetails
+}
+
+export const MARKET_CATEGORIES: MarketCategoryMap = {
+  [CategoryName.MemeWar]: {
+    background: CatsFrogsFull,
+    description: 'Markets related to popular meme competitions',
+    specialFlag: '*NEW*',
+  },
+  [CategoryName.CounterStrikeSkins]: {
+    background: CsRifleFull,
+    description: 'Markets tracking Counter-Strike game item skins',
+  },
+  [CategoryName.OrdinalNft]: {
+    // background: ,
+    description: 'Markets related to Bitcoin Ordinals and NFTs',
+  },
+  [CategoryName.Crypto]: {
+    background: BtcdFull,
+    description: 'General cryptocurrency markets',
+  },
+  [CategoryName.Other]: {
+    background: EvIndexFull,
+    description: '',
+  },
+}
+
 export type MarketDetailsData = {
   marketName: string
   logo: string
@@ -142,6 +184,7 @@ export type MarketDetailsData = {
     name?: string
     url?: string
   }
+  category?: CategoryName
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
@@ -158,6 +201,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x73973d72eef84a8624e4ec381e8e73caff570092'),
       url: 'https://sepolia.arbiscan.io/address/0x73973d72eef84a8624e4ec381e8e73caff570092',
     },
+    category: CategoryName.MemeWar,
   },
   '0xa85ad94c84f2bdc48127d93d087054a5f7e5726b': {
     marketName: 'Cats vs Dogs - Meme War',
@@ -172,6 +216,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xa85ad94c84f2bdc48127d93d087054a5f7e5726b'),
       url: 'https://bartio.beratrail.io/address/0xa85ad94c84f2bdc48127d93d087054a5f7e5726b',
     },
+    category: CategoryName.MemeWar,
   },
   '0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9': {
     marketName: 'Cats vs Frogs - Meme War',
@@ -186,6 +231,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9'),
       url: 'https://sepolia.arbiscan.io/address/0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9',
     },
+    category: CategoryName.MemeWar,
   },
   '0xf0d9f85295d7a41b51aa5bde08c199735fa15909': {
     marketName: 'Cats vs Frogs - Meme War',
@@ -200,6 +246,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xf0d9f85295d7a41b51aa5bde08c199735fa15909'),
       url: 'https://bartio.beratrail.io/address/0xf0d9f85295d7a41b51aa5bde08c199735fa15909',
     },
+    category: CategoryName.MemeWar,
   },
   '0xecd76abb33c36dd62a7d033d26f7146801e03d4f': {
     marketName: 'Frogs vs Dogs - Meme War',
@@ -214,6 +261,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xecd76abb33c36dd62a7d033d26f7146801e03d4f'),
       url: 'https://sepolia.arbiscan.io/address/0xecd76abb33c36dd62a7d033d26f7146801e03d4f',
     },
+    category: CategoryName.MemeWar,
   },
   '0x0befa5099b225ffdaadbba5911d464e12a75a773': {
     marketName: 'Frogs vs Dogs - Meme War',
@@ -228,6 +276,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x0befa5099b225ffdaadbba5911d464e12a75a773'),
       url: 'https://bartio.beratrail.io/address/0x0befa5099b225ffdaadbba5911d464e12a75a773',
     },
+    category: CategoryName.MemeWar,
   },
   '0x58cac8f5c3b398650e30f724adf57c4d21d1e900': {
     marketName: 'Cats vs Dogs - archive',
@@ -269,6 +318,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9'),
       url: 'https://sepolia.arbiscan.io/address/0x6aa41b8f2f858723aafcf388a90d34d1cb1162d9',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x49c4ad8b75e118a9b7bd1b89e7af029f3cb1c237': {
     marketName: 'Counter-Strike 2 Skins',
@@ -282,6 +332,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x49c4ad8b75e118a9b7bd1b89e7af029f3cb1c237'),
       url: 'https://bartio.beratrail.io/address/0x49c4ad8b75e118a9b7bd1b89e7af029f3cb1c237',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x745d36559834f6b016fc43d2261f0709e62344e1': {
     marketName: 'Rifles - CS2 Skins',
@@ -296,6 +347,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x745d36559834f6b016fc43d2261f0709e62344e1'),
       url: 'https://bartio.beratrail.io/address/0x745d36559834f6b016fc43d2261f0709e62344e1',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x789d85fb4f104feb1cd85c7475c02f3f8e2dff5b': {
     marketName: 'Knives - CS2 Skins',
@@ -310,6 +362,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x789d85fb4f104feb1cd85c7475c02f3f8e2dff5b'),
       url: 'https://bartio.beratrail.io/address/0x789d85fb4f104feb1cd85c7475c02f3f8e2dff5b',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x9eb938c3739bbf2b54a80add213f66fe4cd694dc': {
     marketName: 'Knives vs Rifles - CS2 Skins',
@@ -324,6 +377,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x9eb938c3739bbf2b54a80add213f66fe4cd694dc'),
       url: 'https://bartio.beratrail.io/address/0x9eb938c3739bbf2b54a80add213f66fe4cd694dc',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0xe35a856f1d98f101c5c60db8d02ba4dff87986b3': {
     marketName: 'Rifles - CS2 Skins',
@@ -338,6 +392,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xe35a856f1d98f101c5c60db8d02ba4dff87986b3'),
       url: 'https://sepolia.arbiscan.io/address/0xe35a856f1d98f101c5c60db8d02ba4dff87986b3',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x6dfe4094599c74a920285a17608ae023d707eed9': {
     marketName: 'Knives - CS2 Skins',
@@ -352,6 +407,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x6dfe4094599c74a920285a17608ae023d707eed9'),
       url: 'https://sepolia.arbiscan.io/address/0x6dfe4094599c74a920285a17608ae023d707eed9',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x2011d14b00f49cc461958be682bc1443c7fd5d87': {
     marketName: 'Knives vs Rifles - CS2 Skins',
@@ -366,12 +422,14 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x2011d14b00f49cc461958be682bc1443c7fd5d87'),
       url: 'https://sepolia.arbiscan.io/address/0x2011d14b00f49cc461958be682bc1443c7fd5d87',
     },
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x6bd76270a8e8e0c3c030f050134389777a3a7d7e': {
     marketName: 'Counter-Strike 2 Skins',
     logo: csgoLogo,
     currency: PRICE_CURRENCY_FROM_QUOTE['USD'],
     proposedBy: {},
+    category: CategoryName.CounterStrikeSkins,
   },
   '0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b': {
     marketName: 'Crypto Volatility Index',
@@ -404,12 +462,14 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
     descriptionText:
       'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
+    category: CategoryName.Crypto,
   },
   '0x56ff2e923e5c05479ac4c47a3d5ed9a204cc673b': {
     marketName: 'BTC Dominance',
     logo: BtcdLogo,
     currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
     proposedBy: {},
+    category: CategoryName.Crypto,
   },
   '0xb31d222c23104cbc2c04df77941f1f2c478133dd': {
     marketName: 'BAYC / WETH',
@@ -503,6 +563,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
     descriptionText:
       'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
+    category: CategoryName.Crypto,
   },
   '0x09e8641df1e963d0bb1267e51579fc2b4e3e60cd': {
     marketName: 'ETH Dominance',
@@ -518,6 +579,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
     descriptionText:
       'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
+    category: CategoryName.Crypto,
   },
   '0xc7f3240d983fcab7a571be484d2b4da43b95efee': {
     marketName: 'Bitcoin Frogs',
@@ -531,6 +593,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xc7f3240d983fcab7a571be484d2b4da43b95efee'),
       url: 'https://sepolia.arbiscan.io/address/0xc7f3240d983fcab7a571be484d2b4da43b95efee',
     },
+    category: CategoryName.OrdinalNft,
   },
   '0x3178aa08845c986cc62d8aaaac0ec1fb381d01b3': {
     marketName: 'Bitcoin Frogs',
@@ -544,6 +607,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x3178aa08845c986cc62d8aaaac0ec1fb381d01b3'),
       url: 'https://bartio.beratrail.io/address/0x3178aa08845c986cc62d8aaaac0ec1fb381d01b3',
     },
+    category: CategoryName.OrdinalNft,
   },
   '0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae': {
     marketName: 'NodeMonkes',
@@ -557,6 +621,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae'),
       url: 'https://sepolia.arbiscan.io/address/0xef898dbf4f4d75bdfbdd85f781a6c1bf8edaf0ae',
     },
+    category: CategoryName.OrdinalNft,
   },
   '0xb021eb4489c230234567ca6789e53403310db090': {
     marketName: 'BTC Dominance',
@@ -578,6 +643,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
     descriptionText:
       'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
+    category: CategoryName.Crypto,
   },
   '0xeab2fbdc9d43e785eb4065c8447d872735729aac': {
     marketName: 'ETH Dominance',
@@ -591,6 +657,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
     sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    category: CategoryName.Crypto,
     descriptionText:
       'TL:DR -- The share of ETH out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Ethereum is divided by the market capitalization of the entire crypto market. The result is the Ethereum Dominance value.',
   },
@@ -606,6 +673,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x3d47247220d89ad623767de2045dc5e0c5920610'),
       url: 'https://bartio.beratrail.io/address/0x3d47247220d89ad623767de2045dc5e0c5920610',
     },
+    category: CategoryName.OrdinalNft,
   },
   '0xd9b217fa8a9e8ef1c8558128029564e9a50f284d': {
     marketName: 'BTC Dominance',
@@ -625,6 +693,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     },
     sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
+    category: CategoryName.Crypto,
     descriptionText:
       'TL:DR -- The share of BTC out of the entire crypto market. \n\nThe source of data is the API provided by Chainlink, Coinmarketcap, Cryptocompare, and others.\n\nThe market capitalization of Bitcoin is divided by the market capitalization of the entire crypto market. The result is the Bitcoin Dominance value.',
   },
@@ -640,6 +709,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x4edfb4057f3a448b2704df1a3665db4ae6371b69'),
       url: 'https://sepolia.arbiscan.io/address/0x4edfb4057f3a448b2704df1a3665db4ae6371b69',
     },
+    category: CategoryName.OrdinalNft,
   },
   '0xb2599445aeb2fa97d5d8d02e70ffb938f3d803ee': {
     marketName: 'Quantum Cats',
@@ -653,6 +723,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xb2599445aeb2fa97d5d8d02e70ffb938f3d803ee'),
       url: 'https://bartio.beratrail.io/address/0xb2599445aeb2fa97d5d8d02e70ffb938f3d803ee',
     },
+    category: CategoryName.OrdinalNft,
   },
   '0xe060ea13b2e710cefc5124bb790db4823b0f602a': {
     marketName: 'Ink',
@@ -666,6 +737,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0xe060ea13b2e710cefc5124bb790db4823b0f602a'),
       url: 'https://sepolia.arbiscan.io/address/0xe060ea13b2e710cefc5124bb790db4823b0f602a',
     },
+    category: CategoryName.OrdinalNft,
   },
   '0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d': {
     marketName: 'Ink',
@@ -679,6 +751,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d'),
       url: 'https://bartio.beratrail.io/address/0x67d54a54d07600ea7ac68a3d5c8b5f5c28510f7d',
     },
+    category: CategoryName.OrdinalNft,
   },
   // '0x8340f2cd37dd22c9c8b2b8e2e77c5e8c27d99fe6': {
   //   marketName: 'Flippening',
@@ -728,6 +801,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://sepolia.arbiscan.io/address/0xad90fff9d159e18cec2048dd6881e29886e4899e',
     },
     fullLogo: AIIndexFull,
+    category: CategoryName.Crypto,
   },
   '0x1c66ae94c7dd18935f1e723d6395dac27905ab0c': {
     marketName: 'AI Index',
@@ -743,6 +817,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       url: 'https://bartio.beratrail.io/address/0x1c66ae94c7dd18935f1e723d6395dac27905ab0c',
     },
     fullLogo: AIIndexFull,
+    category: CategoryName.Crypto,
   },
   '0x3966f792517e2df998c48301163c2a95bfd3eff8': {
     marketName: 'ETH / SOL',
@@ -756,6 +831,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x3966f792517e2df998c48301163c2a95bfd3eff8'),
       url: 'https://sepolia.arbiscan.io/address/0x3966f792517e2df998c48301163c2a95bfd3eff8',
     },
+    category: CategoryName.Crypto,
   },
   '0x9d32d77c2213a5ff7b6e52669d32752cc092ff40': {
     marketName: 'ETH / SOL',
@@ -769,6 +845,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
       name: shortenAddress('0x9d32d77c2213a5ff7b6e52669d32752cc092ff40'),
       url: 'https://bartio.beratrail.io/address/0x9d32d77c2213a5ff7b6e52669d32752cc092ff40',
     },
+    category: CategoryName.Crypto,
   },
 }
 

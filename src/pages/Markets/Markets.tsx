@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react'
-import styled from 'styled-components/macro'
+import React, {useState, useEffect, useMemo} from 'react'
+import styled, {keyframes} from 'styled-components/macro'
 import {NavLink} from 'react-router-dom'
 import {TableBody, TableContainer, TableHead, Paper} from '@material-ui/core'
 import {useActiveMarketsData} from '../../state/markets/hooks'
@@ -11,14 +11,28 @@ import {useMarketDetails, AdditionalMarketData} from '../../hooks/useMarketDetai
 import {useCurrentMarketState, MarketStateResults, ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
 import {TEXT} from '../../theme/theme'
 import MarketsRow from './MarketsRow'
-import ComingSoonMarketsRow from './ComingSoonMarketsRow'
 import ReactTooltip from 'react-tooltip'
-import {MarketChartMap, MarketDetails, ComingSoonMarkets} from '../../constants/markets'
+import {MarketChartMap, MarketDetails, CategoryName, MARKET_CATEGORIES} from '../../constants/markets'
 import ChangeNetworkModal from '../../components/ConnectWalletModal/ChangeNetworkModal'
 import {SupportedChainId, WORKING_CHAINS} from '../../constants/chains'
 import {useMultichainContext} from '../../state/multichain/useMultichainContext'
 
 const activeClassName = 'INACTIVE'
+
+const CategorySelector = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+`
+
+const SpecialFlag = styled.span`
+  background: linear-gradient(89.2deg, #d5b4ff -1.18%, #ffa2b9 26.07%, #ff648a 47.56%, #ffcc8f 64.85%, #d5b4ff 99.44%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-left: 5px;
+  font-weight: bold;
+`
 
 export const StyledNavLink = styled(NavLink).attrs({activeClassName})`
   color: ${({theme}) => theme.dark.white};
@@ -89,11 +103,59 @@ const infoTipDescriptions = {
   ),
 }
 
+const CategoryButton = styled.button<{active: boolean}>`
+  background-color: ${props => (props.active ? 'transparent' : props.theme.dark.grey3)};
+  color: ${props => (props.active ? props.theme.dark.blue2 : props.theme.dark.white)};
+  border: ${props => (props.active ? '1px solid' : '0px')} ${props => props.theme.dark.blue2};
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: ${props => props.theme.dark.blue2};
+    color: ${props => props.theme.dark.black};
+  }
+`
+
+const shimmer = keyframes`
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+`
+
+const GhostLoader = styled.button`
+  width: 80px;
+  height: 36px;
+  border-radius: 20px;
+  border: 0px;
+  background: ${props => props.theme.dark.grey3};
+  background-image: linear-gradient(
+    to right,
+    ${props => props.theme.dark.grey3} 0%,
+    ${props => props.theme.dark.grey4} 20%,
+    ${props => props.theme.dark.grey5} 40%,
+    ${props => props.theme.dark.grey3} 100%
+  );
+  background-size: 800px 104px;
+  display: inline-block;
+  position: relative;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: ${shimmer};
+  animation-timing-function: linear;
+`
+
 const Markets = () => {
   const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData, error: currentMarketsError}: MarketStateResults = useCurrentMarketState(marketDetails)
   const {chainId: contextChainId} = useMultichainContext()
+  const [selectedCategory, setSelectedCategory] = useState<'All' | CategoryName>('All')
 
   // toggle to hide 7d chart if data unavailable
   const hide7dChart = true
@@ -105,12 +167,6 @@ const Markets = () => {
   useEffect(() => {
     currentMarketsError && refetch()
   }, [currentMarketsError, refetch])
-
-  // useEffect(() => {
-  //   marketsData.length !== markets?.length && refetch()
-  // }, [marketsData, markets, refetch])
-
-  // list of hidden markets from Markets page
 
   const customSort = (a: ParsedMarketStateDetails, b: ParsedMarketStateDetails): number => {
     const order = [
@@ -128,12 +184,64 @@ const Markets = () => {
     return 0
   }
 
-  const marketsAmount: number = marketsData?.filter(
-    market => Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) && !MarketDetails[market.marketAddress.toLowerCase()].disabled,
-  ).length
+  const groupedMarkets = useMemo(() => {
+    if (!marketsData) return {}
+
+    return marketsData
+      .filter(
+        market =>
+          Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) && !MarketDetails[market.marketAddress.toLowerCase()].disabled,
+      )
+      .reduce((acc, market) => {
+        const category = MarketDetails[market.marketAddress.toLowerCase()].category || CategoryName.Other
+        if (!acc[category]) {
+          acc[category] = []
+        }
+        acc[category].push(market)
+        return acc
+      }, {} as Record<string, ParsedMarketStateDetails[]>)
+  }, [marketsData])
+
+  const activeCategories = useMemo(() => {
+    const categories = Object.keys(groupedMarkets).filter(category => groupedMarkets[category].length > 0)
+    return ['All', ...categories]
+  }, [groupedMarkets])
+
+  const filteredMarkets = useMemo(() => {
+    if (selectedCategory === 'All') {
+      return Object.values(groupedMarkets).flat()
+    }
+    return groupedMarkets[selectedCategory] || []
+  }, [groupedMarkets, selectedCategory])
+
+  const isLoading = !marketsData || marketsData.length === 0
 
   return (
     <PageContainer>
+      <CategorySelector>
+        {isLoading ? (
+          // Display ghost loaders while data is being fetched
+          <>
+            <GhostLoader />
+            <GhostLoader />
+            <GhostLoader />
+            <GhostLoader />
+          </>
+        ) : (
+          activeCategories.map(category => (
+            <CategoryButton
+              key={category}
+              active={selectedCategory === category}
+              onClick={() => setSelectedCategory(category as 'All' | CategoryName)}
+            >
+              {category}
+              {category !== 'All' && MARKET_CATEGORIES[category as CategoryName]?.specialFlag && (
+                <SpecialFlag>{MARKET_CATEGORIES[category as CategoryName].specialFlag}</SpecialFlag>
+              )}
+            </CategoryButton>
+          ))
+        )}
+      </CategorySelector>
       <TableContainer component={Paper}>
         {contextChainId && WORKING_CHAINS.includes(SupportedChainId[contextChainId]) ? (
           <StyledTable smwidth="100%">
@@ -148,11 +256,6 @@ const Markets = () => {
                 <StyledHeaderCell>
                   <TEXT.Supplemental id="marketPrice">Price</TEXT.Supplemental>
                 </StyledHeaderCell>
-                {/* <StyledHeaderCell>
-                  
-                    <TEXT.Supplemental>7d</TEXT.Supplemental>
-                  
-                </StyledHeaderCell> */}
                 <StyledHeaderCell id="marketFundingRate">
                   <TEXT.SupplementalUnderlinedDashes data-for={'funding info'} data-tip={'funding info'}>
                     Funding
@@ -180,50 +283,25 @@ const Markets = () => {
               </MarketsStyledTableHeaderRow>
             </TableHead>
             <TableBody>
-              {marketsData.length > 0 &&
-                marketsData
-                  ?.filter(
-                    market =>
-                      Object.keys(MarketDetails).includes(market.marketAddress.toLowerCase()) &&
-                      !MarketDetails[market.marketAddress.toLowerCase()].disabled,
-                  )
-                  .sort(customSort)
-                  .map((market: ParsedMarketStateDetails, index: number) => {
-                    return (
-                      <MarketsRow
-                        key={market.marketAddress}
-                        index={index + 1} //start count at 1
-                        marketId={market.marketAddress}
-                        marketName={market.marketName}
-                        midPrice={market.parsedMid}
-                        oiLong={market.parsedOiLong}
-                        oiShort={market.parsedOiShort}
-                        capOi={market.parsedCapOi}
-                        dailyFundingRate={market.parsedDailyFundingRate}
-                        annualFundingRate={market.parsedAnnualFundingRate}
-                        oracleLogo={MarketDetails[market.marketAddress.toLowerCase()].oracleLogo ?? market.oracleLogo}
-                        marketLogo={market.marketLogo}
-                        priceCurrency={market.priceCurrency}
-                        marketChartData={MarketChartMap[market.marketName ?? '']}
-                        hide7dChart={hide7dChart}
-                      />
-                    )
-                  })}
-              {ComingSoonMarkets &&
-                marketsData.length > 0 &&
-                Object.keys(ComingSoonMarkets)
-                  .filter(address => !ComingSoonMarkets[address].disabled)
-                  .map((address: string, index: number) => {
-                    return (
-                      <ComingSoonMarketsRow
-                        key={address}
-                        index={marketsAmount + index + 1} //start count at (marketsAmount + 1)
-                        marketId={address}
-                        marketName={ComingSoonMarkets[address].marketName}
-                        marketLogo={ComingSoonMarkets[address].logo}
-                      />
-                    )
-                  })}
+              {filteredMarkets.sort(customSort).map((market: ParsedMarketStateDetails, index: number) => (
+                <MarketsRow
+                  key={market.marketAddress}
+                  index={index + 1}
+                  marketId={market.marketAddress}
+                  marketName={market.marketName}
+                  midPrice={market.parsedMid}
+                  oiLong={market.parsedOiLong}
+                  oiShort={market.parsedOiShort}
+                  capOi={market.parsedCapOi}
+                  dailyFundingRate={market.parsedDailyFundingRate}
+                  annualFundingRate={market.parsedAnnualFundingRate}
+                  oracleLogo={MarketDetails[market.marketAddress.toLowerCase()].oracleLogo ?? market.oracleLogo}
+                  marketLogo={market.marketLogo}
+                  priceCurrency={market.priceCurrency}
+                  marketChartData={MarketChartMap[market.marketName ?? '']}
+                  hide7dChart={hide7dChart}
+                />
+              ))}
             </TableBody>
           </StyledTable>
         ) : (

@@ -123,9 +123,9 @@ interface CategoryDetails {
 }
 
 export enum CategoryName {
-  MemeWar = 'Meme War',
-  CounterStrikeSkins = 'Counter Strike Skins',
-  OrdinalNft = 'Ordinal Nft',
+  MemeWar = 'Meme Wars',
+  CounterStrikeSkins = 'Counter-Strike',
+  OrdinalNft = 'Ordinals',
   Crypto = 'Crypto',
   Other = 'Other',
 }

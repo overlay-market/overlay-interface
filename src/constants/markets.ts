@@ -196,7 +196,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
     descriptionText:
-      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/Dogs Index.',
+      'TL;DR –This market represents the ratio between the market cap of the top 10 cat tokens vs the market cap of the top 10 dog tokens in crypto. The source of data is the API provided by Coinmarketcap and Coingecko, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/Dogs Index.',
     contract: {
       name: shortenAddress('0x73973d72eef84a8624e4ec381e8e73caff570092'),
       url: 'https://sepolia.arbiscan.io/address/0x73973d72eef84a8624e4ec381e8e73caff570092',
@@ -211,7 +211,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Coinmarketcap'}, {name: 'CoinGecko'}],
     descriptionText:
-      'TL;DR –This market  represents  the ratio between the market cap of the top 10 Cats tokens vs the market cap of the top 10 Dogs tokens on crypto. The source of data is the API provided by Coinmarketcap and Coingeco, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/Dogs Index.',
+      'TL;DR –This market represents the ratio between the market cap of the top 10 cat tokens vs the market cap of the top 10 dog tokens in crypto. The source of data is the API provided by Coinmarketcap and Coingecko, supplemented by safety mechanisms.\n\nThe following projects are cap-weighted in the Cats index:\nPOPCAT, MOG, MEW, MICHI, TOSHI, WEN, MANEKI, CWIF, CAT, DUKO\n\nThe following projects are cap-weighted in the Dogs index:\nDOGE, SHIB, WIF, BONK, FLOKI, DOGS, DOG, OSAK, CORGIAI, NEIRO\n\nand the market represents the ratio between Cats Index/Dogs Index.',
     contract: {
       name: shortenAddress('0xa85ad94c84f2bdc48127d93d087054a5f7e5726b'),
       url: 'https://bartio.beratrail.io/address/0xa85ad94c84f2bdc48127d93d087054a5f7e5726b',

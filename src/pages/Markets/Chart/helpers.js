@@ -18,6 +18,7 @@ export function isSepolia(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0x73973d72eef84a8624e4ec381e8e73caff570092' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x8bfb2494f3a9b1441185cf04bb10e92e6b4fd9b9' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xecd76abb33c36dd62a7d033d26f7146801e03d4f' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x31d1e411db1a11a5741ff55d5c01c0c4cf4ac891' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x3966f792517e2df998c48301163c2a95bfd3eff8'
   )
 }
@@ -25,6 +26,7 @@ export function isSepolia(symbolInfo) {
 export function isImola(symbolInfo) {
   return (
     String(symbolInfo?.marketAddress).toLowerCase() === '0xb021eb4489c230234567ca6789e53403310db090' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x13b35923944df7e27082fcef640442386487bdda' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xeab2fbdc9d43e785eb4065c8447d872735729aac'
   )
 }
@@ -46,6 +48,7 @@ export function isBartio(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0xa85ad94c84f2bdc48127d93d087054a5f7e5726b' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xf0d9f85295d7a41b51aa5bde08c199735fa15909' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x0befa5099b225ffdaadbba5911d464e12a75a773' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xd27803e696f818038c19f10ca8fc509ec07ba04c' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x9d32d77c2213a5ff7b6e52669d32752cc092ff40'
   )
 }

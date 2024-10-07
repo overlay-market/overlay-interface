@@ -43,6 +43,8 @@ import CatsFrogsLogo from '../assets/images/tokens/cat-vs-frog-logo.png'
 import CatsFrogsFull from '../assets/images/tokens/cat-vs-frog-full.png'
 import DogsFrogsLogo from '../assets/images/tokens/dog-vs-frog-logo.png'
 import DogsFrogsFull from '../assets/images/tokens/dog-vs-frog-full.png'
+import RealEstateLogo from '../assets/images/tokens/Real Estate Dominance logo.png'
+import RealEstateFull from '../assets/images/tokens/Real Estate Dominance.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -188,6 +190,51 @@ export type MarketDetailsData = {
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
+  '0x31d1e411db1a11a5741ff55d5c01c0c4cf4ac891': {
+    marketName: 'Real Estate Dominance',
+    logo: RealEstateLogo,
+    fullLogo: RealEstateFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    sources: [{name: 'CoinMarketCap'}, {name: 'CoinGecko'}, {name: 'CryptoCompare'}, {name: 'MEXC'}, {name: 'Dexscreener'}],
+    descriptionText:
+      'TL;DR – This market represents the ratio between the Real Estate Index and the RWA (Real-World Assets) Index, both composed of cap-weighted tokens. \n\nThe data sources include CoinMarketCap, CoinGecko, CryptoCompare, MEXC, Dexscreener, supplemented by others. \n\nThe Real Estate Index consists of the following tokens: \nPRO, TOKEN, HIFI, PROPC, PRCL, BST, UBXS, EL, and RIO \n\nThe RWA Index consists of the following tokens: \nLINK, ONDO, MKR, SNX, OM, XDC, POLYX, PENDLE, and CFG. \n\nThe dominance market represents the ratio between the Real Estate Index and the RWA Index.',
+    contract: {
+      name: shortenAddress('0x31d1e411db1a11a5741ff55d5c01c0c4cf4ac891'),
+      url: 'https://sepolia.arbiscan.io/address/0x31d1e411db1a11a5741ff55d5c01c0c4cf4ac891',
+    },
+    category: CategoryName.Crypto,
+  },
+  '0xd27803e696f818038c19f10ca8fc509ec07ba04c': {
+    marketName: 'Real Estate Dominance',
+    logo: RealEstateLogo,
+    fullLogo: RealEstateFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    sources: [{name: 'CoinMarketCap'}, {name: 'CoinGecko'}, {name: 'CryptoCompare'}, {name: 'MEXC'}, {name: 'Dexscreener'}],
+    descriptionText:
+      'TL;DR – This market represents the ratio between the Real Estate Index and the RWA (Real-World Assets) Index, both composed of cap-weighted tokens. \n\nThe data sources include CoinMarketCap, CoinGecko, CryptoCompare, MEXC, Dexscreener, supplemented by others. \n\nThe Real Estate Index consists of the following tokens: \nPRO, TOKEN, HIFI, PROPC, PRCL, BST, UBXS, EL, and RIO \n\nThe RWA Index consists of the following tokens: \nLINK, ONDO, MKR, SNX, OM, XDC, POLYX, PENDLE, and CFG. \n\nThe dominance market represents the ratio between the Real Estate Index and the RWA Index.',
+    contract: {
+      name: shortenAddress('0xd27803e696f818038c19f10ca8fc509ec07ba04c'),
+      url: 'https://bartio.beratrail.io/address/0xd27803e696f818038c19f10ca8fc509ec07ba04c',
+    },
+    category: CategoryName.Crypto,
+  },
+  '0x13b35923944df7e27082fcef640442386487bdda': {
+    marketName: 'Real Estate Dominance',
+    logo: RealEstateLogo,
+    fullLogo: RealEstateFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['PERCENTAGE'],
+    sources: [{name: 'CoinMarketCap'}, {name: 'CoinGecko'}, {name: 'CryptoCompare'}, {name: 'MEXC'}, {name: 'Dexscreener'}],
+    descriptionText:
+      'TL;DR – This market represents the ratio between the Real Estate Index and the RWA (Real-World Assets) Index, both composed of cap-weighted tokens. \n\nThe data sources include CoinMarketCap, CoinGecko, CryptoCompare, MEXC, Dexscreener, supplemented by others. \n\nThe Real Estate Index consists of the following tokens: \nPRO, TOKEN, HIFI, PROPC, PRCL, BST, UBXS, EL, and RIO \n\nThe RWA Index consists of the following tokens: \nLINK, ONDO, MKR, SNX, OM, XDC, POLYX, PENDLE, and CFG. \n\nThe dominance market represents the ratio between the Real Estate Index and the RWA Index.',
+    contract: {
+      name: shortenAddress('0x13b35923944df7e27082fcef640442386487bdda'),
+      url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0x13b35923944df7e27082fcef640442386487bdda',
+    },
+    category: CategoryName.Crypto,
+  },
   '0x73973d72eef84a8624e4ec381e8e73caff570092': {
     marketName: 'Cats vs Dogs - Meme War',
     logo: CatsDogsLogo,
@@ -637,7 +684,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     // },
     contract: {
       name: shortenAddress('0xb021eb4489c230234567ca6789e53403310db090'),
-      url: 'https://explorer.testnet.imola.movementlabs.xyz/#/account/0x000000000000000000000000b021eb4489c230234567ca6789e53403310db090',
+      url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0x000000000000000000000000b021eb4489c230234567ca6789e53403310db090',
     },
     sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},
@@ -653,7 +700,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     disabled: false,
     contract: {
       name: shortenAddress('0xeab2fbdc9d43e785eb4065c8447d872735729aac'),
-      url: 'https://explorer.testnet.imola.movementlabs.xyz/#/account/0x000000000000000000000000eab2fbdc9d43e785eb4065c8447d872735729aac',
+      url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0x000000000000000000000000eab2fbdc9d43e785eb4065c8447d872735729aac',
     },
     sources: [{name: 'Chainlink'}, {name: 'Coinmarketcap'}, {name: 'Cryptocompare'}, {name: 'More...'}],
     // additionalInfo: {name: 'docs.overlay.market', url: 'https://docs.overlay.market/'},

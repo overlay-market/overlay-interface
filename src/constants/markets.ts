@@ -45,6 +45,8 @@ import DogsFrogsLogo from '../assets/images/tokens/dog-vs-frog-logo.png'
 import DogsFrogsFull from '../assets/images/tokens/dog-vs-frog-full.png'
 import RealEstateLogo from '../assets/images/tokens/Real Estate Dominance logo.png'
 import RealEstateFull from '../assets/images/tokens/Real Estate Dominance.png'
+import SuperEthLogo from '../assets/images/tokens/Superfarm-ETH logo.png'
+import SuperEthFull from '../assets/images/tokens/Superfarm-Eth.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -190,6 +192,75 @@ export type MarketDetailsData = {
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
+  '0xfd3362feb6a1fd9c7fdd4e314ecdaac1e54360c6': {
+    marketName: 'SUPER / ETH',
+    logo: SuperEthLogo,
+    fullLogo: SuperEthFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    sources: [
+      {name: 'CoinMarketCap'},
+      {name: 'CoinGecko'},
+      {name: 'CryptoCompare'},
+      {name: 'MEXC'},
+      {name: 'Dexscreener'},
+      {name: 'Kucoin'},
+      {name: 'Gate'},
+    ],
+    descriptionText:
+      'TL;DR – This market represents the ratio between SUPER and ETH, tracking the performance of SuperFarm (SuperVerse) against Ethereum (ETH).\n\nThe data sources include CoinMarketCap, CoinGecko, CryptoCompare,Kucoin, Gate, MEXC, and Dexscreener.\n\nSuperFarm (SUPER) is a comprehensive ecosystem that combines two core verticals, (video games and NFT’S marketplace), while Ethereum (ETH) is a decentralized platform that enables smart contracts and decentralized applications.\n\nThe market represents the performance comparison between SUPER and ETH.',
+    contract: {
+      name: shortenAddress('0xfd3362feb6a1fd9c7fdd4e314ecdaac1e54360c6'),
+      url: 'https://sepolia.arbiscan.io/address/0xfd3362feb6a1fd9c7fdd4e314ecdaac1e54360c6',
+    },
+    category: CategoryName.Crypto,
+  },
+  '0x7883c07f0b6d8004e2c8348ab5df2113423a5629': {
+    marketName: 'SUPER / ETH',
+    logo: SuperEthLogo,
+    fullLogo: SuperEthFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    sources: [
+      {name: 'CoinMarketCap'},
+      {name: 'CoinGecko'},
+      {name: 'CryptoCompare'},
+      {name: 'MEXC'},
+      {name: 'Dexscreener'},
+      {name: 'Kucoin'},
+      {name: 'Gate'},
+    ],
+    descriptionText:
+      'TL;DR – This market represents the ratio between SUPER and ETH, tracking the performance of SuperFarm (SuperVerse) against Ethereum (ETH).\n\nThe data sources include CoinMarketCap, CoinGecko, CryptoCompare,Kucoin, Gate, MEXC, and Dexscreener.\n\nSuperFarm (SUPER) is a comprehensive ecosystem that combines two core verticals, (video games and NFT’S marketplace), while Ethereum (ETH) is a decentralized platform that enables smart contracts and decentralized applications.\n\nThe market represents the performance comparison between SUPER and ETH.',
+    contract: {
+      name: shortenAddress('0x7883c07f0b6d8004e2c8348ab5df2113423a5629'),
+      url: 'https://bartio.beratrail.io/address/0x7883c07f0b6d8004e2c8348ab5df2113423a5629',
+    },
+    category: CategoryName.Crypto,
+  },
+  '0x32abe0b73564e1f0b8981474d65dcb72ca1e4865': {
+    marketName: 'SUPER / ETH',
+    logo: SuperEthLogo,
+    fullLogo: SuperEthFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: PRICE_CURRENCY_FROM_QUOTE['ETH'],
+    sources: [
+      {name: 'CoinMarketCap'},
+      {name: 'CoinGecko'},
+      {name: 'CryptoCompare'},
+      {name: 'MEXC'},
+      {name: 'Dexscreener'},
+      {name: 'Kucoin'},
+      {name: 'Gate'},
+    ],
+    descriptionText:
+      'TL;DR – This market represents the ratio between SUPER and ETH, tracking the performance of SuperFarm (SuperVerse) against Ethereum (ETH).\n\nThe data sources include CoinMarketCap, CoinGecko, CryptoCompare,Kucoin, Gate, MEXC, and Dexscreener.\n\nSuperFarm (SUPER) is a comprehensive ecosystem that combines two core verticals, (video games and NFT’S marketplace), while Ethereum (ETH) is a decentralized platform that enables smart contracts and decentralized applications.\n\nThe market represents the performance comparison between SUPER and ETH.',
+    contract: {
+      name: shortenAddress('0x32abe0b73564e1f0b8981474d65dcb72ca1e4865'),
+      url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0x32abe0b73564e1f0b8981474d65dcb72ca1e4865',
+    },
+    category: CategoryName.Crypto,
+  },
   '0x31d1e411db1a11a5741ff55d5c01c0c4cf4ac891': {
     marketName: 'Real Estate Dominance',
     logo: RealEstateLogo,

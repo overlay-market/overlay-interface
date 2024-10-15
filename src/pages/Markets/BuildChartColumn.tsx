@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
 import {TEXT, colors} from '../../theme/theme'
 import {ProgressBar} from '../../components/ProgressBar/ProgressBar'
-import {toScientificNumber} from '../../utils/toScientificNumber'
-import {useTotalMarketsData} from '../../state/markets/hooks'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
+import {useActiveMarketsData} from '../../state/markets/hooks'
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetails'
 import Loader from '../../components/Loaders/Loaders'
@@ -67,15 +67,19 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
   const [total, setTotal] = React.useState<number>(0)
 
   const {chainId} = useActiveWeb3React()
-  const {markets, isUninitialized, refetch} = useTotalMarketsData()
+  const {markets, isUninitialized, refetch} = useActiveMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
-  const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
+  const {markets: marketsData, error: currentMarketsError}: MarketStateResults = useCurrentMarketState(marketDetails)
 
   const marketDataDetails = React.useMemo(() => marketsData.find(market => market.id === marketData?.marketId), [marketsData, marketData])
 
   React.useEffect(() => {
     !isUninitialized && refetch()
   }, [chainId, isUninitialized, refetch])
+
+  React.useEffect(() => {
+    currentMarketsError && refetch()
+  }, [currentMarketsError, refetch])
 
   React.useEffect(() => {
     if (marketDataDetails?.parsedOiLong !== undefined) setLong(Number(marketDataDetails?.parsedOiLong))
@@ -107,7 +111,9 @@ export const BuildChartColumn = ({children, marketData, isLoading}: BuildChartPr
         ) : (
           <>
             <MarketPriceContainer>
-              <TEXT.BoldNumber>{`${marketData?.priceCurrency}${toScientificNumber(marketData?.headerPrice)}`}</TEXT.BoldNumber>
+              <TEXT.BoldNumber>{`${marketData?.priceCurrency}${
+                marketData?.priceCurrency === '%' ? toPercentUnit(marketData?.headerPrice) : toScientificNumber(marketData?.headerPrice)
+              }`}</TEXT.BoldNumber>
               {/* <TEXT.SmallBody color={colors(false).dark.green}>+0.29%</TEXT.SmallBody>
               <TEXT.SmallBody>24h</TEXT.SmallBody> */}
             </MarketPriceContainer>

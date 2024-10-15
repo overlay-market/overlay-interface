@@ -1,4 +1,3 @@
-import {Result} from './../state/multicall/hooks'
 import {useMemo} from 'react'
 import {BigNumber} from 'ethers'
 import {useV1PeripheryContract} from './useContract'
@@ -9,8 +8,9 @@ import {formatBigNumber} from '../utils/formatBigNumber'
 import {formatFundingRateToAnnual, formatFundingRateToDaily} from '../utils/formatWei'
 import {MarketDetails} from '../constants/markets'
 import {getCharactersBeforeSlash, getCharactersAfterSlash} from '../utils/getCharactersBeforeSlash'
+import {Result} from '@ethersproject/abi'
 
-export interface MarketStateDetails {
+export interface MarketStateDetails extends AdditionalMarketData {
   id: string
   marketAddress: string
   bid: BigNumber
@@ -45,18 +45,17 @@ export interface ParsedMarketStateDetails extends MarketStateDetails {
 export interface MarketStateResults {
   loading: boolean
   error: boolean
-  markets: ParsedMarketStateDetails[] | []
+  markets: ParsedMarketStateDetails[]
 }
 
-export function useCurrentMarketState(marketsData: AdditionalMarketData[] | undefined, sigFigs: number = 18) {
+export function useCurrentMarketState(marketsData: AdditionalMarketData[] | undefined, sigFigs: number = 18): MarketStateResults {
   const peripheryContract = useV1PeripheryContract()
   const inputs = useMemo(() => (marketsData ? marketsData.map(market => [market.id]) : []), [marketsData])
   const results = useSingleContractMultipleData(peripheryContract, 'marketState', inputs)
   const loading = useMemo(() => results.some(({loading}) => loading), [results])
-  const error = useMemo(() => results.some(({error}) => error), [results])
 
   const markets = useMemo(() => {
-    if (!loading && !error && marketsData) {
+    if (!loading && marketsData) {
       return results.map((call, index) => {
         const market = marketsData[index]
         const decimals = market.decimals
@@ -79,34 +78,64 @@ export function useCurrentMarketState(marketsData: AdditionalMarketData[] | unde
         let marketLogo: string | undefined = undefined
         let priceCurrency: string | undefined = undefined
 
-        if ((decimals && market.type === FeedType.CHAINLINK) || market.type === FeedType.NFTPERP) {
-          marketName = MarketDetails[marketId]?.marketName ?? 'Parsing error'
-          parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, 5)
-          parsedAsk = decimals && formatBigNumber(result.state_.ask, decimals, 5)
-          parsedMid = decimals && formatBigNumber(result.state_.mid, decimals, 5)
-          parsedOiLong = decimals && formatBigNumber(result.state_.oiLong, decimals, sigFigs)
-          parsedOiShort = decimals && formatBigNumber(result.state_.oiShort, decimals, sigFigs)
-          parsedCapOi = decimals && formatBigNumber(result.state_.capOi, decimals, sigFigs)
-          parsedDailyFundingRate = decimals && formatFundingRateToDaily(result.state_.fundingRate, 18, 2)
-          parsedAnnualFundingRate = decimals && formatFundingRateToAnnual(result.state_.fundingRate, 18, 2)
-          marketBaseToken = marketName ? getCharactersBeforeSlash(marketName) : ''
-          marketQuoteToken = marketName ? getCharactersAfterSlash(marketName) : ''
-          marketLogo = MarketDetails[marketId]?.logo
-          priceCurrency = MarketDetails[marketId]?.currency ?? ''
-        } else if (decimals && uniswapDecimalsDifference && market.type === FeedType.UNISWAP) {
-          marketName = description
-          parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, sigFigs)
-          parsedAsk = decimals && formatBigNumber(result.state_.ask, decimals, sigFigs)
-          parsedMid = decimals && formatBigNumber(result.state_.mid, decimals, sigFigs)
-          parsedOiLong = decimals && formatBigNumber(result.state_.oiLong, uniswapDecimalsDifference + 18, sigFigs)
-          parsedOiShort = decimals && formatBigNumber(result.state_.oiShort, uniswapDecimalsDifference + 18, sigFigs)
-          parsedCapOi = decimals && formatBigNumber(result.state_.capOi, uniswapDecimalsDifference + 18, sigFigs)
-          parsedDailyFundingRate = decimals && formatFundingRateToDaily(result.state_.fundingRate, 18, 2)
-          parsedAnnualFundingRate = decimals && formatFundingRateToAnnual(result.state_.fundingRate, 18, 2)
-          marketBaseToken = marketName ? getCharactersBeforeSlash(marketName) : ''
-          marketQuoteToken = marketName ? getCharactersAfterSlash(marketName) : ''
-          marketLogo = MarketDetails[marketId]?.logo
-          priceCurrency = MarketDetails[marketId]?.currency ?? ''
+        if (result) {
+          if ((decimals && market.type === FeedType.CHAINLINK) || market.type === FeedType.NFTPERP) {
+            marketName = MarketDetails[marketId]?.marketName ?? 'Parsing error'
+            parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, sigFigs)
+            parsedAsk = decimals && formatBigNumber(result.state_.ask, decimals, sigFigs)
+            parsedMid = decimals && formatBigNumber(result.state_.mid, decimals, sigFigs)
+            parsedOiLong = decimals && formatBigNumber(result.state_.oiLong, decimals, sigFigs)
+            parsedOiShort = decimals && formatBigNumber(result.state_.oiShort, decimals, sigFigs)
+            parsedCapOi = decimals && formatBigNumber(result.state_.capOi, decimals, sigFigs)
+            parsedDailyFundingRate = decimals && formatFundingRateToDaily(result.state_.fundingRate, 18, 2)
+            parsedAnnualFundingRate = decimals && formatFundingRateToAnnual(result.state_.fundingRate, 18, 2)
+            marketBaseToken = marketName ? getCharactersBeforeSlash(marketName) : ''
+            marketQuoteToken = marketName ? getCharactersAfterSlash(marketName) : ''
+            marketLogo = MarketDetails[marketId]?.logo
+            priceCurrency = MarketDetails[marketId]?.currency ?? ''
+          } else if (decimals && uniswapDecimalsDifference && market.type === FeedType.UNISWAP) {
+            marketName = description
+            parsedBid = decimals && formatBigNumber(result.state_.bid, decimals, sigFigs)
+            parsedAsk = decimals && formatBigNumber(result.state_.ask, decimals, sigFigs)
+            parsedMid = decimals && formatBigNumber(result.state_.mid, decimals, sigFigs)
+            parsedOiLong = decimals && formatBigNumber(result.state_.oiLong, uniswapDecimalsDifference + 18, sigFigs)
+            parsedOiShort = decimals && formatBigNumber(result.state_.oiShort, uniswapDecimalsDifference + 18, sigFigs)
+            parsedCapOi = decimals && formatBigNumber(result.state_.capOi, uniswapDecimalsDifference + 18, sigFigs)
+            parsedDailyFundingRate = decimals && formatFundingRateToDaily(result.state_.fundingRate, 18, 2)
+            parsedAnnualFundingRate = decimals && formatFundingRateToAnnual(result.state_.fundingRate, 18, 2)
+            marketBaseToken = marketName ? getCharactersBeforeSlash(marketName) : ''
+            marketQuoteToken = marketName ? getCharactersAfterSlash(marketName) : ''
+            marketLogo = MarketDetails[marketId]?.logo
+            priceCurrency = MarketDetails[marketId]?.currency ?? ''
+          }
+        } else {
+          return {
+            ...market,
+            bid: BigNumber.from(0),
+            ask: BigNumber.from(0),
+            mid: BigNumber.from(0),
+            volumeBid: BigNumber.from(0),
+            volumeAsk: BigNumber.from(0),
+            oiLong: BigNumber.from(0),
+            oiShort: BigNumber.from(0),
+            capOi: BigNumber.from(0),
+            circuitBreakerLevel: BigNumber.from(0),
+            fundingRate: BigNumber.from(0),
+            oracleLogo: market.oracleLogo,
+            marketName: description,
+            parsedBid: 'NaN',
+            parsedAsk: 'NaN',
+            parsedMid: 'NaN',
+            parsedOiLong: 'NaN',
+            parsedOiShort: 'NaN',
+            parsedCapOi: 'NaN',
+            parsedDailyFundingRate: 'NaN',
+            parsedAnnualFundingRate: 'NaN',
+            marketBaseToken: marketName ? getCharactersBeforeSlash(marketName) : '',
+            marketQuoteToken: marketName ? getCharactersAfterSlash(marketName) : '',
+            marketLogo: MarketDetails[marketId]?.logo,
+            priceCurrency: MarketDetails[marketId]?.currency ?? '',
+          }
         }
 
         return {
@@ -139,11 +168,11 @@ export function useCurrentMarketState(marketsData: AdditionalMarketData[] | unde
       })
     }
     return undefined
-  }, [loading, error, results, marketsData, sigFigs])
+  }, [loading, results, marketsData, sigFigs])
 
   return {
     loading,
-    error,
+    error: false,
     markets: markets ? markets.map((market, index) => ({...market, marketAddress: inputs[index][0]})) : [],
   }
 }

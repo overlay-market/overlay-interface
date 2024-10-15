@@ -12,6 +12,7 @@ const IconWrapper = styled.div<{
   right?: string
   left?: string
   bottom?: string
+  justifyContent?: string
 }>`
   display: flex;
   height: ${({size}) => size}px;
@@ -26,6 +27,7 @@ const IconWrapper = styled.div<{
   right: ${({right}) => right ?? right};
   left: ${({left}) => left ?? left};
   bottom: ${({bottom}) => bottom ?? bottom};
+  justify-content: ${({justifyContent}) => justifyContent ?? justifyContent};
   position: ${({position}) => (position ? position : 'auto')};
   ${({disabled, theme}) => (disabled ? `color: ${theme.dark.grey2};` : '')};
 `
@@ -44,9 +46,25 @@ type IconProps = {
   left?: string
   bottom?: string
   position?: string
+  justifyContent?: string
 }
 
-export const Icon = ({size, margin, children, color, transform, clickable, onClick, top, right, left, bottom, position, disabled}: IconProps) => {
+export const Icon = ({
+  size,
+  margin,
+  children,
+  color,
+  transform,
+  clickable,
+  onClick,
+  top,
+  right,
+  left,
+  bottom,
+  position,
+  justifyContent,
+  disabled,
+}: IconProps) => {
   return (
     <IconWrapper
       size={size}
@@ -61,6 +79,7 @@ export const Icon = ({size, margin, children, color, transform, clickable, onCli
       left={left}
       bottom={bottom}
       position={position}
+      justifyContent={justifyContent}
     >
       {children}
     </IconWrapper>

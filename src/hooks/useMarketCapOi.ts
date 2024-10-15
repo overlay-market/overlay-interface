@@ -2,12 +2,13 @@ import {useEffect, useState, useMemo} from 'react'
 import {useV1PeripheryContract} from './useContract'
 import {useBlockNumber} from '../state/application/hooks'
 import {useActiveWeb3React} from './web3'
+import {BigNumber} from 'ethers'
 
 /**
  * Returns cap oi for input market address
  * @param marketAddress address of market to query cap oi
  */
-export function useMarketCapOi(marketAddress?: string): any | undefined {
+export function useMarketCapOi(marketAddress?: string): BigNumber | undefined {
   const peripheryContract = useV1PeripheryContract()
   const blockNumber = useBlockNumber()
   const {account} = useActiveWeb3React()

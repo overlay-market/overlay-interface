@@ -7,52 +7,24 @@ import {checkIsNegative} from '../../utils/checkIsNegative'
 import Loader from '../../components/Loaders/Loaders'
 import {useHistory} from 'react-router-dom'
 import {TEXT} from '../../theme/theme'
-import {Build, Liquidate, Unwind} from '../../state/build/hooks'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
+import {UnwindsQuery} from '../../state/data/generated'
+import {ParsedMarketStateDetails} from '../../hooks/useCurrentMarketState'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
+
+type UnwindsType = NonNullable<UnwindsQuery['account']>['unwinds'][number]
+type PositiopnType = UnwindsType['position'] & ParsedMarketStateDetails
+interface TransactionInterface extends UnwindsType {
+  position: PositiopnType
+}
 
 export interface PositionProps {
-  transaction: {
-    collateral: string
-    currentDebt: string
-    currentOi: string
-    id: string
-    fraction: string
-    isLong: boolean
-    mint: string
-    price: string
-    timestamp: string
-    value: string
-    unwindNumber: string
-    pnl: string
-    transferAmount: string
-    size: string
-    position: {
-      id: string
-      positionId: string
-      marketName?: string
-      marketAddress: string
-      leverage: string | number
-      createdAtTimestamp: string
-      isLong: boolean
-      initialCollateral?: string
-      entryPrice: string
-      exitPrice?: string
-      priceCurrency?: string
-      parsedMid?: string | number
-      decimals?: string | number
-      isLiquidated: boolean
-      currentOi: string
-      numberOfUniwnds: string
-      positionStatus: string
-      builds: Build[]
-      unwinds: Unwind[]
-      liquidates: Liquidate[]
-    }
-  }
+  page: number
+  transaction: TransactionInterface
   columns: string[]
 }
 
-export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
+export const UnwindsTransactions = ({page, transaction, columns}: PositionProps) => {
   const {positionId, marketName, leverage, createdAtTimestamp, isLong, entryPrice, priceCurrency, decimals} = transaction.position
   const {id, price, timestamp, pnl, size} = transaction
 
@@ -66,7 +38,7 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
 
   const parsedEntryPrice = useMemo(() => {
     if (!entryPrice || decimals === undefined) return null
-    return formatBigNumber(entryPrice, Number(decimals))
+    return formatBigNumber(entryPrice, Number(decimals), 8)
   }, [entryPrice, decimals])
 
   const parsedPnl = useMemo(() => {
@@ -76,7 +48,7 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
 
   const parsedExitPrice = useMemo(() => {
     if (!price || decimals === undefined) return null
-    return formatBigNumber(price, Number(decimals))
+    return formatBigNumber(price, Number(decimals), 8)
   }, [price, decimals])
 
   const unwindSize: string | undefined = useMemo(() => {
@@ -89,6 +61,7 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
     if (location) {
       const string = `/closed-positions/${location}`
       history.push(string)
+      sessionStorage.setItem(`closedPage`, `${page}`)
     }
   }
 
@@ -120,8 +93,16 @@ export const UnwindsTransactions = ({transaction, columns}: PositionProps) => {
           <TEXT.BoldSupplemental color={isLong ? '#5FD0AB' : '#FF648A'}>{positionSide}</TEXT.BoldSupplemental>
         </FlexRow>
       ),
-      'Entry Price': `${priceCurrency ? priceCurrency : ''}${parsedEntryPrice ? toScientificNumber(parsedEntryPrice) : '-'}`,
-      'Exit Price': `${priceCurrency ? priceCurrency : ''}${parsedExitPrice ? toScientificNumber(parsedExitPrice) : '-'}`,
+      'Entry Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedEntryPrice
+          ? priceCurrency === '%'
+            ? toPercentUnit(parsedEntryPrice)
+            : toScientificNumber(limitDigitsInDecimals(parsedEntryPrice))
+          : '-'
+      }`,
+      'Exit Price': `${priceCurrency ? priceCurrency : ''}${
+        parsedExitPrice ? (priceCurrency === '%' ? toPercentUnit(parsedExitPrice) : toScientificNumber(limitDigitsInDecimals(parsedExitPrice))) : '-'
+      }`,
       Closed: parsedClosedTimestamp,
       Created: parsedCreatedTimestamp,
       PnL: parsedPnl ? <ProfitLossCell PnL={Number(parsedPnl)} /> : '-',

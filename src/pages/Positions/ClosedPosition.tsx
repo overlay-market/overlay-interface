@@ -7,7 +7,7 @@ import {InterfaceWrapper} from '../../components/Container/Container'
 import {Back} from '../../components/Back/Back'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {usePositionInfo} from '../../hooks/usePositionInfo'
-import {PositionDataV2, Unwind, useCurrentWalletPositionsV2} from '../../state/build/hooks'
+import {PositionDataV2, Unwind, usePositionList} from '../../state/build/hooks'
 import {useUnwindActionHandlers} from '../../state/unwind/hooks'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
 import {FlexColumn, FlexRow} from '../../components/Container/Container'
@@ -15,7 +15,8 @@ import {useToken} from '../../hooks/useToken'
 import {useMarketName} from '../../hooks/useMarketName'
 import {MarketDetails} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const ControlInterfaceContainer = styled(FlexColumn)`
   padding: 16px;
@@ -49,13 +50,18 @@ export const AdditionalDetailRow = ({
   )
 }
 
+function getMarketPositionId(unwindId: string) {
+  return unwindId.split('-').slice(0, 2).join('-')
+}
+
 export function ClosedPosition({
   match: {
     params: {unwindId, positionId},
   },
 }: RouteComponentProps<{unwindId: string; positionId: string}>) {
   const {account, chainId} = useActiveWeb3React()
-  const {positions, isUninitialized, refetch} = useCurrentWalletPositionsV2(account)
+  const marketPositionId = getMarketPositionId(unwindId)
+  const {positions, isUninitialized, refetch} = usePositionList(account, [marketPositionId])
 
   useEffect(() => {
     !isUninitialized && refetch()
@@ -63,19 +69,15 @@ export function ClosedPosition({
 
   const {onSelectPositionId, onResetUnwindState} = useUnwindActionHandlers()
 
+  const position = positions ? positions[0] : null
   let filteredUnwind: Unwind | undefined = undefined
-  let filteredPosition: PositionDataV2 | undefined = undefined
-  if (positions) {
-    for (let position of positions) {
-      let selectedUnwind = position.unwinds.filter(transaction => transaction.id === unwindId)
-      if (selectedUnwind.length > 0) {
-        filteredUnwind = selectedUnwind[0]
-        filteredPosition = position
-      }
+
+  if (position) {
+    let selectedUnwind = position.unwinds.filter(transaction => transaction.id === unwindId)
+    if (selectedUnwind.length > 0) {
+      filteredUnwind = selectedUnwind[0]
     }
   }
-
-  const position = filteredPosition
 
   const {baseToken, quoteToken, quoteTokenAddress, decimals, description} = useMarketName(position?.market.feedAddress)
 
@@ -84,6 +86,10 @@ export function ClosedPosition({
     if (baseToken === 'loading' && quoteToken === 'loading') return <Loader stroke="white" size="12px" />
     return `${baseToken}/${quoteToken}`
   }, [description, baseToken, quoteToken, unwindId])
+
+  const priceCurrency = useMemo(() => {
+    return MarketDetails[unwindId.substring(0, 42)]?.currency
+  }, [unwindId])
 
   const quoteTokenInfo = useToken(quoteTokenAddress)
 
@@ -97,12 +103,12 @@ export function ClosedPosition({
   const positionInfo = usePositionInfo(position?.market.id, positionId)
   const isLong = positionInfo ? positionInfo.isLong : undefined
 
-  const parsedPnL = filteredUnwind ? +filteredUnwind.pnl / 10 ** 18 : 0
+  const parsedPnL = filteredUnwind ? +filteredUnwind.pnl / 10 ** 18 : undefined
   const entryPrice: number | string | null | undefined =
-    position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, 4)
+    position && formatBigNumberUsingDecimalsToString(position.entryPrice, decimals ? 18 : quoteTokenDecimals, 8)
 
   const exitPrice: number | string | null | undefined =
-    filteredUnwind && formatBigNumberUsingDecimalsToString(filteredUnwind.price, decimals ? 18 : quoteTokenDecimals, 4)
+    filteredUnwind && formatBigNumberUsingDecimalsToString(filteredUnwind.price, decimals ? 18 : quoteTokenDecimals, 8)
 
   useEffect(() => {
     onResetUnwindState()
@@ -137,14 +143,28 @@ export function ClosedPosition({
           <AdditionalDetailRow
             detail={'Profit/Loss'}
             valueColor={parsedPnL !== undefined && parsedPnL !== 0 ? (parsedPnL < 0 ? '#FF648A' : '#10DCB1') : '#F2F2F2'}
-            value={parsedPnL ? `${Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2)} OVL` : 'loading'}
+            value={
+              parsedPnL !== undefined
+                ? `${parsedPnL === 0 ? 0 : Math.abs(parsedPnL) < 1 ? parsedPnL.toFixed(6) : parsedPnL.toFixed(2)} OVL`
+                : 'loading'
+            }
           />
           <AdditionalDetailRow detail={'Side'} valueColor={'#F2F2F2'} value={isLong !== undefined ? (isLong ? 'Long' : 'Short') : 'loading'} />
         </FlexColumn>
 
         <FlexColumn mt="48px">
-          <AdditionalDetailRow detail={'Entry Price'} value={entryPrice ? `${toScientificNumber(entryPrice)}` : 'loading'} />
-          <AdditionalDetailRow detail={'Exit Price'} value={exitPrice ? `${toScientificNumber(exitPrice)}` : 'loading'} />
+          <AdditionalDetailRow
+            detail={'Entry Price'}
+            value={
+              entryPrice ? `${priceCurrency === '%' ? toPercentUnit(entryPrice) : toScientificNumber(limitDigitsInDecimals(entryPrice))}` : 'loading'
+            }
+          />
+          <AdditionalDetailRow
+            detail={'Exit Price'}
+            value={
+              exitPrice ? `${priceCurrency === '%' ? toPercentUnit(exitPrice) : toScientificNumber(limitDigitsInDecimals(exitPrice))}` : 'loading'
+            }
+          />
         </FlexColumn>
       </>
     </InterfaceWrapper>

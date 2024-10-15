@@ -39,7 +39,7 @@ export const InterfaceWrapper = styled.div`
   `}
 `
 
-const FlexContainer = styled(Box)<{
+export const FlexContainer = styled(Box)<{
   width?: string
   align?: string
   justify?: string
@@ -48,6 +48,7 @@ const FlexContainer = styled(Box)<{
   borderRadius?: string
   borderTop?: string
   borderBottom?: string
+  gap?: string
 }>`
   display: flex;
   position: relative;
@@ -59,6 +60,7 @@ const FlexContainer = styled(Box)<{
   border-radius: ${({borderRadius}) => borderRadius};
   border-top: ${({borderTop}) => borderTop ?? borderTop};
   border-bottom: ${({borderBottom}) => borderBottom ?? borderBottom};
+  gap: ${({gap}) => gap ?? gap};
 `
 
 export const FlexColumn = styled(FlexContainer)`

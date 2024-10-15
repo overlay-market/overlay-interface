@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { parseUnits } from '@ethersproject/units';
 import { CurrencyAmount, Currency } from "@uniswap/sdk-core";
 import JSBI from 'jsbi';
@@ -13,7 +13,7 @@ import {
 import { AppState } from "../state";
 import { useActiveWeb3React } from "../../hooks/web3";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useAccountQuery, useAccountV2Query, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsOverviewQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, usePositionsQuery, useUnwindsQuery } from "../data/generated";
+import { useQueryPositionQuery as usePositionListQuery, useLiquidatedPositionsQuery, useNumberOfPositionsQuery, useOpenPositionsQuery, useMarketOpenPositionsQuery, useUnwindsQuery, OpenPositionsQuery, UnwindsQuery, LiquidatedPositionsQuery, MarketOpenPositionsQuery } from "../data/generated";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { PositionStatus } from "../../pages/Positions/PositionsPage";
 
@@ -190,21 +190,10 @@ export function useTxnSettingsManager(): [boolean, (default_slippage: DefaultTxn
   return [isAuto, toggleSetTxnSettingsAuto];
 };
 
-export function useWalletPositionsFromSubgraph(address: string | undefined | null) {
-  const accountAddress = address ? address.toLowerCase() : undefined;
+export function usePositionListFromSubgraph(address: string | undefined | null, marketPositionIdList: string[]) {
+  const accountAddress = address ? address.toLowerCase() : undefined;  
 
-  return useAccountQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    refetchOnMountOrArgChange: true, 
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
-    skip: false
-  })
-}
-
-export function useWalletPositionsFromSubgraphV2(address: string | undefined | null) {
-  const accountAddress = address ? address.toLowerCase() : undefined;
-
-  return useAccountV2Query(accountAddress ? { account: accountAddress } : skipToken, { 
+  return usePositionListQuery(accountAddress ? { account: accountAddress, marketPositionIdList } : skipToken, { 
     refetchOnMountOrArgChange: true, 
     refetchOnFocus: true,
     refetchOnReconnect: true,
@@ -258,38 +247,24 @@ export interface PositionDataV2 {
 }
 
 export interface Build {
-  collateral: string
-  currentDebt: string
-  currentOi: string
   id: string
   price: string
   timestamp: string
-  value: string
 }
 
 export interface Liquidate {
-  collateral: string
-  currentDebt: string
-  currentOi: string
   id: string
-  isLong: boolean
   mint: string
   price: string
   timestamp: string
-  value: string
 }
 
 export interface Unwind {
-  collateral: string
-  currentDebt: string
-  currentOi: string
   id: string
   fraction: string
-  isLong: boolean
   mint: string
   price: string
   timestamp: string
-  value: string
   unwindNumber: string
   pnl: string
   transferAmount: string
@@ -310,32 +285,10 @@ export interface UniwndsData {
   position: Pick<PositionData, 'id'>
 }
 
-export function useCurrentWalletPositions(
-  address: string | undefined | null
-):{
-  isLoading: boolean
-  isFetching: boolean
-  isUninitialized: boolean
-  isError: boolean
-  error: unknown
-  positions: PositionData[] | undefined
-  refetch: () => void
-} {
-  const walletPositionsData = useWalletPositionsFromSubgraph(address ? address : undefined)
-  return {
-    isLoading: walletPositionsData.isLoading,
-    isFetching: walletPositionsData.isFetching,
-    isUninitialized: walletPositionsData.isUninitialized,
-    isError: walletPositionsData.isError, 
-    error: walletPositionsData.error,
-    positions: walletPositionsData.data?.account?.positions,
-    refetch: walletPositionsData.refetch
-  }
-}
-
-export function useCurrentWalletPositionsV2(
-  address: string | undefined | null
-):{
+export function usePositionList(
+  address: string | undefined | null,
+  marketPositionIdList: string[]
+):{  
   isLoading: boolean
   isFetching: boolean
   isUninitialized: boolean
@@ -344,15 +297,15 @@ export function useCurrentWalletPositionsV2(
   positions: PositionDataV2[] | undefined
   refetch: () => void
 } {
-  const walletPositionsData = useWalletPositionsFromSubgraphV2(address ? address : undefined)
+  const walletPositionData = usePositionListFromSubgraph(address ? address : undefined, marketPositionIdList)
   return {
-    isLoading: walletPositionsData.isLoading,
-    isFetching: walletPositionsData.isFetching,
-    isUninitialized: walletPositionsData.isUninitialized,
-    isError: walletPositionsData.isError, 
-    error: walletPositionsData.error,
-    positions: walletPositionsData.data?.account?.positions,
-    refetch: walletPositionsData.refetch
+    isLoading: walletPositionData.isLoading,
+    isFetching: walletPositionData.isFetching,
+    isUninitialized: walletPositionData.isUninitialized,
+    isError: walletPositionData.isError, 
+    error: walletPositionData.error,
+    positions: walletPositionData.data?.account?.positions,
+    refetch: walletPositionData.refetch
   }
 }
 
@@ -397,6 +350,18 @@ export function useNumberOfPositionsFromSubgraph(address: string | undefined | n
   })
 }
 
+export function isUnwindsQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is UnwindsQuery {
+  return typeof data === "object" && data !== undefined &&(data.account?.hasOwnProperty("unwinds") ?? false); // Check for specific property of UnwindsQuery
+}
+
+export function isLiquidatesQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is LiquidatedPositionsQuery {
+  return typeof data === "object" && data !== undefined && (data.account?.hasOwnProperty("liquidates") ?? false);
+}
+
+export function isOpenPositionsQuery(data: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined): data is OpenPositionsQuery {
+  return typeof data === "object" && data !== undefined && (data.account?.hasOwnProperty("positions") ?? false);
+}
+
 export function usePositionsTableData(
   address: string | undefined | null,
   first: number,
@@ -409,8 +374,8 @@ export function usePositionsTableData(
   isUninitialized: boolean
   isError: boolean
   error: unknown
-  positionsTableData: any | undefined
-  numberOfPositions: any | undefined
+  positionsTableData: OpenPositionsQuery | UnwindsQuery | LiquidatedPositionsQuery | undefined
+  numberOfPositions: number
   refetch: () => void
 } { 
   let query;
@@ -433,7 +398,22 @@ export function usePositionsTableData(
   } else{
     res = query(address ?? undefined, first, skip, undefined)
   }
-  const positionsTableData = res?.data;
+  let positionsTableData:
+    | OpenPositionsQuery
+    | UnwindsQuery
+    | LiquidatedPositionsQuery
+    | MarketOpenPositionsQuery
+    | undefined;
+
+  if (status === PositionStatus.Open) {
+    positionsTableData = res?.data as OpenPositionsQuery;
+  } else if (status === PositionStatus.Build) {
+    positionsTableData = res?.data as MarketOpenPositionsQuery;
+  } else if (status === PositionStatus.Closed) {
+    positionsTableData = res?.data as UnwindsQuery;
+  } else if (status === PositionStatus.Liquidated) {
+    positionsTableData = res?.data as LiquidatedPositionsQuery;
+  }
   const hasPositions = (data: any): data is { account: { positions: any[] } } => {
     return data?.account?.positions !== undefined;
   };
@@ -498,86 +478,3 @@ export function useLiquidatedPositionsFromSubgraph(address: string | undefined |
     skip: false
   })
 }
-
-export interface OpenPositionOverviewData {
-  id: string;
-  positionId: string;
-  market: PositionMarketData;
-}
-
-export function useOpenPositionsOverview(
-  address: string | undefined | null
-):{
-  isLoading: boolean
-  isFetching: boolean
-  isUninitialized: boolean
-  isError: boolean
-  error: unknown
-  openPositions: OpenPositionOverviewData[] | undefined
-  refetch: () => void
-} {
-  const openPositions = useOpenPositionsOverviewFromSubgraph(address ? address : undefined)
-  return {
-    isLoading: openPositions.isLoading,
-    isFetching: openPositions.isFetching,
-    isUninitialized: openPositions.isUninitialized,
-    isError: openPositions.isError, 
-    error: openPositions.error,
-    openPositions: openPositions.data?.account?.positions,
-    refetch: openPositions.refetch
-  }
-}
-
-export function useOpenPositionsOverviewFromSubgraph(address: string | undefined | null) {
-  const accountAddress = address ? address.toLowerCase() : undefined;
-
-  return useOpenPositionsOverviewQuery(accountAddress ? { account: accountAddress } : skipToken, {
-    refetchOnMountOrArgChange: true, 
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
-    skip: false
-  })
-}
-
-export function useCurrentWalletUnwinds(
-  address: string | undefined | null
-):{
-  isLoading: boolean
-  isFetching: boolean
-  isUninitialized: boolean
-  isError: boolean
-  error: unknown
-  unwinds: UniwndsData[] | undefined
-  refetch: () => void
-} {
-  const walletPositionsData = useWalletPositionsFromSubgraph(address ? address : undefined)
-  return {
-    isLoading: walletPositionsData.isLoading,
-    isFetching: walletPositionsData.isFetching,
-    isUninitialized: walletPositionsData.isUninitialized,
-    isError: walletPositionsData.isError, 
-    error: walletPositionsData.error,
-    unwinds: walletPositionsData.data?.account?.unwinds,
-    refetch: walletPositionsData.refetch
-  }
-}
-
-export function useAllPositions() {
-  const {
-    isLoading,
-    isError,
-    error,
-    isUninitialized,
-    data
-  } = usePositionsQuery({}, { pollingInterval: 1000 })
-
-  return useMemo(() => {
-    return {
-      isLoading,
-      isError,
-      error,
-      isUninitialized,
-      positions: data?.positions
-    } 
-  }, [ isLoading, isError, error, isUninitialized, data ])
-};

@@ -25,7 +25,9 @@ const BoldHeader1 = styled(TEXT.BoldHeader1)`
   ${({theme}) => theme.mediaWidth.minMedium`
     font-size: 20px !important;
   `}
+
   ${({theme}) => theme.mediaWidth.minExtraSmall`
+    padding: 24px;
     padding: 4px 0px;
     flex-direction: row;
   `};

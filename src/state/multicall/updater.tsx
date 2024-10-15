@@ -4,13 +4,14 @@ import {AppState} from '../state'
 import {Call, parseCallKey} from './utils'
 import useDebounce from '../../hooks/useDebounce'
 import {chunkArray} from '../../utils/chunkArray'
-import {useActiveWeb3React} from '../../hooks/web3'
 import {useBlockNumber} from '../application/hooks'
 import {RetryableError, retry} from '../../utils/retry'
 import {useAppDispatch, useAppSelector} from '../hooks'
 import {updateBlockNumber} from '../application/actions'
 import {useMulticall2Contract} from '../../hooks/useContract'
 import {errorFetchingMulticallResults, fetchingMulticallResults, updateMulticallResults} from './actions'
+import {SupportedChainId} from '../../constants/chains'
+import {useMultichainContext} from '../multichain/useMultichainContext'
 
 /**
  * Fetches a chunk of calls, enforcing a minimum block number constraint
@@ -117,7 +118,8 @@ export default function Updater(): null {
   // wait for listeners to settle before triggering updates
   const debouncedListeners = useDebounce(state.callListeners, 100)
   const latestBlockNumber = useBlockNumber()
-  const {chainId} = useActiveWeb3React()
+  const {chainId} = useMultichainContext()
+
   const multicall2Contract = useMulticall2Contract()
   const cancellations = useRef<{blockNumber: number; cancellations: (() => void)[]}>()
 
@@ -138,7 +140,7 @@ export default function Updater(): null {
     if (outdatedCallKeys.length === 0) return
     const calls = outdatedCallKeys.map(key => parseCallKey(key))
 
-    const chunkedCalls = chunkArray(calls)
+    const chunkedCalls = chunkArray(calls, +chainId === SupportedChainId.IMOLA ? 2000000 : undefined)
 
     if (cancellations.current && cancellations.current.blockNumber !== latestBlockNumber) {
       cancellations.current.cancellations.forEach(c => c())
@@ -223,6 +225,7 @@ export default function Updater(): null {
                 fetchingBlockNumber: latestBlockNumber,
               }),
             )
+            window.location.reload()
           })
         return cancel
       }),

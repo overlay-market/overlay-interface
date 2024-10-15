@@ -6,13 +6,13 @@ import {SUPPORTED_LOCALES} from '../../constants/locales'
 import {useActiveLocale} from '../../hooks/useActiveLocale'
 import {useWindowDimensions} from '../../hooks/useWindowDimensions'
 import {Accordion, AccordionSelection} from '../Accordion/Accordion'
-import {NETWORK_ICONS, NETWORK_LABELS, PlatformLogo} from '../Header/WalletMenu'
+import {NETWORK_ICONS, NETWORK_LABELS, PlatformLogo} from '../Header/ChainSwitch'
 import {useActiveWeb3React} from '../../hooks/web3'
 import ExternalLinks from '../Header/ExternalLinks'
 import {useState} from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import {ClaimId} from '../../constants/claims'
-import React from 'react'
+import {LINKS} from '../../constants/links'
 
 const NEW_MOBILE_MENU_FLAG = true
 
@@ -47,6 +47,16 @@ const StyledInternalLink = styled(NavLink)`
   font-weight: 700;
   margin: 12px 0;
   border: none !important;
+`
+const ClaimTestTokenLink = styled(NavLink)`
+  background: linear-gradient(89.2deg, #d5b4ff -1.18%, #ffa2b9 26.07%, #ff648a 47.56%, #ffcc8f 64.85%, #d5b4ff 99.44%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  background-clip: text;
+  margin: 12px 0;
+  text-fill-color: transparent;
 `
 
 const StyledExternalLink = styled.a.attrs(props => ({
@@ -158,6 +168,15 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               <StyledInternalLink tabIndex={tabIndex} to={'/referral'}>
                 <StyledMenuLink displayText={'Referral'} linkDestination={'/referrak'} currentLocation={location} />
               </StyledInternalLink>
+              <StyledInternalLink tabIndex={tabIndex} to={'/trading-mining'}>
+                <StyledMenuLink displayText={'Trading Mining'} linkDestination={'/trading-mining'} currentLocation={location} />
+              </StyledInternalLink>
+              <StyledExternalLink href={LINKS.STATISTICS}>
+                <TEXT.Menu>Statistics</TEXT.Menu>
+              </StyledExternalLink>
+              <ClaimTestTokenLink tabIndex={tabIndex} to={'/faucet'}>
+                <StyledMenuLink displayText={'Claim Test Token'} linkDestination={'/leaderboard'} currentLocation={location} />
+              </ClaimTestTokenLink>
               {/* <StyledInternalLink tabIndex={tabIndex} to={'/stake'}>
             <StyledMenuLink displayText={'Stake'} linkDestination={'/stake'} currentLocation={location} />
           </StyledInternalLink> */}

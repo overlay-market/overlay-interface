@@ -4,7 +4,7 @@ import styled from 'styled-components/macro'
 import {IconButton} from '@material-ui/core'
 import {Image} from 'rebass'
 import {useDarkModeManager} from '../../state/user/hooks'
-import {FlexRow} from '../Container/Container'
+import {FlexContainer, FlexRow} from '../Container/Container'
 import {enableLock, disableLock} from '../../utils/scrollLock'
 import {TEXT, colors} from '../../theme/theme'
 import SlideMenu from '../SlideMenu/SlideMenu'
@@ -12,9 +12,11 @@ import Web3Status from '../Web3Status/Web3Status'
 import OverlayLogoOnlyDark from '../../assets/images/overlay-logo-only-no-background.png'
 import {ChevronDown} from 'react-feather'
 import WalletMenu from './WalletMenu'
+import ChainSwitch from './ChainSwitch'
 import MobileWalletMenu from './WalletMenuMobile'
 import SetSlippageModal from '../SetSlippageModal.tsx/SetSlippageModal'
 import {ClaimId} from '../../constants/claims'
+import {LINKS} from '../../constants/links'
 
 export const HeaderContainer = styled.div`
   color: ${({theme}) => theme.dark.white};
@@ -65,6 +67,21 @@ export const StyledLink = styled(NavLink).attrs({
   &.${activeClassName} {
     color: ${({theme}) => theme.dark.blue2};
   }
+
+  ${({theme}) => theme.mediaWidth.minSmall`
+    display: flex;
+  `};
+`
+
+const StyledExternalLink = styled.a`
+  color: ${({theme}) => theme.dark.white};
+  font-size: 14px;
+  font-family: Inter;
+  text-decoration: none;
+  font-weight: bold;
+  margin: auto 16px;
+  cursor: pointer;
+  display: none;
 
   ${({theme}) => theme.mediaWidth.minSmall`
     display: flex;
@@ -254,6 +271,18 @@ export default function Header() {
               <TEXT.Menu>Leaderboard</TEXT.Menu>
               {/* </Trans> */}
             </StyledLink>
+
+            <StyledLink to={'/trading-mining'}>
+              <TEXT.Menu>Trading Mining</TEXT.Menu>
+            </StyledLink>
+
+            <StyledExternalLink href={LINKS.STATISTICS} target="_blank" rel="noopener noreferrer">
+              Statistics
+            </StyledExternalLink>
+
+            <PowerCardLink to={'/faucet'}>
+              <TEXT.Menu>Claim Test Token</TEXT.Menu>
+            </PowerCardLink>
           </>
         )
       ) : (
@@ -289,9 +318,12 @@ export default function Header() {
             </BuyOVLButtonContainer>
           </UnstyledLink>
         )}
-        <Web3Status />
-        <WalletMenu />
-        <MobileWalletMenu open={open} setOpen={setOpen} />
+        <FlexContainer gap="12px">
+          <Web3Status />
+          <ChainSwitch />
+          <WalletMenu />
+          <MobileWalletMenu open={open} setOpen={setOpen} />
+        </FlexContainer>
       </AccountContainer>
       <SlideMenu open={open} setOpen={setOpen} />
       <SetSlippageModal />

@@ -5,7 +5,7 @@ import {Label} from '@rebass/forms'
 import {MarketCard} from '../../components/Card/MarketCard'
 import {SelectActionButton, TriggerActionButton, ApproveTransactionButton} from '../../components/Button/Button'
 import {TEXT, colors} from '../../theme/theme'
-import {OVL} from '../../constants/tokens'
+import {ONE_BN, OVL} from '../../constants/tokens'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useBuildState} from '../../state/build/hooks'
 import {useDerivedBuildInfo} from '../../state/build/hooks'
@@ -42,7 +42,7 @@ import {MarketDetails, ComingSoonMarkets} from '../../constants/markets'
 import Loader from '../../components/Loaders/Loaders'
 import {MainDetails} from './MainBuildDetails'
 import {BuildChart} from './Chart/BuildChart'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
 import {BuildChartColumn} from './BuildChartColumn'
 import BuildHeader from './BuildHeader'
 import {PositionStatus, PositionsTableForBuildPage} from '../Positions/PositionsPage'
@@ -50,8 +50,9 @@ import {AdditionalMarketData, useMarketDetails} from '../../hooks/useMarketDetai
 import {MarketStateResults, useCurrentMarketState} from '../../hooks/useCurrentMarketState'
 import {Icon} from '../../components/Icon/Icon'
 import {AlertCircle} from 'react-feather'
-import React from 'react'
 import {useWalletModalToggle} from '../../state/application/hooks'
+import {usePositionsActionHandlers} from '../../state/positions/hooks'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 const SelectPositionSideButton = styled(SelectActionButton)`
   border-radius: 8px;
@@ -402,11 +403,17 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const {markets} = useTotalMarketsData()
   const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
+  const {onBuildPosition} = usePositionsActionHandlers()
+  const circuitBreakerLevel = marketsData.length > 0 && marketsData[0].circuitBreakerLevel
 
   // force refetch when refreshing page
   useEffect(() => {
     refetch()
   }, [marketId, isLoading, refetch])
+
+  useEffect(() => {
+    !market && refetch()
+  }, [market, refetch])
 
   // const market = marketData?.market
   const {account, chainId} = useActiveWeb3React()
@@ -461,7 +468,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     return difference
   }, [baseTokenDecimals, quoteTokenDecimals])
 
-  const sigFigConstant = 4
+  const sigFigConstant = 8
 
   // @TO-DO: pull market attributes
   const capLeverage = market ? formatWeiToParsedNumber(market.capLeverage, 18, 2) : undefined
@@ -701,19 +708,20 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const headerPrice: string = useMemo(() => {
     const price = estimatedReceivedPrice ?? prices.mid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return limitDigitsInDecimals(formattedPrice)
   }, [estimatedReceivedPrice, prices])
 
   const longPrice: string = useMemo(() => {
     const price = prices.ask
+
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return limitDigitsInDecimals(formattedPrice)
   }, [prices])
 
   const shortPrice: string = useMemo(() => {
     const price = prices.bid
     const formattedPrice = price < 100000 ? price : Math.floor(price)
-    return Number(formattedPrice).toLocaleString('en-US')
+    return limitDigitsInDecimals(formattedPrice)
   }, [prices])
 
   const priceImpact = useMemo(() => {
@@ -741,6 +749,13 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
   const exceedOiCap = useMemo(() => {
     if (!rawOiLong || !rawOiShort || !rawCapOi || !rawExpectedOi || isLong === undefined) return false
     return isLong ? rawExpectedOi.add(rawOiLong).gt(rawCapOi) : rawExpectedOi.add(rawOiShort).gt(rawCapOi)
+  }, [isLong, rawOiLong, rawOiShort, rawCapOi, rawExpectedOi])
+
+  const exceedOiCapCircuitBreaker = useMemo(() => {
+    if (!rawOiLong || !rawOiShort || !rawCapOi || !rawExpectedOi || isLong === undefined || !circuitBreakerLevel || exceedOiCap) return false
+    return isLong
+      ? rawExpectedOi.add(rawOiLong).gt(rawCapOi.mul(circuitBreakerLevel).div(ONE_BN))
+      : rawExpectedOi.add(rawOiShort).gt(rawCapOi.mul(circuitBreakerLevel).div(ONE_BN))
   }, [isLong, rawOiLong, rawOiShort, rawCapOi, rawExpectedOi])
 
   const {adjustedCollateral} = useEstimatedBuild(
@@ -795,6 +810,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           transactionHash: hash,
         })
         onResetBuildState()
+        onBuildPosition(true)
       })
       .catch(error => {
         setBuildState({
@@ -812,7 +828,12 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
       <BuildContainer>
         <LeftColumn>
           <BuildChartColumn marketData={{headerPrice, priceCurrency, isLoading, marketId: market?.id}}>
-            <BuildChart feedAddress={market?.feedAddress} marketId={market?.id} />
+            <BuildChart
+              feedAddress={market?.feedAddress}
+              marketId={market?.id}
+              longPrice={longPrice.replaceAll(',', '')}
+              shortPrice={shortPrice.replaceAll(',', '')}
+            />
           </BuildChartColumn>
           <PositionsTableContainer>
             <PositionsTableForBuildPage
@@ -831,8 +852,8 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                 <TEXT.BoldHeader1>{marketName}</TEXT.BoldHeader1>
                 <TEXT.Number color={colors(false).dark.blue1}>
                   {isLong
-                    ? `Long Price: ${priceCurrency}${toScientificNumber(longPrice)}`
-                    : `Short Price: ${priceCurrency}${toScientificNumber(shortPrice)}`}
+                    ? `Long Price: ${priceCurrency}${priceCurrency === '%' ? toPercentUnit(longPrice) : toScientificNumber(longPrice)}`
+                    : `Short Price: ${priceCurrency}${priceCurrency === '%' ? toPercentUnit(shortPrice) : toScientificNumber(shortPrice)}`}
                 </TEXT.Number>
               </ControlInterfaceHeadContainer>
               <PositionsButtonContainer>
@@ -905,6 +926,10 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
                   <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
                     Exceeds OI Cap
                   </TriggerBuildButton>
+                ) : exceedOiCapCircuitBreaker ? (
+                  <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
+                    Exceeds Circuit Breaker OI Cap
+                  </TriggerBuildButton>
                 ) : showBalanceNotEnoughWarning ? (
                   <TriggerBuildButton onClick={() => null} isDisabled={true} disabled={true}>
                     OVL Balance Below Minimum
@@ -942,7 +967,6 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               fundingRate={fundingRate}
               expectedOi={expectedOi && typedValue !== '' ? expectedOi : null}
               estLiquidationPrice={estimatedLiquidationPrice && typedValue !== '' ? estimatedLiquidationPrice : '-'}
-              marketAddress={market?.id}
               feedAddress={market?.feedAddress}
             />
           </MarketCard>
@@ -973,6 +997,7 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
           transactionHash={transactionHash}
           transactionErrorMessage={transactionErrorMessage}
           minPrice={minPrice.length === 1 ? minPrice[0] : undefined}
+          isDominanceMarket={priceCurrency === '%'}
         />
       </BuildContainer>
       {descriptionText && (
@@ -992,10 +1017,13 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
               {marketIndex && marketIndex.length > 0 && (
                 <SecondColumn>
                   <LeftDetailColumn>Indexes Construction</LeftDetailColumn>
-                  <RightDetailColumn style={{height: '126px'}}>
+                  <RightDetailColumn style={{height: 'auto'}}>
                     <UlList>
                       {visibleIndexes?.map((element, index) => (
-                        <LiList key={index}>{element}</LiList>
+                        <>
+                          <LiList key={index}>{element}</LiList>
+                          <br />
+                        </>
                       ))}
                     </UlList>
                     {marketIndex && marketIndex.length > 4 && (

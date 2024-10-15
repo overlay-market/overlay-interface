@@ -6,13 +6,19 @@ import {NetworkContextName} from '../constants/misc'
 import {injected, walletconnect} from './../connectors/connectors'
 import {isMobile} from 'react-device-detect'
 import {ChainId} from '@sushiswap/sdk'
+import {DEFAULT_CHAINID} from '../constants/chains'
+import {trackWalletConnection} from '../components/ConnectWalletModal/ConnectWalletModal'
 
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & {
   chainId?: ChainId
 } {
   const context = useWeb3ReactCore<Web3Provider>()
-  const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName)
-  return context.active ? context : contextNetwork
+  const {chainId, ...rest} = useWeb3ReactCore<Web3Provider>()
+  const fallbackChainId = Number(localStorage.getItem('chainId'))
+  const supportedChainId = chainId ? chainId : fallbackChainId > 0 ? fallbackChainId : DEFAULT_CHAINID
+
+  const {chainId: chainIdFallback, ...restFallback} = useWeb3ReactCore<Web3Provider>(NetworkContextName)
+  return context.active ? {...rest, chainId: supportedChainId} : {...restFallback, chainId: supportedChainId}
 }
 
 export function useEagerConnect() {
@@ -25,22 +31,28 @@ export function useEagerConnect() {
   useEffect(() => {
     if (storedDisconnected === 'true') {
       if (isMobile && window.ethereum) {
-        activate(injected, undefined, true).catch(() => {
-          setTried(true)
-        })
+        activate(injected, undefined, true)
+          .catch(() => {
+            setTried(true)
+          })
+          .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
       }
       setTried(true)
     } else {
       injected.isAuthorized().then(isAuthorized => {
         if (isAuthorized) {
-          activate(injected, undefined, true).catch(() => {
-            setTried(true)
-          })
-        } else {
-          if (storedConnection === 'walletconnect') {
-            activate(walletconnect, undefined, true).catch(() => {
+          activate(injected, undefined, true)
+            .catch(() => {
               setTried(true)
             })
+            .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
+        } else {
+          if (storedConnection === 'walletconnect') {
+            activate(walletconnect, undefined, true)
+              .catch(() => {
+                setTried(true)
+              })
+              .then(() => walletconnect.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
           } else {
             setTried(true)
           }
@@ -71,26 +83,30 @@ export function useInactiveListener(suppress = false) {
     if (ethereum && ethereum.on && !active && !error && !suppress) {
       const handleChainChanged = () => {
         // eat errors
-        activate(injected, undefined, true).catch(error => {
-          console.error('Failed to activate after chain changed', error)
-        })
+        activate(injected, undefined, true)
+          .catch(error => {
+            console.error('Failed to activate after chain changed', error)
+          })
+          .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
       }
 
       const handleAccountsChanged = (accounts: string[]) => {
         if (accounts.length > 0) {
           // eat errors
-          activate(injected, undefined, true).catch(error => {
-            console.error('Failed to activate after accounts changed', error)
-          })
+          activate(injected, undefined, true)
+            .catch(error => {
+              console.error('Failed to activate after accounts changed', error)
+            })
+            .then(() => injected.getAccount().then(connectedAccount => trackWalletConnection(connectedAccount ?? undefined)))
         }
       }
 
-      ethereum.on('chainChanged', handleChainChanged)
+      // ethereum.on('chainChanged', handleChainChanged)
       ethereum.on('accountsChanged', handleAccountsChanged)
 
       return () => {
         if (ethereum.removeListener) {
-          ethereum.removeListener('chainChanged', handleChainChanged)
+          // ethereum.removeListener('chainChanged', handleChainChanged)
           ethereum.removeListener('accountsChanged', handleAccountsChanged)
         }
       }

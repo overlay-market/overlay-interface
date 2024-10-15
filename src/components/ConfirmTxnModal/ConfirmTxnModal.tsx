@@ -6,8 +6,9 @@ import {AdditionalDetailRow} from '../../pages/Positions/Unwind'
 import {FlexColumn} from '../Container/Container'
 import {ModalContent, WalletHeader, CloseIcon} from '../ConnectWalletModal/ConnectWalletModal'
 import {BigNumber, BigNumberish} from 'ethers'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toPercentUnit, toScientificNumber} from '../../utils/toScientificNumber'
 import {formatBigNumberUsingDecimalsToString} from '../../utils/formatWei'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 export default function ConfirmTxnModal({
   marketName,
@@ -26,6 +27,7 @@ export default function ConfirmTxnModal({
   transactionHash,
   transactionErrorMessage,
   minPrice,
+  isDominanceMarket,
 }: {
   marketName: any
   isOpen: boolean
@@ -45,9 +47,10 @@ export default function ConfirmTxnModal({
   transactionHash?: any
   transactionErrorMessage?: any
   minPrice?: BigNumber
+  isDominanceMarket: boolean
 }) {
   return (
-    <Modal isOpen={isOpen} onDismiss={() => null} width={'350px'} maxWidth='90%'>
+    <Modal isOpen={isOpen} onDismiss={() => null} width={'350px'} maxWidth="90%">
       <ModalContent>
         <WalletHeader>
           <TEXT.StandardBody color={'white'} fontWeight={600} m={'auto 0'}>
@@ -70,7 +73,11 @@ export default function ConfirmTxnModal({
             </FlexColumn>
 
             <FlexColumn mt={'16px'} color={'white'}>
-              <AdditionalDetailRow detail={'Price'} detailColor={'#B9BABD'} value={toScientificNumber(marketPrice)} />
+              <AdditionalDetailRow
+                detail={'Price'}
+                detailColor={'#B9BABD'}
+                value={isDominanceMarket ? toPercentUnit(marketPrice) : toScientificNumber(limitDigitsInDecimals(marketPrice))}
+              />
 
               <AdditionalDetailRow
                 detail={'Side'}
@@ -83,11 +90,17 @@ export default function ConfirmTxnModal({
             </FlexColumn>
 
             <FlexColumn mt={'48px'} color={'white'}>
-              <AdditionalDetailRow detail={'Fee'} detailColor={'#B9BABD'} value={`${buildFee}%`} />
+              <AdditionalDetailRow detail={'Trading Fee'} detailColor={'#B9BABD'} value={`${buildFee}%`} />
 
               <AdditionalDetailRow detail={'Slippage Tolerance'} detailColor={'#B9BABD'} value={`${setSlippageValue}%`} />
 
-              <AdditionalDetailRow detail={'Est. Liquidation Price'} detailColor={'#B9BABD'} value={toScientificNumber(estimatedLiquidationPrice)} />
+              <AdditionalDetailRow
+                detail={'Est. Liquidation Price'}
+                detailColor={'#B9BABD'}
+                value={
+                  isDominanceMarket ? toPercentUnit(estimatedLiquidationPrice) : toScientificNumber(limitDigitsInDecimals(estimatedLiquidationPrice))
+                }
+              />
             </FlexColumn>
 
             <FlexColumn mt={'48px'} color={'white'}>
@@ -98,7 +111,11 @@ export default function ConfirmTxnModal({
 
             <TEXT.Supplemental color={'#B9BABD'} mt={'24px'} mb={'24px'}>
               {`The received price will be at ${isLong ? 'most' : 'least'} ${
-                minPrice ? toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4)) : '-'
+                minPrice
+                  ? isDominanceMarket
+                    ? toPercentUnit(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
+                    : toScientificNumber(formatBigNumberUsingDecimalsToString(minPrice, 18, 4))
+                  : '-'
               } or the transaction will revert.`}
             </TEXT.Supplemental>
 

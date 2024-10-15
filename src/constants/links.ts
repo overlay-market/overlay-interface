@@ -8,4 +8,5 @@ export const LINKS = {
   RISKS: 'https://docs.overlay.market/Security/Risks',
   TELEGRAM: 'https://t.me/overlay_protocol',
   TWITTER: 'https://twitter.com/OverlayProtocol',
+  STATISTICS: 'https://stats.overlay.market/',
 }

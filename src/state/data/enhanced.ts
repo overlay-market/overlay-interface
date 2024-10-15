@@ -5,10 +5,7 @@ export const CHAIN_TAG = 'Chain'
 export const api = generatedApi.enhanceEndpoints({
   addTagTypes: [CHAIN_TAG],
   endpoints: {
-    accountQuery: {
-      providesTags: [CHAIN_TAG],
-    },
-    accountV2Query: {
+    positionListQuery: {
       providesTags: [CHAIN_TAG],
     },
     marketQuery: {
@@ -17,10 +14,7 @@ export const api = generatedApi.enhanceEndpoints({
     activeMarketsQuery: {
       providesTags: [CHAIN_TAG],
     },
-    positionsQuery: {
-      providesTags: [CHAIN_TAG],
-    },
   },
 })
 
-export const {useMarketQuery, useTotalMarketsQuery, useAccountQuery, useAccountV2Query, usePositionsQuery, useActiveMarketsQuery} = api
+export const {useMarketQuery, useTotalMarketsQuery, useQueryPositionQuery, useActiveMarketsQuery} = api

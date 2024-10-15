@@ -10,7 +10,8 @@ import {AlertCircle} from 'react-feather'
 import {MarketChartData} from '../../constants/markets'
 import Chart7dCoin from './Chart7dCoin'
 import Chart7dNft from './Chart7dNft'
-import {toScientificNumber} from '../../utils/toScientificNumber'
+import {toScientificNumber, toPercentUnit} from '../../utils/toScientificNumber'
+import {limitDigitsInDecimals} from '../../utils/limitDigitsInDecimals'
 
 export const MarketsStyledTableRow = styled(StyledTableRow)`
   height: unset;
@@ -123,9 +124,9 @@ const MarketsRow = ({
       <StyledTableCellThin align="left" id="marketPrice">
         <TEXT.BoldNumber>
           {priceCurrency}
-          {toScientificNumber(
-            Number(midPrice) < 100000 ? Number(midPrice).toLocaleString('en-US') : Math.floor(Number(midPrice)).toLocaleString('en-US'),
-          )}
+          {priceCurrency === '%'
+            ? toPercentUnit(midPrice)
+            : toScientificNumber(Number(midPrice) < 100000 ? limitDigitsInDecimals(midPrice) : Math.floor(Number(midPrice)).toLocaleString('en-US'))}
         </TEXT.BoldNumber>
       </StyledTableCellThin>
 
@@ -151,7 +152,7 @@ const MarketsRow = ({
       </StyledTableCellThin>
 
       <StyledTableCellThin id="marketFeedLogo">
-        <Icon size={20} margin="auto">
+        <Icon size={20} margin="auto" justifyContent="center">
           <img src={oracleLogo} alt="Market Feed Logo" />
         </Icon>
       </StyledTableCellThin>

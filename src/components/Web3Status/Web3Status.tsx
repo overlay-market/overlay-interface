@@ -31,7 +31,6 @@ export const Web3StatusUnconnected = styled.button`
   color: ${({theme}) => theme.dark.white};
   border: 0px;
   border-radius: 25px;
-  margin-right: 24px;
   font-size: 12px;
   cursor: pointer;
 `
@@ -74,13 +73,8 @@ const PendingTransactions = styled.div`
 `
 
 const BalanceContainer = styled(FlexRow)`
-  margin-right: 12px;
   font-size: 12px;
   font-weight: 400;
-
-  ${({theme}) => theme.mediaWidth.minSmall`
-    margin-right: 16px;
-  `}
 `
 
 const Amount = styled(FlexRow)`
@@ -93,13 +87,8 @@ const Amount = styled(FlexRow)`
 `
 
 const WalletDetails = styled(FlexColumn)`
-  margin-right: 8px;
   position: relative;
-`
-
-const WalletBalance = styled(TEXT.Number)`
-  position: absolute;
-  top: 100%;
+  top: 2px;
 `
 
 /**
@@ -160,6 +149,8 @@ export const NETWORK_LABELS: {[chainId in SupportedChainId | number]: string} = 
   [SupportedChainId.ARBITRUM]: 'Arbitrum One',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'Arbitrum Goerli Testnet',
   [SupportedChainId.ARBITRUM_SEPOLIA]: 'Arbitrum Sepolia Testnet',
+  [SupportedChainId.IMOLA]: 'Movement Testnet',
+  [SupportedChainId.BARTIO]: 'Bartio Testnet',
 }
 
 const providerEth = new ethers.providers.InfuraProvider('mainnet', process.env.REACT_APP_INFURA_KEY)
@@ -226,10 +217,10 @@ function Web3StatusInner() {
             <TEXT.BoldSmallBody>{ens ?? shortenAddress(account)}</TEXT.BoldSmallBody>
             {HIDE_WALLET_BALANCE ? null : (
               <>
-                <WalletBalance fontSize={12} color={colors(false).dark.grey1}>
+                <TEXT.Number fontSize={12} color={colors(false).dark.grey1}>
                   {account && chainId && ovlBalance && <TokenBalance balance={Number(ovlBalance?.toFixed(4))} network={NETWORK_LABELS[chainId]} />}
                   {account && chainId && !ovlBalance && <TokenBalance balance={0} network={NETWORK_LABELS[chainId]} />}
-                </WalletBalance>
+                </TEXT.Number>
               </>
             )}
           </WalletDetails>

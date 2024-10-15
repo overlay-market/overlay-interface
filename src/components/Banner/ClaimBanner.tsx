@@ -11,10 +11,9 @@ export const BannerContainer = styled.div`
   width: 100vw;
   box-sizing: border-box;
   background: linear-gradient(to right, #ffa5cf, #cd11ff, #7017ff);
-  margin: 10px auto auto;
+  margin: auto auto;
   padding: 8px 32px;
   position: sticky;
-  top: 10px;
   z-index: 500;
   :hover {
     opacity: 0.96;
@@ -56,10 +55,10 @@ export default function ClaimBanner() {
       {linkToClaim === 'true' ? (
         <BannerContainer>
           <TextWrapper>
-            <StyledLink to={'/sepolia-faucet'}>
+            <StyledLink to={'/faucet'}>
               <TEXT.BoldSupplemental onClick={handleClose}>
-                You can now claim Arbitrum Sepolia Testnet ETH and test token OVL here. You can test the protocol, collect points and share 1.5% of
-                the total supply thanks to TUNA: The Ultimate New Airdrop.
+                You can now claim Arbitrum Sepolia / Berachain Testnet / Movement Testnet gas tokens, and test token OVL here. You can test the
+                protocol, collect points and share 1.5% of the total supply thanks to TUNA: The Ultimate New Airdrop.
               </TEXT.BoldSupplemental>
             </StyledLink>
           </TextWrapper>

@@ -16,83 +16,20 @@ const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   [SupportedChainId.ARBITRUM]:
     'https://gateway-arbitrum.network.thegraph.com/api/9d0198304529988979fdf429caba9ed3/subgraphs/id/7RuVCeRzAHL5apu6SWHyUEVt3Ko2pUv2wMTiHQJaiUW9',
   [SupportedChainId.ARBITRUM_GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arb-goerli',
+  [SupportedChainId.IMOLA]: 'https://subgraph.overlay.market/query/subgraphs/name/overlay/v1-subgraph',
+  [SupportedChainId.BARTIO]: 'https://api.goldsky.com/api/public/project_clyiptt06ifuv01ul9xiwfj28/subgraphs/overlay-bartio/prod/gn',
 }
 
 export const api = createApi({
   reducerPath: 'dataApi',
   baseQuery: graphqlRequestBaseQuery(),
   endpoints: builder => ({
-    accountQuery: builder.query({
-      query: ({account}) => ({
+    positionListQuery: builder.query({
+      query: ({account, marketPositionIdList}) => ({
         document: gql`
-          query account($account: ID!) {
+          query queryPosition($account: ID!, $marketPositionIdList: [ID!]) {
             account(id: $account) {
-              positions {
-                id
-                positionId
-                market {
-                  id
-                  feedAddress
-                }
-                initialOi
-                initialDebt
-                initialCollateral
-                initialNotional
-                leverage
-                isLong
-                entryPrice
-                isLiquidated
-                currentOi
-                currentDebt
-                mint
-                createdAtTimestamp
-                createdAtBlockNumber
-                numberOfUniwnds
-              }
-              builds {
-                id
-                isLong
-                price
-                timestamp
-                value
-                collateral
-              }
-              unwinds {
-                id
-                value
-                unwindNumber
-                timestamp
-                price
-                mint
-                fraction
-                currentOi
-                currentDebt
-                collateral
-                position {
-                  id
-                }
-              }
-              liquidates {
-                id
-                value
-                timestamp
-                price
-                mint
-              }
-            }
-          }
-        `,
-        variables: {
-          account,
-        },
-      }),
-    }),
-    accountV2Query: builder.query({
-      query: ({account}) => ({
-        document: gql`
-          query accountV2($account: ID!) {
-            account(id: $account) {
-              positions(orderBy: createdAtTimestamp, orderDirection: desc) {
+              positions(first: 1000, orderBy: createdAtTimestamp, orderDirection: desc, where: {id_in: $marketPositionIdList}) {
                 id
                 positionId
                 market {
@@ -116,37 +53,23 @@ export const api = createApi({
                 numberOfUniwnds
                 fractionUnwound
                 builds {
-                  collateral
-                  currentDebt
-                  currentOi
                   id
                   price
                   timestamp
-                  value
                 }
                 liquidates {
-                  collateral
-                  currentDebt
                   id
-                  currentOi
-                  isLong
                   mint
                   price
                   timestamp
-                  value
                 }
                 unwinds(orderBy: unwindNumber, orderDirection: asc) {
-                  collateral
-                  currentDebt
-                  currentOi
                   fraction
                   id
-                  isLong
                   mint
                   timestamp
                   price
                   unwindNumber
-                  value
                   transferAmount
                   pnl
                   size
@@ -157,6 +80,7 @@ export const api = createApi({
         `,
         variables: {
           account,
+          marketPositionIdList,
         },
       }),
     }),
@@ -220,9 +144,6 @@ export const api = createApi({
               priceDriftUpperLimit
               averageBlockTime
               isShutdown
-              positions {
-                id
-              }
             }
           }
         `,
@@ -254,28 +175,6 @@ export const api = createApi({
               priceDriftUpperLimit
               averageBlockTime
               isShutdown
-              positions {
-                id
-              }
-            }
-          }
-        `,
-      }),
-    }),
-    positionsQuery: builder.query({
-      query: () => ({
-        document: gql`
-          query positions {
-            positions {
-              id
-              positionId
-              owner {
-                id
-              }
-              market {
-                id
-              }
-              isLiquidated
             }
           }
         `,
@@ -304,7 +203,7 @@ export const api = createApi({
           query openPositions($account: ID!, $first: Int, $skip: Int) {
             account(id: $account) {
               positions(
-                where: {isLiquidated: false, currentOi_gt: "0"}
+                where: {isLiquidated: false, fractionUnwound_lt: "1000000000000000000"}
                 orderBy: createdAtTimestamp
                 orderDirection: desc
                 first: $first
@@ -313,6 +212,7 @@ export const api = createApi({
                 id
                 createdAtTimestamp
                 currentOi
+                fractionUnwound
                 entryPrice
                 initialCollateral
                 isLiquidated
@@ -341,7 +241,7 @@ export const api = createApi({
           query marketOpenPositions($account: ID!, $first: Int, $skip: Int, $marketId: String) {
             account(id: $account) {
               positions(
-                where: {isLiquidated: false, currentOi_gt: "0", market: $marketId}
+                where: {isLiquidated: false, fractionUnwound_lt: "1000000000000000000", market: $marketId}
                 orderBy: createdAtTimestamp
                 orderDirection: desc
                 first: $first
@@ -350,6 +250,7 @@ export const api = createApi({
                 id
                 createdAtTimestamp
                 currentOi
+                fractionUnwound
                 entryPrice
                 initialCollateral
                 isLiquidated
@@ -373,39 +274,15 @@ export const api = createApi({
         },
       }),
     }),
-    openPositionsOverviewQuery: builder.query({
-      query: ({account}) => ({
-        document: gql`
-          query openPositionsOverview($account: ID!) {
-            account(id: $account) {
-              positions(where: {isLiquidated: false, currentOi_gt: "0"}, orderBy: createdAtTimestamp, orderDirection: desc) {
-                id
-                positionId
-                market {
-                  feedAddress
-                  id
-                }
-              }
-            }
-          }
-        `,
-        variables: {
-          account,
-        },
-      }),
-    }),
     unwindsQuery: builder.query({
       query: ({account, first, skip}) => ({
         document: gql`
           query unwinds($account: ID!, $first: Int, $skip: Int) {
             account(id: $account) {
               unwinds(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
-                collateral
-                currentDebt
-                currentOi
                 fraction
+                fractionOfPosition
                 id
-                isLong
                 mint
                 pnl
                 price
@@ -413,7 +290,6 @@ export const api = createApi({
                 timestamp
                 transferAmount
                 unwindNumber
-                value
                 position {
                   createdAtTimestamp
                   currentOi
@@ -446,15 +322,10 @@ export const api = createApi({
           query liquidatedPositions($account: ID!, $first: Int, $skip: Int) {
             account(id: $account) {
               liquidates(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
-                collateral
-                currentDebt
-                currentOi
                 id
-                isLong
                 mint
                 price
                 timestamp
-                value
                 size
                 position {
                   createdAtTimestamp
@@ -543,9 +414,10 @@ function graphqlRequestBaseQuery(): BaseQueryFn<
   return async ({document, variables}, {getState}: BaseQueryApi) => {
     try {
       const chainId = (getState() as AppState).application.chainId
+      const storageChainId = Number(localStorage.getItem('chainId'))
 
-      // if chainId in state is null, set default query to Arbitrum One
-      const subgraphUrl = chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
+      const subgraphUrl =
+        storageChainId > 0 ? CHAIN_SUBGRAPH_URL[storageChainId] : chainId ? CHAIN_SUBGRAPH_URL[chainId] : CHAIN_SUBGRAPH_URL[DEFAULT_CHAINID]
 
       if (!subgraphUrl) {
         return {

@@ -11,7 +11,7 @@ export const StyledBurger = styled.button<{open: boolean}>`
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 3px;
   z-index: 50;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -19,11 +19,11 @@ export const StyledBurger = styled.button<{open: boolean}>`
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  height: 17px;
-  width: 17px;
+  height: 24px;
+  width: 24px;
 
   span {
-    width: 17px;
+    width: 18px;
     height: ${({open}) => (open ? '2px' : '1px')};
     background: ${({theme, open}) => (open ? theme.dark.white : theme.dark.white)};
     transition: all 0.3s linear;
@@ -38,7 +38,7 @@ export const StyledBurger = styled.button<{open: boolean}>`
       transform: ${({open}) => (open ? 'translateX(20px)' : 'translateX(0)')};
     }
     :nth-child(3) {
-      width: ${({open}) => (open ? '17px' : '10px')};
+      width: ${({open}) => (open ? '18px' : '10px')};
       transform: ${({open}) => (open ? 'rotate(-45deg)' : 'rotate(0)')};
     }
   }

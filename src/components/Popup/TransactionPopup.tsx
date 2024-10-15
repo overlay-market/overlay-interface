@@ -32,6 +32,72 @@ const ErrorMessage = styled(TEXT.Supplemental)`
 
 export default function TransactionPopup({hash, success, summary, info}: {hash: string; success?: boolean; summary?: string; info?: any}) {
   const {chainId} = useActiveWeb3React()
+
+  let errorMessage: string
+
+  switch (chainId && info?.message) {
+    case 'execution reverted: OVLV1: shutdown':
+      errorMessage = 'Market has been shutdown.'
+      break
+    case 'execution reverted: OVLV1:lev<min':
+      errorMessage = 'Leverage must be at least 1.'
+      break
+    case 'execution reverted: OVLV1:lev>max':
+      errorMessage = 'Leverage is greater than max.'
+      break
+    case 'execution reverted: OVLV1:fraction>max':
+      errorMessage = 'Fraction cannot equal greater than 1.'
+      break
+    case 'execution reverted: OVLV1:fraction<min':
+      errorMessage = 'Fraction cannot equal less than 0.'
+      break
+    case 'execution reverted: OVLV1:!position':
+      errorMessage = 'Position does not currently exist.'
+      break
+    case 'execution reverted: OVLV1:collateral<min':
+      errorMessage = 'Input collateral is less than minimum required collateral.'
+      break
+    case 'execution reverted: OVLV1:oi>cap':
+      errorMessage = 'Attempting to build position that will exceed market oi cap!'
+      break
+    case 'execution reverted: OVLV1:slippage>max':
+      errorMessage = 'User selected price limit is outside the range of the current market price.'
+      break
+    case 'execution reverted: OVLV1:!data':
+      errorMessage = 'Market price volatility has exceeded risk tolerance in the last hour.'
+      break
+    case 'execution reverted: OVLV1:oi==0':
+      errorMessage = 'Underlying price feed price points are too high. Unable to reliably estimate oi.'
+      break
+    case 'execution reverted: OVLV1:liquidatable':
+      errorMessage = 'Cannot build/unwind due to being liquidatable at execution time.'
+      break
+    case 'execution reverted: OVLV1:!liquidatable':
+      errorMessage = 'Position is currently not liquidatable.'
+      break
+    case 'execution reverted: ERC20: transfer amount exceeds balance':
+      errorMessage = 'Not enough balance.'
+      break
+    default:
+      errorMessage = 'Undefined error. Please look into console'
+  }
+
+  let notSuccessfulMessage: string | undefined
+
+  switch (info?.code) {
+    case 4001:
+      notSuccessfulMessage = 'Transaction Rejected'
+      break
+    case 'ACTION_REJECTED':
+      notSuccessfulMessage = 'Transaction Rejected'
+      break
+    case -32603:
+      notSuccessfulMessage = 'Transaction Failed'
+      break
+    default:
+      notSuccessfulMessage = undefined
+  }
+
   return (
     <PopupContentsContainer>
       <Icon>{success ? <CheckCircle width={22} height={22} color={'#10DCB1'} /> : <AlertTriangle width={22} height={22} color={'#FF648A'} />}</Icon>
@@ -46,54 +112,11 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
           {info?.type === TransactionType.CLAIM_OVL && 'Claim Successful'}
           {info?.type === TransactionType.REFERRAL_CLAIM && 'Claim Successful'}
           {/* {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)} */}
-          {info?.code === 4001 && 'Transaction Rejected'}
-          {info?.code === 'ACTION_REJECTED' && 'Transaction Rejected'}
-          {info?.code === -32603 && 'Transaction Failed'}
+          {notSuccessfulMessage}
         </TEXT.BoldSmallBody>
 
-        {chainId && info?.message === 'execution reverted: OVLV1: shutdown' && <ErrorMessage>Market has been shutdown.</ErrorMessage>}
+        {info?.message && !info?.type && !notSuccessfulMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
 
-        {chainId && info?.message === 'execution reverted: OVLV1:lev<min' && <ErrorMessage>Leverage must be at least 1.</ErrorMessage>}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:lev>max' && <ErrorMessage>Leverage is greater than max.</ErrorMessage>}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:fraction>max' && <ErrorMessage>Fraction cannot equal greater than 1.</ErrorMessage>}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:fraction<min' && <ErrorMessage>Fraction cannot equal less than 0.</ErrorMessage>}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:!position' && <ErrorMessage>Position does not currently exist.</ErrorMessage>}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:collateral<min' && (
-          <ErrorMessage>Input collateral is less than minimum required collateral.</ErrorMessage>
-        )}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:oi>cap' && (
-          <ErrorMessage>Attempting to build position that will exceed market oi cap!</ErrorMessage>
-        )}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:slippage>max' && (
-          <ErrorMessage>User selected price limit is outside the range of the current market price.</ErrorMessage>
-        )}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:!data' && (
-          <ErrorMessage>Market price volatility has exceeded risk tolerance in the last hour.</ErrorMessage>
-        )}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:oi==0' && (
-          <ErrorMessage>Underlying price feed price points are too high. Unable to reliably estimate oi.</ErrorMessage>
-        )}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:liquidatable' && (
-          <ErrorMessage>Cannot build/unwind due to being liquidatable at execution time.</ErrorMessage>
-        )}
-
-        {chainId && info?.message === 'execution reverted: OVLV1:!liquidatable' && (
-          <ErrorMessage>Position is currently not liquidatable.</ErrorMessage>
-        )}
-
-        {chainId && info?.message === 'execution reverted: ERC20: transfer amount exceeds balance' && (
-          <ErrorMessage>Not enough balance.</ErrorMessage>
-        )}
         {/* {chainId && info?.message && (
           <ErrorMessage>
             { info?.message }

@@ -116,6 +116,10 @@ const ABOUT_LINKS: Array<LinkAsset> = [
     label: 'Arbiscan',
     href: LINKS.ARBISCAN,
   },
+  {
+    label: 'Statistics',
+    href: LINKS.STATISTICS,
+  },
 ]
 
 const SOCIAL_LINKS: Array<LinkAsset> = [

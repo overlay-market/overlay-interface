@@ -8,7 +8,7 @@ import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
   [SupportedChainId.MAINNET]: 'https://api.studio.thegraph.com/query/46086/overlay-subgraph-eth/v2.0.2',
-  [SupportedChainId.ARBITRUM_SEPOLIA]: 'https://api.thegraph.com/subgraphs/name/overlay-market/overlay-sepolia-test',
+  [SupportedChainId.ARBITRUM_SEPOLIA]: 'https://api.studio.thegraph.com/query/77621/overlay-sepolia-test/version/latest',
   [SupportedChainId.GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-goerli',
   [SupportedChainId.RINKEBY]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-rinkeby',
   // [SupportedChainId.ARBITRUM]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arbitrum',

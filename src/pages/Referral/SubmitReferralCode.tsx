@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import {useActiveWeb3React} from '../../hooks/web3'
 import {useWalletModalToggle} from '../../state/application/hooks'
 import ReferralModal from './ReferralModal'
+import {useReferralSignature} from '../../hooks/useReferralSignature'
 
 const useStyles = makeStyles(theme => ({
   toggleButton: {
@@ -116,7 +117,9 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
     ethers.utils.isAddress(referralLink) || referralLink.length === 0 ? setValidAddress(false) : setValidAddress(true)
   }, [referralLink])
 
-  const {callback: referralCodeCallback, error: errorMessage} = useReferralCodeCallback(referralLink)
+  // const {callback: referralCodeCallback, error: errorMessage} = useReferralCodeCallback(referralLink)
+  const {callback: referralCodeCallback, error: errorMessage} = useReferralSignature(referralLink)
+  // TODO continue implementation
 
   const toggleWalletModal = useWalletModalToggle()
 

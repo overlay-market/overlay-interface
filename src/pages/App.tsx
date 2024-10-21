@@ -32,6 +32,7 @@ import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
 import {useMultichainContext} from '../state/multichain/useMultichainContext'
 import {MultichainContextProvider} from '../state/multichain/MultichainContext'
 import useSyncChainQuery from '../hooks/useSyncChainQuery'
+import ScrollToTop from '../utils/scrollToTop'
 
 export const AppWrapper = styled.div`
   background-color: ${({theme}) => theme.dark.background};
@@ -92,6 +93,7 @@ const App = () => {
   return (
     <MultichainContextProvider initialChainId={contextChainID}>
       <AppWrapper>
+        <ScrollToTop />
         <Popups />
         <TermsOfServiceManager>
           <ClaimBanner />

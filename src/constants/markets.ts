@@ -208,7 +208,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Chess.com'}],
     descriptionText:
-      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using an exponential moving average (EMA) to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
     contract: {
       name: shortenAddress('0xf3a513adadb8f1617c71b7b48bc0ef0cf9509e0f'),
       url: 'https://sepolia.arbiscan.io/address/0xf3a513adadb8f1617c71b7b48bc0ef0cf9509e0f',
@@ -223,7 +223,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Chess.com'}],
     descriptionText:
-      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using an exponential moving average (EMA) to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
     contract: {
       name: shortenAddress('0xfcf1cd40d20ae4955b35833c2329e923a5d8453d'),
       url: 'https://bartio.beratrail.io/address/0xfcf1cd40d20ae4955b35833c2329e923a5d8453d',
@@ -238,7 +238,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Chess.com'}],
     descriptionText:
-      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using an exponential moving average (EMA) to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
     contract: {
       name: shortenAddress('0x89b53fc8cbf3b646145ff510c44719d4961a9d33'),
       url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0x89b53fc8cbf3b646145ff510c44719d4961a9d33',
@@ -254,7 +254,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Chess.com'}],
     descriptionText:
-      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using an exponential moving average (EMA) to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
     contract: {
       name: shortenAddress('0x3bad2b943f4921c90f8738791a842905376ffb1d'),
       url: 'https://sepolia.arbiscan.io/address/0x3bad2b943f4921c90f8738791a842905376ffb1d',
@@ -269,7 +269,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Chess.com'}],
     descriptionText:
-      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using an exponential moving average (EMA) to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
     contract: {
       name: shortenAddress('0xdd81f146822100a71d1485a087a0f5d571b66942'),
       url: 'https://bartio.beratrail.io/address/0xdd81f146822100a71d1485a087a0f5d571b66942',
@@ -284,7 +284,7 @@ export const MarketDetails: {[address: string]: MarketDetailsData} = {
     currency: '',
     sources: [{name: 'Chess.com'}],
     descriptionText:
-      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using an exponential moving average (EMA) to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
     contract: {
       name: shortenAddress('0xfd73f1a5b9ae44780dd4e36be443b9dfa444b376'),
       url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0xfd73f1a5b9ae44780dd4e36be443b9dfa444b376',

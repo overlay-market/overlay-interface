@@ -3,7 +3,7 @@ import {useActiveWeb3React} from './web3'
 import {useTransactionAdder} from '../state/transactions/hooks'
 import {useAddPopup} from '../state/application/hooks'
 import {currentTimeParsed} from '../utils/currentTime'
-import {REFERRAL_LIST_ADDRESS} from '../constants/addresses'
+import {REFERRAL_API} from '../constants/applications'
 
 enum ReferralSignatureState {
   INVALID,
@@ -42,6 +42,16 @@ export function useReferralSignature(affiliateAddress: string): {
       state: ReferralSignatureState.VALID,
       callback: async function onReferralSignature(): Promise<string> {
         try {
+          const validationResponse = await fetch(`${REFERRAL_API}/affiliates/${affiliateAddress}`)
+          if (!validationResponse.ok) {
+            throw new Error('Failed to validate affiliate address')
+          }
+          
+          const validationData = await validationResponse.json()
+          if (!validationData.isValid) {
+            throw new Error('Invalid affiliate address')
+          }
+
           const domain = {
             name: 'Overlay Referrals',
             version: '1.0',
@@ -60,6 +70,29 @@ export function useReferralSignature(affiliateAddress: string): {
           const signer = library.getSigner()
           const signature = await signer._signTypedData(domain, types, message)
           console.log({signature})
+
+          try {
+            const response = await fetch(`${REFERRAL_API}/signatures`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                trader: account,
+                affiliate: affiliateAddress,
+                signature: signature,
+              }),
+            })
+
+            if (!response.ok) {
+              const errorData = await response.json()
+              throw new Error(errorData.message || 'Failed to store signature')
+            }
+          } catch (apiError) {
+            console.error('API error:', apiError)
+            const errorMessage = getErrorMessage(apiError)
+            throw new Error(`Failed to store referral signature: ${errorMessage}`)
+          }
 
           addPopup(
             {

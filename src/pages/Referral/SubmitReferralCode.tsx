@@ -176,7 +176,7 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
         />
         {transactionErrorMessage != undefined && !transactionErrorMessage.toString().includes('Transaction rejected') && (
           <TEXT.Supplemental className={classes.errorMessage} color={colors(false).dark.red}>
-            Invalid wallet address
+            { transactionErrorMessage.toString() }
           </TEXT.Supplemental>
         )}
         {!account && <ConnectWalletButton onClick={toggleWalletModal}>Connect wallet</ConnectWalletButton>}

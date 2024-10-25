@@ -138,7 +138,7 @@ export function useReferralSignature(affiliateAddress: string): {
             },
             currentTimeForId,
           )
-          throw new Error(`Referral signature failed: ${errorMessage}`)
+          throw new Error(errorMessage)
         }
       },
       error: null,

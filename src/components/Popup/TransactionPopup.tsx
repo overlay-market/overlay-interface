@@ -113,6 +113,7 @@ export default function TransactionPopup({hash, success, summary, info}: {hash: 
           {info?.type === TransactionType.REFERRAL_CLAIM && 'Claim Successful'}
           {/* {summary ?? 'Hash: ' + hash.slice(0, 8) + '...' + hash.slice(58, 65)} */}
           {notSuccessfulMessage}
+          {summary !== undefined && summary}
         </TEXT.BoldSmallBody>
 
         {info?.message && !info?.type && !notSuccessfulMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}

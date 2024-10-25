@@ -24,7 +24,6 @@ export function useReferralSignature(affiliateAddress: string): {
 } {
   const {account, chainId, library} = useActiveWeb3React()
   console.log({affiliateAddress})
-  const addTransaction = useTransactionAdder()
   const addPopup = useAddPopup()
   const currentTimeForId = currentTimeParsed()
 
@@ -46,7 +45,7 @@ export function useReferralSignature(affiliateAddress: string): {
           if (!validationResponse.ok) {
             throw new Error('Failed to validate affiliate address')
           }
-          
+
           const validationData = await validationResponse.json()
           if (!validationData.isValid) {
             throw new Error('Invalid affiliate address')
@@ -96,8 +95,7 @@ export function useReferralSignature(affiliateAddress: string): {
 
           addPopup(
             {
-              txn: {
-                hash: currentTimeForId,
+              info: {
                 success: true,
                 summary: `Successfully signed referral for ${affiliateAddress}`,
               },
@@ -116,8 +114,7 @@ export function useReferralSignature(affiliateAddress: string): {
             if (errorWithCode.code === 4001 || errorWithCode.code === 'ACTION_REJECTED') {
               addPopup(
                 {
-                  txn: {
-                    hash: currentTimeForId,
+                  info: {
                     success: false,
                     summary: 'User rejected the signature request',
                   },
@@ -130,8 +127,7 @@ export function useReferralSignature(affiliateAddress: string): {
 
           addPopup(
             {
-              txn: {
-                hash: currentTimeForId,
+              info: {
                 success: false,
                 summary: `Failed to sign referral: ${errorMessage}`,
               },

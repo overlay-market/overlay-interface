@@ -144,7 +144,7 @@ export const SubmitReferralCode = ({urlReferralCode}: {urlReferralCode: string |
         setReferralCodeState({
           showConfirm: false,
           attemptingTransaction: false,
-          transactionErrorMessage: error,
+          transactionErrorMessage: error.message,
           transactionHash: undefined,
         })
       })

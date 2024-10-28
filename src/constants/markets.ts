@@ -47,6 +47,10 @@ import RealEstateLogo from '../assets/images/tokens/Real Estate Dominance logo.p
 import RealEstateFull from '../assets/images/tokens/Real Estate Dominance.png'
 import SuperEthLogo from '../assets/images/tokens/Superfarm-ETH logo.png'
 import SuperEthFull from '../assets/images/tokens/Superfarm-Eth.png'
+import CarlsenLogo from '../assets/images/tokens/magnus.carlsen.logo.png'
+import CarlsenFull from '../assets/images/tokens/magnus.carlsen.png'
+import HikaruLogo from '../assets/images/tokens/hikaru.nakamura.logo.png'
+import HikaruFull from '../assets/images/tokens/hikaru.nakamura.png'
 import {shortenAddress} from '../utils/web3'
 import {FeedType, ORACLE_LOGO} from '../constants/oracles'
 
@@ -131,6 +135,7 @@ export enum CategoryName {
   CounterStrikeSkins = 'Counter-Strike',
   OrdinalNft = 'Ordinals',
   Crypto = 'Crypto',
+  Chess = 'Chess',
   Other = 'Other',
 }
 
@@ -139,10 +144,13 @@ export type MarketCategoryMap = {
 }
 
 export const MARKET_CATEGORIES: MarketCategoryMap = {
+  [CategoryName.Chess]: {
+    description: 'Markets tracking Chess players stats',
+    specialFlag: '*NEW*',
+  },
   [CategoryName.MemeWar]: {
     background: CatsFrogsFull,
     description: 'Markets related to popular meme competitions',
-    specialFlag: '*NEW*',
   },
   [CategoryName.CounterStrikeSkins]: {
     background: CsRifleFull,
@@ -192,6 +200,97 @@ export type MarketDetailsData = {
 }
 
 export const MarketDetails: {[address: string]: MarketDetailsData} = {
+  '0xf3a513adadb8f1617c71b7b48bc0ef0cf9509e0f': {
+    marketName: 'Magnus Carlsen',
+    logo: CarlsenLogo,
+    fullLogo: CarlsenFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Chess.com'}],
+    descriptionText:
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+    contract: {
+      name: shortenAddress('0xf3a513adadb8f1617c71b7b48bc0ef0cf9509e0f'),
+      url: 'https://sepolia.arbiscan.io/address/0xf3a513adadb8f1617c71b7b48bc0ef0cf9509e0f',
+    },
+    category: CategoryName.Chess,
+  },
+  '0xfcf1cd40d20ae4955b35833c2329e923a5d8453d': {
+    marketName: 'Magnus Carlsen',
+    logo: CarlsenLogo,
+    fullLogo: CarlsenFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Chess.com'}],
+    descriptionText:
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+    contract: {
+      name: shortenAddress('0xfcf1cd40d20ae4955b35833c2329e923a5d8453d'),
+      url: 'https://bartio.beratrail.io/address/0xfcf1cd40d20ae4955b35833c2329e923a5d8453d',
+    },
+    category: CategoryName.Chess,
+  },
+  '0x89b53fc8cbf3b646145ff510c44719d4961a9d33': {
+    marketName: 'Magnus Carlsen',
+    logo: CarlsenLogo,
+    fullLogo: CarlsenFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Chess.com'}],
+    descriptionText:
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nMagnus Carlsen, a Norwegian chess grandmaster, five-time World Chess Champion, and the reigning World Blitz, Rapid, and Chess World Cup Champion, is tracked in this market.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+    contract: {
+      name: shortenAddress('0x89b53fc8cbf3b646145ff510c44719d4961a9d33'),
+      url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0x89b53fc8cbf3b646145ff510c44719d4961a9d33',
+    },
+    category: CategoryName.Chess,
+  },
+
+  '0x3bad2b943f4921c90f8738791a842905376ffb1d': {
+    marketName: 'Hikaru Nakamura',
+    logo: HikaruLogo,
+    fullLogo: HikaruFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Chess.com'}],
+    descriptionText:
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+    contract: {
+      name: shortenAddress('0x3bad2b943f4921c90f8738791a842905376ffb1d'),
+      url: 'https://sepolia.arbiscan.io/address/0x3bad2b943f4921c90f8738791a842905376ffb1d',
+    },
+    category: CategoryName.Chess,
+  },
+  '0xdd81f146822100a71d1485a087a0f5d571b66942': {
+    marketName: 'Hikaru Nakamura',
+    logo: HikaruLogo,
+    fullLogo: HikaruFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Chess.com'}],
+    descriptionText:
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+    contract: {
+      name: shortenAddress('0xdd81f146822100a71d1485a087a0f5d571b66942'),
+      url: 'https://bartio.beratrail.io/address/0xdd81f146822100a71d1485a087a0f5d571b66942',
+    },
+    category: CategoryName.Chess,
+  },
+  '0xfd73f1a5b9ae44780dd4e36be443b9dfa444b376': {
+    marketName: 'Hikaru Nakamura',
+    logo: HikaruLogo,
+    fullLogo: HikaruFull,
+    oracleLogo: ORACLE_LOGO[FeedType.OVERLAY],
+    currency: '',
+    sources: [{name: 'Chess.com'}],
+    descriptionText:
+      'TL;DR – The smoothed blitz rating of the specified chess player on Chess.com.\n\nHikaru Nakamura, an American chess grandmaster, five-time U.S. Chess Champion, and the reigning World Fischer Random Chess Champion, is tracked in this market. A chess prodigy, Nakamura became the youngest American to earn the grandmaster title at age 15.\n\nThe data source is Chess.com, providing real-time blitz ratings for players. \nThe ratings are processed using 2 TWAPS to filter out short-term noise and highlight performance trends. \n\nIf data is unavailable or invalid, the last valid rating is used.',
+    contract: {
+      name: shortenAddress('0xfd73f1a5b9ae44780dd4e36be443b9dfa444b376'),
+      url: 'https://explorer.devnet.imola.movementlabs.xyz/#/account/0xfd73f1a5b9ae44780dd4e36be443b9dfa444b376',
+    },
+    category: CategoryName.Chess,
+  },
   '0xfd3362feb6a1fd9c7fdd4e314ecdaac1e54360c6': {
     marketName: 'SUPER / ETH',
     logo: SuperEthLogo,

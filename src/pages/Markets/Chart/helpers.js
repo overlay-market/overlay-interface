@@ -20,6 +20,8 @@ export function isSepolia(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0xecd76abb33c36dd62a7d033d26f7146801e03d4f' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x31d1e411db1a11a5741ff55d5c01c0c4cf4ac891' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xfd3362feb6a1fd9c7fdd4e314ecdaac1e54360c6' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xf3a513adadb8f1617c71b7b48bc0ef0cf9509e0f' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x3bad2b943f4921c90f8738791a842905376ffb1d' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x3966f792517e2df998c48301163c2a95bfd3eff8'
   )
 }
@@ -29,6 +31,8 @@ export function isImola(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0xb021eb4489c230234567ca6789e53403310db090' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x13b35923944df7e27082fcef640442386487bdda' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x32abe0b73564e1f0b8981474d65dcb72ca1e4865' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0x89b53fc8cbf3b646145ff510c44719d4961a9d33' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xfd73f1a5b9ae44780dd4e36be443b9dfa444b376' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xeab2fbdc9d43e785eb4065c8447d872735729aac'
   )
 }
@@ -52,6 +56,8 @@ export function isBartio(symbolInfo) {
     String(symbolInfo?.marketAddress).toLowerCase() === '0x0befa5099b225ffdaadbba5911d464e12a75a773' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0xd27803e696f818038c19f10ca8fc509ec07ba04c' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x7883c07f0b6d8004e2c8348ab5df2113423a5629' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xfcf1cd40d20ae4955b35833c2329e923a5d8453d' ||
+    String(symbolInfo?.marketAddress).toLowerCase() === '0xdd81f146822100a71d1485a087a0f5d571b66942' ||
     String(symbolInfo?.marketAddress).toLowerCase() === '0x9d32d77c2213a5ff7b6e52669d32752cc092ff40'
   )
 }

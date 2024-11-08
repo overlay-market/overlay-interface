@@ -4,7 +4,6 @@ import Web3ReactManager from '../components/Web3ReactManager/Web3ReactManager'
 import TermsOfServiceManager from '../components/TermsOfServiceModal/TermsOfServiceManager'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
-import ClaimBanner from '../components/Banner/ClaimBanner'
 import CurrentBlock from '../components/CurrentBlock/CurrentBlock'
 import Markets from './Markets/Markets'
 import {Market} from './Markets/Market'
@@ -96,7 +95,6 @@ const App = () => {
         <ScrollToTop />
         <Popups />
         <TermsOfServiceManager>
-          <ClaimBanner />
           <Header />
           <Web3ReactManager>
             <ContentWrapper>

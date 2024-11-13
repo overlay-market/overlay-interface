@@ -47,6 +47,10 @@ export function useReferralSignature(affiliateAddress: string): {
       state: ReferralSignatureState.VALID,
       callback: async function onReferralSignature(): Promise<string> {
         try {
+          if (account === affiliateAddress) {
+            throw new Error("Cannot refer yourself")
+          }
+          
           let validationResponse = await fetch(`${REFERRAL_API}/affiliates/${affiliateAddress}`)
           if (!validationResponse.ok) {
             throw new Error('Failed to validate affiliate address')

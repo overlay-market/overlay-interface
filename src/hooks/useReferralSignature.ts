@@ -3,7 +3,8 @@ import {useActiveWeb3React} from './web3'
 import {useTransactionAdder} from '../state/transactions/hooks'
 import {useAddPopup} from '../state/application/hooks'
 import {currentTimeParsed} from '../utils/currentTime'
-import {REFERRAL_LIST_ADDRESS} from '../constants/addresses'
+import {REFERRAL_API} from '../constants/applications'
+import {shortenAddress} from '../utils/web3'
 
 enum ReferralSignatureState {
   INVALID,
@@ -11,10 +12,15 @@ enum ReferralSignatureState {
   VALID,
 }
 
+const errorTransformationMap: { [key: string]: string } = {
+  "You've already chosen your referral": 'Wallet already signed up'
+};
+
 // Helper function to extract error message
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message
-  return String(error)
+function getErrorMessage(error: unknown, toaster: boolean = false): string {
+  let errorMessage = error instanceof Error ? error.message : String(error);
+  
+  return toaster ? errorTransformationMap[errorMessage] || errorMessage : errorMessage;
 }
 
 export function useReferralSignature(affiliateAddress: string): {
@@ -24,7 +30,6 @@ export function useReferralSignature(affiliateAddress: string): {
 } {
   const {account, chainId, library} = useActiveWeb3React()
   console.log({affiliateAddress})
-  const addTransaction = useTransactionAdder()
   const addPopup = useAddPopup()
   const currentTimeForId = currentTimeParsed()
 
@@ -42,6 +47,26 @@ export function useReferralSignature(affiliateAddress: string): {
       state: ReferralSignatureState.VALID,
       callback: async function onReferralSignature(): Promise<string> {
         try {
+          let validationResponse = await fetch(`${REFERRAL_API}/affiliates/${affiliateAddress}`)
+          if (!validationResponse.ok) {
+            throw new Error('Failed to validate affiliate address')
+          }
+
+          let validationData = await validationResponse.json()
+          if (!validationData.isValid) {
+            throw new Error('Invalid affiliate address')
+          }
+
+          validationResponse = await fetch(`${REFERRAL_API}/signatures/check/${account}`)
+          if (!validationResponse.ok) {
+            throw new Error("Failed to validate trader's signature")
+          }
+
+          validationData = await validationResponse.json()
+          if (validationData.exists) {
+            throw new Error("You've already chosen your referral")
+          }
+
           const domain = {
             name: 'Overlay Referrals',
             version: '1.0',
@@ -61,12 +86,34 @@ export function useReferralSignature(affiliateAddress: string): {
           const signature = await signer._signTypedData(domain, types, message)
           console.log({signature})
 
+          try {
+            const response = await fetch(`${REFERRAL_API}/signatures`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                trader: account,
+                affiliate: affiliateAddress,
+                signature: signature,
+              }),
+            })
+
+            if (!response.ok) {
+              const errorData = await response.json()
+              throw new Error(errorData.message || 'Failed to store signature')
+            }
+          } catch (apiError) {
+            console.error('API error:', apiError)
+            const errorMessage = getErrorMessage(apiError)
+            throw new Error(`Failed to store referral signature: ${errorMessage}`)
+          }
+
           addPopup(
             {
-              txn: {
-                hash: currentTimeForId,
+              info: {
                 success: true,
-                summary: `Successfully signed referral for ${affiliateAddress}`,
+                summary: `Successfully signed referral for ${shortenAddress(affiliateAddress)}`,
               },
             },
             currentTimeForId,
@@ -83,8 +130,7 @@ export function useReferralSignature(affiliateAddress: string): {
             if (errorWithCode.code === 4001 || errorWithCode.code === 'ACTION_REJECTED') {
               addPopup(
                 {
-                  txn: {
-                    hash: currentTimeForId,
+                  info: {
                     success: false,
                     summary: 'User rejected the signature request',
                   },
@@ -97,15 +143,14 @@ export function useReferralSignature(affiliateAddress: string): {
 
           addPopup(
             {
-              txn: {
-                hash: currentTimeForId,
+              info: {
                 success: false,
-                summary: `Failed to sign referral: ${errorMessage}`,
+                summary: `${getErrorMessage(error, true)}`,
               },
             },
             currentTimeForId,
           )
-          throw new Error(`Referral signature failed: ${errorMessage}`)
+          throw new Error(errorMessage)
         }
       },
       error: null,

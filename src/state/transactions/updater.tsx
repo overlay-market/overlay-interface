@@ -113,6 +113,19 @@ export default function Updater(): null {
                 )
               }
 
+              if (transactionInfo.type === TransactionType.REFERRAL_CODE) {
+                addPopup(
+                  {
+                    txn: {
+                      hash,
+                      success: receipt.status === 1,
+                      info: transactionInfo,
+                    },
+                  },
+                  hash,
+                )
+              }
+
               if (transactionInfo.type === TransactionType.BUILD_OVL_POSITION) {
                 addPopup(
                   {

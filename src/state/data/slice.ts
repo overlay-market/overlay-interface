@@ -8,8 +8,7 @@ import {SupportedChainId, DEFAULT_CHAINID} from '../../constants/chains'
 const CHAIN_SUBGRAPH_URL: Record<number, string> = {
   // [SupportedChainId.MAINNET]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph',
   [SupportedChainId.MAINNET]: 'https://api.studio.thegraph.com/query/46086/overlay-subgraph-eth/v2.0.2',
-  [SupportedChainId.ARBITRUM_SEPOLIA]:
-    'https://gateway-arbitrum.network.thegraph.com/api/f2e24a6f4bc2253fc8b99f56a3600aa1/subgraphs/id/6HYgwKVqKS4dYr3DDhZCH6zey7LbTd8DHqWtHZkjXBW5',
+  [SupportedChainId.ARBITRUM_SEPOLIA]: 'https://api.studio.thegraph.com/query/77621/overlay-sepolia-test/version/latest',
   [SupportedChainId.GÖRLI]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-goerli',
   [SupportedChainId.RINKEBY]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-rinkeby',
   // [SupportedChainId.ARBITRUM]: 'https://api.thegraph.com/subgraphs/name/bigboydiamonds/overlay-v1-subgraph-arbitrum',
@@ -350,6 +349,55 @@ export const api = createApi({
           account,
           first,
           skip,
+        },
+      }),
+    }),
+    referralAccountQuery: builder.query({
+      query: ({account}) => ({
+        document: gql`
+          query referralAccount($account: ID!) {
+            account(id: $account) {
+              id
+              ovlVolumeTraded
+              referralPositions {
+                affiliatedTo {
+                  id
+                }
+                id
+                tier
+                totalAffiliateComission
+                totalAirdroppedAmount
+                totalRewardsPending
+                totalTraderDiscount
+                accountsReferred
+              }
+            }
+          }
+        `,
+        variables: {
+          account,
+        },
+      }),
+    }),
+    tokenTransfersQuery: builder.query({
+      query: ({to, from, token}) => ({
+        document: gql`
+          query TokenTransfers($to: Bytes!, $from: Bytes!, $token: String!) {
+            tokenTransfers(where: {to: $to, from: $from, token: $token}) {
+              amount
+              from
+              to
+              transaction {
+                timestamp
+                id
+              }
+            }
+          }
+        `,
+        variables: {
+          to,
+          from,
+          token,
         },
       }),
     }),

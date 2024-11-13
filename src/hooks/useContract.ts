@@ -8,6 +8,7 @@ import MULTICALL2_ABI from '../constants/multicall/multicall2.json'
 import ERC20_ABI from '../constants/abis/erc20.json'
 import ERC20_BYTES32_ABI from '../constants/abis/erc20_bytes32.json'
 import V1_MARKET_ABI from '../constants/abis/OverlayV1Market.json'
+import REFERRAL_LIST_ABI from '../constants/abis/ReferralList.json'
 import V1_PERIPHERY_ABI from '../constants/abis/OverlayV1State.json'
 import OVL_TOKEN_ABI from '../constants/abis/OverlayV1Token.json'
 import UNISWAP_V3_FEED_ABI from '../constants/abis/OverlayV1UniswapV3Feed.json'
@@ -73,6 +74,10 @@ export function useLayerZeroEndpointContract(): Contract | null {
 
 export function useMarketContract(address: string | undefined): Contract | null {
   return useContract(address, V1_MARKET_ABI, false)
+}
+
+export function useReferralListContract(address: string | undefined): Contract | null {
+  return useContract(address, REFERRAL_LIST_ABI, false)
 }
 
 export function useOvlTokenContract(): Contract | null {

@@ -165,6 +165,9 @@ const SlideMenu = ({open, setOpen, ...props}: {open: boolean; setOpen: Function;
               <StyledInternalLink tabIndex={tabIndex} to={'/leaderboard'}>
                 <StyledMenuLink displayText={'Leaderboard'} linkDestination={'/leaderboard'} currentLocation={location} />
               </StyledInternalLink>
+              <StyledInternalLink tabIndex={tabIndex} to={'/referral'}>
+                <StyledMenuLink displayText={'Referral'} linkDestination={'/referrak'} currentLocation={location} />
+              </StyledInternalLink>
               <StyledInternalLink tabIndex={tabIndex} to={'/trading-mining'}>
                 <StyledMenuLink displayText={'Trading Mining'} linkDestination={'/trading-mining'} currentLocation={location} />
               </StyledInternalLink>

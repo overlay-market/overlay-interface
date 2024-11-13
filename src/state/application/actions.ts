@@ -18,6 +18,12 @@ export type PopupContent =
         auto: boolean
       }
     }
+  | {
+      info: {
+        summary?: string
+        success: boolean
+      }
+    }
 
 export enum ApplicationModal {
   WALLET,

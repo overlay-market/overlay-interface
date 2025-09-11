@@ -25,7 +25,7 @@ import {useEstimatedBuild} from '../../hooks/useEstimatedBuild'
 import {useBuildCallback} from '../../hooks/useBuildCallback'
 import {AdditionalDetails} from './AdditionalBuildDetails'
 import ConfirmTxnModal from '../../components/ConfirmTxnModal/ConfirmTxnModal'
-import {useMarketData} from '../../state/markets/hooks'
+import {useMarketData, useTotalMarketsData} from '../../state/markets/hooks'
 import {useSingleCallResult} from '../../state/multicall/hooks'
 import {useToken} from '../../hooks/useToken'
 import {useV1PeripheryContract} from '../../hooks/useContract'
@@ -346,7 +346,6 @@ const TextAboveLogo = styled.p`
 const TextBelowLogo = styled.p`
   margin-top: 5px;
   font-style: italic;
-  white-space: pre-line;
 `
 
 const LiList = styled.li`
@@ -399,24 +398,25 @@ export const BuildInterface = ({marketId}: {marketId: string}) => {
     transactionHash: undefined,
   })
 
-  const {account, chainId} = useActiveWeb3React()
-  const {market, isLoading, isUninitialized, refetch} = useMarketData(marketId)
+  const {market, isLoading, refetch} = useMarketData(marketId)
 
-  const marketDetails: AdditionalMarketData[] = useMarketDetails(market && [market])
+  const {markets} = useTotalMarketsData()
+  const marketDetails: AdditionalMarketData[] = useMarketDetails(markets)
   const {markets: marketsData}: MarketStateResults = useCurrentMarketState(marketDetails)
   const {onBuildPosition} = usePositionsActionHandlers()
   const circuitBreakerLevel = marketsData.length > 0 && marketsData[0].circuitBreakerLevel
 
   // force refetch when refreshing page
   useEffect(() => {
-    !isUninitialized && refetch()
-  }, [chainId, marketId, isLoading, isUninitialized, refetch])
+    refetch()
+  }, [marketId, isLoading, refetch])
 
   useEffect(() => {
     !market && refetch()
   }, [market, refetch])
 
   // const market = marketData?.market
+  const {account, chainId} = useActiveWeb3React()
   const ovlBalance = useOvlBalance()
   const parsedOvlBalance = ovlBalance && ovlBalance.toFixed(8)
   const ovl = chainId ? OVL[chainId] : undefined

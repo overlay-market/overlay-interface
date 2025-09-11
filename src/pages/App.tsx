@@ -27,6 +27,9 @@ import {useEffect, useRef, useState} from 'react'
 import {NetworkCheckerRoute} from '../routes/NetworkCheckerRoute'
 import {ProtectedRoute} from '../routes/ProtectedRoute'
 import {useActiveWeb3React} from '../hooks/web3'
+import {ReferralPage} from './Referral/ReferralPage'
+import {SubmitReferralCode} from './Referral/SubmitReferralCode'
+import {Referral} from './Referral/Referral'
 import {SupportedChainId, WORKING_CHAINS} from '../constants/chains'
 import {useMultichainContext} from '../state/multichain/useMultichainContext'
 import {MultichainContextProvider} from '../state/multichain/MultichainContext'
@@ -127,6 +130,9 @@ const App = () => {
                       <Route exact strict path="/faucet" component={Faucet} />
                       <Route exact strict path="/leaderboard" component={Leaderboard} />
                       <Route exact strict path="/trading-mining" component={TradingMiningLeaderboard} />
+                      <Route exact strict path="/referral" component={ReferralPage} />
+                      <Route exact strict path="/trader" component={SubmitReferralCode} />
+                      <Route exact strict path="/trader/:urlReferralCode" component={Referral} />
                     </Switch>
                   </ProtectedRoute>
                 }
